@@ -60,7 +60,6 @@ class Index extends SignCommon implements AutoSign
             'lottery_history_id' => "7056938122860298243"
         ];
         $res = $this->request->post("$this->siteUrl/lottery_lucky/dip_lucky{$this->queryStr}", $params, $this->options);
-        dump($res);
         return json_decode($res, true);
     }
 
