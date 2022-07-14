@@ -30,13 +30,12 @@ class ThirdPartySign extends Api
     public function jjAuto(){
         $jjIndex = new \app\api\library\jjSign\Index();
         /* 签到 */
-        $res = $jjIndex->sign();
-        dump($res);
+        $res['sign'] = $jjIndex->sign();
+
         /* 沾福气 */
-        $res = $jjIndex->lucky();
-        dump($res);
+        $res['lucky'] = $jjIndex->lucky();
         /* 抽奖 */
-        $res = $jjIndex->lottery();
-        dump($res);
+        $res['lottery'] = $jjIndex->lottery();
+        exit(json_encode($res, JSON_UNESCAPED_UNICODE));
     }
 }
