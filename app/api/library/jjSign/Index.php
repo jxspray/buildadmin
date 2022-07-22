@@ -52,12 +52,34 @@ class Index extends SignCommon implements AutoSign
     }
 
     /**
+     * @throws \Exception
+     */
+    private function getHistoryId(){
+        $res = $this->request->post("$this->siteUrl/lottery_history/global_big{$this->queryStr}", [], $this->options);
+        $result = json_decode($res, true);
+        if($result['err_no'] != '0') return ['code' => $result['err_no'], 'msg' => $result['err_msg']];
+        $data = $result['data'];
+        if($data > 0) {
+            $lotteries = $data['lotteries'];
+            $history_ids = [];
+            foreach ($lotteries as $lottery) {
+                $history_ids[] = $lottery['history_id'];
+            }
+            return $history_ids[random_int(0, count($history_ids) - 1)];
+        }
+        return "7056938122860298243";
+    }
+
+    /**
      * 沾福气
      * @return mixed
+     * @throws \Exception
      */
     public function lucky(){
+        $history_id = $this->getHistoryId();
+        /* 获取福气ID */
         $params = [
-            'lottery_history_id' => "7056938122860298243"
+            'lottery_history_id' => $history_id ?? "7056938122860298243"
         ];
         $res = $this->request->post("$this->siteUrl/lottery_lucky/dip_lucky{$this->queryStr}", $params, $this->options);
         return json_decode($res, true);
