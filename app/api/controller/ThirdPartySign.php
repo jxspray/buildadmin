@@ -31,7 +31,6 @@ class ThirdPartySign extends Api
         $jjIndex = new \app\api\library\jjSign\Index();
         /* 签到 */
         $res['sign'] = $jjIndex->sign();
-
         /* 沾福气 */
         $res['lucky'] = $jjIndex->lucky();
         /* 抽奖 */
