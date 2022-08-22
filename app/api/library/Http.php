@@ -72,10 +72,12 @@ class Http
         // disable 100-continue
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
 
-        if ('https' == $protocol) {
-            $defaults[CURLOPT_SSL_VERIFYPEER] = false;
-            $defaults[CURLOPT_SSL_VERIFYHOST] = false;
-        }
+        $defaults[CURLOPT_SSL_VERIFYPEER] = false;
+        $defaults[CURLOPT_SSL_VERIFYHOST] = false;
+//        if ('https' == $protocol) {
+//            $defaults[CURLOPT_SSL_VERIFYPEER] = false;
+//            $defaults[CURLOPT_SSL_VERIFYHOST] = false;
+//        }
 
         curl_setopt_array($ch, (array)$options + $defaults);
 

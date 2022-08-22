@@ -42,7 +42,22 @@ class Index extends SignCommon implements AutoSign
         if ($this->getResponseBody($res, $data)) exit($data);
         exit(json_encode(['code' => -1, "返回内容有误"]));
     }
-
+// HTTP请求（支持HTTP/HTTPS，支持GET/POST）
+    function http_request($url, $data = null)
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+        if (! empty($data)) {
+            curl_setopt($curl, CURLOPT_POST, 1);
+            curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        }
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return $output;
+    }
     /**
      * 平台登录
      * @return array
@@ -54,8 +69,11 @@ class Index extends SignCommon implements AutoSign
             'pass' => request()->get("password") ?? $this->password
         ];
         $options = [
-            CURLOPT_HEADER => 1
+            CURLOPT_HEADER => 1,
         ];
+
+        $res = $this->http_request("$this->siteUrl/user/ajax.php?act=login", $params);
+        dump($res);die;
         $res = $this->request->post("$this->siteUrl/user/ajax.php?act=login", $params, $options);
         if ($this->getResponseBody($res, $data)) {
             $data = json_decode($data, true);
