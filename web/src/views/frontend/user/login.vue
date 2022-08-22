@@ -83,7 +83,7 @@
                                             <img
                                                 @click="onChangeCaptcha"
                                                 class="captcha-img"
-                                                :src="buildCaptchaUrl() + '?id=' + state.form.captchaId"
+                                                :src="buildCaptchaUrl() + '&id=' + state.form.captchaId"
                                                 alt=""
                                             />
                                         </el-col>
@@ -412,7 +412,7 @@ const onSubmit = (formRef: InstanceType<typeof ElForm> | undefined = undefined) 
                     userInfo.$state = res.data.userinfo
                     router.push({ path: res.data.routePath })
                 })
-                .catch((err) => {
+                .catch(() => {
                     state.formLoading = false
                     onChangeCaptcha()
                 })

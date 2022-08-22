@@ -7,7 +7,7 @@ export const useSiteConfig = defineStore('siteConfig', {
             site_name: '',
             record_number: '',
             version: '',
-            api_url: '',
+            cdn_url: '',
         }
     },
 })

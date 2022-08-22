@@ -16,10 +16,19 @@ namespace think;
  * 不在tp加载后判断，为了安全的使用exit()
  * 使用绝对路径，确保花里胡哨的url均能正确判定和跳转
  */
-$rootPath = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR;
+if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+    header("Access-Control-Allow-Credentials: true");
+    header("Access-Control-Max-Age: 86400");
+    header("Access-Control-Allow-Methods: GET, POST, PATCH, PUT, DELETE, OPTIONS");
+    header("Access-Control-Allow-Headers: " . $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']);
+    header("Access-Control-Allow-Origin: *");
+    exit();
+}
 
-if (substr($_SERVER['REQUEST_URI'], 1, 9) != 'index.php') {
-    // 没有入口文件=用户访问前端
+$rootPath = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR;
+$server   = isset($_REQUEST['server']) || isset($_SERVER['HTTP_SERVER']) || substr($_SERVER['REQUEST_URI'], 1, 9) == 'index.php';
+if (!$server) {
+    // 用户访问前端
 
     // 安装检测-s
     if (!is_file($rootPath . 'install.lock') && is_file($rootPath . 'install' . DIRECTORY_SEPARATOR . 'index.html')) {
@@ -31,7 +40,6 @@ if (substr($_SERVER['REQUEST_URI'], 1, 9) != 'index.php') {
     /*
      * 检测是否已编译前端-s
      * 如果存在 index.html 则访问 index.html
-     * 本系统无需且不能配置隐藏 index.php 文件
      */
     if (is_file($rootPath . 'index.html')) {
         header("location:" . DIRECTORY_SEPARATOR . 'index.html');

@@ -14,7 +14,7 @@
 
     <!-- image -->
     <div v-if="field.render == 'image' && fieldValue" class="ba-render-image">
-        <el-image :preview-teleported="true" :preview-src-list="[fieldValue]" :src="fieldValue"></el-image>
+        <el-image :preview-teleported="true" :preview-src-list="[fullUrl(fieldValue)]" :src="fullUrl(fieldValue)"></el-image>
     </div>
 
     <!-- images -->
@@ -22,11 +22,12 @@
         <template v-if="Array.isArray(fieldValue) && fieldValue.length">
             <el-image
                 v-for="(item, idx) in fieldValue"
+                :key="idx"
                 :initial-index="idx"
                 :preview-teleported="true"
-                :preview-src-list="fieldValue"
+                :preview-src-list="arrayFullUrl(fieldValue)"
                 class="images-item"
-                :src="item"
+                :src="fullUrl(item)"
             ></el-image>
         </template>
     </div>
@@ -41,7 +42,7 @@
     <!-- tags -->
     <div v-if="field.render == 'tags'">
         <template v-if="Array.isArray(fieldValue)">
-            <template v-for="tag in fieldValue">
+            <template v-for="(tag, idx) in fieldValue" :key="idx">
                 <el-tag v-if="tag" class="m-10" size="small" effect="light">{{ field.replaceValue ? field.replaceValue[tag] ?? tag : tag }}</el-tag>
             </template>
         </template>
@@ -71,9 +72,12 @@
     <!-- customTemplate 自定义模板 -->
     <div v-if="field.render == 'customTemplate'" v-html="field.customTemplate ? field.customTemplate(row, field, fieldValue) : ''"></div>
 
+    <!-- 自定义组件/函数渲染 -->
+    <component v-if="field.render == 'customRender'" :is="field.customRender" :renderRow="row" :renderField="field" :renderValue="fieldValue" />
+
     <!-- 按钮组 -->
     <div v-if="field.render == 'buttons' && field.buttons">
-        <template v-for="(btn, idx) in field.buttons">
+        <template v-for="(btn, idx) in field.buttons" :key="idx">
             <template v-if="btn.display ? btn.display(row, field) : true">
                 <el-tooltip
                     v-if="btn.render == 'tipButton'"
@@ -153,6 +157,7 @@ import type { TagProps } from 'element-plus'
 import { timeFormat, openUrl } from '/@/components/table'
 import useCurrentInstance from '/@/utils/useCurrentInstance'
 import { useI18n } from 'vue-i18n'
+import { fullUrl, arrayFullUrl } from '/@/utils/common'
 
 const { t } = useI18n()
 const { proxy } = useCurrentInstance()
@@ -176,11 +181,11 @@ const props = withDefaults(defineProps<Props>(), {
 const fieldValue = ref(props.row[props.property])
 if (props.property.indexOf('.') > -1) {
     let fieldNameArr = props.property.split('.')
-    let val: any = props.row[fieldNameArr[0]]
+    let val: any = ref(props.row[fieldNameArr[0]])
     for (let index = 1; index < fieldNameArr.length; index++) {
-        val = val ? val[fieldNameArr[index]] ?? '' : ''
+        val.value = val.value ? val.value[fieldNameArr[index]] ?? '' : ''
     }
-    fieldValue.value = val
+    fieldValue.value = val.value
 }
 
 if (props.field.renderFormatter && typeof props.field.renderFormatter == 'function') {

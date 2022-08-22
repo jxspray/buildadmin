@@ -3,7 +3,7 @@
         <div class="table-com-search">
             <el-form @keyup.enter="onComSearch" label-position="top" :model="baTable.comSearch.form">
                 <el-row>
-                    <template v-for="(item, idx) in baTable.table.column">
+                    <template v-for="(item, idx) in baTable.table.column" :key="idx">
                         <template v-if="item.operator !== false">
                             <!-- 时间范围 -->
                             <el-col v-if="item.render == 'datetime' && (item.operator == 'RANGE' || item.operator == 'NOT RANGE')" :span="12">
@@ -73,6 +73,15 @@
                                             v-model="baTable.comSearch.form[item.prop!]"
                                             :attr="item.remote"
                                             :placeholder="item.operatorPlaceholder"
+                                        />
+
+                                        <!-- 自定义组件/函数渲染 -->
+                                        <component
+                                            v-else-if="item.comSearchRender == 'customRender'"
+                                            :is="item.comSearchCustomRender"
+                                            :renderRow="item"
+                                            :renderField="item.prop!"
+                                            :renderValue="baTable.comSearch.form[item.prop!]"
                                         />
 
                                         <!-- 开关 -->

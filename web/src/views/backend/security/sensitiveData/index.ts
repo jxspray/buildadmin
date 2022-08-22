@@ -24,8 +24,8 @@ export class sensitiveDataClass extends baTableClass {
                 id: id,
             })
             .then((res) => {
-                let fields: string[] = []
-                let dataFields: DataFields[] = []
+                const fields: string[] = []
+                const dataFields: DataFields[] = []
                 for (const key in res.data.row.data_fields) {
                     fields.push(key)
                     dataFields.push({
@@ -34,7 +34,7 @@ export class sensitiveDataClass extends baTableClass {
                     })
                 }
 
-                this.form.extend = Object.assign(this.form.extend, {
+                this.form.extend = Object.assign(this.form.extend!, {
                     tableList: res.data.tables,
                     controllerList: res.data.controllers,
                 })
@@ -53,7 +53,7 @@ export class sensitiveDataClass extends baTableClass {
 
     // 数据表改变事件
     onTableChange = (table: string) => {
-        this.form.extend = Object.assign(this.form.extend, {
+        this.form.extend = Object.assign(this.form.extend!, {
             fieldLoading: true,
             fieldlist: {},
             fieldSelect: {},
@@ -67,12 +67,12 @@ export class sensitiveDataClass extends baTableClass {
             this.form.items!.primary_key = res.data.pk
             this.form.defaultItems!.primary_key = res.data.pk
 
-            let fieldSelect: anyObj = {}
+            const fieldSelect: anyObj = {}
             for (const key in res.data.fieldlist) {
                 fieldSelect[key] = (key ? key + ' - ' : '') + res.data.fieldlist[key]
             }
 
-            this.form.extend = Object.assign(this.form.extend, {
+            this.form.extend = Object.assign(this.form.extend!, {
                 fieldLoading: false,
                 fieldlist: res.data.fieldlist,
                 fieldSelect: fieldSelect,
@@ -84,7 +84,7 @@ export class sensitiveDataClass extends baTableClass {
     /**
      * 重写打开表单方法
      */
-    toggleForm = (operate: string = '', operateIds: string[] = []) => {
+    toggleForm = (operate = '', operateIds: string[] = []) => {
         this.runBefore('toggleForm', { operate, operateIds })
         if (this.form.ref) {
             this.form.ref.resetFields()
@@ -100,7 +100,7 @@ export class sensitiveDataClass extends baTableClass {
         } else if (operate == 'add') {
             this.form.loading = true
             add().then((res) => {
-                this.form.extend = Object.assign(this.form.extend, {
+                this.form.extend = Object.assign(this.form.extend!, {
                     tableList: res.data.tables,
                     controllerList: res.data.controllers,
                 })

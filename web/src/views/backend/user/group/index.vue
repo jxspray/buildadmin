@@ -4,7 +4,7 @@
 
         <!-- 表格顶部菜单 -->
         <TableHeader
-            :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch']"
+            :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
             :quick-search-placeholder="t('quick Search Placeholder', { fields: t('user.group.GroupName') })"
             @action="baTable.onTableHeaderAction"
         />
@@ -88,7 +88,7 @@ const baTable = new baTableClass(
                         baTable.onTableHeaderAction('refresh', {})
                         baTable.form.submitLoading = false
                         baTable.form.operateIds?.shift()
-                        if (baTable.form.operateIds?.length! > 0) {
+                        if (baTable.form.operateIds!.length > 0) {
                             baTable.toggleForm('edit', baTable.form.operateIds)
                         } else {
                             baTable.toggleForm()

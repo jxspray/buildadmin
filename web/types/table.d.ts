@@ -1,4 +1,5 @@
 import type { TagProps, ButtonType, ElForm } from 'element-plus'
+import { Component, ComponentPublicInstance } from 'vue'
 import Table from '/@/components/table/index.vue'
 declare global {
     /* baTable */
@@ -19,6 +20,14 @@ declare global {
         acceptQuery?: boolean
         showComSearch?: boolean
         extend?: anyObj
+    }
+
+    interface TableRenderPublicInstance extends ComponentPublicInstance {
+        $attrs: {
+            renderValue: any
+            renderRow: TableRow
+            renderField: TableColumn
+        }
     }
 
     /* baTableForm */
@@ -71,8 +80,8 @@ declare global {
     interface TableColumn extends ElTableColumn {
         // 是否显示
         show?: boolean
-        // 渲染为:icon|switch|image|images|tag|url|datetime|buttons|customTemplate
-        render?: string
+        // 渲染为:icon|switch|image|images|tag|url|datetime|buttons|customTemplate|customRender
+        render?: 'icon' | 'switch' | 'image' | 'images' | 'tag' | 'tags' | 'url' | 'datetime' | 'buttons' | 'customTemplate' | 'customRender'
         // 操作按钮组
         buttons?: OptButton[]
         // 渲染为Tag时:el-tag 组件的主题
@@ -83,12 +92,14 @@ declare global {
         custom?: any
         // 谨慎使用：自定义渲染模板，方法可返回html内容，请确保返回内容是xss安全的
         customTemplate?: (row: TableRow, field: TableColumn, value: any) => string
+        // 自定义组件/函数渲染
+        customRender?: string | Component
         // 渲染为链接时,链接的打开方式
         target?: aTarget
         // 渲染为:a|buttons的点击事件
         click?: Function
-        // 渲染为 datetime 时的格式化方式,字母可以自由组合:y=年,m=月,d=日,h=时,M=分,s=秒
-        timeFormat?: 'yyyy-mm-dd hh:MM:ss'
+        // 渲染为 datetime 时的格式化方式,字母可以自由组合:y=年,m=月,d=日,h=时,M=分,s=秒，默认：yyyy-mm-dd hh:MM:ss
+        timeFormat?: string
         // 默认值
         default?: any
         // 值替换数据,如{open: '开'}
@@ -100,7 +111,9 @@ declare global {
         // 通用搜索框的placeholder
         operatorPlaceholder?: string
         // 公共搜索渲染方式:上方的 render=tag|switch 时公共搜索也会渲染为下拉，数字会渲染为范围筛选，时间渲染为时间选择器等
-        comSearchRender?: 'remoteSelect' | 'select'
+        comSearchRender?: 'remoteSelect' | 'select' | 'customRender'
+        // 公共搜索自定义组件/函数渲染
+        comSearchCustomRender?: string | Component
         // 远程属性
         remote?: {
             pk?: string
@@ -133,7 +146,7 @@ declare global {
     }
 
     /* 表头支持的按钮 */
-    type HeaderOptButton = 'refresh' | 'add' | 'edit' | 'delete' | 'unfold' | 'recycle bin' | 'comSearch'
+    type HeaderOptButton = 'refresh' | 'add' | 'edit' | 'delete' | 'unfold' | 'recycle bin' | 'comSearch' | 'quickSearch' | 'columnDisplay'
 
     /* 通用搜索操作符支持的值 */
     type OperatorStr =

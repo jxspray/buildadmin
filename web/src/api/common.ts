@@ -7,31 +7,32 @@ import { getUrl } from '/@/utils/axios'
  */
 
 // Admin模块
-export const adminUploadUrl = '/index.php/admin/ajax/upload'
-export const adminBuildSuffixSvgUrl = '/index.php/admin/ajax/buildSuffixSvg'
-export const adminAreaUrl = '/index.php/admin/ajax/area'
-export const getTablePkUrl = '/index.php/admin/ajax/getTablePk'
-export const terminalUrl = '/index.php/admin/install/terminal'
-export const changeTerminalConfigUrl = '/index.php/admin/ajax/changeTerminalConfig'
-export const clearCacheUrl = '/index.php/admin/ajax/clearCache'
+export const adminUploadUrl = '/admin/ajax/upload'
+export const adminBuildSuffixSvgUrl = '/admin/ajax/buildSuffixSvg'
+export const adminAreaUrl = '/admin/ajax/area'
+export const getTablePkUrl = '/admin/ajax/getTablePk'
+export const terminalUrl = '/admin/install/terminal'
+export const changeTerminalConfigUrl = '/admin/ajax/changeTerminalConfig'
+export const clearCacheUrl = '/admin/ajax/clearCache'
 
 // 公共
-export const captchaUrl = '/index.php/api/common/captcha'
-export const refreshTokenUrl = '/index.php/api/common/refreshToken'
+export const captchaUrl = '/api/common/captcha'
+export const refreshTokenUrl = '/api/common/refreshToken'
 
 // api模块(前台)
-export const apiUploadUrl = '/index.php/api/ajax/upload'
-export const apiBuildSuffixSvgUrl = '/index.php/api/ajax/buildSuffixSvg'
-export const apiAreaUrl = '/index.php/api/ajax/area'
+export const apiUploadUrl = '/api/ajax/upload'
+export const apiBuildSuffixSvgUrl = '/api/ajax/buildSuffixSvg'
+export const apiAreaUrl = '/api/ajax/area'
 
 /**
  * 上传文件
  */
-export function fileUpload(fd: FormData): ApiPromise {
+export function fileUpload(fd: FormData, params: anyObj = {}): ApiPromise {
     return createAxios({
         url: isAdminApp() ? adminUploadUrl : apiUploadUrl,
         method: 'POST',
         data: fd,
+        params: params,
     }) as ApiPromise
 }
 
@@ -40,7 +41,7 @@ export function fileUpload(fd: FormData): ApiPromise {
  * @param suffix 后缀名
  * @param background 背景色,如:rgb(255,255,255)
  */
-export function buildSuffixSvgUrl(suffix: string, background: string = '') {
+export function buildSuffixSvgUrl(suffix: string, background = '') {
     return (
         getUrl() +
         (isAdminApp() ? adminBuildSuffixSvgUrl : apiBuildSuffixSvgUrl) +
@@ -48,7 +49,8 @@ export function buildSuffixSvgUrl(suffix: string, background: string = '') {
         getAdminToken() +
         '&suffix=' +
         suffix +
-        (background ? '&background=' + background : '')
+        (background ? '&background=' + background : '') +
+        '&server=1'
     )
 }
 
@@ -56,7 +58,7 @@ export function buildSuffixSvgUrl(suffix: string, background: string = '') {
  * 获取地区数据
  */
 export function getArea(values: number[]) {
-    let params: { province?: number; city?: number } = {}
+    const params: { province?: number; city?: number } = {}
     if (values[0]) {
         params.province = values[0]
     }
@@ -92,7 +94,7 @@ export function postClearCache(type: string) {
  * 构建命令执行窗口url
  */
 export function buildTerminalUrl(commandKey: string, outputExtend: string) {
-    return getUrl() + terminalUrl + '?command=' + commandKey + '&extend=' + outputExtend + '&batoken=' + getAdminToken()
+    return getUrl() + terminalUrl + '?command=' + commandKey + '&extend=' + outputExtend + '&batoken=' + getAdminToken() + '&server=1'
 }
 
 /**
@@ -126,7 +128,7 @@ export function getSelectData(remoteUrl: string, q: string, params: {}) {
 }
 
 export function buildCaptchaUrl() {
-    return getUrl() + captchaUrl
+    return getUrl() + captchaUrl + '?server=1'
 }
 
 export function getTablePk(table: string) {
