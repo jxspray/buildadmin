@@ -30,7 +30,7 @@ class Security
                     return true;
                 }
 
-                $recycleData    = Db::table($recycle['data_table'])
+                $recycleData    = Db::name($recycle['data_table'])
                     ->whereIn($recycle['primary_key'], $dataIds)
                     ->select()->toArray();
                 $recycleDataArr = [];
@@ -50,16 +50,16 @@ class Security
                 if (!$recycleDataArr) {
                     return true;
                 }
-            } catch (PDOException $e) {
-                Log::record('[ DataSecurity ]' . var_export($e, true), 'warning');
-            } catch (Exception $e) {
-                Log::record('[ DataSecurity ]' . var_export($e, true), 'warning');
-            }
 
-            // saveAll 方法自带事务
-            $dataRecycleLogModel = new \app\admin\model\DataRecycleLog;
-            if ($dataRecycleLogModel->saveAll($recycleDataArr) === false) {
-                Log::record('[ DataSecurity ] Failed to recycle data:' . var_export($recycleDataArr, true), 'warning');
+                // saveAll 方法自带事务
+                $dataRecycleLogModel = new \app\admin\model\DataRecycleLog;
+                if ($dataRecycleLogModel->saveAll($recycleDataArr) === false) {
+                    Log::record('[ DataSecurity ] Failed to recycle data:' . var_export($recycleDataArr, true), 'warning');
+                }
+            } catch (PDOException $e) {
+                Log::record('[ DataSecurity ]' . $e->getMessage(), 'warning');
+            } catch (Exception $e) {
+                Log::record('[ DataSecurity ]' . $e->getMessage(), 'warning');
             }
             return true;
         }
@@ -74,7 +74,7 @@ class Security
 
             $sensitiveData = $sensitiveData->toArray();
             $dataId        = $request->param('id');
-            $editData      = Db::table($sensitiveData['data_table'])
+            $editData      = Db::name($sensitiveData['data_table'])
                 ->field(array_keys($sensitiveData['data_fields']))
                 ->where($sensitiveData['primary_key'], $dataId)
                 ->find();
@@ -112,21 +112,19 @@ class Security
                 }
             }
 
+            if (!isset($sensitiveDataLog) || !$sensitiveDataLog) {
+                return true;
+            }
+
+            $sensitiveDataLogModel = new \app\admin\model\SensitiveDataLog;
+            if ($sensitiveDataLogModel->saveAll($sensitiveDataLog) === false) {
+                Log::record('[ DataSecurity ] Sensitive data recording failed:' . var_export($sensitiveDataLog, true), 'warning');
+            }
         } catch (PDOException $e) {
-            Log::record('[ DataSecurity ]' . var_export($e, true), 'warning');
+            Log::record('[ DataSecurity ]' . $e->getMessage(), 'warning');
         } catch (Exception $e) {
-            Log::record('[ DataSecurity ]' . var_export($e, true), 'warning');
+            Log::record('[ DataSecurity ]' . $e->getMessage(), 'warning');
         }
-
-        if (!isset($sensitiveDataLog) || !$sensitiveDataLog) {
-            return true;
-        }
-
-        $sensitiveDataLogModel = new \app\admin\model\SensitiveDataLog;
-        if ($sensitiveDataLogModel->saveAll($sensitiveDataLog) === false) {
-            Log::record('[ DataSecurity ] Sensitive data recording failed:' . var_export($sensitiveDataLog, true), 'warning');
-        }
-
         return true;
     }
 }

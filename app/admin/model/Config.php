@@ -6,6 +6,8 @@ use think\Model;
 
 class Config extends Model
 {
+    public static $cacheTag = 'sys_config';
+
     protected $append = [
         'value',
         'content',
@@ -46,6 +48,7 @@ class Config extends Model
 
     public function getValueAttr($value, $row)
     {
+        if (!isset($row['type'])) return $value;
         if (in_array($row['type'], $this->jsonDecodeType)) {
             $arr = json_decode($value, true);
             return $arr ? $arr : [];
@@ -53,6 +56,14 @@ class Config extends Model
             return (bool)$value;
         } elseif ($row['type'] == 'editor') {
             return !$value ? '' : htmlspecialchars_decode($value);
+        } elseif ($row['type'] == 'city') {
+            if ($value == '') {
+                return [];
+            }
+            if (!is_array($value)) {
+                return explode(',', $value);
+            }
+            return $value;
         } else {
             return $value ? $value : '';
         }
@@ -64,6 +75,13 @@ class Config extends Model
             return $value ? json_encode($value) : '';
         } elseif ($row['type'] == 'switch') {
             return $value ? '1' : '0';
+        } elseif ($row['type'] == 'time') {
+            return $value ? date('H:i:s', strtotime($value)) : '';
+        } elseif ($row['type'] == 'city') {
+            if ($value && is_array($value)) {
+                return implode(',', $value);
+            }
+            return $value ? $value : '';
         }
 
         return $value;
@@ -71,6 +89,7 @@ class Config extends Model
 
     public function getContentAttr($value, $row)
     {
+        if (!isset($row['type'])) return '';
         if (in_array($row['type'], $this->needContent)) {
             $arr = json_decode($value, true);
             return $arr ? $arr : [];

@@ -167,7 +167,7 @@ class Crud extends Command
         ],
         // 多文件上传
         [
-            'suffix' => ['files', 'file_list'],
+            'suffix' => ['files'],
             'value'  => 'files',
         ],
         // icon选择器
@@ -178,7 +178,7 @@ class Crud extends Command
         // 单选框
         [
             'column_type' => ['tinyint(1)', 'char(1)', 'tinyint(1) unsigned'],
-            'suffix'      => ['status', 'state'],
+            'suffix'      => ['status', 'state', 'type'],
             'value'       => 'radio',
         ],
         // 数字输入框
@@ -1525,19 +1525,15 @@ class Crud extends Command
     /**
      * 列替换数据
      */
-    public function getColumnReplaceData(&$column, $fieldName, $inputType)
+    public function getColumnReplaceData($column, $fieldName, $inputType)
     {
         $columnData = [];
-        if (in_array($column['DATA_TYPE'], ['enum', 'set', 'tinyint'])) {
+        if (in_array($column['DATA_TYPE'], ['enum', 'set', 'tinyint', 'char'])) {
             if ($column['DATA_TYPE'] !== 'tinyint') {
                 $columnData = substr($column['COLUMN_TYPE'], strlen($column['DATA_TYPE']) + 1, -1);
                 $columnData = explode(',', str_replace("'", '', $columnData));
             }
             $columnData = $this->getItemArray($columnData, $fieldName, $column['COLUMN_COMMENT']);
-            // 如果类型为tinyint且有使用备注数据
-            if ($columnData && $column['DATA_TYPE'] == 'tinyint') {
-                $column['DATA_TYPE'] = 'enum';
-            }
         }
         if (!$columnData && in_array($inputType, ['select', 'selects'])) {
             $columnData = $this->getItemArray($columnData, $fieldName, $column['COLUMN_COMMENT']);

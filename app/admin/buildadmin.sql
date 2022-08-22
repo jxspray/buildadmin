@@ -45,7 +45,6 @@ CREATE TABLE `__PREFIX__admin_group` (
     `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上级分组',
     `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '组名',
     `rules` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '权限规则ID',
-    `half_rules` text COLLATE utf8mb4_unicode_ci COMMENT '半选中规则',
     `createtime` int(10) DEFAULT NULL COMMENT '创建时间',
     `updatetime` int(10) DEFAULT NULL COMMENT '更新时间',
     `status` enum('1','0') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '1' COMMENT '状态:0=禁用,1=启用',
@@ -56,10 +55,10 @@ CREATE TABLE `__PREFIX__admin_group` (
 -- Records of __PREFIX__admin_group
 -- ----------------------------
 BEGIN;
-INSERT INTO `__PREFIX__admin_group` VALUES ('1', '0', '超级管理组', '*', '', '1645876529', '1647805864', '1');
-INSERT INTO `__PREFIX__admin_group` VALUES ('2', '1', '一级管理员', '29,45,46,47,48,50,49,2,51,32,4,54,55,56,59,58,53', '', '1645876529', '1652378857', '1');
-INSERT INTO `__PREFIX__admin_group` VALUES ('3', '2', '二级管理员', '29,45,46,47,48,50,49', '', '1645876529', '1652378879', '1');
-INSERT INTO `__PREFIX__admin_group` VALUES ('4', '3', '三级管理员', '29,2,51,32,4', '', '1645876529', '1652378889', '1');
+INSERT INTO `__PREFIX__admin_group` VALUES ('1', '0', '超级管理组', '*', '1645876529', '1647805864', '1');
+INSERT INTO `__PREFIX__admin_group` VALUES ('2', '1', '一级管理员', '1,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,77,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76', '1645876529', '1658197123', '1');
+INSERT INTO `__PREFIX__admin_group` VALUES ('3', '2', '二级管理员', '21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43', '1645876529', '1658197143', '1');
+INSERT INTO `__PREFIX__admin_group` VALUES ('4', '3', '三级管理员', '55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75', '1645876529', '1658197162', '1');
 COMMIT;
 
 -- ----------------------------
@@ -327,12 +326,12 @@ CREATE TABLE `__PREFIX__security_data_recycle` (
 -- Records of __PREFIX__security_data_recycle
 -- ----------------------------
 BEGIN;
-INSERT INTO `__PREFIX__security_data_recycle` VALUES ('1', '管理员', 'auth/Admin.php', 'auth/admin', '__PREFIX__admin', 'id', '1', '1648958789', '1648958789');
-INSERT INTO `__PREFIX__security_data_recycle` VALUES ('2', '管理员日志', 'auth/AdminLog.php', 'auth/adminlog', '__PREFIX__admin_log', 'id', '1', '1648967082', '1648958964');
-INSERT INTO `__PREFIX__security_data_recycle` VALUES ('3', '菜单规则', 'auth/Menu.php', 'auth/menu', '__PREFIX__menu_rule', 'id', '1', '1648959494', '1648959494');
-INSERT INTO `__PREFIX__security_data_recycle` VALUES ('4', '系统配置项', 'routine/Config.php', 'routine/config', '__PREFIX__config', 'id', '1', '1648959518', '1648959510');
-INSERT INTO `__PREFIX__security_data_recycle` VALUES ('5', '会员', 'user/User.php', 'user/user', '__PREFIX__user', 'id', '1', '1649097966', '1648959540');
-INSERT INTO `__PREFIX__security_data_recycle` VALUES ('6', '数据回收规则', 'security/DataRecycle.php', 'security/datarecycle', '__PREFIX__security_data_recycle', 'id', '1', '1648965759', '1648959655');
+INSERT INTO `__PREFIX__security_data_recycle` VALUES ('1', '管理员', 'auth/Admin.php', 'auth/admin', 'admin', 'id', '1', '1648958789', '1648958789');
+INSERT INTO `__PREFIX__security_data_recycle` VALUES ('2', '管理员日志', 'auth/AdminLog.php', 'auth/adminlog', 'admin_log', 'id', '1', '1648967082', '1648958964');
+INSERT INTO `__PREFIX__security_data_recycle` VALUES ('3', '菜单规则', 'auth/Menu.php', 'auth/menu', 'menu_rule', 'id', '1', '1648959494', '1648959494');
+INSERT INTO `__PREFIX__security_data_recycle` VALUES ('4', '系统配置项', 'routine/Config.php', 'routine/config', 'config', 'id', '1', '1648959518', '1648959510');
+INSERT INTO `__PREFIX__security_data_recycle` VALUES ('5', '会员', 'user/User.php', 'user/user', 'user', 'id', '1', '1649097966', '1648959540');
+INSERT INTO `__PREFIX__security_data_recycle` VALUES ('6', '数据回收规则', 'security/DataRecycle.php', 'security/datarecycle', 'security_data_recycle', 'id', '1', '1648965759', '1648959655');
 COMMIT;
 
 -- ----------------------------
@@ -375,9 +374,9 @@ CREATE TABLE `__PREFIX__security_sensitive_data` (
 -- Records of __PREFIX__security_sensitive_data
 -- ----------------------------
 BEGIN;
-INSERT INTO `__PREFIX__security_sensitive_data` VALUES ('1', '管理员数据', 'auth/Admin.php', 'auth/admin', '__PREFIX__admin', 'id', '{\"username\":\"用户名\",\"mobile\":\"手机\",\"password\":\"密码\",\"status\":\"状态\"}', '1', '1649047890', '1649045180');
-INSERT INTO `__PREFIX__security_sensitive_data` VALUES ('2', '会员数据', 'user/User.php', 'user/user', '__PREFIX__user', 'id', '{\"username\":\"用户名\",\"mobile\":\"手机号\",\"password\":\"密码\",\"status\":\"状态\",\"email\":\"邮箱地址\"}', '1', '1649058989', '1649045243');
-INSERT INTO `__PREFIX__security_sensitive_data` VALUES ('3', '管理员权限', 'auth/Group.php', 'auth/group', '__PREFIX__admin_group', 'id', '{\"rules\":\"权限规则ID\"}', '1', '1649047866', '1649047271');
+INSERT INTO `__PREFIX__security_sensitive_data` VALUES ('1', '管理员数据', 'auth/Admin.php', 'auth/admin', 'admin', 'id', '{\"username\":\"用户名\",\"mobile\":\"手机\",\"password\":\"密码\",\"status\":\"状态\"}', '1', '1649047890', '1649045180');
+INSERT INTO `__PREFIX__security_sensitive_data` VALUES ('2', '会员数据', 'user/User.php', 'user/user', 'user', 'id', '{\"username\":\"用户名\",\"mobile\":\"手机号\",\"password\":\"密码\",\"status\":\"状态\",\"email\":\"邮箱地址\"}', '1', '1649058989', '1649045243');
+INSERT INTO `__PREFIX__security_sensitive_data` VALUES ('3', '管理员权限', 'auth/Group.php', 'auth/group', 'admin_group', 'id', '{\"rules\":\"权限规则ID\"}', '1', '1649047866', '1649047271');
 COMMIT;
 
 -- ----------------------------
@@ -483,7 +482,6 @@ CREATE TABLE `__PREFIX__user_group` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
     `name` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '组名',
     `rules` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '权限节点',
-    `half_rules` text COLLATE utf8mb4_unicode_ci COMMENT '半选中权限',
     `status` enum('1','0') COLLATE utf8mb4_unicode_ci DEFAULT '1' COMMENT '状态:0=禁用,1=启用',
     `updatetime` int(10) DEFAULT NULL COMMENT '更新时间',
     `createtime` int(10) DEFAULT NULL COMMENT '添加时间',
@@ -494,7 +492,7 @@ CREATE TABLE `__PREFIX__user_group` (
 -- Records of __PREFIX__user_group
 -- ----------------------------
 BEGIN;
-INSERT INTO `__PREFIX__user_group` VALUES ('1', '默认分组', '*', '', '1', '1648167137', '1648167095');
+INSERT INTO `__PREFIX__user_group` VALUES ('1', '默认分组', '*', '1', '1648167137', '1648167095');
 COMMIT;
 
 -- ----------------------------

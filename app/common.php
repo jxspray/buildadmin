@@ -2,6 +2,10 @@
 // 应用公共文件
 
 use think\facade\Db;
+use think\Response;
+use think\facade\Config;
+use app\admin\model\Config as configModel;
+use think\exception\HttpResponseException;
 
 if (!function_exists('path_is_writable')) {
     /**
@@ -97,13 +101,13 @@ if (!function_exists('get_sys_config')) {
         $config = false;
         if ($name) {
             // 直接使用->value('value')不能使用到模型的类型格式化
-            $config = \app\admin\model\Config::where('name', $name)->find();
+            $config = configModel::cache($name, null, configModel::$cacheTag)->where('name', $name)->find();
             if ($config) $config = $config['value'];
         } else {
             if ($group) {
-                $temp = \app\admin\model\Config::where('group', $group)->select()->toArray();
+                $temp = configModel::cache('group' . $group, null, configModel::$cacheTag)->where('group', $group)->select()->toArray();
             } else {
-                $temp = \app\admin\model\Config::order('weigh desc')->select()->toArray();
+                $temp = configModel::cache('sys_config_all', null, configModel::$cacheTag)->order('weigh desc')->select()->toArray();
             }
             if ($reduct) {
                 $config = [];
@@ -284,5 +288,32 @@ if (!function_exists('hsv2rgb')) {
             floor($g * 255),
             floor($b * 255)
         ];
+    }
+}
+
+if (!function_exists('ip_check')) {
+    function ip_check($ip = null)
+    {
+        $ip       = is_null($ip) ? request()->ip() : $ip;
+        $noAccess = get_sys_config('no_access_ip');
+        $noAccess = !$noAccess ? [] : array_filter(explode("\n", str_replace("\r\n", "\n", $noAccess)));
+        if ($noAccess && \Symfony\Component\HttpFoundation\IpUtils::checkIp($ip, $noAccess)) {
+            $response = Response::create(['msg' => 'No permission request'], 'json', 403);
+            throw new HttpResponseException($response);
+        }
+    }
+}
+
+if (!function_exists('set_timezone')) {
+    function set_timezone($timezone = null)
+    {
+        $defaultTimezone = Config::get('app.default_timezone');
+        $timezone        = is_null($timezone) ? get_sys_config('time_zone') : $timezone;
+        if ($timezone && $defaultTimezone != $timezone) {
+            Config::set([
+                'app.default_timezone' => $timezone
+            ]);
+            date_default_timezone_set($timezone);
+        }
     }
 }

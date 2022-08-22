@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { SiteConfig } from '/@/stores/interface'
-import { SITE_CONFIG } from '/@/stores/constant/cacheKey'
 
 export const useSiteConfig = defineStore('siteConfig', {
     state: (): SiteConfig => {
@@ -10,9 +9,5 @@ export const useSiteConfig = defineStore('siteConfig', {
             version: '',
             api_url: '',
         }
-    },
-    actions: {},
-    persist: {
-        key: SITE_CONFIG,
     },
 })
