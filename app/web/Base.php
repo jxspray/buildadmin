@@ -3,9 +3,10 @@
 namespace app\web;
 
 use app\BaseController;
+use app\controller\Action;
 use think\App;
 
-class Action extends BaseController
+class Base extends Action
 {
     /**
      * 架构函数 取得模板对象实例

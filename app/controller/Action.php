@@ -1,12 +1,15 @@
 <?php
 declare (strict_types = 1);
 
-namespace app\web\controller;
+namespace app\controller;
 
-class Index
+use app\BaseController;
+
+class Action extends BaseController
 {
     public function index()
     {
+        var_dump($this->request->action());
         return '您好！这是一个[web]示例应用';
     }
 

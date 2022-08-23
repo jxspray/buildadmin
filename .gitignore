@@ -7,15 +7,15 @@ node_modules
 dist
 dist-ssr
 /public/*.lock
-/public/index.html
-/public/assets
+#/public/index.html
+#/public/assets
 /public/storage/*
 .DS_Store
 composer.lock
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
-/.env
+#/.env
 
 # Log files
 *.log
