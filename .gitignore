@@ -6,7 +6,7 @@
 node_modules
 dist
 dist-ssr
-/public/*.lock
+#/public/*.lock
 #/public/index.html
 #/public/assets
 /public/storage/*
