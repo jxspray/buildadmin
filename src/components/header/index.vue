@@ -18,7 +18,7 @@ import { useI18n } from 'vue-i18n'
 import logo from '/@/assets/img/logo.svg'
 import lang from '/@/assets/img/lang.svg'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
 
 const selectLang = (name: string) => {
     window.localStorage.setItem('ba-lang', name)

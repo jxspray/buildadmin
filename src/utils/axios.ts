@@ -3,7 +3,7 @@ import { isProd } from '/@/utils/vite'
 import { ElMessage } from 'element-plus'
 import { i18n } from '../lang'
 
-var langValue = window.localStorage.getItem('ba-lang') || 'zh-cn'
+const langValue = window.localStorage.getItem('ba-lang') || 'zh-cn'
 
 /**
  * 获取baseUrl

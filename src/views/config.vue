@@ -307,7 +307,7 @@ const goUrl = (url: string) => {
     window.open(url)
 }
 
-const setGlobalError = (msg: string = '') => {
+const setGlobalError = (msg: string) => {
     state.showError = msg
 }
 
@@ -374,7 +374,7 @@ const submitBaseConfig = (formEl: InstanceType<typeof ElForm> | undefined = unde
                 }
             })
         })
-        .catch((err) => {
+        .catch(() => {
             state.baseConfigSubmitState = false
         })
 }

@@ -9,16 +9,19 @@
         <el-timeline v-if="terminal.state.taskList.length">
             <el-timeline-item
                 v-for="(item, idx) in terminal.state.taskList"
+                :key="idx"
                 class="task-item"
                 :class="'task-status-' + item.status"
-                :type="getTaskStatus(item.status)['statusType']"
+                :type="(getTaskStatus(item.status)['statusType'] as TimelineItemProps['type'])"
                 center
                 :timestamp="item.createtime"
                 placement="top"
             >
                 <el-card>
                     <div>
-                        <el-tag :type="(getTaskStatus(item.status)['statusType'] as '')">{{ getTaskStatus(item.status)['statusText'] }}</el-tag>
+                        <el-tag :type="(getTaskStatus(item.status)['statusType'] as TagProps['type'])">{{
+                            getTaskStatus(item.status)['statusText']
+                        }}</el-tag>
                         <el-tag
                             class="block-on-failure-tag"
                             v-if="(item.status == taskStatus.Failed || item.status == taskStatus.Unknown) && item.blockOnFailure"
@@ -67,7 +70,7 @@
                             class="exec-message"
                             :class="'exec-message-' + item.uuid"
                         >
-                            <div v-for="msg in item.message" class="message-item">{{ msg }}</div>
+                            <div v-for="(msg, i) in item.message" :key="i" class="message-item">{{ msg }}</div>
                         </div>
                     </template>
                 </el-card>
@@ -117,6 +120,7 @@ import { useTerminal } from '/@/stores/terminal'
 import { useI18n } from 'vue-i18n'
 import { taskStatus } from './constant'
 import { ElMessageBox } from 'element-plus'
+import type { TimelineItemProps, TagProps } from 'element-plus'
 import { ArrowDown, ArrowUp, RefreshRight, Delete } from '@element-plus/icons-vue'
 import { changePackageManager } from '/@/api/install/index'
 

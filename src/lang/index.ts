@@ -5,7 +5,7 @@ import elementEnLocale from 'element-plus/lib/locale/lang/en'
 import langZhcn from '/@/lang/zh-cn'
 import langEn from '/@/lang/en'
 
-let pagesLang = {
+const pagesLang = {
     'zh-cn': getLangFileMessage(import.meta.globEager('./pages/zh-cn/**/*.ts'), 'zh-cn'),
     en: getLangFileMessage(import.meta.globEager('./pages/en/**/*.ts'), 'en'),
 }
@@ -34,13 +34,13 @@ function getLangFileMessage(mList: any, locale: string) {
     interface msg {
         [key: string]: any
     }
-    let msg: msg = {}
-    for (let path in mList) {
+    const msg: msg = {}
+    for (const path in mList) {
         if (mList[path].default) {
             //  获取文件名
-            let pathName = path.slice(path.lastIndexOf(locale) + (locale.length + 1), path.lastIndexOf('.'))
+            const pathName = path.slice(path.lastIndexOf(locale) + (locale.length + 1), path.lastIndexOf('.'))
             if (pathName.indexOf('/') > 0) {
-                let pathNameTmp = pathName.split('/')
+                const pathNameTmp = pathName.split('/')
                 for (const key in pathNameTmp) {
                     if (typeof msg[pathNameTmp[key]] === 'undefined') {
                         msg[pathNameTmp[key]] = []
@@ -62,10 +62,10 @@ function getLangFileMessage(mList: any, locale: string) {
 }
 
 function handleMsglist(mlist: anyObj) {
-    let newMlist: any = []
+    const newMlist: any = []
     for (const key in mlist) {
         if (key.indexOf('.') > 0) {
-            let keyTmp = key.split('.')
+            const keyTmp = key.split('.')
             if (typeof newMlist[keyTmp[0]] === 'undefined') {
                 newMlist[keyTmp[0]] = []
             } else {
