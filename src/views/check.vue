@@ -181,7 +181,7 @@ const onLabelNeed = (link: CheckLink) => {
         // 安装包管理器
         state.checkDoneIndex = 'executing'
         terminal.toggle(true)
-        terminal.addTaskPM('install', true, (res: number) => {
+        terminal.addTaskPM('install', true, '', (res: number) => {
             terminal.toggle(false)
             checkSubmit()
             if (res == taskStatus.Failed) {
@@ -273,7 +273,7 @@ const setNpmRegistry = () => {
             }
         }
         if (!exist) {
-            terminal.addTask('set-registry.' + state.startForm.setNpmRegistry, false, (res: number) => {
+            terminal.addTask('set-registry.' + state.startForm.setNpmRegistry, false, '', (res: number) => {
                 if (res == taskStatus.Failed) {
                     let npmInstall = {
                         'set-npm-registry': {
@@ -324,7 +324,7 @@ const axiosNpmTestInstall = () => {
     state.checkTypeIndex = 'npminstall'
     closeTableLabel('check npm install')
     terminal.toggle(true)
-    terminal.addTaskPM('test', true, (res: number) => {
+    terminal.addTaskPM('test', true, '', (res: number) => {
         checkSubmit()
         terminal.toggle(false)
         if (res == taskStatus.Failed) {

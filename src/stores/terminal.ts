@@ -92,7 +92,7 @@ export const useTerminal = defineStore(
             })
         }
 
-        function addTask(command: string, blockOnFailure = true, callback: Function = () => {}) {
+        function addTask(command: string, blockOnFailure = true, extend = '', callback: Function = () => {}) {
             if (!state.show) toggleDot(true)
             state.taskList = state.taskList.concat({
                 uuid: uuid(),
@@ -102,6 +102,7 @@ export const useTerminal = defineStore(
                 message: [],
                 showMessage: false,
                 blockOnFailure: blockOnFailure,
+                extend: extend,
                 callback: callback,
             })
 
@@ -111,8 +112,8 @@ export const useTerminal = defineStore(
             startTask()
         }
 
-        function addTaskPM(command: string, blockOnFailure = true, callback: Function = () => {}) {
-            addTask(command + '.' + state.packageManager, blockOnFailure, callback)
+        function addTaskPM(command: string, blockOnFailure = true, extend = '', callback: Function = () => {}) {
+            addTask(command + '.' + state.packageManager, blockOnFailure, extend, callback)
         }
 
         function delTask(idx: number) {
@@ -152,14 +153,16 @@ export const useTerminal = defineStore(
         }
 
         function startEventSource(taskKey: number) {
-            window.eventSource = new EventSource(buildTerminalUrl(state.taskList[taskKey].command, state.taskList[taskKey].uuid))
+            window.eventSource = new EventSource(
+                buildTerminalUrl(state.taskList[taskKey].command, state.taskList[taskKey].uuid, state.taskList[taskKey].extend)
+            )
             window.eventSource.onmessage = function (e) {
                 const data = JSON.parse(e.data)
                 if (!data || !data.data) {
                     return
                 }
 
-                const taskIdx = findTaskIdxFromUuid(data.extend)
+                const taskIdx = findTaskIdxFromUuid(data.uuid)
                 if (taskIdx === false) {
                     return
                 }

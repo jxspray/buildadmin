@@ -13,6 +13,8 @@ export interface TaskItem {
     showMessage: boolean
     // 失败阻断后续命令执行
     blockOnFailure: boolean
+    // 扩展信息，自动发送到后台
+    extend: string
     // 回调
     callback: Function
 }

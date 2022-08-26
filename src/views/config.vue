@@ -313,9 +313,9 @@ const setGlobalError = (msg: string) => {
 
 const execCommand = () => {
     terminal.toggle(true)
-    terminal.addTaskPM('web-install', true, (res: number, idx: number) => {
+    terminal.addTaskPM('web-install', true, '', (res: number, idx: number) => {
         if (res == taskStatus.Success) {
-            terminal.addTaskPM('web-build', true, (res: number) => {
+            terminal.addTaskPM('web-build', true, '', (res: number) => {
                 if (res == taskStatus.Success) {
                     commandExecComplete()
                     terminal.toggle(false)

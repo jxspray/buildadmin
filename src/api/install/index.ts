@@ -99,6 +99,6 @@ export const getManualInstall = () => {
 /**
  * 构建Terminal的Url
  */
-export const buildTerminalUrl = (commandKey: string, outputExtend: string) => {
-    return getUrl() + terminalUrl + '?command=' + commandKey + '&extend=' + outputExtend
+export const buildTerminalUrl = (commandKey: string, uuid: string, extend: string) => {
+    return getUrl() + terminalUrl + '?command=' + commandKey + '&uuid=' + uuid + '&extend=' + extend
 }
