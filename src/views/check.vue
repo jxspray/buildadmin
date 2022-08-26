@@ -181,7 +181,7 @@ const onLabelNeed = (link: CheckLink) => {
         // 安装包管理器
         state.checkDoneIndex = 'executing'
         terminal.toggle(true)
-        terminal.addTaskPM('install-package-manager', true, (res: number) => {
+        terminal.addTaskPM('install', true, (res: number) => {
             terminal.toggle(false)
             checkSubmit()
             if (res == taskStatus.Failed) {
@@ -324,7 +324,7 @@ const axiosNpmTestInstall = () => {
     state.checkTypeIndex = 'npminstall'
     closeTableLabel('check npm install')
     terminal.toggle(true)
-    terminal.addTaskPM('test-install', true, (res: number) => {
+    terminal.addTaskPM('test', true, (res: number) => {
         checkSubmit()
         terminal.toggle(false)
         if (res == taskStatus.Failed) {
@@ -363,7 +363,7 @@ const closeTableLabel = (idx: any) => {
  */
 const checkSubmit = () => {
     state.checkTypeIndex = 'done'
-    let dataKey = ['php_version', 'config_is_writable', 'public_is_writable', 'php-mysqli']
+    let dataKey = ['php_version', 'config_is_writable', 'public_is_writable', 'php_pdo']
     for (const key in dataKey) {
         if (!state.envCheckData[dataKey[key] as any] || state.envCheckData[dataKey[key] as any]['state'] != 'ok') {
             state.checkDoneIndex = 'fail'
