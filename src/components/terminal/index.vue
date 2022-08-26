@@ -79,14 +79,12 @@
         <el-empty v-else :image-size="80" :description="t('terminal.No mission yet')" />
 
         <el-button-group>
-            <el-button class="terminal-menu-item" v-blur @click="terminal.addTaskPM('test-install', false)">{{
-                t('terminal.Test command')
-            }}</el-button>
+            <el-button class="terminal-menu-item" v-blur @click="terminal.addTaskPM('test', false)">{{ t('terminal.Test command') }}</el-button>
             <el-button class="terminal-menu-item" v-blur @click="terminal.addTaskPM('web-install')">{{
                 t('terminal.Install dependent packages')
             }}</el-button>
             <el-button class="terminal-menu-item" v-blur @click="webBuild()">{{ t('terminal.Republish') }}</el-button>
-            <el-button class="terminal-menu-item" v-blur @click="terminal.addTask('version-view.npm', false)">npm -v</el-button>
+            <el-button class="terminal-menu-item" v-blur @click="terminal.addTask('version.npm', false)">npm -v</el-button>
             <el-button class="terminal-menu-item" v-blur @click="onSwitchPackageManager">{{ t('Switch package manager') }}</el-button>
             <el-button class="terminal-menu-item" v-blur @click="terminal.clearSuccessTask()">{{ t('terminal.Clean up task list') }}</el-button>
         </el-button-group>
