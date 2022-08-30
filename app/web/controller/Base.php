@@ -17,9 +17,12 @@ class Base extends Action
         $this->settingTerminal();
     }
 
-    public function index()
-    {
-        return '您好！这是一个[web]示例应用';
+    public function catalog($catid = '', $module = ''){
+        if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
+
+        if ($catid) {
+
+        } else abort(404);
     }
 
     /**

@@ -11,8 +11,8 @@ use think\App;
 
 class Action extends BaseController
 {
-    private static $verityModule = ['index'];
-    private static $verityAction = ['index', 'catalog', 'single', 'info'];
+    private static $verityModule = ['index', 'urlRule'];
+    private static $verityAction = ['index', 'catalog', 'info'];
     private $basePath = "app\\web\\controller";
     protected $app, $module, $action;
 
