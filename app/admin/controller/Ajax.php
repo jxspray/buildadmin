@@ -82,6 +82,7 @@ class Ajax extends Backend
         $type = $this->request->post('type');
         if ($type == 'tp') {
             Cache::clear();
+            \app\common\logic\CmsLogic::forceUpdate();
         } else {
             $this->error(__('Parameter error'));
         }

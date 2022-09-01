@@ -3,26 +3,39 @@ declare (strict_types = 1);
 
 namespace app\web\controller;
 
+use app\common\logic\CmsLogic;
 use app\index\controller\Action;
 use think\App;
 
 class Base extends Action
 {
     protected $terminal;
+    protected $categorys;
     
     public function __construct(App $app)
     {
         parent::__construct($app);
         // 设置终端
         $this->settingTerminal();
+        $this->categorys = CmsLogic::$catalogList;
     }
 
     public function catalog($catid = '', $module = ''){
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
         if ($catid) {
+            $cat = $this->categorys[$catid];
 
         } else abort(404);
+    }
+
+    public function single($catid = '', $module = ''){
+        if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
+
+        if ($catid) {
+            $cat = $this->categorys[$catid];
+        } else abort(404);
+//        $this->
     }
 
     /**
@@ -32,7 +45,7 @@ class Base extends Action
     private function settingTerminal()
     {
         $terminal = $this->checkTerminal(); // 检测终端
-        $this->app = in_array($terminal, ['Wap', 'Xcx']) ? 'Wap' : 'Home';
+        $this->app = in_array($terminal, ['wap', 'xcx']) ? 'wap' : 'home';
         $this->terminal = $terminal;
     }
 

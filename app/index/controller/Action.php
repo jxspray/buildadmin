@@ -8,6 +8,7 @@ namespace app\index\controller;
 
 use app\BaseController;
 use think\App;
+use think\View;
 
 class Action extends BaseController
 {
@@ -16,15 +17,24 @@ class Action extends BaseController
     private $basePath = "app\\web\\controller";
     protected $app, $module, $action;
 
+    protected $view;
     public function __construct(App $app)
     {
         parent::__construct($app);
+        $this->view = new View($app);
+
         $this->app = input("app", 'home');
         $this->module = input("module", 'index');
         $this->action = input("action", 'index');
         /* 检查action是否合规 */
         if (!in_array($this->module, self::$verityModule)) abort(404);
         if (!in_array($this->action, self::$verityAction)) abort(404);
+
+        static $initState = false;
+        if ($initState === false) {
+            \app\common\logic\CmsLogic::init();
+            $initState = true;
+        }
     }
 
     /**

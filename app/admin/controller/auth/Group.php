@@ -22,33 +22,14 @@ class Group extends Backend
 
     protected $quickSearchField = 'name';
 
-    /**
-     * @var Tree
-     */
-    protected $tree = null;
-
-    protected $keyword = false;
-
-    /**
-     * @var array 远程select初始化传值
-     */
-    protected $initValue;
-    /**
-     * @var bool 是否组装Tree
-     */
-    protected $assembleTree;
+    use \app\admin\traits\TreeTrait;
 
     public function initialize()
     {
         parent::initialize();
         $this->model = new AdminGroup();
-        $this->tree  = Tree::instance();
 
-        $isTree          = $this->request->param('isTree', true);
-        $this->initValue = $this->request->get("initValue/a", '');
-        $this->keyword   = $this->request->request("quick_search");
-
-        $this->assembleTree = $isTree && !$this->keyword && !$this->initValue;
+        $this->treeInit();
     }
 
     public function index()

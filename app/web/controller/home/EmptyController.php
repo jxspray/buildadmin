@@ -2,30 +2,13 @@
 
 namespace app\web\controller\home;
 
+use app\common\logic\CmsLogic;
 use app\index\controller\Action;
 use app\web\controller\Base;
 use think\App;
 
 class EmptyController extends Action
 {
-    protected $virtualRule = [
-        'about' => 1,
-        'about/contact' => 2
-    ];
-
-    protected $virtualCatalog = [
-        1 => [
-            'id' => 1,
-            'moduleid' => 1,
-            'module' => 'article'
-        ],
-        2 => [
-            'id' => 2,
-            'moduleid' => 2,
-            'module' => 'case'
-        ],
-    ];
-
     protected $base;
     public function __construct(App $app)
     {
@@ -35,6 +18,8 @@ class EmptyController extends Action
     }
 
     public function _empty() {
+        $catalogs = CmsLogic::$catalogList;
+dump($catalogs);
         /* 路由判断 */
         $id = $this->request->param('id', '', 'intval');
         $catid = $this->request->param('catid', '', 'intval');
@@ -43,11 +28,11 @@ class EmptyController extends Action
         if ($this->module == "urlRule") {
             $catdir = $this->request->param('catdir');
             if ($catdir) {
-                $catid = $catid ?: $this->virtualRule[$catdir];
+                $catid = $catid ?: CmsLogic::$ruleList[$catdir];
             }
             if ($catid) {
-                if ($this->virtualCatalog[$catid]['moduleid'] > 0) {
-                    $module = $this->virtualCatalog[$catid]['module'];
+                if ($catalogs[$catid]['moduleid'] > 0) {
+                    $module = $catalogs[$catid]['module'];
                     $action = 'catalog';
                 } else {
                     $module = 'page';
