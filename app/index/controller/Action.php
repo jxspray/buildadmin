@@ -8,6 +8,7 @@
 namespace app\index\controller;
 
 use app\BaseController;
+use app\common\logic\CmsLogic;
 use think\App;
 use think\View;
 
@@ -62,13 +63,23 @@ class Action extends BaseController
         $this->view->assign($name, $value);
     }
 
-    public function fetch($template): string
+    public function display($value)
     {
-        $template = "{$this->basePath}\\view\\{$this->app}\\$template.html";
+        $template = $value;
+        try {
+            return $this->view->display($template);
+        } catch (\Exception $e) {
+            abort(404, "Template does not exist: $value");
+        }
+    }
+
+    public function fetch($value)
+    {
+        $template = app()->getBasePath() . "/web/view/{$this->app}/$value.html";
         try {
             return $this->view->fetch($template);
         } catch (\Exception $e) {
-            abort(404);
+            abort(404, $e->getMessage());
         }
     }
 

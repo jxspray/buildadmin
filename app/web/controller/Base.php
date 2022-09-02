@@ -11,7 +11,7 @@ class Base extends Action
 {
     protected $terminal;
     protected $categorys;
-    
+
     public function __construct(App $app)
     {
         parent::__construct($app);
@@ -29,13 +29,18 @@ class Base extends Action
         } else abort(404);
     }
 
-    public function single($catid = '', $module = ''){
+    public function single($catid = '', $module = '')
+    {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
         if ($catid) {
             $cat = $this->categorys[$catid];
+            $cat['catid'] = $catid;
+            $cat['catname'] = $cat['title'];
+            unset($cat['id'], $cat['title']);
+            $this->assign($cat);
         } else abort(404);
-        return $this->fetch("");
+        return $this->fetch($cat['template_info']);
     }
 
     /**

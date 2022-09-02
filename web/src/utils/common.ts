@@ -242,3 +242,130 @@ export const getGreet = () => {
     }
     return greet
 }
+
+// 随机字符串
+export const getRandStr = (len = 16) => {
+    var chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+    var id = '';
+    for (let i = 0; i < len; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+}
+
+// 	json字符串转json对象
+export const parseJson = (jsonStr = '') => {
+    return JSON.parse(jsonStr, (k, v) => {
+        try{
+            if (eval(v) instanceof RegExp) {
+                return eval(v);
+            }
+        }catch(e){
+            // nothing
+        }
+        return v;
+    });
+}
+
+// json对象转json字符串
+export const stringifyJson = (json: anyObj) => {
+    return JSON.stringify(json, (k, v) => {
+        if(v instanceof RegExp){
+            return v.toString();
+        }
+        return v;
+    });
+}
+
+// 二维数组根据某字段返回一维数组
+export const arrayColumn = (arr: any, name: string) => {
+    let val: any = [];
+    arr.forEach(function(item: anyObj,index: number) {
+        val.push(item[name]);
+    })
+    return val;
+}
+
+// 二维数组根据某元素返回当前下标
+export const arrayIndex = (arr: any, value: string, field = "id") => {
+    let index = -1;
+    arr.forEach(function(val: anyObj, key: number) {
+        if (val[field] == value) {
+            index = key;
+        }
+    });
+    return index;
+}
+
+// 二维数组根据多字段排序
+export const arraySort = (objArr: any, keyArr: any, type: string) => {
+    if (type != undefined && type != 'asc' && type != 'desc') {
+        return 'error';
+    }
+    var order = 1;
+    if (type != undefined && type == 'desc') {
+        order = -1;
+    }
+    var key = keyArr[0];
+    objArr.sort(function (objA: anyObj, objB: anyObj) {
+        if (objA[key] > objB[key]) {
+            return order;
+        } else if (objA[key] < objB[key]) {
+            return 0 - order;
+        } else {
+            return 0;
+        }
+    })
+    for (var i = 1; i < keyArr.length; i++) {
+        var key = keyArr[i];
+        objArr.sort(function (objA: anyObj, objB: anyObj) {
+            for (var j = 0; j < i; j++) {
+                if (objA[keyArr[j]] != objB[keyArr[j]]) {
+                    return 0;
+                }
+            }
+            if (objA[key] > objB[key]) {
+                return order;
+            } else if (objA[key] < objB[key]){
+                return 0 - order;
+            } else {
+                return 0;
+            }
+        })
+    }
+    return objArr;
+}
+
+
+// 自定义字段类型
+export const customField = [
+    {label: "文本", is: "el-input", value: "", icon: "icon-danhangshurukuang"},
+    {label: "文本域", is: "el-input", type: "textarea", value: "", icon: "icon-duohangshurukuang"},
+    {label: "编辑器", is: "el-editor", value: "", icon: "icon-fuwenbenbianjiqi_zhonghuaxian"},
+    {label: "链接设置", is: "el-link-select", value: {}, icon: "icon-lianjie"},
+    {label: "自定义数组", is: "el-array", value: {}, icon: "icon-shuzu"},
+    {label: "图片上传", is: "el-file-select", type: "image", value: "", icon: "icon-tupianpic"},
+    {label: "图片列表", is: "el-file-list-select", type:"image", value: [], icon: "icon-huadongduotu"},
+    {label: "文件上传", is: "el-file-select", type: "all", value: "", icon: "icon-a-wenjianjiawenjian"},
+    {label: "文件列表", is: "el-file-list-select", type:"all", value: [], icon: "icon-wenjian1"},
+    {label: "分类编号", is: "el-catalog-select", value: 0, icon: "icon-bianhaodanhao"},
+    {label: "参数设置", is: "el-parameter", value: [], icon: "icon-chanpincanshu"},
+    {label: "颜色选择", is: "el-color-picker", value: "", icon: "icon-yanse1"},
+    {label: "开关", is: "el-switch", value: false, icon: "icon-kaiguan"},
+]
+
+// 日期时间格式
+export const dateTime = (date = new Date()) => {
+    let year = date.getFullYear(); // 年
+    let month: string|number = date.getMonth() + 1; // 月
+    month = month < 10 ? "0" + month : month; // 如果只有一位，则前面补零
+    let day: string|number = date.getDate(); // 日
+    day = day < 10 ? "0" + day : day; // 如果只有一位，则前面补零
+    let hour: string|number = date.getHours(); // 时
+    hour = hour < 10 ? "0" + hour : hour; // 如果只有一位，则前面补零
+    let minute: string|number = date.getMinutes(); // 分
+    minute = minute < 10 ? "0" + minute : minute; // 如果只有一位，则前面补零
+    let second: string|number = date.getSeconds(); // 秒
+    second = second < 10 ? "0" + second : second; // 如果只有一位，则前面补零
+    return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+}
