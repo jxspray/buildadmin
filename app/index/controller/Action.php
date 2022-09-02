@@ -4,6 +4,7 @@
  * Action控制器基类 抽象类
  * 仅允许首页(index)、单页(single)、列表(catalog)、详情页(info)页面路由调用
  */
+
 namespace app\index\controller;
 
 use app\BaseController;
@@ -14,10 +15,11 @@ class Action extends BaseController
 {
     private static $verityModule = ['index', 'urlRule'];
     private static $verityAction = ['index', 'catalog', 'info'];
-    private $basePath = "app\\web\\controller";
+    private $basePath = "app\\web";
     protected $app, $module, $action;
 
     protected $view;
+
     public function __construct(App $app)
     {
         parent::__construct($app);
@@ -47,7 +49,7 @@ class Action extends BaseController
         $action = $this->action;
         /* 如果控制不存在 */
         if (!class_exists($namespace)) {
-            $namespace = "{$this->basePath}\\{$this->app}\\EmptyController";
+            $namespace = "{$this->basePath}\\controller\\{$this->app}\\EmptyController";
             $action = "_empty";
             if (!method_exists($namespace, $action)) abort(404);
         }
@@ -55,6 +57,20 @@ class Action extends BaseController
         return app($namespace)->$action();
     }
 
+    public function assign($name, $value = null)
+    {
+        $this->view->assign($name, $value);
+    }
+
+    public function fetch($template): string
+    {
+        $template = "{$this->basePath}\\view\\{$this->app}\\$template.html";
+        try {
+            return $this->view->fetch($template);
+        } catch (\Exception $e) {
+            abort(404);
+        }
+    }
 
     public function __call($name, $arguments)
     {

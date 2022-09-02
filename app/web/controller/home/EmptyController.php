@@ -19,7 +19,6 @@ class EmptyController extends Action
 
     public function _empty() {
         $catalogs = CmsLogic::$catalogList;
-dump($catalogs);
         /* 路由判断 */
         $id = $this->request->param('id', '', 'intval');
         $catid = $this->request->param('catid', '', 'intval');

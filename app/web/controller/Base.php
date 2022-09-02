@@ -35,7 +35,7 @@ class Base extends Action
         if ($catid) {
             $cat = $this->categorys[$catid];
         } else abort(404);
-//        $this->
+        return $this->fetch("");
     }
 
     /**
