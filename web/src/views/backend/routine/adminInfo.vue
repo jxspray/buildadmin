@@ -86,7 +86,7 @@
                         </el-timeline-item>
                     </el-timeline>
                     <el-pagination
-                        :currentPage="state.logCurrentPage"
+                        :current-page="state.logCurrentPage"
                         :page-size="state.logPageSize"
                         :page-sizes="[12, 22, 52, 100]"
                         background

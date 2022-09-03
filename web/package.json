@@ -29,7 +29,7 @@
         "vue": "~3.2.25",
         "vue-i18n": "~9.1.9",
         "vue-router": "~4.0.12",
-        "vuedraggable": "^2.24.3"
+        "vuedraggable": "^4.1.0"
     },
     "devDependencies": {
         "@types/lodash": "~4.14.180",

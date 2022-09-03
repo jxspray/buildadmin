@@ -24,7 +24,7 @@
         ></el-option>
         <el-pagination
             v-if="state.total"
-            :currentPage="state.currentPage"
+            :current-page="state.currentPage"
             :page-size="state.pageSize"
             class="select-pagination"
             layout="->, prev, next"

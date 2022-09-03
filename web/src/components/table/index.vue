@@ -31,7 +31,7 @@
     </el-table>
     <div v-if="props.pagination" class="table-pagination">
         <el-pagination
-            :currentPage="state.currentPage"
+            :current-page="state.currentPage"
             :page-size="state.pageSize"
             :page-sizes="[10, 20, 50, 100]"
             background
