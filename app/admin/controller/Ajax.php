@@ -2,14 +2,15 @@
 
 namespace app\admin\controller;
 
-use ba\CommandExec;
+use ba\Terminal;
 use think\Exception;
-use think\exception\FileException;
-use app\common\library\Upload;
-use app\common\controller\Backend;
-use think\facade\Cache;
 use think\facade\Db;
+use think\facade\Cache;
+use think\facade\Event;
 use app\admin\model\AdminLog;
+use app\common\library\Upload;
+use think\exception\FileException;
+use app\common\controller\Backend;
 
 class Ajax extends Backend
 {
@@ -33,7 +34,7 @@ class Ajax extends Backend
         }
 
         $this->success(__('File uploaded successfully'), [
-            'file' => $attachment
+            'file' => $attachment ?? []
         ]);
     }
 
@@ -70,8 +71,8 @@ class Ajax extends Backend
     public function changeTerminalConfig()
     {
         AdminLog::setTitle(__('changeTerminalConfig'));
-        if (CommandExec::instance(false)->changeTerminalConfig()) {
-            $this->success('');
+        if (Terminal::changeTerminalConfig()) {
+            $this->success();
         } else {
             $this->error(__('Failed to modify the terminal configuration. Please modify the configuration file manually:%s', ['/config/buildadmin.php']));
         }
@@ -80,12 +81,13 @@ class Ajax extends Backend
     public function clearCache()
     {
         $type = $this->request->post('type');
-        if ($type == 'tp') {
+        if ($type == 'tp' || $type == 'all') {
             Cache::clear();
             \app\common\logic\CmsLogic::forceUpdate();
         } else {
             $this->error(__('Parameter error'));
         }
+        Event::trigger('cacheClearAfter', $this->app);
         $this->success(__('Cache cleaned~'));
     }
 }

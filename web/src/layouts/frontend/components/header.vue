@@ -38,6 +38,9 @@
                             >{{ item.value }}</el-menu-item
                         >
                     </el-sub-menu>
+                    <el-menu-item index="theme-switch" class="theme-switch">
+                        <DarkSwitch @click="toggleDark()" />
+                    </el-menu-item>
                 </el-menu>
             </el-col>
         </el-row>
@@ -60,6 +63,8 @@ import { index } from '/@/api/frontend/index'
 import 'element-plus/theme-chalk/display.css'
 import Aside from '/@/layouts/frontend/components/aside.vue'
 import 'element-plus/theme-chalk/display.css'
+import DarkSwitch from '/@/layouts/common/components/darkSwitch.vue'
+import toggleDark from '/@/utils/useDark'
 
 const state = reactive({
     activeMenu: '',
@@ -87,7 +92,7 @@ index()
 <style scoped lang="scss">
 .header {
     background-color: var(--ba-bg-color-overlay);
-    box-shadow: 0px 0px 8px rgba(0 0 0 / 8%);
+    box-shadow: 0 0 8px rgba(0 0 0 / 8%);
 }
 .el-header {
     padding: 0;
@@ -158,6 +163,17 @@ index()
 @media screen and (max-width: 425px) {
     :deep(.aside-drawer) {
         width: 70% !important;
+    }
+}
+.theme-switch {
+    --el-menu-hover-bg-color: none;
+}
+
+@at-root .dark {
+    .header-logo {
+        .hidden-xs-only {
+            color: var(--el-text-color-primary);
+        }
     }
 }
 </style>

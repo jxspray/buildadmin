@@ -4,6 +4,7 @@ namespace app\common\controller;
 
 use think\App;
 use app\BaseController;
+use think\facade\Event;
 use think\facade\Config;
 use think\Response;
 use think\exception\HttpResponseException;
@@ -40,6 +41,8 @@ class Api extends BaseController
             ip_check();
             // 时区设定
             set_timezone();
+            // 存储/上传资料配置
+            Event::trigger('uploadConfigInit', $this->app);
         }
 
         parent::initialize();
@@ -99,7 +102,7 @@ class Api extends BaseController
         ];
 
         // 如果未设置类型则自动判断
-        $type = $type ? $type : ($this->request->param(Config::get('route.var_jsonp_handler')) ? 'jsonp' : $this->responseType);
+        $type = $type ?: ($this->request->param(Config::get('route.var_jsonp_handler')) ? 'jsonp' : $this->responseType);
 
         $code = 200;
         if (isset($header['statuscode'])) {

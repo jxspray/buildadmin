@@ -8,6 +8,18 @@ export const useSiteConfig = defineStore('siteConfig', {
             record_number: '',
             version: '',
             cdn_url: '',
+            api_url: '',
+            upload: {
+                mode: 'local',
+                maxsize: 0,
+                mimetype: '',
+                savename: '',
+            },
         }
+    },
+    actions: {
+        dataFill(state: SiteConfig) {
+            this.$state = state
+        },
     },
 })

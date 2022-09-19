@@ -4,10 +4,7 @@ import * as elIcons from '@element-plus/icons-vue'
 import router from '/@/router/index'
 import Icon from '/@/components/icon/index.vue'
 import { useNavTabs } from '/@/stores/navTabs'
-import { useMemberCenter } from '/@/stores/memberCenter'
 import { ElForm } from 'element-plus'
-import { useAdminInfo } from '/@/stores/adminInfo'
-import { useUserInfo } from '/@/stores/userInfo'
 import { useSiteConfig } from '../stores/siteConfig'
 import { i18n } from '../lang'
 import { getUrl } from './axios'
@@ -48,18 +45,16 @@ export function loadJs(url: string): void {
 /**
  * 设置浏览器标题
  */
-export function setTitleFromRoute(t: any = null) {
-    const navTabs = useNavTabs()
-    const memberCenter = useMemberCenter()
+export function setTitleFromRoute() {
+    if (typeof router.currentRoute.value.meta.title != 'string') {
+        return
+    }
     nextTick(() => {
         let webTitle = ''
-        if (navTabs.state.activeRoute) {
-            webTitle = navTabs.state.activeRoute.title
-        } else if (memberCenter.state.activeRoute) {
+        if ((router.currentRoute.value.meta.title as string).indexOf('pagesTitle.') === -1) {
             webTitle = router.currentRoute.value.meta.title as string
         } else {
-            webTitle =
-                t && router.currentRoute.value.meta.title ? t(router.currentRoute.value.meta.title) : (router.currentRoute.value.meta.title as string)
+            webTitle = i18n.global.t(router.currentRoute.value.meta.title as string)
         }
         document.title = `${webTitle}`
     })
@@ -71,31 +66,10 @@ export function setTitle(title: string) {
 
 /**
  * 是否是外部链接
- * @param {string} path
- * @return {Boolean}
+ * @param path
  */
-export function isExternal(path: string) {
+export function isExternal(path: string): boolean {
     return /^(https?|ftp|mailto|tel):/.test(path)
-}
-
-export function getAdminToken(type: 'auth' | 'refresh' = 'auth') {
-    const adminInfo = useAdminInfo()
-    return type == 'auth' ? adminInfo.token : adminInfo.refreshToken
-}
-
-export function removeAdminToken() {
-    const adminInfo = useAdminInfo()
-    adminInfo.removeToken()
-}
-
-export function getUserToken(type: 'auth' | 'refresh' = 'auth') {
-    const userInfo = useUserInfo()
-    return type == 'auth' ? userInfo.token : userInfo.refreshToken
-}
-
-export function removeUserToken() {
-    const userInfo = useUserInfo()
-    userInfo.removeToken()
 }
 
 /**
@@ -208,6 +182,24 @@ export const fullUrl = (relativeUrl: string, domain = '') => {
         return relativeUrl
     }
     return domain + relativeUrl
+}
+
+export const checkFileMimetype = (fileName: string, fileType: string) => {
+    if (!fileName || !fileType) return false
+    const siteConfig = useSiteConfig()
+    const mimetype = siteConfig.upload.mimetype.toLowerCase().split(',')
+    const fileTypeTemp = fileType.toLowerCase().split('/')
+    const fileSuffix = fileName.substring(fileName.lastIndexOf('.') + 1)
+    if (
+        siteConfig.upload.mimetype === '*' ||
+        mimetype.includes(fileSuffix) ||
+        mimetype.includes('.' + fileSuffix) ||
+        mimetype.includes(fileType) ||
+        mimetype.includes(fileTypeTemp[0] + '/*')
+    ) {
+        return true
+    }
+    return false
 }
 
 export const arrayFullUrl = (relativeUrls: string | string[], domain = '') => {

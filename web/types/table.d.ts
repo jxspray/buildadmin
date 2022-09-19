@@ -80,6 +80,8 @@ declare global {
     interface TableColumn extends ElTableColumn {
         // 是否显示
         show?: boolean
+        // 是否在下拉菜单的复选框显示 默认为true显示
+        enableColumnDisplayControl?: boolean
         // 渲染为:icon|switch|image|images|tag|url|datetime|buttons|customTemplate|customRender
         render?: 'icon' | 'switch' | 'image' | 'images' | 'tag' | 'tags' | 'url' | 'datetime' | 'buttons' | 'customTemplate' | 'customRender'
         // 操作按钮组
@@ -96,7 +98,7 @@ declare global {
         customRender?: string | Component
         // 渲染为链接时,链接的打开方式
         target?: aTarget
-        // 渲染为:a|buttons的点击事件
+        // 渲染为:url 时的点击事件
         click?: Function
         // 渲染为 datetime 时的格式化方式,字母可以自由组合:y=年,m=月,d=日,h=时,M=分,s=秒，默认：yyyy-mm-dd hh:MM:ss
         timeFormat?: string
@@ -111,7 +113,7 @@ declare global {
         // 通用搜索框的placeholder
         operatorPlaceholder?: string
         // 公共搜索渲染方式:上方的 render=tag|switch 时公共搜索也会渲染为下拉，数字会渲染为范围筛选，时间渲染为时间选择器等
-        comSearchRender?: 'remoteSelect' | 'select' | 'customRender'
+        comSearchRender?: 'remoteSelect' | 'select' | 'date' | 'customRender'
         // 公共搜索自定义组件/函数渲染
         comSearchCustomRender?: string | Component
         // 远程属性
@@ -136,6 +138,8 @@ declare global {
         icon: string
         popconfirm?: any
         disabledTip?: boolean
+        // 自定义点击事件
+        click?: (row: TableRow, field: TableColumn) => void
         // 按钮是否显示，请返回布尔值
         display?: (row: TableRow, field: TableColumn) => boolean
     }

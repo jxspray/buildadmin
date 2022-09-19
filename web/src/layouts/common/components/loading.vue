@@ -2,7 +2,7 @@
     <div>
         <div
             v-loading="true"
-            element-loading-background="#f5f5f5"
+            element-loading-background="var(--ba-bg-color-overlay)"
             :element-loading-text="$t('utils.Loading')"
             class="default-main ba-main-loading"
         ></div>
@@ -34,10 +34,10 @@ const refresh = () => {
 
 if (isAdminApp() && navTabs.state.tabsViewRoutes) {
     let firstRoute = getFirstRoute(navTabs.state.tabsViewRoutes)
-    if (firstRoute) routePush('', {}, firstRoute.path)
+    if (firstRoute) routePush(firstRoute.path)
 } else if (memberCenter.state.viewRoutes) {
     let firstRoute = getFirstRoute(memberCenter.state.viewRoutes)
-    if (firstRoute) router.push({ path: firstRoute.path })
+    if (firstRoute) routePush(firstRoute.path)
 }
 
 timer = setTimeout(() => {

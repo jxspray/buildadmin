@@ -33,12 +33,12 @@ class AllowCrossDomain
     /**
      * 跨域请求检测
      * @access public
-     * @param Request $request
-     * @param Closure $next
-     * @param array   $header
+     * @param Request    $request
+     * @param Closure    $next
+     * @param array|null $header
      * @return Response
      */
-    public function handle($request, Closure $next, ?array $header = [])
+    public function handle(Request $request, Closure $next, ?array $header = []): Response
     {
         $header = !empty($header) ? array_merge($this->header, $header) : $this->header;
 

@@ -2,7 +2,7 @@
     <el-aside class="ba-user-layouts">
         <div class="userinfo">
             <div @click="routerPush('account/profile')" class="user-avatar-box">
-                <img class="user-avatar" :src="userInfo.avatar" alt="" />
+                <img class="user-avatar" :src="fullUrl(userInfo.avatar)" alt="" />
                 <Icon class="user-avatar-gender" :name="userInfo.getGenderIcon()['name']" size="14" :color="userInfo.getGenderIcon()['color']" />
             </div>
             <p class="username">{{ userInfo.nickname }}</p>
@@ -32,7 +32,7 @@
 
         <div class="user-menus">
             <template v-for="(item, idx) in memberCenter.state.viewRoutes" :key="idx">
-                <div v-if="memberCenter.state.showHeadline" class="user-menu-max-title">{{ item.title }}</div>
+                <div v-if="memberCenter.state.showHeadline" class="user-menu-max-title">{{ item.meta?.title }}</div>
                 <div
                     v-for="(menu, index) in item.children"
                     :key="index"
@@ -40,8 +40,8 @@
                     class="user-menu-item"
                     :class="memberCenter.state.activeRoute?.name == menu.name ? 'active' : ''"
                 >
-                    <Icon :name="menu.icon" size="16" color="var(--el-text-color-secondary)" />
-                    <span>{{ menu.title }}</span>
+                    <Icon :name="menu.meta?.icon" size="16" color="var(--el-text-color-secondary)" />
+                    <span>{{ menu.meta?.title }}</span>
                 </div>
             </template>
         </div>
@@ -49,17 +49,17 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router'
+import { useRouter, RouteRecordRaw } from 'vue-router'
 import { useUserInfo } from '/@/stores/userInfo'
 import { useMemberCenter } from '/@/stores/memberCenter'
-import { viewMenu } from '/@/stores/interface';
 import { clickMenu } from '/@/utils/router'
+import { fullUrl } from '/@/utils/common'
 
 const router = useRouter()
 const userInfo = useUserInfo()
 const memberCenter = useMemberCenter()
 
-const routerPush = (routeName = '', route?: viewMenu) => {
+const routerPush = (routeName = '', route?: RouteRecordRaw) => {
     if (document.body.clientWidth < 992) {
         memberCenter.toggleMenuExpand(false)
     }
@@ -74,7 +74,7 @@ const routerPush = (routeName = '', route?: viewMenu) => {
 <style scoped lang="scss">
 .ba-user-layouts {
     width: 240px;
-    background-color: var(--el-color-white);
+    background-color: var(--ba-bg-color-overlay);
     box-shadow: var(--el-box-shadow-light);
 }
 .userinfo {
@@ -103,7 +103,7 @@ const routerPush = (routeName = '', route?: viewMenu) => {
 }
 .user-avatar-gender {
     position: absolute;
-    bottom: 0px;
+    bottom: 0;
     right: 10px;
     height: 22px;
     width: 22px;
@@ -146,12 +146,12 @@ const routerPush = (routeName = '', route?: viewMenu) => {
     .icon {
         color: var(--el-color-primary) !important;
     }
-    background-color: var(--ba-bg-color);
+    background-color: var(--el-color-info-light-8);
 }
 @media screen and (max-width: 991px) {
     .ba-user-layouts {
         width: 100%;
-        background-color: var(--el-color-white);
+        background-color: var(--ba-bg-color-overlay);
         box-shadow: none;
     }
 }

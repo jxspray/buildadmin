@@ -61,12 +61,7 @@
                         <el-divider border-style="dashed">{{ t('layouts.overall situation') }}</el-divider>
                         <div class="layout-config-global">
                             <el-form-item size="large" :label="t('layouts.Dark mode')">
-                                <el-switch
-                                    v-model="configStore.layout.isDark"
-                                    @change="switchDark($event as boolean)"
-                                    active-icon="el-icon-Moon"
-                                    inactive-icon="el-icon-Sunny"
-                                />
+                                <DarkSwitch @click="toggleDark()" />
                             </el-form-item>
                             <el-form-item :label="t('layouts.Background page switching animation')">
                                 <el-select
@@ -134,7 +129,7 @@
                                 </el-input>
                             </el-form-item>
                             <el-form-item :label="t('layouts.Side menu default icon')">
-                                <selector
+                                <IconSelector
                                     @change="onCommitMenuDefaultIcon($event, 'menuDefaultIcon')"
                                     :model-value="configStore.layout.menuDefaultIcon"
                                 />
@@ -204,25 +199,18 @@
 import { useConfig } from '/@/stores/config'
 import { useNavTabs } from '/@/stores/navTabs'
 import { useRouter } from 'vue-router'
-import selector from '/@/components/icon/selector.vue'
+import IconSelector from '/@/components/baInput/components/iconSelector.vue'
 import { STORE_CONFIG, BEFORE_RESIZE_LAYOUT } from '/@/stores/constant/cacheKey'
 import { Local, Session } from '/@/utils/storage'
 import { useI18n } from 'vue-i18n'
-import { useDark, useToggle } from '@vueuse/core'
 import { Layout } from '/@/stores/interface'
+import DarkSwitch from '/@/layouts/common/components/darkSwitch.vue'
+import toggleDark from '/@/utils/useDark'
 
 const { t } = useI18n()
 const configStore = useConfig()
 const navTabs = useNavTabs()
 const router = useRouter()
-const isDark = useDark()
-const toggleDark = useToggle(isDark)
-
-const switchDark = (val: boolean): void => {
-    toggleDark(val)
-    configStore.setLayout('isDark', val)
-    configStore.onSetLayoutColor()
-}
 
 const onCommitState = (value: any, name: any) => {
     configStore.setLayout(name, value)
@@ -264,7 +252,6 @@ const onCloseDrawer = () => {
 const restoreDefault = () => {
     Local.remove(STORE_CONFIG)
     Session.remove(BEFORE_RESIZE_LAYOUT)
-    toggleDark(false)
     router.go(0)
 }
 </script>

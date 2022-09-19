@@ -7,7 +7,6 @@ use ba\Random;
 use think\facade\Db;
 use app\common\controller\Backend;
 use app\admin\model\User as UserModel;
-use app\admin\model\UserGroup;
 use think\db\exception\PDOException;
 use think\exception\ValidateException;
 
@@ -26,6 +25,32 @@ class User extends Backend
     {
         parent::initialize();
         $this->model = new UserModel();
+    }
+
+    /**
+     * 查看
+     */
+    public function index()
+    {
+        $this->request->filter(['strip_tags', 'trim']);
+        if ($this->request->param('select')) {
+            $this->select();
+        }
+
+        list($where, $alias, $limit, $order) = $this->queryBuilder();
+        $res = $this->model
+            ->withoutField('password,salt')
+            ->withJoin($this->withJoinTable, $this->withJoinType)
+            ->alias($alias)
+            ->where($where)
+            ->order($order)
+            ->paginate($limit);
+
+        $this->success('', [
+            'list'   => $res->items(),
+            'total'  => $res->total(),
+            'remark' => get_route_remark(),
+        ]);
     }
 
     public function add()
@@ -56,13 +81,7 @@ class User extends Backend
                 $data['password'] = $passwd;
                 $result           = $this->model->save($data);
                 Db::commit();
-            } catch (ValidateException $e) {
-                Db::rollback();
-                $this->error($e->getMessage());
-            } catch (PDOException $e) {
-                Db::rollback();
-                $this->error($e->getMessage());
-            } catch (Exception $e) {
+            } catch (ValidateException|Exception|PDOException $e) {
                 Db::rollback();
                 $this->error($e->getMessage());
             }
@@ -88,7 +107,7 @@ class User extends Backend
             if ($password) {
                 $this->model->resetPassword($id, $password);
             }
-            parent::edit($id);
+            parent::edit();
         }
 
         unset($row->salt);

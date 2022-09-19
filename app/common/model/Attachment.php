@@ -32,7 +32,7 @@ class Attachment extends Model
 
     public function getFullUrlAttr($value, $row)
     {
-        return full_url($row['url'], true);
+        return full_url($row['url']);
     }
 
     protected static function onBeforeInsert($model)
@@ -43,19 +43,26 @@ class Attachment extends Model
             ['storage', '=', $model->storage],
         ])->find();
         if ($repeat) {
-            $repeat->quote++;
-            $repeat->lastuploadtime = time();
-            $repeat->save();
-            return false;
+            $storageFile = path_transform(public_path() . ltrim($repeat['url'], '/'));
+            if ($model->storage == 'local' && !file_exists($storageFile)) {
+                $repeat->delete();
+                return true;
+            } else {
+                $repeat->quote++;
+                $repeat->lastuploadtime = time();
+                $repeat->save();
+                return false;
+            }
         }
+        return true;
     }
 
-    protected static function onAfterInsert($row)
+    protected static function onAfterInsert($model)
     {
-        if (!$row->lastuploadtime) {
-            $row->quote          = 1;
-            $row->lastuploadtime = time();
-            $row->save();
+        if (!$model->lastuploadtime) {
+            $model->quote          = 1;
+            $model->lastuploadtime = time();
+            $model->save();
         }
     }
 

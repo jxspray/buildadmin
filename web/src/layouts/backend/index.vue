@@ -45,30 +45,28 @@ onUnmounted(() => {
 
 const init = () => {
     index().then((res) => {
-        siteConfig.$state = res.data.siteConfig
+        siteConfig.dataFill(res.data.siteConfig)
         terminal.changePort(res.data.terminal.install_service_port)
         terminal.changePackageManager(res.data.terminal.npm_package_manager)
-        adminInfo.super = res.data.adminInfo.super
+        adminInfo.dataFill(res.data.adminInfo)
 
         if (res.data.menus) {
-            let menuRule = handleAdminRoute(res.data.menus)
-            // 更新stores中的路由菜单数据
-            navTabs.setTabsViewRoutes(menuRule)
+            handleAdminRoute(res.data.menus)
 
             // 预跳转到上次路径
             if (route.query && route.query.url && route.query.url != adminBaseRoute.path) {
                 // 检查路径是否有权限
-                let menuPaths = getMenuPaths(menuRule)
+                let menuPaths = getMenuPaths(navTabs.state.tabsViewRoutes)
                 if (menuPaths.indexOf(route.query.url as string) !== -1) {
                     let query = JSON.parse(route.query.query as string)
-                    router.push({ path: route.query.url as string, query: Object.keys(query).length ? query : {} })
+                    routePush({ path: route.query.url as string, query: Object.keys(query).length ? query : {} })
                     return
                 }
             }
 
             // 跳转到第一个菜单
             let firstRoute = getFirstRoute(navTabs.state.tabsViewRoutes)
-            if (firstRoute) routePush('', {}, firstRoute.path)
+            if (firstRoute) routePush(firstRoute.path)
         }
     })
 }

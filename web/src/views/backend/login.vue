@@ -214,7 +214,7 @@ const onSubmit = (formEl: InstanceType<typeof ElForm> | undefined) => {
             login('post', form)
                 .then((res) => {
                     form.loading = false
-                    adminInfo.$state = res.data.userinfo
+                    adminInfo.dataFill(res.data.userinfo)
                     ElNotification({
                         message: res.msg,
                         type: 'success',
@@ -281,7 +281,7 @@ const onSubmit = (formEl: InstanceType<typeof ElForm> | undefined) => {
             border-radius: 50%;
             border: 4px solid var(--ba-bg-color-overlay);
             top: -50px;
-            right: 175px;
+            right: calc(50% - 50px);
             z-index: 2;
             user-select: none;
         }
@@ -293,6 +293,7 @@ const onSubmit = (formEl: InstanceType<typeof ElForm> | undefined) => {
             letter-spacing: 2px;
             font-weight: 300;
             margin-top: 15px;
+            --el-button-bg-color: var(--el-color-primary);
         }
     }
 }
@@ -317,5 +318,31 @@ const onSubmit = (formEl: InstanceType<typeof ElForm> | undefined) => {
 }
 .captcha-img {
     width: 100%;
+}
+
+// 暗黑样式
+@at-root .dark {
+    .bubble {
+        background: url(/@/assets/bg-dark.jpg) repeat;
+    }
+    .login {
+        .login-box {
+            background: #161b22;
+        }
+        .head {
+            img {
+                filter: brightness(61%);
+            }
+        }
+        .form {
+            .submit-button {
+                --el-button-bg-color: var(--el-color-primary-light-5);
+                --el-button-border-color: rgba(240, 252, 241, 0.1);
+            }
+        }
+    }
+    .captcha-img {
+        filter: brightness(61%);
+    }
 }
 </style>

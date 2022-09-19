@@ -200,9 +200,8 @@ class Auth
         foreach ($this->rules as $key => $rule) {
             $rules[$rule['id']] = strtolower($rule['name']);
             if (isset($rule['keepalive']) && $rule['keepalive']) {
-                $this->rules[$key]['keepAlive'] = $rule['name'];
+                $this->rules[$key]['keepalive'] = $rule['name'];
             }
-            unset($this->rules[$key]['keepalive']);
         }
         $ruleList[$uid] = $rules;
         return array_unique($rules);
@@ -221,8 +220,7 @@ class Auth
         foreach ($groups as $g) {
             $ids = array_merge($ids, explode(',', trim($g['rules'], ',')));
         }
-        $ids = array_unique($ids);
-        return $ids;
+        return array_unique($ids);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace app\common\library;
 
 use ba\Random;
+use \think\File;
 use think\Exception;
 use think\facade\Config;
 use think\file\UploadedFile;
@@ -134,11 +135,7 @@ class Upload
      */
     protected function checkSize()
     {
-        preg_match('/([0-9\.]+)(\w+)/', $this->config['maxsize'], $matches);
-        $size     = $matches ? $matches[1] : $this->config['maxsize'];
-        $type     = $matches ? strtolower($matches[2]) : 'b';
-        $typeDict = ['b' => 0, 'k' => 1, 'kb' => 1, 'm' => 2, 'mb' => 2, 'gb' => 3, 'g' => 3];
-        $size     = (int)($size * pow(1024, $typeDict[$type] ?? 0));
+        $size = file_unit_to_byte($this->config['maxsize']);
         if ($this->fileInfo['size'] > $size) {
             throw new Exception(__('The uploaded file is too large (%sMiB), Maximum file size:%sMiB', [
                 round($this->fileInfo['size'] / pow(1024, 2), 2),
@@ -171,8 +168,8 @@ class Upload
         } else {
             $suffix = $this->fileInfo['suffix'];
         }
-        $filename   = $filename ? $filename : ($suffix ? substr($this->fileInfo['name'], 0, strripos($this->fileInfo['name'], '.')) : $this->fileInfo['name']);
-        $sha1       = $sha1 ? $sha1 : $this->fileInfo['sha1'];
+        $filename   = $filename ?: ($suffix ? substr($this->fileInfo['name'], 0, strripos($this->fileInfo['name'], '.')) : $this->fileInfo['name']);
+        $sha1       = $sha1 ?: $this->fileInfo['sha1'];
         $replaceArr = [
             '{topic}'    => $this->topic,
             '{year}'     => date("Y"),
@@ -188,18 +185,19 @@ class Upload
             '{.suffix}'  => $suffix ? '.' . $suffix : '',
             '{filesha1}' => $sha1,
         ];
-        $saveName   = $saveName ? $saveName : $this->config['savename'];
-        $saveName   = str_replace(array_keys($replaceArr), array_values($replaceArr), $saveName);
-        return $saveName;
+        $saveName   = $saveName ?: $this->config['savename'];
+        return str_replace(array_keys($replaceArr), array_values($replaceArr), $saveName);
     }
 
     /**
      * 上传文件
      * @param null $saveName
+     * @param int  $adminId
+     * @param int  $userId
      * @return array
      * @throws Exception
      */
-    public function upload($saveName = null, $adminId = 0, $userId = 0)
+    public function upload($saveName = null, int $adminId = 0, int $userId = 0): array
     {
         if (empty($this->file)) {
             throw new Exception(__('No files have been uploaded or the file size exceeds the upload limit of the server'));
@@ -208,15 +206,6 @@ class Upload
         $this->checkSize();
         $this->checkMimetype();
         $this->checkIsImage();
-
-        $saveName  = $saveName ? $saveName : $this->getSaveName();
-        $saveName  = '/' . ltrim($saveName, '/');
-        $uploadDir = substr($saveName, 0, strripos($saveName, '/') + 1);
-        $fileName  = substr($saveName, strripos($saveName, '/') + 1);
-
-        $destDir = root_path() . 'public' . str_replace('/', DIRECTORY_SEPARATOR, $uploadDir);
-
-        $this->file->move($destDir, $fileName);
 
         $params = [
             'topic'    => $this->topic,
@@ -241,8 +230,21 @@ class Upload
                 ['topic', '=', $params['topic']],
                 ['storage', '=', $params['storage']],
             ])->find();
+        } else {
+            $this->move($saveName);
         }
 
         return $attachment->toArray();
+    }
+
+    public function move($saveName = null): File
+    {
+        $saveName  = $saveName ?: $this->getSaveName();
+        $saveName  = '/' . ltrim($saveName, '/');
+        $uploadDir = substr($saveName, 0, strripos($saveName, '/') + 1);
+        $fileName  = substr($saveName, strripos($saveName, '/') + 1);
+        $destDir   = root_path() . 'public' . str_replace('/', DIRECTORY_SEPARATOR, $uploadDir);
+
+        return $this->file->move($destDir, $fileName);
     }
 }

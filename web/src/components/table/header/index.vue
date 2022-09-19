@@ -77,7 +77,7 @@
                     </el-button>
                     <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item v-for="(item, idx) in baTable.table.column" :key="idx">
+                            <el-dropdown-item v-for="(item, idx) in columnDisplay" :key="idx">
                                 <el-checkbox
                                     v-if="item.prop"
                                     @change="onChangeShowColumn($event, item.prop!)"
@@ -135,6 +135,14 @@ const state = reactive({
     quickSearch: '',
 })
 
+const columnDisplay = computed(() => {
+    let columnDisplayArr = []
+    for (let item of baTable.table.column) {
+        item.type === 'selection' || item.render === 'buttons' || item.enableColumnDisplayControl === false ? '' : columnDisplayArr.push(item)
+    }
+    return columnDisplayArr
+})
+
 const enableBatchOpt = computed(() => (baTable.table.selection!.length > 0 ? true : false))
 
 const emits = defineEmits<{
@@ -174,15 +182,6 @@ const onChangeShowColumn = (value: string | number | boolean, field: string) => 
     font-size: 14px;
     .table-header-operate-text {
         margin-left: 6px;
-    }
-    .table-header-operate .icon {
-        font-size: 14px !important;
-        color: var(--ba-bg-color-overlay) !important;
-    }
-    .el-button.is-disabled {
-        .icon {
-            color: var(--el-button-disabled-text-color) !important;
-        }
     }
 }
 

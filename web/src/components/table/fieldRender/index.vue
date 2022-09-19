@@ -43,13 +43,27 @@
     <div v-if="field.render == 'tags'">
         <template v-if="Array.isArray(fieldValue)">
             <template v-for="(tag, idx) in fieldValue" :key="idx">
-                <el-tag v-if="tag" class="m-10" size="small" effect="light">{{ field.replaceValue ? field.replaceValue[tag] ?? tag : tag }}</el-tag>
+                <el-tag
+                    v-if="tag"
+                    class="m-10"
+                    :type="getTagType(tag, field.custom)"
+                    :effect="field.effect ?? 'light'"
+                    :size="field.size ?? 'default'"
+                >
+                    {{ field.replaceValue ? field.replaceValue[tag] ?? tag : tag }}</el-tag
+                >
             </template>
         </template>
         <template v-else>
-            <el-tag class="m-10" v-if="fieldValue !== ''" size="small" effect="light">{{
-                field.replaceValue ? field.replaceValue[fieldValue] ?? fieldValue : fieldValue
-            }}</el-tag>
+            <el-tag
+                class="m-10"
+                v-if="fieldValue !== ''"
+                :type="getTagType(fieldValue, field.custom)"
+                :effect="field.effect ?? 'light'"
+                :size="field.size ?? 'default'"
+            >
+                {{ field.replaceValue ? field.replaceValue[fieldValue] ?? fieldValue : fieldValue }}</el-tag
+            >
         </template>
     </div>
 
@@ -57,7 +71,7 @@
     <div v-if="field.render == 'url' && fieldValue">
         <el-input :model-value="fieldValue" :placeholder="t('Link address')">
             <template #append>
-                <el-button @click="typeof field.click == 'function' ? field.click(fieldValue, field) : openUrl(fieldValue, field)">
+                <el-button @click="typeof field.click == 'function' ? field.click(row, fieldValue, field) : openUrl(fieldValue, field)">
                     <Icon :color="'#606266'" name="el-icon-Position" />
                 </el-button>
             </template>
@@ -89,7 +103,7 @@
                         v-if="btn.name == 'edit'"
                         v-auth="'edit'"
                         v-blur
-                        @click="onButtonClick(btn.name)"
+                        @click="onButtonClick(btn)"
                         :class="btn.class"
                         class="table-operate"
                         :type="btn.type"
@@ -97,12 +111,12 @@
                         <Icon :name="btn.icon" />
                         <div v-if="btn.text" class="table-operate-text">{{ btn.text }}</div>
                     </el-button>
-                    <el-button v-else v-blur @click="onButtonClick(btn.name)" :class="btn.class" class="table-operate" :type="btn.type">
+                    <el-button v-else v-blur @click="onButtonClick(btn)" :class="btn.class" class="table-operate" :type="btn.type">
                         <Icon :name="btn.icon" />
                         <div v-if="btn.text" class="table-operate-text">{{ btn.text }}</div>
                     </el-button>
                 </el-tooltip>
-                <el-popconfirm v-if="btn.render == 'confirmButton'" v-bind="btn.popconfirm" @confirm="onButtonClick(btn.name)">
+                <el-popconfirm v-if="btn.render == 'confirmButton'" v-bind="btn.popconfirm" @confirm="onButtonClick(btn)">
                     <template #reference>
                         <div class="ml-6">
                             <el-tooltip :disabled="btn.title ? false : true" :content="btn.title ? t(btn.title) : ''" placement="top">
@@ -203,9 +217,13 @@ const changeField = (value: any, fieldName: keyof TableRow) => {
     }
 }
 
-const onButtonClick = (name: string) => {
+const onButtonClick = (btn: OptButton) => {
+    if (typeof btn.click === 'function') {
+        btn.click(props.row, props.field)
+        return
+    }
     proxy.eventBus.emit('onTableButtonClick', {
-        name: name,
+        name: btn.name,
         row: props.row,
     })
 }

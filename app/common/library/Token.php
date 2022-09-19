@@ -130,10 +130,10 @@ class Token
 
     /**
      * 获取驱动配置
-     * @param string $store
-     * @param string $name
-     * @param null   $default
-     * @return array
+     * @param string      $store
+     * @param string|null $name
+     * @param null        $default
+     * @return array|string
      */
     protected function getStoreConfig(string $store, string $name = null, $default = null)
     {
@@ -141,13 +141,13 @@ class Token
             return Arr::get($config, $name, $default);
         }
 
-        throw new \InvalidArgumentException("Store [$store] not found.");
+        throw new InvalidArgumentException("Store [$store] not found.");
     }
 
     /**
      * 获取驱动类型
      * @param string $name
-     * @return array
+     * @return array|string
      */
     protected function resolveType(string $name)
     {
@@ -170,11 +170,12 @@ class Token
     /**
      * 获取token
      * @param string $token
+     * @param bool   $expirationException
      * @return array
      */
-    public function get(string $token): array
+    public function get(string $token, bool $expirationException = true): array
     {
-        return $this->getDriver()->get($token);
+        return $this->getDriver()->get($token, $expirationException);
     }
 
     /**
@@ -182,11 +183,12 @@ class Token
      * @param string $token
      * @param string $type
      * @param int    $user_id
+     * @param bool   $expirationException
      * @return bool
      */
-    public function check(string $token, string $type, int $user_id): bool
+    public function check(string $token, string $type, int $user_id, bool $expirationException = true): bool
     {
-        return $this->getDriver()->check($token, $type, $user_id);
+        return $this->getDriver()->check($token, $type, $user_id, $expirationException);
     }
 
     /**

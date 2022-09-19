@@ -9,7 +9,7 @@
                         <div class="main-content">
                             {{ $t('index.Steve Jobs') }}
                         </div>
-                        <el-button v-if="memberCenter.state.open" @click="$router.push('/user')" color="#FFFFFF" size="large">{{
+                        <el-button v-if="memberCenter.state.open" @click="$router.push('/user')" color="#ffffff" size="large">{{
                             $t('index.Member Center')
                         }}</el-button>
                     </div>
@@ -29,9 +29,12 @@ import { useSiteConfig } from '/@/stores/siteConfig'
 import { useMemberCenter } from '/@/stores/memberCenter'
 import Header from '/@/layouts/frontend/components/header.vue'
 import Footer from '/@/layouts/frontend/components/footer.vue'
+import { togglePageDark } from '/@/utils/useDark'
 
 const siteConfig = useSiteConfig()
 const memberCenter = useMemberCenter()
+
+togglePageDark(false)
 </script>
 
 <style scoped lang="scss">
@@ -93,6 +96,9 @@ const memberCenter = useMemberCenter()
                 color: var(--el-menu-hover-text-color);
             }
         }
+    }
+    :deep(.theme-switch) {
+        display: none;
     }
 }
 .footer {

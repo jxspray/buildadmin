@@ -100,6 +100,11 @@ class Backend extends Api
     protected $dataLimitFieldAutoFill = true;
 
     /**
+     * 查看请求返回的主表字段控制
+     */
+    protected $indexField = ['*'];
+
+    /**
      * 引入traits
      * traits内实现了index、add、edit等方法
      */
@@ -140,7 +145,7 @@ class Backend extends Api
         }
 
         // 管理员验权和登录标签位
-        Event::trigger('backendInit');
+        Event::trigger('backendInit', $this->auth);
     }
 
     public function queryBuilder()
@@ -178,7 +183,7 @@ class Backend extends Api
         if ($order) {
             $order = explode(',', $order);
             if (isset($order[0]) && isset($order[1]) && ($order[1] == 'asc' || $order[1] == 'desc')) {
-                $order = [(string)$order[0] => $order[1]];
+                $order = [$order[0] => $order[1]];
             }
         } else {
             if (is_array($this->defaultSortField)) {
@@ -194,7 +199,7 @@ class Backend extends Api
         }
 
         // 通用搜索组装
-        foreach ($search as $key => $item) {
+        foreach ($search as $item) {
             $field = json_decode($item, true);
             if (!is_array($field) || !isset($field['operator']) || !isset($field['field'])) {
                 continue;

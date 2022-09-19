@@ -9,7 +9,6 @@ use app\admin\model\Admin as AdminModel;
 use think\db\exception\PDOException;
 use think\exception\ValidateException;
 use think\facade\Db;
-use app\admin\model\AdminGroup;
 
 class Admin extends Backend
 {
@@ -22,10 +21,43 @@ class Admin extends Backend
 
     protected $quickSearchField = ['username', 'nickname'];
 
+    /**
+     * 开启数据限制
+     */
+    protected $dataLimit = 'allAuthAndOthers';
+
+    protected $dataLimitField = 'id';
+
     public function initialize()
     {
         parent::initialize();
         $this->model = new AdminModel();
+    }
+
+    /**
+     * 查看
+     */
+    public function index()
+    {
+        $this->request->filter(['strip_tags', 'trim']);
+        if ($this->request->param('select')) {
+            $this->select();
+        }
+
+        list($where, $alias, $limit, $order) = $this->queryBuilder();
+        $res = $this->model
+            ->withoutField('loginfailure,password,salt')
+            ->withJoin($this->withJoinTable, $this->withJoinType)
+            ->alias($alias)
+            ->where($where)
+            ->order($order)
+            ->paginate($limit);
+
+        $this->success('', [
+            'list'   => $res->items(),
+            'total'  => $res->total(),
+            'remark' => get_route_remark(),
+        ]);
     }
 
     public function add()
@@ -71,13 +103,7 @@ class Admin extends Backend
                     Db::name('admin_group_access')->insertAll($groupAccess);
                 }
                 Db::commit();
-            } catch (ValidateException $e) {
-                Db::rollback();
-                $this->error($e->getMessage());
-            } catch (PDOException $e) {
-                Db::rollback();
-                $this->error($e->getMessage());
-            } catch (Exception $e) {
+            } catch (ValidateException|PDOException|Exception $e) {
                 Db::rollback();
                 $this->error($e->getMessage());
             }
@@ -96,6 +122,11 @@ class Admin extends Backend
         $row = $this->model->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
+        }
+
+        $dataLimitAdminIds = $this->getDataLimitAdminIds();
+        if ($dataLimitAdminIds && !in_array($row[$this->dataLimitField], $dataLimitAdminIds)) {
+            $this->error(__('You have no permission'));
         }
 
         if ($this->request->isPost()) {
@@ -146,10 +177,7 @@ class Admin extends Backend
             try {
                 $result = $row->save($data);
                 Db::commit();
-            } catch (PDOException $e) {
-                Db::rollback();
-                $this->error($e->getMessage());
-            } catch (Exception $e) {
+            } catch (PDOException|Exception $e) {
                 Db::rollback();
                 $this->error($e->getMessage());
             }
@@ -160,6 +188,7 @@ class Admin extends Backend
             }
         }
 
+        unset($row['salt'], $row['loginfailure']);
         $row['password'] = '';
         $this->success('', [
             'row' => $row
@@ -176,6 +205,11 @@ class Admin extends Backend
             $this->error(__('Parameter error'));
         }
 
+        $dataLimitAdminIds = $this->getDataLimitAdminIds();
+        if ($dataLimitAdminIds) {
+            $this->model->where($this->dataLimitField, 'in', $dataLimitAdminIds);
+        }
+
         $pk    = $this->model->getPk();
         $data  = $this->model->where($pk, 'in', $ids)->select();
         $count = 0;
@@ -188,10 +222,7 @@ class Admin extends Backend
                     ->delete();
             }
             Db::commit();
-        } catch (PDOException $e) {
-            Db::rollback();
-            $this->error($e->getMessage());
-        } catch (Exception $e) {
+        } catch (PDOException|Exception $e) {
             Db::rollback();
             $this->error($e->getMessage());
         }

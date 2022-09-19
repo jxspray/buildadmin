@@ -2,7 +2,7 @@ import axios, { AxiosPromise, Method } from 'axios'
 import type { AxiosRequestConfig } from 'axios'
 import { ElLoading, LoadingOptions, ElNotification } from 'element-plus'
 import { useConfig } from '/@/stores/config'
-import { getAdminToken, removeAdminToken, getUserToken, removeUserToken, isAdminApp } from './common'
+import { isAdminApp } from './common'
 import router from '/@/router/index'
 import { refreshToken } from '/@/api/common'
 import { useUserInfo } from '/@/stores/userInfo'
@@ -34,6 +34,8 @@ export const getUrlPort = (): string => {
  */
 function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loading: LoadingOptions = {}): ApiPromise | AxiosPromise {
     const config = useConfig()
+    const adminInfo = useAdminInfo()
+    const userInfo = useUserInfo()
 
     const Axios = axios.create({
         baseURL: getUrl(),
@@ -53,6 +55,7 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
             showErrorMessage: true, // 是否开启接口错误信息展示,默认为true
             showCodeMessage: true, // 是否开启code不为1时的信息提示, 默认为true
             showSuccessMessage: false, // 是否开启code为1时的信息提示, 默认为false
+            anotherToken: '', // 当前请求使用另外的用户token
         },
         options
     )
@@ -72,9 +75,9 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
 
             // 自动携带token
             if (config.headers) {
-                const token = getAdminToken('auth')
+                const token = adminInfo.getToken()
                 if (token) config.headers.batoken = token
-                const userToken = getUserToken('auth')
+                const userToken = options.anotherToken || userInfo.getToken()
                 if (userToken) config.headers['ba-user-token'] = userToken
             }
 
@@ -91,20 +94,18 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
             removePending(response.config)
             options.loading && closeLoading(options) // 关闭loading
 
-            if (options.showCodeMessage && response.data && response.data.code !== 1) {
+            if (response.data && response.data.code !== 1) {
                 if (response.data.code == 409) {
                     if (!window.tokenRefreshing) {
                         window.tokenRefreshing = true
                         return refreshToken()
                             .then((res) => {
                                 if (res.data.type == 'admin-refresh') {
-                                    const adminInfo = useAdminInfo()
-                                    adminInfo.token = res.data.token
+                                    adminInfo.setToken(res.data.token, 'token')
                                     response.headers.batoken = `${res.data.token}`
                                     window.requests.forEach((cb) => cb(res.data.token, 'admin-refresh'))
                                 } else if (res.data.type == 'user-refresh') {
-                                    const userInfo = useUserInfo()
-                                    userInfo.token = res.data.token
+                                    userInfo.setToken(res.data.token, 'token')
                                     response.headers['ba-user-token'] = `${res.data.token}`
                                     window.requests.forEach((cb) => cb(res.data.token, 'user-refresh'))
                                 }
@@ -113,7 +114,7 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                             })
                             .catch((err) => {
                                 if (isAdminApp()) {
-                                    removeAdminToken()
+                                    adminInfo.removeToken()
                                     if (router.currentRoute.value.name != 'adminLogin') {
                                         router.push({ name: 'adminLogin' })
                                         return Promise.reject(err)
@@ -124,7 +125,7 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                                         return Axios(response.config)
                                     }
                                 } else {
-                                    removeUserToken()
+                                    userInfo.removeToken()
                                     if (router.currentRoute.value.name != 'userLogin') {
                                         router.push({ name: 'userLogin' })
                                         return Promise.reject(err)
@@ -153,10 +154,12 @@ function createAxios(axiosConfig: AxiosRequestConfig, options: Options = {}, loa
                         })
                     }
                 }
-                ElNotification({
-                    type: 'error',
-                    message: response.data.msg,
-                })
+                if (options.showCodeMessage) {
+                    ElNotification({
+                        type: 'error',
+                        message: response.data.msg,
+                    })
+                }
                 // 自动跳转到路由name或path，仅限server端返回302的情况
                 if (response.data.code == 302) {
                     if (response.data.data.routeName) {
@@ -205,7 +208,7 @@ function httpErrorStatusHandle(error: any) {
                 message = i18n.global.t('axios.Incorrect parameter!')
                 break
             case 401:
-                message = i18n.global.t('axios.You are not logged in, or the login has timed out. Please log in first!')
+                message = i18n.global.t('axios.You do not have permission to operate!')
                 break
             case 403:
                 message = i18n.global.t('axios.You do not have permission to operate!')
@@ -232,7 +235,7 @@ function httpErrorStatusHandle(error: any) {
                 message = i18n.global.t('axios.Service unavailable!')
                 break
             case 504:
-                message = i18n.global.t('axios.The service is temporarily unavailable. Please try again later!')
+                message = i18n.global.t('axios.The service is temporarily unavailable Please try again later!')
                 break
             case 505:
                 message = i18n.global.t('axios.HTTP version is not supported!')
@@ -335,6 +338,8 @@ interface Options {
     showCodeMessage?: boolean
     // 是否开启code为0时的信息提示, 默认为false
     showSuccessMessage?: boolean
+    // 当前请求使用另外的用户token
+    anotherToken?: string
 }
 
 /*

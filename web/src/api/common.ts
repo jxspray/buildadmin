@@ -1,6 +1,12 @@
 import createAxios from '/@/utils/axios'
-import { getAdminToken, getUserToken, isAdminApp } from '/@/utils/common'
+import { isAdminApp, checkFileMimetype } from '/@/utils/common'
 import { getUrl } from '/@/utils/axios'
+import { useAdminInfo } from '/@/stores/adminInfo'
+import { useUserInfo } from '/@/stores/userInfo'
+import { ElNotification, UploadRawFile } from 'element-plus'
+import { useSiteConfig } from '/@/stores/siteConfig'
+import { state as uploadExpandState, fileUpload as uploadExpand } from '/@/components/baInput/components/baUpload'
+import { i18n } from '../lang'
 
 /*
  * 公共请求函数和Url定义
@@ -11,7 +17,7 @@ export const adminUploadUrl = '/admin/ajax/upload'
 export const adminBuildSuffixSvgUrl = '/admin/ajax/buildSuffixSvg'
 export const adminAreaUrl = '/admin/ajax/area'
 export const getTablePkUrl = '/admin/ajax/getTablePk'
-export const terminalUrl = '/admin/install/terminal'
+export const terminalUrl = '/admin/Terminal/index'
 export const changeTerminalConfigUrl = '/admin/ajax/changeTerminalConfig'
 export const clearCacheUrl = '/admin/ajax/clearCache'
 
@@ -28,6 +34,31 @@ export const apiAreaUrl = '/api/ajax/area'
  * 上传文件
  */
 export function fileUpload(fd: FormData, params: anyObj = {}): ApiPromise {
+    let errorMsg = ''
+    const file = fd.get('file') as UploadRawFile
+    const siteConfig = useSiteConfig()
+
+    if (!file.name || !file.type || typeof file.size == 'undefined') {
+        errorMsg = i18n.global.t('utils.The data of the uploaded file is incomplete!')
+    } else if (!checkFileMimetype(file.name, file.type)) {
+        errorMsg = i18n.global.t('utils.The type of uploaded file is not allowed!')
+    } else if (file.size > siteConfig.upload.maxsize) {
+        errorMsg = i18n.global.t('utils.The size of the uploaded file exceeds the allowed range!')
+    }
+    if (errorMsg) {
+        return new Promise((resolve, reject) => {
+            ElNotification({
+                type: 'error',
+                message: errorMsg,
+            })
+            reject(errorMsg)
+        })
+    }
+
+    if (uploadExpandState() == 'enable') {
+        return uploadExpand(fd, params)
+    }
+
     return createAxios({
         url: isAdminApp() ? adminUploadUrl : apiUploadUrl,
         method: 'POST',
@@ -42,11 +73,12 @@ export function fileUpload(fd: FormData, params: anyObj = {}): ApiPromise {
  * @param background 背景色,如:rgb(255,255,255)
  */
 export function buildSuffixSvgUrl(suffix: string, background = '') {
+    const adminInfo = useAdminInfo()
     return (
         getUrl() +
         (isAdminApp() ? adminBuildSuffixSvgUrl : apiBuildSuffixSvgUrl) +
         '?batoken=' +
-        getAdminToken() +
+        adminInfo.getToken() +
         '&suffix=' +
         suffix +
         (background ? '&background=' + background : '') +
@@ -93,8 +125,11 @@ export function postClearCache(type: string) {
 /**
  * 构建命令执行窗口url
  */
-export function buildTerminalUrl(commandKey: string, outputExtend: string) {
-    return getUrl() + terminalUrl + '?command=' + commandKey + '&extend=' + outputExtend + '&batoken=' + getAdminToken() + '&server=1'
+export function buildTerminalUrl(commandKey: string, uuid: string, extend: string) {
+    const adminInfo = useAdminInfo()
+    return (
+        getUrl() + terminalUrl + '?command=' + commandKey + '&uuid=' + uuid + '&extend=' + extend + '&batoken=' + adminInfo.getToken() + '&server=1'
+    )
 }
 
 /**
@@ -142,11 +177,13 @@ export function getTablePk(table: string) {
 }
 
 export function refreshToken(): ApiPromise {
+    const adminInfo = useAdminInfo()
+    const userInfo = useUserInfo()
     return createAxios({
         url: refreshTokenUrl,
         method: 'POST',
         data: {
-            refresh_token: isAdminApp() ? getAdminToken('refresh') : getUserToken('refresh'),
+            refresh_token: isAdminApp() ? adminInfo.getToken('refresh') : userInfo.getToken('refresh'),
         },
     }) as ApiPromise
 }

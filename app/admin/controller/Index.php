@@ -19,7 +19,7 @@ class Index extends Backend
     {
         $adminInfo          = $this->auth->getInfo();
         $adminInfo['super'] = $this->auth->isSuperAdmin();
-        unset($adminInfo['token']);
+        unset($adminInfo['token'], $adminInfo['refreshToken']);
 
         $menus = $this->auth->getMenus();
         if (!$menus) {
@@ -32,10 +32,12 @@ class Index extends Backend
                 'site_name' => get_sys_config('site_name'),
                 'version'   => get_sys_config('version'),
                 'cdn_url'   => full_url(),
+                'api_url'   => Config::get('buildadmin.api_url'),
+                'upload'    => get_upload_config(),
             ],
             'terminal'   => [
-                'install_service_port' => Config::get('buildadmin.install_service_port'),
-                'npm_package_manager'  => Config::get('buildadmin.npm_package_manager'),
+                'install_service_port' => Config::get('terminal.install_service_port'),
+                'npm_package_manager'  => Config::get('terminal.npm_package_manager'),
             ]
         ]);
     }
@@ -94,7 +96,7 @@ class Index extends Backend
                 ]);
             } else {
                 $msg = $this->auth->getError();
-                $msg = $msg ? $msg : __('Incorrect user name or password!');
+                $msg = $msg ?: __('Incorrect user name or password!');
                 $this->error($msg);
             }
         }
