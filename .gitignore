@@ -2,7 +2,7 @@
 /runtime/*
 /install
 /vendor
-/modules
+#/modules
 node_modules
 dist
 dist-ssr
