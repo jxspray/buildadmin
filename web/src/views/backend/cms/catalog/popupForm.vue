@@ -1,6 +1,6 @@
 <template>
     <!-- 对话框表单 -->
-    <el-dialog custom-class="ba-operate-dialog" :fullscreen="true" :close-on-click-modal="false"
+    <el-dialog class="ba-operate-dialog" :fullscreen="true" :close-on-click-modal="false"
         :model-value="baTable.form.operate ? true : false" @close="baTable.toggleForm">
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
@@ -20,7 +20,7 @@
                                 :input-attr="{ field: 'title', params: { isTree: true }, 'remote-url': baTable.api.actionUrl.get('index'), placeholder: t('Please select field', { field: t('，默认一级栏目') }) }" />
                             <FormItem :label="t('cms.catalog.title')" type="string" v-model="baTable.form.items!.title"
                                 prop="title"
-                                :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.title') }) }" />
+                                :input-attr="{ placeholder: t('', { field: t('cms.catalog.title') }) }" />
                             <FormItem :label="t('cms.catalog.description')" type="textarea"
                                 v-model="baTable.form.items!.description" prop="description"
                                 :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.description') }) }" />
@@ -71,7 +71,7 @@
                 </el-scrollbar>
             </el-tab-pane>
             <el-tab-pane label="扩展属性" name="other">
-                <CustomField ref="customRef" :ifset="true" @action="baTable.onTableAction" />
+                <!-- <CustomField ref="customRef" :ifset="true" @action="baTable.onTableAction" /> -->
             </el-tab-pane>
         </el-tabs>
         <template #footer>
