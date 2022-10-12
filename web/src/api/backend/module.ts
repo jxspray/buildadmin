@@ -170,7 +170,7 @@ export function changeState(params: anyObj) {
         {
             url: moduleControllerUrl + 'changeState',
             method: 'post',
-            params: params,
+            data: params,
         },
         {
             showCodeMessage: false,
@@ -178,13 +178,12 @@ export function changeState(params: anyObj) {
     )
 }
 
-export function dependentInstallComplete(uid: string, type: string) {
+export function dependentInstallComplete(uid: string) {
     return createAxios({
         url: moduleControllerUrl + 'dependentInstallComplete',
         method: 'post',
         params: {
             uid: uid,
-            type: type,
         },
     }) as ApiPromise
 }

@@ -12,7 +12,8 @@ import { i18n } from '/@/lang/index'
 export default class baTable {
     public api
 
-    public activate
+    // 表格是否激活，多表格共存时，激活的表格才能触发事件
+    public activate: boolean
 
     /* 表格状态-s */
     public table: BaTable = reactive({
@@ -240,7 +241,7 @@ export default class baTable {
     }
 
     /**
-     * 表格内的事件响应
+     * 表格内的事件统一响应
      * @param event 事件:selection-change=选中项改变,page-size-change=每页数量改变,current-page-change=翻页,sort-change=排序
      * @param data 携带数据
      */
@@ -270,10 +271,8 @@ export default class baTable {
             [
                 'sort-change',
                 () => {
-                    let newOrder = ''
-                    if (!data.prop) {
-                        newOrder = ''
-                    } else if (data.prop) {
+                    let newOrder: string | undefined
+                    if (data.prop && data.order) {
                         newOrder = data.prop + ',' + data.order
                     }
                     if (newOrder != this.table.filter!.order) {
@@ -296,7 +295,7 @@ export default class baTable {
     }
 
     /**
-     * 表格顶栏按钮事件响应
+     * 表格顶栏按钮事件统一响应
      * @param event 事件:refresh=刷新,edit=编辑,delete=删除,quick-search=快速查询
      * @param data 携带数据
      */

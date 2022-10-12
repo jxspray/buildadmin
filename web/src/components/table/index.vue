@@ -31,8 +31,8 @@
     </el-table>
     <div v-if="props.pagination" class="table-pagination">
         <el-pagination
-            :current-page="state.currentPage"
-            :page-size="state.pageSize"
+            :currentPage="baTable.table.filter!.page"
+            :page-size="baTable.table.filter!.limit"
             :page-sizes="[10, 20, 50, 100]"
             background
             :layout="config.layout.shrink ? 'prev, next, jumper' : 'sizes,total, ->, prev, pager, next, jumper'"
@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, reactive, inject } from 'vue'
+import { ref, nextTick, inject } from 'vue'
 import type { ElTable } from 'element-plus'
 import Column from '/@/components/table/column/index.vue'
 import FieldRender from '/@/components/table/fieldRender/index.vue'
@@ -62,24 +62,17 @@ const props = withDefaults(defineProps<Props>(), {
     pagination: true,
 })
 
-const state = reactive({
-    currentPage: 1,
-    pageSize: 10,
-})
-
 const emits = defineEmits<{
     (e: 'action', event: string, data: anyObj): void
 }>()
 
 const onTableSizeChange = (val: number) => {
-    state.pageSize = val
     emits('action', 'page-size-change', {
         size: val,
     })
 }
 
 const onTableCurrentChange = (val: number) => {
-    state.currentPage = val
     emits('action', 'current-page-change', {
         page: val,
     })

@@ -53,14 +53,12 @@ class Module extends Backend
 
     public function dependentInstallComplete()
     {
-        $uid     = $this->request->get("uid/s", '');
-        $type    = $this->request->get("type/s", '');
-        $typeArr = ['npm', 'composer', 'all'];
-        if (!$uid || !in_array($type, $typeArr)) {
+        $uid = $this->request->get("uid/s", '');
+        if (!$uid) {
             $this->error(__('Parameter error'));
         }
         try {
-            Manage::instance($uid)->dependentInstallComplete($type);
+            Manage::instance($uid)->dependentInstallComplete('all');
         } catch (moduleException $e) {
             $this->error(__($e->getMessage()), $e->getData(), $e->getCode());
         } catch (Exception $e) {
@@ -71,8 +69,8 @@ class Module extends Backend
 
     public function changeState()
     {
-        $uid   = $this->request->get("uid/s", '');
-        $state = $this->request->get("state/b", false);
+        $uid   = $this->request->post("uid/s", '');
+        $state = $this->request->post("state/b", false);
         if (!$uid) {
             $this->error(__('Parameter error'));
         }

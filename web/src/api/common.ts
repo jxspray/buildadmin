@@ -29,11 +29,13 @@ export const refreshTokenUrl = '/api/common/refreshToken'
 export const apiUploadUrl = '/api/ajax/upload'
 export const apiBuildSuffixSvgUrl = '/api/ajax/buildSuffixSvg'
 export const apiAreaUrl = '/api/ajax/area'
+export const apiSendSms = '/api/Sms/send'
+export const apiSendEms = '/api/Ems/send'
 
 /**
  * 上传文件
  */
-export function fileUpload(fd: FormData, params: anyObj = {}): ApiPromise {
+export function fileUpload(fd: FormData, params: anyObj = {}, forceLocal = false): ApiPromise {
     let errorMsg = ''
     const file = fd.get('file') as UploadRawFile
     const siteConfig = useSiteConfig()
@@ -55,7 +57,7 @@ export function fileUpload(fd: FormData, params: anyObj = {}): ApiPromise {
         })
     }
 
-    if (uploadExpandState() == 'enable') {
+    if (!forceLocal && uploadExpandState() == 'enable') {
         return uploadExpand(fd, params)
     }
 
@@ -102,6 +104,44 @@ export function getArea(values: number[]) {
         method: 'GET',
         params: params,
     })
+}
+
+/**
+ * 发送短信
+ */
+export function sendSms(mobile: string, templateCode: string) {
+    return createAxios(
+        {
+            url: apiSendSms,
+            method: 'POST',
+            data: {
+                mobile: mobile,
+                template_code: templateCode,
+            },
+        },
+        {
+            showSuccessMessage: true,
+        }
+    ) as ApiPromise
+}
+
+/**
+ * 发送邮件
+ */
+export function sendEms(email: string, event: string) {
+    return createAxios(
+        {
+            url: apiSendEms,
+            method: 'POST',
+            data: {
+                email: email,
+                event: event,
+            },
+        },
+        {
+            showSuccessMessage: true,
+        }
+    ) as ApiPromise
 }
 
 /*

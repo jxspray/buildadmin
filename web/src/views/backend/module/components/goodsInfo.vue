@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-dialog v-model="state.dialog.goodsInfo" custom-class="goods-info-dialog" :title="t('module.detailed information')" width="60%">
+        <el-dialog v-model="state.dialog.goodsInfo" class="goods-info-dialog" :title="t('module.detailed information')" width="60%">
             <el-scrollbar v-loading="state.loading.goodsInfo" :key="state.goodsInfo.uid" :height="500">
                 <div class="goods-info">
                     <div class="goods-images">
@@ -44,7 +44,15 @@
                         <div class="basic-item">
                             <div class="basic-item-title">{{ t('module.Developer Homepage') }}</div>
                             <div class="basic-item-content">
-                                <a v-if="state.goodsInfo.author_url" :href="state.goodsInfo.author_url">{{ t('module.Click to access') }}</a>
+                                <el-link
+                                    type="primary"
+                                    class="developer-homepage"
+                                    v-if="state.goodsInfo.author_url"
+                                    target="_blank"
+                                    :href="state.goodsInfo.author_url"
+                                >
+                                    {{ t('module.Click to access') }}
+                                </el-link>
                                 <span v-else>-</span>
                             </div>
                         </div>
@@ -435,6 +443,9 @@ const onUpdate = (uid: string, order: number) => {
     }
     .el-carousel__item:nth-child(2n) {
         background-color: #99a9bf;
+    }
+    .developer-homepage {
+        font-size: var(--el-font-size-small);
     }
 }
 .basic-button-item {
