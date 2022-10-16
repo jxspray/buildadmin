@@ -5,6 +5,7 @@
         :title="t('terminal.Terminal') + ' - ' + terminal.state.packageManager"
         custom-class="ba-terminal-dialog"
         :append-to-body="true"
+        :close-on-click-modal="false"
     >
         <el-timeline v-if="terminal.state.taskList.length">
             <el-timeline-item
