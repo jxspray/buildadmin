@@ -101,7 +101,6 @@ export default {
     'Site name': '站点名称',
     'Site configuration': '站点配置',
     'The entered database was not found!': '输入的数据库没有找到!',
-    'The password needs to be between 6 and 32 bits': '密码需要在6~32位之间',
     'Duplicate passwords do not match': '重复密码不匹配',
     'Command execution failed': '命令执行失败',
     Installing: '正在安装...',

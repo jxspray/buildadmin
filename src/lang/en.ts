@@ -102,7 +102,6 @@ export default {
     'Site name': 'Site Name',
     'Site configuration': 'Site Configuration',
     'The entered database was not found!': 'The entered database was not found!',
-    'The password needs to be between 6 and 32 bits': 'The password needs to be between 6 and 32 bits',
     'Duplicate passwords do not match': 'Duplicate passwords mismatch',
     'Command execution failed': 'Command execution failed',
     Installing: 'Installing',
