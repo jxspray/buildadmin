@@ -262,7 +262,7 @@ const validation = {
     },
     adminpassword: function (rule: any, field: { value: string; label: string }, callback: any) {
         if (!/^[a-zA-Z0-9_]{6,32}$/.test(field.value)) {
-            return callback(new Error(t('Composed of letters, numbers and underscores, (6-32 bits)')))
+            return callback(new Error(t('Please enter the correct password')))
         }
         return callback()
     },

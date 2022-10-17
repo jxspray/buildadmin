@@ -122,7 +122,7 @@ export default {
     'Abnormal problem, please contact the website administrator!': '异常问题，请联系网站管理员！',
     "You're disconnected!": '您断网了！',
     Required: '必填',
-    'Composed of letters, numbers and underscores, (6-32 bits)': '由字母、数字、下划线组成，(6-32位)',
+    'Please enter the correct password': '密码要求6到32位，不能包含 & < > " \'',
     'It is composed of letters, numbers and underscores, starting with letters (3-15 digits)': '由字母、数字、下划线组成，以字母开头(3-15位)',
     'It is recommended to delete the root directory / public / install folder; This page is only visible on your device.':
         '建议删除: 根目录/public/install 文件夹；本页仅在您的设备上可见。',

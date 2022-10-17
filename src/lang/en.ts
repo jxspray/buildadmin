@@ -124,7 +124,7 @@ export default {
     'Abnormal problem, please contact the website administrator!': 'Abnormal problem, please contact the website administrator!',
     "You're disconnected!": "You're disconnected!",
     Required: 'Required',
-    'Composed of letters, numbers and underscores, (6-32 bits)': 'Composed of letters, numbers and underscores, (6-32 bits)',
+    'Please enter the correct password': 'The password requires 6 to 32 bits and cannot contain & < > " \'',
     'It is composed of letters, numbers and underscores, starting with letters (3-15 digits)':
         'Composed of letters, numbers and underscores, start with letters (3-15 digits)',
     'It is recommended to delete the root directory / public / install folder; This page is only visible on your device.':
