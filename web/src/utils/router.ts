@@ -95,7 +95,6 @@ export const handleAdminRoute = (routes: any) => {
     addRouteAll(viewsComponent, routes, adminBaseRoute.name as string)
     const menuAdminBaseRoute = '/' + (adminBaseRoute.name as string) + '/'
     const menuRule = handleMenuRule(routes, menuAdminBaseRoute, menuAdminBaseRoute)
-
     // 更新stores中的路由菜单数据
     const navTabs = useNavTabs()
     navTabs.setTabsViewRoutes(menuRule)
@@ -170,6 +169,9 @@ export const addRouteAll = (viewsComponent: Record<string, { [key: string]: any 
     for (const idx in routes) {
         if (routes[idx].extend == 'add_menu_only') {
             continue
+        }
+        if (routes[idx].type == 'menu' && routes[idx].menu_type == 'tab' && !viewsComponent[routes[idx].component] && /^cms\/content/.test(routes[idx].name)) {
+            routes[idx].component = "/src/views/backend/cms/content/loading.vue"
         }
         if (
             routes[idx].type == 'menu' &&
