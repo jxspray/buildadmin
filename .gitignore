@@ -1,21 +1,15 @@
 /nbproject
 /runtime/*
 /install
-/vendor
-/modules
 node_modules
 dist
 dist-ssr
 /public/*.lock
-/public/index.html
-/public/assets
 /public/storage/*
 .DS_Store
 composer.lock
 pnpm-lock.yaml
-package-lock.json
 yarn.lock
-/.env
 
 # Log files
 *.log
@@ -32,7 +26,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
-!/web/.vscode
 
 # Other
 *.css.map

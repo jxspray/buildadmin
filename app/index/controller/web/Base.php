@@ -3,21 +3,17 @@ declare (strict_types = 1);
 
 namespace app\index\controller\web;
 
-use app\index\logic\CmsLogic;
-use app\index\controller\Action;
-use think\App;
-
-class Base extends Action
+class Base extends \app\index\controller\Action
 {
     protected $terminal;
     protected $categorys;
 
-    public function __construct(App $app)
+    public function __construct(\think\App $app)
     {
         parent::__construct($app);
         // 设置终端
         $this->settingTerminal();
-        $this->categorys = CmsLogic::$catalogList;
+        $this->categorys = \app\index\logics\CmsLogic::$catalogList;
     }
 
     public function catalog($catid = '', $module = ''){

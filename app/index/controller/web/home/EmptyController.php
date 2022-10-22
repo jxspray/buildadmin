@@ -2,7 +2,7 @@
 
 namespace app\index\controller\web\home;
 
-use app\index\logic\CmsLogic;
+use app\index\logics\CmsLogic;
 use app\index\controller\Action;
 use app\index\controller\web\Base;
 use think\App;

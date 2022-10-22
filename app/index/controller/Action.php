@@ -8,23 +8,19 @@
 namespace app\index\controller;
 
 use app\BaseController;
-use app\common\logic\CmsLogic;
-use think\App;
-use think\View;
 
-class Action extends BaseController
+class Action extends \app\BaseController
 {
     private static $verityModule = ['index', 'urlRule'];
     private static $verityAction = ['index', 'catalog', 'info'];
-    private $basePath = "app\\index\\controller\\web";
     protected $app, $module, $action;
 
     protected $view;
 
-    public function __construct(App $app)
+    public function __construct(\think\App $app)
     {
         parent::__construct($app);
-        $this->view = new View($app);
+        $this->view = new \think\View($app);
 
         $this->app = input("app", 'home');
         $this->module = input("module", 'index');
@@ -35,7 +31,7 @@ class Action extends BaseController
 
         static $initState = false;
         if ($initState === false) {
-            \app\common\logic\CmsLogic::init();
+            \app\index\logics\CmsLogic::init();
             $initState = true;
         }
     }
@@ -46,11 +42,11 @@ class Action extends BaseController
      */
     public function index()
     {
-        $namespace = "{$this->basePath}\\{$this->app}\\" . ucfirst($this->module);
+        $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->app}\\" . ucfirst($this->module);
         $action = $this->action;
         /* 如果控制不存在 */
         if (!class_exists($namespace)) {
-            $namespace = "{$this->basePath}\\controller\\{$this->app}\\EmptyController";
+            $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->app}\\EmptyController";
             $action = "_empty";
             if (!method_exists($namespace, $action)) abort(404);
         }
@@ -75,7 +71,7 @@ class Action extends BaseController
 
     public function fetch($value)
     {
-        $template = app()->getBasePath() . "/web/view/{$this->app}/$value.html";
+        $template = app()->getBasePath() . "/view/web/{$this->app}/$value.html";
         try {
             return $this->view->fetch($template);
         } catch (\Exception $e) {

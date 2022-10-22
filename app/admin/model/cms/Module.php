@@ -61,22 +61,23 @@ class Module extends Model
         /* 检查数据库是否存在 */
         if (!Db::query("SHOW TABLES LIKE '$table'")) {
             list($sql, $fdata) = $model->createField($model['id'], new SqlField($table), $model['type']);
-//            Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
+            Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
 //            (new Field())->saveAll($fdata);
         } else return false;
     }
 
     public static function onBeforeDelete(Model $model)
     {
-        $name = strtolower($model->name);
+        $name = strtolower($model['name']);
         if (empty($name)) return false;
-        $prefix = env('database.prefix', 'build_') . "cms";
-        $table = $prefix . "_" . $name;
+        $prefix = env('database.prefix', 'build_');
+        $tableName = "cms_$name";
+        $table = $prefix . "_" . $tableName;
 
         /* 检查数据库是否存在 */
         if (!Db::query("SHOW TABLES LIKE '$table'")) {
-            list($sql, $fdata) = $model->createField(new SqlField($table), $model->type);
-            $sql = "CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model->title}'";
+            list($sql, $fdata) = $model->createField($model['id'], new SqlField($table), $model['type']);
+            $sql = "CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'";
             if (Db::query($sql) && (new Field())->saveAll($fdata)) return true;
             else return false;
         } else return false;

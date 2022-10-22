@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { ref, provide, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import baTableClass from '/@/utils/baTable'
 import { defaultOptButtons } from '/@/components/table'
 import { baTableApi } from '/@/api/common'
@@ -30,7 +31,26 @@ import TableHeader from '/@/components/table/header/index.vue'
 
 const { t } = useI18n()
 const tableRef = ref()
-const optButtons = defaultOptButtons(["weigh-sort","edit","delete"])
+const router = useRouter()
+let optButtons: OptButton[] = [
+    {
+        render: 'tipButton',
+        name: 'fields',
+        title: '字段管理',
+        text: '字段管理',
+        type: 'primary',
+        icon: '',
+        class: 'table-row-info',
+        disabledTip: false,
+        click: (row: TableRow) => {
+            router.push({ path: '/admin/cms/fields', query: { id: row[baTable.table.pk!] } })
+        },
+    }
+]
+
+
+
+optButtons = optButtons.concat(defaultOptButtons(["weigh-sort","edit","delete"]))
 const baTable = new baTableClass(
     new baTableApi('/admin/cms.module/'),
     {

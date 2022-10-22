@@ -15,6 +15,7 @@ class Content extends Backend
      * @var \app\admin\model\cms\(.*)
      */
     protected $model = null;
+    protected $cont = self::class;
 
     protected $quickSearchField = ['id'];
 
@@ -22,19 +23,26 @@ class Content extends Backend
 
     protected $preExcludeFields = [''];
 
+
     public function initialize()
     {
         $route = $this->request->get('route');
         if ($route && $module = \app\admin\model\cms\Module::where('path', $route)->find()) {
             $name = ucfirst($module->name);
-            $controllerClass = "\app\admin\controller\cms\content\{$name}";
+            /* 检查控制器是否存在 */
+            $controllerClass = "\app\admin\controller\cms\contents\\$name";
             if (class_exists($controllerClass)) {
-
-                parent::initialize();
+                $this->cont = new $controllerClass;
+                $this->cont::initialize();
             }
-            $modelClass = "\app\admin\model\cms\content\{$name}";
-            $this->model = new $modelClass();
-        }
+            /* 检查模型是否存在 */
+            $modelClass = "\app\admin\model\cms\contents\\$name";
+            if (class_exists($modelClass)) {
+                $this->model = new $modelClass;
+            } else {
+                $this->model = new \app\admin\model\cms\Content($module->name);
+            }
+        } else abort(405);
     }
 
 }
