@@ -53,4 +53,8 @@ class Fields extends Backend
         ]);
     }
 
+    public function add()
+    {
+        dump($this->request->post());
+    }
 }

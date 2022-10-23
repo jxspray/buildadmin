@@ -26,6 +26,9 @@
                     :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules"
                 >
+                <!-- 字段属性 -->
+                <CustomField />
+
                 <FormItem :label="t('cms.field.field')" type="string" v-model="baTable.form.items!.field" prop="field" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.field') }) }" />
                 <FormItem :label="t('cms.field.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.name') }) }" />
                 <FormItem :label="t('cms.field.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.field.status 0'), 1: t('cms.field.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.field.status') }) }" />
@@ -49,6 +52,7 @@ import { useI18n } from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
+import CustomField from './customField.vue'
 
 
 const formRef = ref<InstanceType<typeof ElForm>>()
