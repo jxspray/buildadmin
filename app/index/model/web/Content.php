@@ -8,7 +8,7 @@ class Content extends Model
 {
     public function __construct($name = '', array $data = [])
     {
-        $this->name = $name;
+        if (!empty($name)) $this->name = $name;
         parent::__construct($data);
     }
 

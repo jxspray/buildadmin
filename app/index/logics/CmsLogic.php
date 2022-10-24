@@ -9,6 +9,7 @@ use think\facade\Cache;
  * Created by JOVO.
  *
  * CMS static logic class
+ * @property array module
  *
  * @Class CmsLogic
  * @namespace app\index\logics
@@ -32,7 +33,12 @@ class CmsLogic
 
     public static $cmsCache = [];
 
-    const ALLOW_TYPE = ['catalog', 'rule'];
+    const ALLOW_TYPE = ['module', 'catalog', 'rule'];
+
+    /**
+     * @var self
+     */
+    private static $instance = false;
 
     public static function init()
     {
@@ -40,6 +46,11 @@ class CmsLogic
             if (self::cmsCache($value, self::CACHE_HAS)) self::$cmsCache[$value] = self::cmsCache($value);
             else self::forceUpdate($value);
         }
+    }
+
+    public static function getInstance(){
+        if (self::$instance === false) self::$instance = new self();
+        return self::$instance;
     }
 
     public static function cmsCache($name, $type = self::CACHE_GET)
@@ -54,7 +65,7 @@ class CmsLogic
                 return Cache::has($name);
             case self::CACHE_SET:
                 Cache::set($name, $data);
-                break;
+                return true;
             case self::CACHE_GET:
             default:
                 return Cache::get($name);
@@ -71,7 +82,13 @@ class CmsLogic
             $name = ucfirst($item);
             $method = "update{$name}";
             if (method_exists(self::class, $method)) self::$method(true);
-            else {
+            else if ($name == 'Module') {
+                $namespace = "\\app\\index\\model\\web\\$name";;
+                if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
+                $instance = new $namespace();
+                $data = $instance->getColumnAll();
+                self::cmsCache([$item, $data]);
+            } else {
                 $namespace = "\\app\\index\\model\\web\\contents\\$name";
                 if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
                 $instance = new $namespace();
@@ -117,5 +134,11 @@ class CmsLogic
         }
     }
 
-
+    public function __get($name)
+    {
+        if (in_array($name, self::ALLOW_TYPE)) {
+            if (!self::cmsCache($name, self::CACHE_HAS)) self::forceUpdate($name);
+            return self::cmsCache($name);
+        } else abort('error', "变量{$name}不存在");
+    }
 }

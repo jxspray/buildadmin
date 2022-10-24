@@ -2,6 +2,9 @@
 
 namespace app\admin\model\cms;
 
+use app\index\logics\CmsLogic;
+use ba\cms\SqlField;
+use think\facade\Db;
 use think\Model;
 
 /**
@@ -19,10 +22,47 @@ class Fields extends Model
     protected $createTime = false;
     protected $updateTime = false;
 
+    protected $json = ['setup'];
 
-
-    public function getSetupAttr($value, $row)
+    public static function onAfterInsert(self $model): void
     {
-        return !$value ? '' : $value;
+        $moduleInfo = Module::get($model['moduleid']);
+        $name = strtolower($moduleInfo['name']);
+        $field = strtolower($model['field']);
+        if (empty($name)) return;
+        $prefix = env('database.prefix', 'ba_');
+        $tableName = "cms_$name";
+        $table = $prefix . "_" . $tableName;
+
+        /* 检查数据库是否存在 */
+        if (!Db::query("DESC `$table` `$field`")) {
+            list($sql, $fdata) = (new SqlField($table, 'ADD'))->$model['type']($field, $model['setup']);
+            Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
+//            (new Field())->saveAll($fdata);
+        }
+    }
+
+    public static function onAfterUpdate(self $model): void
+    {
+        $cmsLogic = CmsLogic::getInstance();
+        $module = $cmsLogic->module;
+        $moduleInfo = $module[$model['moduleid']];
+        $name = strtolower($moduleInfo['name']);
+        $field = strtolower($model['field']);
+        if (empty($name)) return;
+        $prefix = env('database.prefix', 'ba_');
+        $tableName = "cms_$name";
+        $table = $prefix . $tableName;
+
+        /* 检查数据库是否存在 */
+        if (!Db::query("DESC `$table` `$field`")) {
+            list($sql, $fdata) = (new SqlField($table, 'ADD'))->$model['type']($field, $model['setup']);
+            var_dump($sql);
+//            Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
+//            (new Field())->saveAll($fdata);
+        } else {
+            list($sql, $fdata) = (new SqlField($table, 'CHANGE'))->$model['type']($field, $model['setup']);
+            var_dump($sql);
+        }
     }
 }
