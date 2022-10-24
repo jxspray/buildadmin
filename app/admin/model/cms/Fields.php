@@ -44,17 +44,12 @@ class Fields extends Model
 
     public static function onAfterUpdate(self $model): void
     {
+        $model = $model->getData();
         $module = CmsLogic::getInstance()->module;
         $moduleInfo = $module[$model['moduleid']];
-        $name = strtolower($moduleInfo['name']);
-        $field = strtolower($model['field']);
-        if (empty($name)) return;
-        $prefix = env('database.prefix', 'ba_');
-        $tableName = "cms_$name";
-        $table = $prefix . $tableName;
-
-
-        list($sql, $fdata) = SqlField::getInstance($table)->$model['type']($model);
+        if (empty($moduleInfo['name'])) return;
+        $type = $model['type'];
+        list($sql, $fdata) = SqlField::getInstance($moduleInfo['name'])->$type($model);
         var_dump($sql);
     }
 

@@ -47,7 +47,8 @@ const setSetup = (type: string) => {
             }
         }
     }
-    form.setup = setup
+    console.log(setup);
+    baTable.form.items!.setup = form.setup = setup
 }
 setSetup(baTable.form.items!.type)
 
@@ -56,6 +57,7 @@ watch(() => baTable.form.items!.type, (newVal) => {
 })
 
 watch(form.setup, (newVal) => {
+    console.log(newVal);
     baTable.form.items!.setup = newVal
 })
 

@@ -2,7 +2,9 @@
 
 namespace ba\cms;
 
+use app\admin\model\cms\Fields;
 use think\facade\Db;
+use think\Model;
 
 class SqlField
 {
@@ -27,8 +29,16 @@ class SqlField
      */
     private static $instance = false;
 
-    public static function getInstance($table){
-        if (self::$instance === false) self::$instance = new self($table);
+    public static function getInstance($name){
+        static $oldName = '';
+        if (self::$instance === false || $oldName != $name) {
+            $name = strtolower($name);
+            $prefix = env('database.prefix', 'ba_');
+            $tableName = "cms_$name";
+            $table = $prefix . $tableName;
+            self::$instance = new self($table);
+            $oldName = $name;
+        }
         return self::$instance;
     }
 
@@ -77,10 +87,8 @@ class SqlField
         ], $data))];
     }
 
-    public function title($res){
+    public function title(array $res){
         extract($res);
-        $setup = json_decode($res, true);
-        var_dump($setup);
         return [$this->_varchar($field, $setup, $remark), $setup];
     }
 
@@ -205,7 +213,7 @@ class SqlField
         else $default = "NOT NULL DEFAULT '$default'";
         if (!empty($remark)) $remark = "COMMENT '$remark'";
 
-        return "{$this->getHead()} `$field` VARCHAR( $maxlength ) $default $remark";
+        return "{$this->getHead($field)} `$field` VARCHAR( $maxlength ) $default $remark";
     }
 
     private function _smallint($field, $args = [], $remark = ''): string
