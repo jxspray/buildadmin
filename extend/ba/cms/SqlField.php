@@ -2,6 +2,8 @@
 
 namespace ba\cms;
 
+use think\facade\Db;
+
 class SqlField
 {
     /**
@@ -15,10 +17,19 @@ class SqlField
      */
     protected $do;
 
-    public function __construct($table, $do = '')
+    public function __construct($table)
     {
         $this->table = $table;
-        $this->do = $do;
+    }
+
+    /**
+     * @var self
+     */
+    private static $instance = false;
+
+    public static function getInstance($table){
+        if (self::$instance === false) self::$instance = new self($table);
+        return self::$instance;
     }
 
     private function handleData($field, $data)
@@ -46,11 +57,10 @@ class SqlField
         return $setup;
     }
 
-    public function getHead(): string
+    public function getHead($field): string
     {
-        if (in_array($this->do, ['ADD', 'CHANGE'])) {
-            return "ALTER TABLE `{$this->table}` {$this->do}";
-        } else return '';
+        $this->do = Db::query("DESC `{$this->table}` `$field`") ? "CHANGE" : "ADD";
+        return "ALTER TABLE `{$this->table}` {$this->do}";
     }
 
     /*```````````````````````````````````````````` 模型字段操作Begin ``````````````````````````````````````````````*/
@@ -67,18 +77,11 @@ class SqlField
         ], $data))];
     }
 
-    public function title($field, $args = []): array
-    {
-        $data = [];
-        extract($args);
-        $default = $default ?? 0;
-        $remark = $remark ?? '标题';
-        return [$this->_varchar($field, ['maxlength' => 120, 'default' => $default], $remark), $this->handleData($field, array_merge([
-            'listorder' => 1,
-            'type' => __FUNCTION__,
-            'name' => $remark,
-            'required' => 1
-        ], $data))];
+    public function title($res){
+        extract($res);
+        $setup = json_decode($res, true);
+        var_dump($setup);
+        return [$this->_varchar($field, $setup, $remark), $setup];
     }
 
     public function text($field, $args = []): array

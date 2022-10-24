@@ -44,8 +44,7 @@ class Fields extends Model
 
     public static function onAfterUpdate(self $model): void
     {
-        $cmsLogic = CmsLogic::getInstance();
-        $module = $cmsLogic->module;
+        $module = CmsLogic::getInstance()->module;
         $moduleInfo = $module[$model['moduleid']];
         $name = strtolower($moduleInfo['name']);
         $field = strtolower($model['field']);
@@ -54,15 +53,9 @@ class Fields extends Model
         $tableName = "cms_$name";
         $table = $prefix . $tableName;
 
-        /* 检查数据库是否存在 */
-        if (!Db::query("DESC `$table` `$field`")) {
-            list($sql, $fdata) = (new SqlField($table, 'ADD'))->$model['type']($field, $model['setup']);
-            var_dump($sql);
-//            Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
-//            (new Field())->saveAll($fdata);
-        } else {
-            list($sql, $fdata) = (new SqlField($table, 'CHANGE'))->$model['type']($field, $model['setup']);
-            var_dump($sql);
-        }
+
+        list($sql, $fdata) = SqlField::getInstance($table)->$model['type']($model);
+        var_dump($sql);
     }
+
 }
