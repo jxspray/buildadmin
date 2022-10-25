@@ -52,14 +52,4 @@ class Fields extends Backend
             'remark' => get_route_remark(),
         ]);
     }
-
-    public function add()
-    {
-        dump($this->request->post());
-    }
-
-//    public function edit()
-//    {
-//        dump($this->request->post());
-//    }
 }

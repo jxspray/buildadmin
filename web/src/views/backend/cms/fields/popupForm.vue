@@ -31,6 +31,8 @@
 
                 <FormItem :label="t('cms.field.field')" type="string" v-model="baTable.form.items!.field" prop="field" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.field') }) }" />
                 <FormItem :label="t('cms.field.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.name') }) }" />
+                <FormItem :label="t('cms.field.comment')" type="string" v-model="baTable.form.items!.comment" prop="comment" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.comment') }) }" />
+                <FormItem :label="t('cms.field.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.field.remark') }) }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" />
                 <FormItem :label="t('cms.field.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.field.status 0'), 1: t('cms.field.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.field.status') }) }" />
                 </el-form>
             </div>

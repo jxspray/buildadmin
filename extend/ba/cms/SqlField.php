@@ -19,8 +19,15 @@ class SqlField
      */
     protected $do;
 
-    public function __construct($table)
+    /**
+     * 模式：CREATE=创建模式
+     * @var string $pattern
+     */
+    protected $pattern;
+
+    public function __construct($table, $pattern = null)
     {
+        $this->pattern = $pattern;
         $this->table = $table;
     }
 
@@ -40,6 +47,20 @@ class SqlField
             $oldName = $name;
         }
         return self::$instance;
+    }
+
+    /**
+     * 获取sql和setup
+     * @param $res
+     * @return bool|array
+     */
+    public function getTypeResult($data, $originData = null)
+    {
+        if (method_exists($this, $data['type'])) {
+            list($sql, $setup) = $this->{$data['type']}($data);
+            return ["ALTER TABLE `{$this->table}` {$this->getHead($data['field'], $originData['field']??'')} $sql", $setup];
+        }
+        return false;
     }
 
     private function handleData($field, $data)
@@ -67,10 +88,17 @@ class SqlField
         return $setup;
     }
 
-    public function getHead($field): string
+    public function getHead($field, $originField = ''): string
     {
-        $this->do = Db::query("DESC `{$this->table}` `$field`") ? "CHANGE" : "ADD";
-        return "ALTER TABLE `{$this->table}` {$this->do}";
+        if (!empty($originField)) {
+            $do = Db::query("DESC `{$this->table}` `$originField`") ? (($originField != $field) ? "CHANGE" : "MODIFY") : "ADD";
+            /* 如果数据表原字段不存在，检查新字段是否存在 */
+            if ($do == "ADD" && Db::query("DESC `{$this->table}` `$field`")) abort(405, "字段已存在");
+            if ($do == "CHANGE") $field = "`$originField` `$field`";
+        } else {
+            $do = Db::query("DESC `{$this->table}` `$field`") ? "CHANGE COLUMN" : "ADD";
+        }
+        return "$do COLUMN $field";
     }
 
     /*```````````````````````````````````````````` 模型字段操作Begin ``````````````````````````````````````````````*/
@@ -87,21 +115,16 @@ class SqlField
         ], $data))];
     }
 
-    public function title(array $res){
+    public function title(array $res): array
+    {
         extract($res);
-        return [$this->_varchar($field, $setup, $remark), $setup];
+        return [$this->_varchar($field, $setup, $comment??''), $setup];
     }
 
-    public function text($field, $args = []): array
+    public function text(array $res): array
     {
-        $data = [];
-        extract($args);
-        $default = $default ?? 0;
-        $remark = $remark ?? '文本';
-        return [$this->_varchar($field, ['maxlength' => 120, 'default' => $default], $remark), $this->handleData($field, array_merge([
-            'type' => __FUNCTION__,
-            'name' => $remark,
-        ], $data))];
+        extract($res);
+        return [$this->_varchar($field, $setup, $comment??''), $setup];
     }
 
     public function textarea($field, $args = []): array
@@ -202,18 +225,30 @@ class SqlField
         ], $data))];
     }
 
+    private function getLength($type, $length): int
+    {
+        $length = (int) $length;
+        switch ($type) {
+            case 'int':
+                if ($length <= 0) $length = 255;
+                else if ($length > 65535) $length = 65535;
+                break;
+        }
+        return $length;
+    }
 
     /*```````````````````````````````````````````` 数据库操作Begin ``````````````````````````````````````````````*/
-    private function _varchar($field, $args = [], $remark = ''): string
+    private function _varchar($field, &$args = [], $comment = ''): string
     {
+        if ($res = sql_inject($args) !== true) abort(405, $res);
         $default = NULL;
-        $maxlength = 255;
+        $args['maxlength'] = $this->getLength('int', $args['maxlength']);
         extract($args);
         if ($default === NULL) $default = "DEFAULT NULL";
         else $default = "NOT NULL DEFAULT '$default'";
-        if (!empty($remark)) $remark = "COMMENT '$remark'";
+        if (!empty($comment)) $comment = "COMMENT '$comment'";
 
-        return "{$this->getHead($field)} `$field` VARCHAR( $maxlength ) $default $remark";
+        return "VARCHAR( $maxlength ) $default $comment";
     }
 
     private function _smallint($field, $args = [], $remark = ''): string

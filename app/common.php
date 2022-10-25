@@ -402,3 +402,30 @@ if (!function_exists('file_unit_to_byte')) {
         return (int)($matches[1] * pow(1024, $typeDict[strtolower($matches[2])] ?? 0));
     }
 }
+
+if (!function_exists('sql_check_inject')) {
+
+    /**
+     * sql注入检查
+     * @param $val
+     * @return string
+     */
+    function sql_inject($val)
+    {
+        //过滤参数
+        static $arr = false;
+        if ($arr === false) $arr = explode('|', 'UPDATEXML|UPDATE|WHERE|EXEC|INSERT|SELECT|DELETE|COUNT|CHR|MID|MASTER|TRUNCATE|DECLARE|BIND|DROP|CREATE| EXP |EXP%| OR |XOR| LIKE |NOTLIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|CONTACT|EXTRACTVALUE|LOAD_FILE|INFORMATION_SCHEMA|outfile|%20|into|union');
+        if (is_string($val)) {
+            foreach ($arr as $a) {
+                //过滤sql关键字
+                if (stripos($val, $a) !== false) return '存在非法字符';
+            }
+        } elseif (is_array($val)) {
+            foreach ($val as $k => $v) {
+                if ($res = sql_inject($v) !== true) return $res;
+//                if ($res = sql_inject($k) !== true) return $res;
+            }
+        } else return "参数类型错误";
+        return true;
+    }
+}

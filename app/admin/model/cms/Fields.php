@@ -26,31 +26,28 @@ class Fields extends Model
 
     public static function onAfterInsert(self $model): void
     {
-        $moduleInfo = Module::get($model['moduleid']);
-        $name = strtolower($moduleInfo['name']);
-        $field = strtolower($model['field']);
-        if (empty($name)) return;
-        $prefix = env('database.prefix', 'ba_');
-        $tableName = "cms_$name";
-        $table = $prefix . "_" . $tableName;
-
-        /* 检查数据库是否存在 */
-        if (!Db::query("DESC `$table` `$field`")) {
-            list($sql, $fdata) = (new SqlField($table, 'ADD'))->$model['type']($field, $model['setup']);
-            Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
-//            (new Field())->saveAll($fdata);
-        }
+        $model->executeField($model->getData());
     }
 
     public static function onAfterUpdate(self $model): void
     {
-        $model = $model->getData();
-        $module = CmsLogic::getInstance()->module;
-        $moduleInfo = $module[$model['moduleid']];
-        if (empty($moduleInfo['name'])) return;
-        $type = $model['type'];
-        list($sql, $fdata) = SqlField::getInstance($moduleInfo['name'])->$type($model);
-        var_dump($sql);
+        $data = $model->getData();
+        $originData = $model->getOriginData();
+        if ($data['field'] != $originData['field'] || $data['setup'] != $originData['setup'] || $data['comment'] != $originData['comment']) {
+            $model->executeField($data, $originData);
+        }
     }
 
+    public function executeField($data, $originData = null){
+        $module = CmsLogic::getInstance()->module;
+        $moduleInfo = $module[$data['moduleid']];
+        if (empty($moduleInfo['name'])) return;
+        list($sql) = SqlField::getInstance($moduleInfo['name'])->getTypeResult($data, $originData);
+        if ($sql) Db::execute($sql);
+    }
+
+    public function getOriginData()
+    {
+        return json_decode(json_encode($this->getOrigin()), true);
+    }
 }
