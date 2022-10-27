@@ -1,4 +1,5 @@
 export default {
+    "id": "catid",
     "pid": "上级栏目",
     "num": "栏目标识,区分多语言",
     "title": "名称",

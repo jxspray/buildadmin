@@ -26,7 +26,17 @@
                     :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules"
                 >
-                <FormItem :label="t('cms.catalog.pid')" type="number" prop="pid" v-model.number="baTable.form.items!.pid" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.pid') }) }" />
+                <FormItem
+                    type="remoteSelect"
+                    :label="t('cms.catalog.pid')"
+                    v-model="baTable.form.items!.pid"
+                    :placeholder="t('cms.catalog.pid')"
+                    :input-attr="{
+                        params: { isTree: true },
+                        field: 'title',
+                        'remote-url': '/admin/cms.catalog/index',
+                    }"
+                />
                 <FormItem :label="t('cms.catalog.num')" type="number" prop="num" v-model.number="baTable.form.items!.num" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.num') }) }" />
                 <FormItem :label="t('cms.catalog.title')" type="string" v-model="baTable.form.items!.title" prop="title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.title') }) }" />
                 <FormItem :label="t('cms.catalog.description')" type="string" v-model="baTable.form.items!.description" prop="description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.description') }) }" />

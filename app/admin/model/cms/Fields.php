@@ -33,9 +33,22 @@ class Fields extends Model
     {
         $data = $model->getData();
         $originData = $model->getOriginData();
-        if ($data['field'] != $originData['field'] || $data['setup'] != $originData['setup'] || $data['comment'] != $originData['comment']) {
-            $model->executeField($data, $originData);
+        if ($model->updateFieldCheck(['field', 'setup', 'comment'], $data, $originData)) $model->executeField($data, $originData);
+    }
+
+    /**
+     * 检查更新时字段值是否改变
+     * @param $fields
+     * @param $data
+     * @param $originData
+     * @return bool
+     */
+    public function updateFieldCheck($fields, $data, $originData): bool
+    {
+        foreach ($fields as $field) {
+            if ($data[$field] != $originData[$field]) return true;
         }
+        return false;
     }
 
     public function executeField($data, $originData = null){
