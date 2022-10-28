@@ -4,14 +4,13 @@
 
         <!-- 表格顶部菜单 -->
         <TableHeader
-            :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
+            :buttons="['refresh', 'add', 'edit', 'delete', 'unfold', 'quickSearch', 'columnDisplay']"
             :quick-search-placeholder="t('quick Search Placeholder', { fields: t('cms.catalog.quick Search Fields') })"
-            @action="baTable.onTableHeaderAction"
         />
 
         <!-- 表格 -->
         <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
-        <Table ref="tableRef" @action="baTable.onTableAction" />
+        <Table ref="tableRef" :pagination="false" />
 
         <!-- 表单 -->
         <PopupForm />
@@ -34,7 +33,7 @@ const optButtons = defaultOptButtons(["weigh-sort","edit","delete"])
 const baTable = new baTableClass(
     new baTableApi('/admin/cms.catalog/'),
     {
-        pk: 'id',
+        expandAll: true,
         column: [
             { type: 'selection', align: 'center', operator: false },
             { label: t('cms.catalog.id'), prop: 'id', align: 'center', width: 100, sortable: 'custom', operator: 'RANGE' },
@@ -42,11 +41,12 @@ const baTable = new baTableClass(
             { label: t('cms.catalog.seo_url'), prop: 'seo_url', align: 'center' },
             { label: t('operate'), align: 'center', width: 140, render: 'buttons', buttons: optButtons, operator: false },
         ],
-        dblClickNotEditColumn: [undefined, ],
-        defaultOrder: { prop: 'weigh', order: 'desc' },
+        dblClickNotEditColumn: [undefined, 'status'],
+        // defaultOrder: { prop: 'weigh', order: 'desc' },
+        dragSortLimitField: 'pid',
     },
     {
-        defaultItems: {"links_type":"0","blank":"0","show":"1","status":"1"},
+        defaultItems: {"pic":"0", "weigh":"0", "links_type":"0","blank":"0","show":"1","status":"1"},
     }
 )
 

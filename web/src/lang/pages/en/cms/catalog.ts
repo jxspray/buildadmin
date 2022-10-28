@@ -4,6 +4,7 @@ export default {
     "num": "num",
     "title": "title",
     "description": "description",
+    "default_catalog": "default_catalog",
     "template_list": "template_list",
     "template_info": "template_info",
     "seo_url": "seo_url",

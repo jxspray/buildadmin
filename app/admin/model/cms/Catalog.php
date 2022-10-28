@@ -3,6 +3,7 @@
 namespace app\admin\model\cms;
 
 use think\Model;
+use think\model\concern\SoftDelete;
 
 /**
  * Catalog
@@ -10,15 +11,19 @@ use think\Model;
  */
 class Catalog extends Model
 {
+    use SoftDelete;
     // 表名
     protected $name = 'cms_catalog';
 
     // 自动写入时间戳字段
-    protected $autoWriteTimestamp = false;
+    protected $autoWriteTimestamp = 'int';
 
-    protected $createTime = false;
-    protected $updateTime = false;
+    protected $createTime = 'createtime';
+    protected $updateTime = 'updatetime';
+    protected $deleteTime = "deletetime";
+    protected $defaultSoftDelete = null;
 
+    protected $json = [];
 
     protected static function onAfterInsert($model)
     {
