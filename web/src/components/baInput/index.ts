@@ -128,7 +128,7 @@ export interface InputAttr {
     'with-credentials'?: boolean
     'show-file-list'?: boolean
     drag?: boolean
-    accept?: boolean
+    accept?: string
     'list-type'?: string
     'auto-upload'?: boolean
     limit?: number
@@ -160,4 +160,5 @@ export interface InputAttr {
     onFocus?: Function
     onCalendarChange?: Function
     onPanelChange?: Function
+    [key: string]: any
 }

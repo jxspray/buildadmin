@@ -6,6 +6,7 @@ import Icon from '/@/components/icon/index.vue'
 import { useNavTabs } from '/@/stores/navTabs'
 import { ElForm } from 'element-plus'
 import { useSiteConfig } from '../stores/siteConfig'
+import { useTitle } from '@vueuse/core'
 import { i18n } from '../lang'
 import { getUrl } from './axios'
 
@@ -26,7 +27,10 @@ export function registerIcons(app: App) {
     }
 }
 
-/* 加载网络css文件 */
+/**
+ * 加载网络css文件
+ * @param url css资源url
+ */
 export function loadCss(url: string): void {
     const link = document.createElement('link')
     link.rel = 'stylesheet'
@@ -35,7 +39,10 @@ export function loadCss(url: string): void {
     document.getElementsByTagName('head')[0].appendChild(link)
 }
 
-/* 加载网络js文件 */
+/**
+ * 加载网络js文件
+ * @param url js资源url
+ */
 export function loadJs(url: string): void {
     const link = document.createElement('script')
     link.src = url
@@ -43,7 +50,7 @@ export function loadJs(url: string): void {
 }
 
 /**
- * 设置浏览器标题
+ * 根据路由 meta.title 设置浏览器标题
  */
 export function setTitleFromRoute() {
     if (typeof router.currentRoute.value.meta.title != 'string') {
@@ -56,12 +63,20 @@ export function setTitleFromRoute() {
         } else {
             webTitle = i18n.global.t(router.currentRoute.value.meta.title as string)
         }
-        document.title = `${webTitle}`
+        const title = useTitle()
+        const siteConfig = useSiteConfig()
+        title.value = `${webTitle}${siteConfig.site_name ? ' - ' + siteConfig.site_name : ''}`
     })
 }
 
-export function setTitle(title: string) {
-    document.title = `${title}`
+/**
+ * 设置浏览器标题-只能在路由加载完成后调用
+ * @param webTitle 新的标题
+ */
+export function setTitle(webTitle: string) {
+    const title = useTitle()
+    const siteConfig = useSiteConfig()
+    title.value = `${webTitle}${siteConfig.site_name ? ' - ' + siteConfig.site_name : ''}`
 }
 
 /**
@@ -109,7 +124,7 @@ export const getArrayKey = (arr: any, pk: string, value: string): any => {
  */
 export const onResetForm = (formEl: InstanceType<typeof ElForm> | undefined) => {
     if (!formEl) return
-    formEl.resetFields()
+    formEl.resetFields && formEl.resetFields()
 }
 
 /**
@@ -184,24 +199,35 @@ export const fullUrl = (relativeUrl: string, domain = '') => {
     return domain + relativeUrl
 }
 
+/**
+ * 文件类型效验，主要用于云存储
+ * 服务端并不能单纯此函数来限制文件上传
+ * @param {string} fileName 文件名
+ * @param {string} fileType 文件mimetype，不一定存在
+ */
 export const checkFileMimetype = (fileName: string, fileType: string) => {
-    if (!fileName || !fileType) return false
+    if (!fileName) return false
     const siteConfig = useSiteConfig()
     const mimetype = siteConfig.upload.mimetype.toLowerCase().split(',')
-    const fileTypeTemp = fileType.toLowerCase().split('/')
+
     const fileSuffix = fileName.substring(fileName.lastIndexOf('.') + 1)
-    if (
-        siteConfig.upload.mimetype === '*' ||
-        mimetype.includes(fileSuffix) ||
-        mimetype.includes('.' + fileSuffix) ||
-        mimetype.includes(fileType) ||
-        mimetype.includes(fileTypeTemp[0] + '/*')
-    ) {
+    if (siteConfig.upload.mimetype === '*' || mimetype.includes(fileSuffix) || mimetype.includes('.' + fileSuffix)) {
         return true
+    }
+    if (fileType) {
+        const fileTypeTemp = fileType.toLowerCase().split('/')
+        if (mimetype.includes(fileTypeTemp[0] + '/*') || mimetype.includes(fileType)) {
+            return true
+        }
     }
     return false
 }
 
+/**
+ * 获取一组资源的完整地址
+ * @param relativeUrls 资源相对地址
+ * @param domain 指定域名
+ */
 export const arrayFullUrl = (relativeUrls: string | string[], domain = '') => {
     if (typeof relativeUrls === 'string') {
         relativeUrls = relativeUrls == '' ? [] : relativeUrls.split(',')
@@ -212,6 +238,9 @@ export const arrayFullUrl = (relativeUrls: string | string[], domain = '') => {
     return relativeUrls
 }
 
+/**
+ * 根据当前时间生成问候语
+ */
 export const getGreet = () => {
     const now = new Date()
     const hour = now.getHours()

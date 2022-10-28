@@ -12,13 +12,15 @@ import { useRoute } from 'vue-router'
 import Default from '/@/layouts/backend/container/default.vue'
 import Classic from '/@/layouts/backend/container/classic.vue'
 import Streamline from '/@/layouts/backend/container/streamline.vue'
-import { onMounted, onBeforeMount, onUnmounted } from 'vue'
+import { onMounted, onBeforeMount } from 'vue'
 import { Session } from '/@/utils/storage'
 import { index } from '/@/api/backend'
 import { handleAdminRoute, getMenuPaths, getFirstRoute, routePush } from '/@/utils/router'
 import router from '/@/router/index'
 import { adminBaseRoute } from '/@/router/static'
+import { useEventListener } from '@vueuse/core'
 import { BEFORE_RESIZE_LAYOUT } from '/@/stores/constant/cacheKey'
+import { isEmpty } from 'lodash-es'
 
 const terminal = useTerminal()
 const navTabs = useNavTabs()
@@ -32,15 +34,11 @@ onMounted(() => {
 
     init()
     onSetNavTabsMinWidth()
-    window.addEventListener('resize', onSetNavTabsMinWidth)
+    useEventListener(window, 'resize', onSetNavTabsMinWidth)
 })
 onBeforeMount(() => {
     onAdaptiveLayout()
-    window.addEventListener('resize', onAdaptiveLayout)
-})
-onUnmounted(() => {
-    window.removeEventListener('resize', onAdaptiveLayout)
-    window.removeEventListener('resize', onSetNavTabsMinWidth)
+    useEventListener(window, 'resize', onAdaptiveLayout)
 })
 
 const init = () => {
@@ -55,11 +53,19 @@ const init = () => {
 
             // 预跳转到上次路径
             if (route.query && route.query.url && route.query.url != adminBaseRoute.path) {
+                let query = JSON.parse(route.query.query as string)
+                query = !isEmpty(query) ? query : {}
+                const lastRouter = router.getRoutes().find((value) => {
+                    return value.path == route.query.url
+                })
+                if (lastRouter) {
+                    routePush({ path: lastRouter.path, query: query })
+                    return
+                }
                 // 检查路径是否有权限
                 let menuPaths = getMenuPaths(navTabs.state.tabsViewRoutes)
                 if (menuPaths.indexOf(route.query.url as string) !== -1) {
-                    let query = JSON.parse(route.query.query as string)
-                    routePush({ path: route.query.url as string, query: Object.keys(query).length ? query : {} })
+                    routePush({ path: route.query.url as string, query: query })
                     return
                 }
             }

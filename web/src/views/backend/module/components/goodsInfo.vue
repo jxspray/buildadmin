@@ -204,7 +204,34 @@
                         </div>
                     </div>
                 </div>
-                <div class="goods-detail" v-html="state.goodsInfo.detail_editor"></div>
+                <div class="goods-detail ba-markdown" v-html="state.goodsInfo.detail_editor"></div>
+                <div class="goods-version">
+                    <h1>{{ t('module.Update Log') }}</h1>
+                    <div class="version-timeline">
+                        <el-timeline>
+                            <el-timeline-item
+                                v-for="(version, idx) in state.goodsInfo.version"
+                                :key="idx"
+                                :timestamp="timeFormat(version.createtime)"
+                                placement="top"
+                                :color="idx == 0 ? 'var(--el-color-success)' : ''"
+                            >
+                                <el-card class="version-card" shadow="hover">
+                                    <template #header>
+                                        <div class="version-card-header">
+                                            <h2>{{ version.title }}</h2>
+                                            <span class="version-short-describe">{{ version.short_describe }}</span>
+                                        </div>
+                                    </template>
+                                    <div
+                                        class="version-detail ba-markdown"
+                                        v-html="version.describe ? version.describe : t('module.No detailed update log')"
+                                    ></div>
+                                </el-card>
+                            </el-timeline-item>
+                        </el-timeline>
+                    </div>
+                </div>
             </el-scrollbar>
         </el-dialog>
         <Buy />
@@ -217,7 +244,7 @@ import { showInfo, currency, onBuy, onInstall, onDisable, onEnable, onRefreshTab
 import { postUninstall, getInstallState, postUpdate } from '/@/api/backend/module'
 import { moduleInstallState } from '../types'
 import { timeFormat } from '/@/components/table'
-import { isEmpty } from 'lodash'
+import { isEmpty } from 'lodash-es'
 import { ElMessageBox } from 'element-plus'
 import { useBaAccount } from '/@/stores/baAccount'
 import { useI18n } from 'vue-i18n'
@@ -328,6 +355,7 @@ const onUpdate = (uid: string, order: number) => {
 }
 .goods-info {
     display: flex;
+    position: relative;
     .goods-images {
         max-width: 41%;
         width: 300px;
@@ -375,6 +403,8 @@ const onUpdate = (uid: string, order: number) => {
         width: 20%;
         border-left: 1px solid var(--ba-bg-color);
         padding: 10px;
+        position: absolute;
+        right: 0;
         .developer-header {
             display: flex;
             align-items: center;
@@ -408,9 +438,9 @@ const onUpdate = (uid: string, order: number) => {
         .recommend-goods-item {
             display: flex;
             align-items: center;
-            margin: 8px 0;
+            margin: 4px 0;
             cursor: pointer;
-            padding: 2px;
+            padding: 6px;
             &:hover {
                 background-color: var(--ba-bg-color);
             }
@@ -450,6 +480,33 @@ const onUpdate = (uid: string, order: number) => {
 }
 .basic-button-item {
     --el-loading-spinner-size: 22px;
+}
+.goods-detail {
+    width: 80%;
+}
+.goods-version {
+    width: 80%;
+    h1 {
+        margin: 1.4em 0 0.8em;
+        font-weight: 700;
+        font-size: var(--el-font-size-large);
+        text-transform: uppercase;
+        color: var(--el-color-primary);
+    }
+    .version-timeline {
+        padding-left: 2px;
+        :deep(.el-card__body) {
+            padding: 10px 20px 20px 20px;
+        }
+    }
+    .version-card {
+        border: 1px solid var(--el-color-info-light-9);
+    }
+    .version-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 }
 /* 商品详情弹窗-s */
 @media screen and (max-width: 1440px) {

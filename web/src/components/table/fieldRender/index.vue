@@ -14,7 +14,12 @@
 
     <!-- image -->
     <div v-if="field.render == 'image' && fieldValue" class="ba-render-image">
-        <el-image :preview-teleported="true" :preview-src-list="[fullUrl(fieldValue)]" :src="fullUrl(fieldValue)"></el-image>
+        <el-image
+            :hide-on-click-modal="true"
+            :preview-teleported="true"
+            :preview-src-list="[fullUrl(fieldValue)]"
+            :src="fullUrl(fieldValue)"
+        ></el-image>
     </div>
 
     <!-- images -->
@@ -28,6 +33,7 @@
                 :preview-src-list="arrayFullUrl(fieldValue)"
                 class="images-item"
                 :src="fullUrl(item)"
+                :hide-on-click-modal="true"
             ></el-image>
         </template>
     </div>
@@ -120,11 +126,22 @@
                         :class="btn.class"
                         class="table-operate"
                         :type="btn.type"
+                        :disabled="btn.disabled && btn.disabled(row, field)"
+                        v-bind="btn.attr"
                     >
                         <Icon :name="btn.icon" />
                         <div v-if="btn.text" class="table-operate-text">{{ btn.text }}</div>
                     </el-button>
-                    <el-button v-else v-blur @click="onButtonClick(btn)" :class="btn.class" class="table-operate" :type="btn.type">
+                    <el-button
+                        v-else
+                        v-blur
+                        @click="onButtonClick(btn)"
+                        :class="btn.class"
+                        class="table-operate"
+                        :type="btn.type"
+                        :disabled="btn.disabled && btn.disabled(row, field)"
+                        v-bind="btn.attr"
+                    >
                         <Icon :name="btn.icon" />
                         <div v-if="btn.text" class="table-operate-text">{{ btn.text }}</div>
                     </el-button>
@@ -140,11 +157,21 @@
                                     :class="btn.class"
                                     class="table-operate"
                                     :type="btn.type"
+                                    :disabled="btn.disabled && btn.disabled(row, field)"
+                                    v-bind="btn.attr"
                                 >
                                     <Icon :name="btn.icon" />
                                     <div v-if="btn.text" class="table-operate-text">{{ btn.text }}</div>
                                 </el-button>
-                                <el-button v-else v-blur :class="btn.class" class="table-operate" :type="btn.type">
+                                <el-button
+                                    v-else
+                                    v-blur
+                                    :class="btn.class"
+                                    class="table-operate"
+                                    :type="btn.type"
+                                    :disabled="btn.disabled && btn.disabled(row, field)"
+                                    v-bind="btn.attr"
+                                >
                                     <Icon :name="btn.icon" />
                                     <div v-if="btn.text" class="table-operate-text">{{ btn.text }}</div>
                                 </el-button>
@@ -164,11 +191,21 @@
                         :class="btn.class"
                         class="table-operate move-button"
                         :type="btn.type"
+                        :disabled="btn.disabled && btn.disabled(row, field)"
+                        v-bind="btn.attr"
                     >
                         <Icon :name="btn.icon" />
                         <div v-if="btn.text" class="table-operate-text">{{ btn.text }}</div>
                     </el-button>
-                    <el-button v-else v-blur :class="btn.class" class="table-operate move-button" :type="btn.type">
+                    <el-button
+                        v-else
+                        v-blur
+                        :class="btn.class"
+                        class="table-operate move-button"
+                        :type="btn.type"
+                        :disabled="btn.disabled && btn.disabled(row, field)"
+                        v-bind="btn.attr"
+                    >
                         <Icon :name="btn.icon" />
                         <div v-if="btn.text" class="table-operate-text">{{ btn.text }}</div>
                     </el-button>
