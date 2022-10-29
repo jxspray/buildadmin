@@ -73,7 +73,7 @@ const baTable = new baTableClass(
         defaultOrder: { prop: 'weigh', order: 'desc' },
     },
     {
-        defaultItems: {"type":"1","issystem":"1","issearch":"1","status":"1"},
+        defaultItems: {"create_template":"empty","type":"1","issystem":"1","issearch":"1","status":"1"},
     }
 )
 

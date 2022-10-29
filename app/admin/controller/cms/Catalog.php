@@ -73,7 +73,7 @@ class Catalog extends Backend
         ]);
     }
 
-    protected function getCatalogList($where = [])
+    protected function getCatalogList($where = []): array
     {
         if ($this->keyword) {
             $keyword = explode(' ', $this->keyword);
@@ -86,6 +86,6 @@ class Catalog extends Backend
         return $this->model
             ->where($where)
             ->order('weigh desc,id asc')
-            ->select();
+            ->select()->toArray();
     }
 }

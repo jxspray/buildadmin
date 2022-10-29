@@ -35,6 +35,15 @@
                 <FormItem :label="t('cms.module.listfields')" type="string" v-model="baTable.form.items!.listfields" prop="listfields" :input-attr="{ placeholder: t('Please input field', { field: t('cms.module.listfields') }) }" />
                 <FormItem :label="t('cms.module.weigh')" type="number" prop="weigh" v-model.number="baTable.form.items!.weigh" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.module.weigh') }) }" />
                 <FormItem :label="t('cms.module.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 1: t('cms.module.status 1'), 0: t('cms.module.status 0') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.module.status') }) }" />
+
+                
+                <FormItem v-if="baTable.form.operate == 'add'"
+                    :label="t('cms.module.template')" 
+                    type="radio" v-model="baTable.form.items!.template" 
+                    prop="template" 
+                    :data="{ content: { 'empty': t('cms.module.empty template'), 'article': t('cms.module.article template') } }" 
+                    :input-attr="{ placeholder: t('Please select field', { field: t('cms.module.template') }) }" 
+                />
                 </el-form>
             </div>
         </el-scrollbar>

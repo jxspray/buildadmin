@@ -28,7 +28,7 @@
                     :rules="rules"
                 >
                 <el-tabs :tab-position="tabPosition" class="catalog-tabs">
-                    <el-tab-pane label="base">
+                    <el-tab-pane :label="t('cms.catalog.base')">
                         <FormItem
                             type="remoteSelect"
                             :label="t('cms.catalog.moduleid')"
@@ -43,7 +43,7 @@
                             type="remoteSelect"
                             :label="t('cms.catalog.pid')"
                             v-model="baTable.form.items!.pid"
-                            :placeholder="t('cms.catalog.default_catalog')"
+                            :placeholder="t('Click Select')"
                             :input-attr="{
                                 params: { isTree: true },
                                 field: 'title',
@@ -59,13 +59,13 @@
                         <!-- <FormItem :label="t('cms.catalog.blank')" type="radio" v-model="baTable.form.items!.blank" prop="blank" :data="{ content: { 0: t('cms.catalog.blank 0'), 1: t('cms.catalog.blank 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.blank') }) }" />
                         <FormItem :label="t('cms.catalog.show')" type="radio" v-model="baTable.form.items!.show" prop="show" :data="{ content: { 0: t('cms.catalog.show 0'), 1: t('cms.catalog.show 1'), 2: t('cms.catalog.show 2'), 3: t('cms.catalog.show 3') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.show') }) }" /> -->
                     </el-tab-pane>
-                    <el-tab-pane label="seo">
+                    <el-tab-pane :label="t('cms.catalog.seo')">
                         <FormItem :label="t('cms.catalog.seo_title')" type="string" v-model="baTable.form.items!.seo_title" prop="seo_title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_title') }) }" />
                         <FormItem :label="t('cms.catalog.seo_keywords')" type="string" v-model="baTable.form.items!.seo_keywords" prop="seo_keywords" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_keywords') }) }" />
                         <FormItem :label="t('cms.catalog.seo_description')" type="textarea" v-model="baTable.form.items!.seo_description" prop="seo_description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_description') }) }" />
                     </el-tab-pane>
-                    <el-tab-pane label="more">
-                        more
+                    <el-tab-pane :label="t('cms.catalog.extend')">
+                        extend
                     </el-tab-pane>
                 </el-tabs>
                 </el-form>
@@ -89,6 +89,13 @@ import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
+
+const options = [
+  {
+    id: '0',
+    title: '一级栏目',
+  }
+]
 
 const tabPosition = ref('left')
 const formRef = ref<InstanceType<typeof ElForm>>()

@@ -32,6 +32,7 @@
         <entry key="view" value="think\View" />
       </map>
     </option>
+    <option name="tpVersion" value="6.1" />
     <option name="useDatabase">
       <set>
         <option value="test" />

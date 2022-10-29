@@ -26,41 +26,39 @@ class Fields extends Model
 
     public static function onAfterInsert(self $model): void
     {
-        $model->executeField($model->getData());
+        if (($res = $model->getSqlFieldInstance()->getTypeResult($model->getData())) && !empty($res[0]??'')) {
+            $model->getSqlFieldInstance()->execute($res[0]);
+        }
     }
 
     public static function onAfterUpdate(self $model): void
     {
-        $data = $model->getData();
-        $originData = $model->getOriginData();
-        if ($model->updateFieldCheck(['field', 'setup', 'comment'], $data, $originData)) $model->executeField($data, $originData);
-    }
-
-    /**
-     * 检查更新时字段值是否改变
-     * @param $fields
-     * @param $data
-     * @param $originData
-     * @return bool
-     */
-    public function updateFieldCheck($fields, $data, $originData): bool
-    {
-        foreach ($fields as $field) {
-            if ($data[$field] != $originData[$field]) return true;
+        if (($res = $model->getSqlFieldInstance()->getTypeResult($model->getData(), $model->getOriginData(), ['field', 'setup', 'comment'])) && !empty($res[0]??'')) {
+            $model->getSqlFieldInstance()->execute($res[0]);
         }
-        return false;
     }
 
-    public function executeField($data, $originData = null){
-        $module = CmsLogic::getInstance()->module;
-        $moduleInfo = $module[$data['moduleid']];
-        if (empty($moduleInfo['name'])) return;
-        list($sql) = SqlField::getInstance($moduleInfo['name'])->getTypeResult($data, $originData);
-        if ($sql) Db::execute($sql);
+    public static function onAfterDelete(self $model): void
+    {
+        $model->getSqlFieldInstance()->deleteField($model['field']);
+    }
+
+    public function getSqlFieldInstance(){
+        static $instance = null;
+        if ($instance === null) {
+            $data = $this->getOriginData();
+            $module = CmsLogic::getInstance()->module;
+            $moduleInfo = $module[$data['moduleid']];
+            if (empty($moduleInfo['name'])) abort(502, "模型不存在");
+            $instance = SqlField::getInstance($moduleInfo['name']);
+        }
+        return $instance;
     }
 
     public function getOriginData()
     {
-        return json_decode(json_encode($this->getOrigin()), true);
+        static $data = null;
+        if ($data === null) $data = json_decode(json_encode($this->getOrigin()), true);
+        return $data;
     }
 }

@@ -1,4 +1,7 @@
 export default {
+    "template": "create_template",
+    "empty template": "empty template",
+    "article template": "article template",
     "id": "id",
     "name": "name",
     "title": "title",

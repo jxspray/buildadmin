@@ -1,6 +1,22 @@
 <template>
     <FormItem :label="t('cms.fields.type')" type="select" v-model="baTable.form.items!.type" prop="type" :data="{ content: form.customType }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.fields.type') }) }" />
-    <template v-if="baTable.form.items!.type == 'title' || baTable.form.items!.type == 'text'">
+    <template v-if="baTable.form.items!.type == 'text'">
+        <FormItem
+            :label="t('cms.fields.maxlength')"
+            type="number"
+            prop="maxlength"
+            v-model.number="form.setup!.maxlength"
+            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.fields.maxlength') }) }"
+        />
+        <FormItem
+            :label="t('cms.fields.default')"
+            type="string"
+            prop="default"
+            v-model="form.setup!.default"
+            :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.default') }) }"
+        />
+    </template>
+    <template v-if="baTable.form.items!.type == 'radio'">
         <FormItem
             :label="t('cms.fields.maxlength')"
             type="number"
@@ -32,12 +48,8 @@ const form: {
     customDefalut: any|any[]
 } = reactive({
     setup: baTable.form.items!.setup,
-    customType: { title: '标题', text: "单行文本" },
+    customType: { text: "单行文本" },
     customDefalut: {
-        title: {
-            maxlength: 20,
-            default: ''
-        },
         text: {
             maxlength: 20,
             default: ''

@@ -49,16 +49,108 @@ class SqlField
         return self::$instance;
     }
 
+    public function createTable($moduleRow){
+        $this->createField($moduleRow);
+        return Db::query("CREATE TABLE `$this->table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$remark}'");
+    }
+
+    protected function createField(array $moduleRow): array
+    {
+        $data = [];
+        $fieldList = [];
+        $sqlList = [];
+        switch ($moduleRow['template']) {
+            case 'article':
+                $data[] = $sqlField->catid('catid', ['remark' => '栏目']);
+                $data[] = $sqlField->title('title', ['remark' => '标题']);
+                $data[] = $sqlField->text('keywords', ['remark' => '关键词']);
+                $data[] = $sqlField->textarea('description', ['remark' => '描述']);
+                $data[] = $sqlField->radio('status', ['default' => 0, 'listorder' => 99, 'remark' => '状态']);
+                break;
+            case 'empty':
+                $data[] = $sqlField->radio([
+                    'setup' => ['options' => ['0' => '否', '1' => '是'], 'default' => 1],
+                    'comment' => '状态',
+                    'weigh' => 99
+                ]);
+                break;
+        }
+        $sqlList[] = "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID'";
+        $sqlList[] = "`weigh` int(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序'";
+        $sqlList[] = "`lang` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '语言ID'";
+
+        foreach ($data as $datum) {
+            $sqlList[] = $datum[0];
+            $datum[1]['moduleid'] = $moduleid;
+            $fieldList[] = $datum[1];
+        }
+
+        $sqlList[] = "PRIMARY KEY (`id`)";
+        return [implode(", ", $sqlList), $fieldList];
+    }
+
+    /**
+     * @param $field
+     * @return bool|object
+     */
+    public function fieldExists($field)
+    {
+        if (empty($field)) return false;
+        return Db::query("DESC `{$this->table}` `$field`");
+    }
+
+    /**
+     * @param $field
+     * @return bool|object
+     */
+    public function tableExists()
+    {
+        return Db::query("SHOW TABLES LIKE '{$this->table}'");
+    }
+
+    public function deleteTable(){
+        Db::execute("DROP TABLE {$this->table}");
+        return true;
+    }
+
+    public function deleteField($field): bool
+    {
+        /* 检查字段是否存在 */
+        if ($this->fieldExists($field)) {
+            $this->execute($this->getHead($field, 'DROP'));
+            return true;
+        }
+        return false;
+    }
+
+    public function execute($sql): bool
+    {
+        Db::execute("ALTER TABLE `{$this->table}` $sql");
+        return true;
+    }
+
     /**
      * 获取sql和setup
-     * @param $res
+     * @param array $data
+     * @param array $originData
+     * @param array $checkChange
      * @return bool|array
      */
-    public function getTypeResult($data, $originData = null)
+    public function getTypeResult(array $data, array $originData = [], array $checkChange = [])
     {
+        if ($checkChange) {
+            $bool = false;
+            foreach ($checkChange as $field) {
+                if ($data[$field] != $originData[$field]) {
+                    $bool = true;
+                    break;
+                }
+            }
+            if ($bool === false) return false;
+        }
         if (method_exists($this, $data['type'])) {
             list($sql, $setup) = $this->{$data['type']}($data);
-            return ["ALTER TABLE `{$this->table}` {$this->getHead($data['field'], $originData['field']??'')} $sql", $setup];
+            return ["{$this->getHead($data['field'], $originData['field']??'')} $sql", $setup];
         }
         return false;
     }
@@ -90,13 +182,17 @@ class SqlField
 
     public function getHead($field, $originField = ''): string
     {
-        if (!empty($originField)) {
-            $do = Db::query("DESC `{$this->table}` `$originField`") ? (($originField != $field) ? "CHANGE" : "MODIFY") : "ADD";
-            /* 如果数据表原字段不存在，检查新字段是否存在 */
-            if ($do == "ADD" && Db::query("DESC `{$this->table}` `$field`")) abort(405, "字段已存在");
-            if ($do == "CHANGE") $field = "`$originField` `$field`";
+        if ($originField == 'DROP') {
+            $do = "DROP";
         } else {
-            $do = Db::query("DESC `{$this->table}` `$field`") ? "CHANGE COLUMN" : "ADD";
+            if (!empty($originField)) {
+                $do = $this->fieldExists($originField) ? (($originField != $field) ? "CHANGE" : "MODIFY") : "ADD";
+                /* 如果数据表原字段不存在，检查新字段是否存在 */
+                if ($do == "ADD" && $this->fieldExists($field)) abort(405, "字段已存在");
+                if ($do == "CHANGE") $field = "`$originField` `$field`";
+            } else {
+                $do = $this->fieldExists($field) ? "CHANGE COLUMN" : "ADD";
+            }
         }
         return "$do COLUMN $field";
     }
@@ -115,16 +211,17 @@ class SqlField
         ], $data))];
     }
 
-    public function title(array $res): array
-    {
-        extract($res);
-        return [$this->_varchar($field, $setup, $comment??''), $setup];
-    }
-
     public function text(array $res): array
     {
         extract($res);
-        return [$this->_varchar($field, $setup, $comment??''), $setup];
+        return [$this->_varchar($setup, $comment??''), $setup];
+    }
+
+    public function radio(array $res): array
+    {
+        extract($res);
+        $setup['options'] = $setup['options'] ?? ['0' => '否', '1' => '是'];
+        return [$this->_enum($setup, $comment ?? ''), $setup];
     }
 
     public function textarea($field, $args = []): array
@@ -185,20 +282,6 @@ class SqlField
         ], $data))];
     }
 
-    public function radio($field, $args = []): array
-    {
-        $data = [];
-        extract($args);
-        $default = $default ?? '';
-        $remark = $remark ?? '多选';
-        $options = $options ?? ['0' => '否', '1' => '是'];
-        return [$this->_enum($field, ['default' => $default, 'options' => array_keys($options)], $remark), $this->handleData($field, array_merge([
-            'type' => __FUNCTION__,
-            'name' => $remark,
-            'setup' => $this->handleSetup('radio', ['options' => $options, 'default' => 1])
-        ], $data))];
-    }
-
     public function image($field, $args = []): array
     {
         $data = [];
@@ -229,7 +312,7 @@ class SqlField
     {
         $length = (int) $length;
         switch ($type) {
-            case 'int':
+            case 'varchar':
                 if ($length <= 0) $length = 255;
                 else if ($length > 65535) $length = 65535;
                 break;
@@ -238,11 +321,11 @@ class SqlField
     }
 
     /*```````````````````````````````````````````` 数据库操作Begin ``````````````````````````````````````````````*/
-    private function _varchar($field, &$args = [], $comment = ''): string
+    private function _varchar(&$args = [], $comment = ''): string
     {
-        if ($res = sql_inject($args) !== true) abort(405, $res);
+        if (($res = sql_inject($args)) !== true) abort(502, $res);
         $default = NULL;
-        $args['maxlength'] = $this->getLength('int', $args['maxlength']);
+        $args['maxlength'] = $this->getLength('varchar', $args['maxlength']);
         extract($args);
         if ($default === NULL) $default = "DEFAULT NULL";
         else $default = "NOT NULL DEFAULT '$default'";
@@ -288,19 +371,19 @@ class SqlField
         return "{$this->getHead()} `$field` TINYINT( $maxlength ) $default $remark";
     }
 
-    private function _enum($field, $args = [], $remark = ''): string
+    private function _enum($args = [], $comment = ''): string
     {
+        if (($res = sql_inject($args)) !== true) abort(405, $res);
+        $default = NULL;
         extract($args);
-        $default = (isset($default) && $default !== '' && in_array($default, $options)) ? $default : 'NULL';
+        $options = array_keys($options);
 
-        if (!empty($remark)) $remark = "COMMENT '$remark'";
+        $default = in_array($default, $options) ? $default : 'NULL';
 
         $str = '';
-        foreach ($options as $option) {
-            if ($str) $str .= ", ";
-            $str .= "'{$option}'";
-        }
-        return "{$this->getHead()} `$field` enum( $str ) DEFAULT '$default' $remark";
+        foreach ($options as $option) $str .= $str ? "'$option'" : ", ";
+        if (!empty($comment)) $comment = "COMMENT '$comment'";
+        return "enum( $str ) DEFAULT '$default' $comment";
     }
 
 

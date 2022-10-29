@@ -1,4 +1,7 @@
 export default {
+    "base": "base",
+    "seo": "seo",
+    "extend": "extend",
     "id": "catid",
     "pid": "pid",
     "num": "num",

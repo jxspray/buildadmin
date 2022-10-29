@@ -1,4 +1,7 @@
 export default {
+    "base": "基本设置",
+    "seo": "SEO设置",
+    "extend": "扩展设置",
     "id": "catid",
     "pid": "上级栏目",
     "num": "栏目标识",
