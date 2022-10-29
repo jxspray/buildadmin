@@ -1,6 +1,7 @@
 /nbproject
 /runtime/*
 /install
+/vendor/
 node_modules
 dist
 dist-ssr
