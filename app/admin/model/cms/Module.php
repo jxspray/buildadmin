@@ -25,7 +25,7 @@ class Module extends Model
     protected $createTime = false;
     protected $updateTime = false;
 
-    public static function onBeforeInsert(Model $model)
+    public static function onBeforeInsert(self $model)
     {
         /* 检查数据表是否存在 */
         if (SqlField::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
@@ -56,36 +56,21 @@ class Module extends Model
 
     protected static function onAfterInsert(self $model)
     {
-        list($sqlStr, $fieldList) = $model->createField($model['id'], SqlField::getInstance($model['name']), $model['type']);
-        $sqlFieldInstance = SqlField::getInstance($model['name']);
-        if (!$sqlFieldInstance->tableExists() && $sqlFieldInstance->createTable()) {
-            Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
-        }
-
-        $name = strtolower($model['name']);
-        if (empty($name)) return false;
-        $prefix = env('database.prefix', 'build_');
-        $tableName = "cms_$name";
-        $table = $prefix . "_" . $tableName;
-
-        /* 检查数据表是否存在 */
-        if (!Db::query("SHOW TABLES LIKE '$table'")) {
-            list($sql, $fdata) = $model->createField($model['id'], new SqlField($table), $model['type']);
-            Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
-//            (new Field())->saveAll($fdata);
-        } else return false;
+        $sqlFieldInstance = SqlField::getInstance($model['name'], "CREATE");
+        !$sqlFieldInstance->tableExists() && $sqlFieldInstance->createTable($model->getData());
     }
 
-    public static function onAfterWrite(Model $model): void
+    public static function onAfterWrite(self $model): void
     {
         CmsLogic::forceUpdate('module');
     }
 
-    public static function onBeforeDelete(Model $model): bool
+    public static function onBeforeDelete(self $model): bool
     {
         $sqlFieldInstance = SqlField::getInstance($model['name']);
         /* 检查数据库是否存在 */
-        if (!$sqlFieldInstance->tableExists() || $sqlFieldInstance->deleteTable()) return Menu::delete($model['path'], true);
+        if (!$sqlFieldInstance->tableExists()
+            || ($sqlFieldInstance->deleteTable() && \app\admin\model\cms\Fields::where('moduleid', $model['id'])->delete())) return Menu::delete($model['path'], true);
         else return false;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace ba\cms;
 
@@ -36,7 +37,8 @@ class SqlField
      */
     private static $instance = false;
 
-    public static function getInstance($name){
+    public static function getInstance($name = '', $pattern = null)
+    {
         static $oldName = '';
         if (self::$instance === false || $oldName != $name) {
             $name = strtolower($name);
@@ -46,12 +48,17 @@ class SqlField
             self::$instance = new self($table);
             $oldName = $name;
         }
+        self::$instance->pattern = $pattern;
         return self::$instance;
     }
 
-    public function createTable($moduleRow){
-        $this->createField($moduleRow);
-        return Db::query("CREATE TABLE `$this->table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$remark}'");
+    public function createTable($moduleRow): bool
+    {
+        list($sql, $fieldList) = $this->createField($moduleRow);
+//        $res1 = Db::query("CREATE TABLE `$this->table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'");
+        $res1 = true;
+        $res2 = (new \app\admin\model\cms\Fields)->saveAll($fieldList);
+        return $res1 && $res2;
     }
 
     protected function createField(array $moduleRow): array
@@ -61,14 +68,16 @@ class SqlField
         $sqlList = [];
         switch ($moduleRow['template']) {
             case 'article':
-                $data[] = $sqlField->catid('catid', ['remark' => '栏目']);
-                $data[] = $sqlField->title('title', ['remark' => '标题']);
-                $data[] = $sqlField->text('keywords', ['remark' => '关键词']);
-                $data[] = $sqlField->textarea('description', ['remark' => '描述']);
-                $data[] = $sqlField->radio('status', ['default' => 0, 'listorder' => 99, 'remark' => '状态']);
+                $data[] = $this->catid('catid', ['remark' => '栏目']);
+                $data[] = $this->title('title', ['remark' => '标题']);
+                $data[] = $this->text('keywords', ['remark' => '关键词']);
+                $data[] = $this->textarea('description', ['remark' => '描述']);
+                $data[] = $this->radio('status', ['default' => 0, 'listorder' => 99, 'remark' => '状态']);
                 break;
             case 'empty':
-                $data[] = $sqlField->radio([
+                $data[] = $this->getTypeResult([
+                    'type' => 'radio',
+                    'field' => 'status',
                     'setup' => ['options' => ['0' => '否', '1' => '是'], 'default' => 1],
                     'comment' => '状态',
                     'weigh' => 99
@@ -81,7 +90,7 @@ class SqlField
 
         foreach ($data as $datum) {
             $sqlList[] = $datum[0];
-            $datum[1]['moduleid'] = $moduleid;
+            $datum[1]['moduleid'] = $moduleRow['id'];
             $fieldList[] = $datum[1];
         }
 
@@ -108,7 +117,8 @@ class SqlField
         return Db::query("SHOW TABLES LIKE '{$this->table}'");
     }
 
-    public function deleteTable(){
+    public function deleteTable()
+    {
         Db::execute("DROP TABLE {$this->table}");
         return true;
     }
@@ -150,6 +160,7 @@ class SqlField
         }
         if (method_exists($this, $data['type'])) {
             list($sql, $setup) = $this->{$data['type']}($data);
+//            var_dump("{$this->getHead($data['field'], $originData['field']??'')} $sql");
             return ["{$this->getHead($data['field'], $originData['field']??'')} $sql", $setup];
         }
         return false;
@@ -182,9 +193,9 @@ class SqlField
 
     public function getHead($field, $originField = ''): string
     {
-        if ($originField == 'DROP') {
-            $do = "DROP";
-        } else {
+        if ($this->pattern == 'CREATE') return "`$field`";
+        if ($originField == 'DROP') $do = "DROP";
+        else {
             if (!empty($originField)) {
                 $do = $this->fieldExists($originField) ? (($originField != $field) ? "CHANGE" : "MODIFY") : "ADD";
                 /* 如果数据表原字段不存在，检查新字段是否存在 */
@@ -194,7 +205,7 @@ class SqlField
                 $do = $this->fieldExists($field) ? "CHANGE COLUMN" : "ADD";
             }
         }
-        return "$do COLUMN $field";
+        return "$do COLUMN `$field`";
     }
 
     /*```````````````````````````````````````````` 模型字段操作Begin ``````````````````````````````````````````````*/
@@ -214,7 +225,7 @@ class SqlField
     public function text(array $res): array
     {
         extract($res);
-        return [$this->_varchar($setup, $comment??''), $setup];
+        return [$this->_varchar($setup, $comment ?? ''), $setup];
     }
 
     public function radio(array $res): array
@@ -310,7 +321,7 @@ class SqlField
 
     private function getLength($type, $length): int
     {
-        $length = (int) $length;
+        $length = (int)$length;
         switch ($type) {
             case 'varchar':
                 if ($length <= 0) $length = 255;
@@ -377,11 +388,13 @@ class SqlField
         $default = NULL;
         extract($args);
         $options = array_keys($options);
-
         $default = in_array($default, $options) ? $default : 'NULL';
 
         $str = '';
-        foreach ($options as $option) $str .= $str ? "'$option'" : ", ";
+        foreach ($options as $option) {
+            if ($str) $str .= ", ";
+            $str .= "'$option'";
+        }
         if (!empty($comment)) $comment = "COMMENT '$comment'";
         return "enum( $str ) DEFAULT '$default' $comment";
     }
