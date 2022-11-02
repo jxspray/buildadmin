@@ -62,9 +62,9 @@ const baTable = new baTableClass(
             { label: t('cms.module.title'), prop: 'title', align: 'center' },
             { label: t('cms.module.description'), prop: 'description', align: 'center' },
             { label: t('cms.module.type'), prop: 'type', align: 'center', render: 'tag', replaceValue: { 1: t('cms.module.type 1'), 2: t('cms.module.type 2') } },
-            { label: t('cms.module.issystem'), prop: 'issystem', align: 'center', render: 'tag', replaceValue: { 1: t('cms.module.issystem 1'), 0: t('cms.module.issystem 0') } },
-            { label: t('cms.module.issearch'), prop: 'issearch', align: 'center', render: 'tag', replaceValue: { 1: t('cms.module.issearch 1'), 0: t('cms.module.issearch 0') } },
-            { label: t('cms.module.listfields'), prop: 'listfields', align: 'center' },
+            // { label: t('cms.module.issystem'), prop: 'issystem', align: 'center', render: 'tag', replaceValue: { 1: t('cms.module.issystem 1'), 0: t('cms.module.issystem 0') } },
+            // { label: t('cms.module.issearch'), prop: 'issearch', align: 'center', render: 'tag', replaceValue: { 1: t('cms.module.issearch 1'), 0: t('cms.module.issearch 0') } },
+            // { label: t('cms.module.listfields'), prop: 'listfields', align: 'center' },
             { label: t('cms.module.weigh'), prop: 'weigh', align: 'center', sortable: 'custom', operator: false },
             { label: t('cms.module.status'), prop: 'status', align: 'center', render: 'tag', replaceValue: { 1: t('cms.module.status 1'), 0: t('cms.module.status 0') } },
             { label: t('operate'), align: 'center', width: 140, render: 'buttons', buttons: optButtons, operator: false },
@@ -73,7 +73,7 @@ const baTable = new baTableClass(
         defaultOrder: { prop: 'weigh', order: 'desc' },
     },
     {
-        defaultItems: {"create_template":"empty","type":"1","issystem":"1","issearch":"1","status":"1"},
+        defaultItems: {"template":"empty","type":"1","issystem":"1","issearch":"1","status":"1"},
     }
 )
 
