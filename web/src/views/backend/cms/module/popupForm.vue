@@ -69,6 +69,16 @@ import { buildValidatorData } from '/@/utils/validate'
 
 const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
+console.log(baTable.form.operate)   
+baTable.api.actionUrl.set('createTemplateField', '/admin/cms.module/createTemplateField')
+baTable.after = {
+    onSubmit: function (res: any){
+        if (res.res.code == 1 && res.res.data?.id > 0) {
+            // 执行模板字段创建
+            baTable.api.postData('createTemplateField', { moduleid: res.res.data.id })
+        }
+    }
+}
 
 const { t } = useI18n()
 

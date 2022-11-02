@@ -3,9 +3,7 @@ declare(strict_types=1);
 
 namespace ba\cms;
 
-use app\admin\model\cms\Fields;
 use think\facade\Db;
-use think\Model;
 
 class SqlField
 {
@@ -52,13 +50,25 @@ class SqlField
         return self::$instance;
     }
 
+    /**
+     * @return string
+     */
+    public function getPattern()
+    {
+        return $this->pattern;
+    }
+
     public function createTable($moduleRow): bool
     {
         list($sql, $fieldList) = $this->createField($moduleRow);
-//        $res1 = Db::query("CREATE TABLE `$this->table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'");
-        $res1 = true;
-        $res2 = (new \app\admin\model\cms\Fields)->saveAll($fieldList);
-        return $res1 && $res2;
+
+        $fieldsModel = new \app\admin\model\cms\Fields();
+//        foreach ($fieldList as $item) {
+//            $fieldsModel->save($item);
+//        }
+        $fieldsModel->saveAll($fieldList);
+        Db::query("CREATE TABLE `$this->table` ($sql) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'");
+        return true;
     }
 
     protected function createField(array $moduleRow): array
@@ -75,13 +85,13 @@ class SqlField
                 $data[] = $this->radio('status', ['default' => 0, 'listorder' => 99, 'remark' => '状态']);
                 break;
             case 'empty':
-                $data[] = $this->getTypeResult([
+                $data[] = $this->getTypeResult($this->getFieldDefaultInfo([
+                    'name' => '状态',
                     'type' => 'radio',
                     'field' => 'status',
                     'setup' => ['options' => ['0' => '否', '1' => '是'], 'default' => 1],
-                    'comment' => '状态',
                     'weigh' => 99
-                ]);
+                ]));
                 break;
         }
         $sqlList[] = "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID'";
@@ -96,6 +106,12 @@ class SqlField
 
         $sqlList[] = "PRIMARY KEY (`id`)";
         return [implode(", ", $sqlList), $fieldList];
+    }
+
+    public function getFieldDefaultInfo($data){
+        $data['createtime'] = time();
+        $data['comment'] = $data['remark'] = $data['name'];
+        return $data;
     }
 
     /**
@@ -161,7 +177,9 @@ class SqlField
         if (method_exists($this, $data['type'])) {
             list($sql, $setup) = $this->{$data['type']}($data);
 //            var_dump("{$this->getHead($data['field'], $originData['field']??'')} $sql");
-            return ["{$this->getHead($data['field'], $originData['field']??'')} $sql", $setup];
+            $sql = "{$this->getHead($data['field'], $originData['field']??'')} $sql";
+            $data['setup'] = $setup;
+            return [$sql, $data];
         }
         return false;
     }
@@ -388,7 +406,8 @@ class SqlField
         $default = NULL;
         extract($args);
         $options = array_keys($options);
-        $default = in_array($default, $options) ? $default : 'NULL';
+        if (in_array($default, $options)) $default = "NOT NULL DEFAULT '$default'";
+        else if ($default === NULL) $default = "DEFAULT NULL";
 
         $str = '';
         foreach ($options as $option) {
@@ -396,7 +415,7 @@ class SqlField
             $str .= "'$option'";
         }
         if (!empty($comment)) $comment = "COMMENT '$comment'";
-        return "enum( $str ) DEFAULT '$default' $comment";
+        return "enum( $str ) $default $comment";
     }
 
 

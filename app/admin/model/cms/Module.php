@@ -54,12 +54,6 @@ class Module extends Model
         Menu::create([$menu], 'cms');
     }
 
-    protected static function onAfterInsert(self $model)
-    {
-        $sqlFieldInstance = SqlField::getInstance($model['name'], "CREATE");
-        !$sqlFieldInstance->tableExists() && $sqlFieldInstance->createTable($model->getData());
-    }
-
     public static function onAfterWrite(self $model): void
     {
         CmsLogic::forceUpdate('module');

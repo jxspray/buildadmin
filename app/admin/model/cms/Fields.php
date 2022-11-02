@@ -4,7 +4,6 @@ namespace app\admin\model\cms;
 
 use app\index\logics\CmsLogic;
 use ba\cms\SqlField;
-use think\facade\Db;
 use think\Model;
 
 /**
@@ -19,28 +18,28 @@ class Fields extends Model
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = false;
 
-    protected $createTime = false;
-    protected $updateTime = false;
+    protected $createTime = 'createtime';
+    protected $updateTime = 'updatetime';
 
     protected $json = ['setup'];
 
     public static function onAfterInsert(self $model): void
     {
-        if (($res = $model->getSqlFieldInstance()->getTypeResult($model->getData())) && !empty($res[0]??'')) {
+        if ($model->getSqlFieldInstance()->tableExists() && ($res = $model->getSqlFieldInstance()->getTypeResult($model->getData())) && !empty($res[0]??'')) {
             $model->getSqlFieldInstance()->execute($res[0]);
         }
     }
 
     public static function onAfterUpdate(self $model): void
     {
-        if (($res = $model->getSqlFieldInstance()->getTypeResult($model->getData(), $model->getOriginData(), ['field', 'setup', 'comment'])) && !empty($res[0]??'')) {
+        if ($model->getSqlFieldInstance()->tableExists() && ($res = $model->getSqlFieldInstance()->getTypeResult($model->getData(), $model->getOriginData(), ['field', 'setup', 'comment'])) && !empty($res[0]??'')) {
             $model->getSqlFieldInstance()->execute($res[0]);
         }
     }
 
     public static function onAfterDelete(self $model): void
     {
-        $model->getSqlFieldInstance()->deleteField($model['field']);
+        $model->getSqlFieldInstance()->tableExists() && $model->getSqlFieldInstance()->deleteField($model['field']);
     }
 
     public function getSqlFieldInstance(){
@@ -48,8 +47,8 @@ class Fields extends Model
         if ($instance === null) {
             $data = $this->getOriginData();
             $module = CmsLogic::getInstance()->module;
-            $moduleInfo = $module[$data['moduleid']];
-            if (empty($moduleInfo['name'])) abort(502, "模型不存在");
+            $moduleInfo = $module[$data['moduleid']] ?? [];
+            if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
             $instance = SqlField::getInstance($moduleInfo['name']);
         }
         return $instance;

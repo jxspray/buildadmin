@@ -83,7 +83,7 @@ class CmsLogic
             $method = "update{$name}";
             if (method_exists(self::class, $method)) self::$method(true);
             else if ($name == 'Module') {
-                $namespace = "\\app\\index\\model\\web\\$name";;
+                $namespace = "\\app\\index\\model\\web\\$name";
                 if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
                 $instance = new $namespace();
                 $data = $instance->getColumnAll();
