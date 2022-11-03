@@ -22,6 +22,8 @@ class Fields extends Backend
 
     protected $preExcludeFields = [''];
 
+    protected $withJoinTable = ['module'];
+
     public function initialize()
     {
         parent::initialize();

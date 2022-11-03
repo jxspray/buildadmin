@@ -60,4 +60,9 @@ class Fields extends Model
         if ($data === null) $data = json_decode(json_encode($this->getOrigin()), true);
         return $data;
     }
+
+    public function module()
+    {
+        return $this->belongsTo('module', 'moduleid');
+    }
 }

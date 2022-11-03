@@ -40,8 +40,8 @@ const baTable = new baTableClass(
         pk: 'id',
         column: [
             { type: 'selection', align: 'center', operator: false },
-            { label: t('cms.field.id'), prop: 'id', align: 'center', width: 70, sortable: 'custom', operator: 'RANGE' },
-            { label: t('cms.field.moduleid'), prop: 'moduleid', align: 'center', operator: 'RANGE' },
+            // { label: t('cms.field.id'), prop: 'id', align: 'center', width: 70, sortable: 'custom', operator: 'RANGE' },
+            { label: t('cms.module.title'), prop: 'module.title', align: 'center', operator: 'RANGE' },
             { label: t('cms.field.field'), prop: 'field', align: 'center' },
             { label: t('cms.field.name'), prop: 'name', align: 'center' },
             { label: t('cms.field.type'), prop: 'type', align: 'center' },

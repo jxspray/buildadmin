@@ -1,35 +1,35 @@
 <template>
-    <FormItem :label="t('cms.fields.type')" type="select" v-model="baTable.form.items!.type" prop="type" :data="{ content: form.customType }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.fields.type') }) }" />
+    <FormItem :label="t('cms.field.type')" type="select" v-model="baTable.form.items!.type" prop="type" :data="{ content: form.customType }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.fields.type') }) }" />
     <template v-if="baTable.form.items!.type == 'text'">
         <FormItem
-            :label="t('cms.fields.maxlength')"
+            :label="t('cms.field.maxlength')"
             type="number"
             prop="maxlength"
             v-model.number="form.setup!.maxlength"
-            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.fields.maxlength') }) }"
+            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.field.maxlength') }) }"
         />
         <FormItem
-            :label="t('cms.fields.default')"
+            :label="t('cms.field.default')"
             type="string"
             prop="default"
             v-model="form.setup!.default"
-            :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.default') }) }"
+            :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.default') }) }"
         />
     </template>
     <template v-if="baTable.form.items!.type == 'radio'">
         <FormItem
-            :label="t('cms.fields.maxlength')"
+            :label="t('cms.field.maxlength')"
             type="number"
             prop="maxlength"
             v-model.number="form.setup!.maxlength"
-            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.fields.maxlength') }) }"
+            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.field.maxlength') }) }"
         />
         <FormItem
-            :label="t('cms.fields.default')"
+            :label="t('cms.field.default')"
             type="string"
             prop="default"
             v-model="form.setup!.default"
-            :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.default') }) }"
+            :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.default') }) }"
         />
     </template>
 </template>

@@ -3,7 +3,7 @@ export default {
     "empty template": "空表字段",
     "article template": "常规文章字段",
     "id": "ID",
-    "name": "模型",
+    "name": "模型表",
     "title": "模型名称",
     "description": "模型描述",
     "type": "类型",
