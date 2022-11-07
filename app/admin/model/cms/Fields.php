@@ -16,7 +16,7 @@ class Fields extends Model
     protected $name = 'cms_field';
 
     // 自动写入时间戳字段
-    protected $autoWriteTimestamp = false;
+    protected $autoWriteTimestamp = true;
 
     protected $createTime = 'createtime';
     protected $updateTime = 'updatetime';
@@ -25,6 +25,10 @@ class Fields extends Model
 
     public static function onAfterInsert(self $model): void
     {
+        if ($model->weigh == 0) {
+            $pk = $model->getPk();
+            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
+        }
         if ($model->getSqlFieldInstance()->tableExists() && ($res = $model->getSqlFieldInstance()->getTypeResult($model->getData())) && !empty($res[0]??'')) {
             $model->getSqlFieldInstance()->execute($res[0]);
         }

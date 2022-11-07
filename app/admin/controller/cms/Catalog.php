@@ -4,6 +4,9 @@ namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
 use ba\Tree;
+use think\db\exception\PDOException;
+use think\exception\ValidateException;
+use think\facade\Db;
 
 /**
  * 栏目管理
@@ -87,5 +90,57 @@ class Catalog extends Backend
             ->where($where)
             ->order('weigh desc,id asc')
             ->select()->toArray();
+    }
+
+    public function edit()
+    {
+        $id  = $this->request->param($this->model->getPk());
+        $row = $this->model->withJoin(['catalogExtend'])->find($id);
+        if (!$row) {
+            $this->error(__('Record not found'));
+        }
+
+        $dataLimitAdminIds = $this->getDataLimitAdminIds();
+        if ($dataLimitAdminIds && !in_array($row[$this->dataLimitField], $dataLimitAdminIds)) {
+            $this->error(__('You have no permission'));
+        }
+
+        if ($this->request->isPost()) {
+            $data = $this->request->post();
+            if (!$data) {
+                $this->error(__('Parameter %s can not be empty', ['']));
+            }
+
+            $data   = $this->excludeFields($data);
+            $result = false;
+            Db::startTrans();
+            try {
+                // 模型验证
+                if ($this->modelValidate) {
+                    $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
+                    if (class_exists($validate)) {
+                        $validate = new $validate;
+                        if ($this->modelSceneValidate) $validate->scene('edit');
+                        $validate->check($data);
+                    }
+                }
+                $result = $row->save($data);
+                Db::commit();
+            } catch (ValidateException|PDOException|\Exception $e) {
+                Db::rollback();
+                $this->error($e->getMessage());
+            }
+            if ($result !== false) {
+                $this->success(__('Update successful'));
+            } else {
+                $this->error(__('No rows updated'));
+            }
+
+        }
+
+        $this->success('', [
+            'row' => $row,
+            'fields' => $row->fields
+        ]);
     }
 }

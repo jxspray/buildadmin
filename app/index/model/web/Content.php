@@ -4,7 +4,7 @@ namespace app\index\model\web;
 
 use think\Model;
 
-class Content extends Model
+class Content extends Model implements \app\admin\model\cms\CmsModelInterface
 {
     public function __construct($name = '', array $data = [])
     {
@@ -12,7 +12,8 @@ class Content extends Model
         parent::__construct($data);
     }
 
-    public function getColumnAll() {
-        echo 111;
+    public function getColumnAll(): array
+    {
+        return $this->column("*", 'id');
     }
 }

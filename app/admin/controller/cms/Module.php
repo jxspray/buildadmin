@@ -108,7 +108,7 @@ class Module extends Backend
                 }
                 $result = $row->save($data);
                 Db::commit();
-            } catch (ValidateException|PDOException|Exception $e) {
+            } catch (ValidateException|PDOException|\Exception $e) {
                 Db::rollback();
                 $this->error($e->getMessage());
             }

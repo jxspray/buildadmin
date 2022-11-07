@@ -47,4 +47,12 @@ class Catalog extends Model
     {
         return !$value ? '' : $value;
     }
+
+    public function catalogExtend(){
+        return $this->belongsTo("app\\admin\\model\\cms\\contents\\Page", 'moduleid')->joinType("left");
+    }
+
+    public function fields(){
+        return $this->belongsTo("fields", 'moduleid', 'moduleid')->joinType("left");
+    }
 }

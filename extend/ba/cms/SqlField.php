@@ -311,17 +311,10 @@ class SqlField
         ], $data))];
     }
 
-    public function image($field, $args = []): array
+    public function image(array $res): array
     {
-        $data = [];
-        extract($args);
-        $default = $default ?? '';
-        $remark = $remark ?? '图片';
-        return [$this->_tinyint($field, ['default' => $default], $remark), $this->handleData($field, array_merge([
-            'type' => __FUNCTION__,
-            'name' => $remark,
-            'setup' => ['remak' => $remark, 'upload_maxsize' => '5', 'upload_allowext' => 'jpg,jpeg,gif,png', 'watermark' => '0', 'more' => '0']
-        ], $data))];
+        extract($res);
+        return [$this->_varchar($setup, $comment ?? ''), $setup];
     }
 
     public function editor($field, $args = []): array
@@ -354,7 +347,7 @@ class SqlField
     {
         if (($res = sql_inject($args)) !== true) abort(502, $res);
         $default = NULL;
-        $args['maxlength'] = $this->getLength('varchar', $args['maxlength']);
+        $args['maxlength'] = $this->getLength('varchar', $args['maxlength'] ?? 0);
         extract($args);
         if ($default === NULL) $default = "DEFAULT NULL";
         else $default = "NOT NULL DEFAULT '$default'";

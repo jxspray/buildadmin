@@ -65,7 +65,7 @@
                         <FormItem :label="t('cms.catalog.seo_description')" type="textarea" v-model="baTable.form.items!.seo_description" prop="seo_description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_description') }) }" />
                     </el-tab-pane>
                     <el-tab-pane :label="t('cms.catalog.extend')">
-                        extend
+                        
                     </el-tab-pane>
                 </el-tabs>
                 </el-form>
@@ -90,16 +90,17 @@ import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 
-const options = [
-  {
-    id: '0',
-    title: '一级栏目',
-  }
-]
 
 const tabPosition = ref('left')
 const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
+
+baTable.after = {
+    requestEdit: function (res: any) {
+        let catalogExtend = {};
+        baTable.form.items!.catalogExtend = catalogExtend
+    }
+}
 
 const { t } = useI18n()
 

@@ -25,7 +25,7 @@ class Module extends Model
     protected $createTime = false;
     protected $updateTime = false;
 
-    public static function onBeforeInsert(self $model)
+    public static function onBeforeInsert(self $model): bool
     {
         /* 检查数据表是否存在 */
         if (SqlField::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
@@ -52,6 +52,15 @@ class Module extends Model
             ]
         ];
         Menu::create([$menu], 'cms');
+        return true;
+    }
+
+    public static function onAfterInsert(Model $model): void
+    {
+        if ($model->weigh == 0) {
+            $pk = $model->getPk();
+            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
+        }
     }
 
     public static function onAfterWrite(self $model): void
