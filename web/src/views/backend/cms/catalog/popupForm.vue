@@ -65,7 +65,10 @@
                         <FormItem :label="t('cms.catalog.seo_description')" type="textarea" v-model="baTable.form.items!.seo_description" prop="seo_description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_description') }) }" />
                     </el-tab-pane>
                     <el-tab-pane :label="t('cms.catalog.extend')">
-                        
+                        <template v-for="item in state.fields">
+                            <FormItem v-if="item.type == 'text'" :label="item.name" type="string" v-model="state.catalogExtend[item.field]" :prop="item.field" :input-attr="{ placeholder: t('Please input field', { field: item.name }) }" />
+                            <FormItem v-if="item.type == 'image'" :label="item.name" type="image" v-model="state.catalogExtend[item.field]" />
+                        </template>
                     </el-tab-pane>
                 </el-tabs>
                 </el-form>
@@ -95,10 +98,26 @@ const tabPosition = ref('left')
 const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
 
+const state: {
+    catalogExtend: any,
+    fields: any[]
+} = reactive({
+    catalogExtend: {},
+    fields: []
+})
+
+baTable.before = {
+    onSubmit: function (res: any) {
+        baTable.form.items!.catalogExtend = state.catalogExtend
+    }
+}
 baTable.after = {
     requestEdit: function (res: any) {
-        let catalogExtend = {};
-        baTable.form.items!.catalogExtend = catalogExtend
+        let fields = []
+        for(const key in res.res.data.fields) {
+            fields.push(res.res.data.fields[key])
+        }
+        state.fields = fields
     }
 }
 
