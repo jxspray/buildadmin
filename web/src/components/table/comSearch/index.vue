@@ -6,7 +6,7 @@
                     <template v-for="(item, idx) in baTable.table.column" :key="idx">
                         <template v-if="item.operator !== false">
                             <!-- 时间范围 -->
-                            <el-col v-if="item.render == 'datetime' && (item.operator == 'RANGE' || item.operator == 'NOT RANGE')" :span="12">
+                            <el-col v-if="item.render == 'datetime' && (item.operator == 'RANGE' || item.operator == 'NOT RANGE')" :xs="24" :sm="12">
                                 <div class="com-search-col">
                                     <div class="com-search-col-label w16">{{ item.label }}</div>
                                     <div class="com-search-col-input-range w83">
@@ -15,15 +15,15 @@
                                             v-model="baTable.comSearch.form[item.prop!]"
                                             :default-value="baTable.comSearch.form[item.prop! + '-default'] ? baTable.comSearch.form[item.prop! + '-default']:[new Date(), new Date()]"
                                             :type="item.comSearchRender == 'date' ? 'daterange' : 'datetimerange'"
-                                            range-separator="To"
-                                            start-placeholder="Start date"
-                                            end-placeholder="End date"
+                                            :range-separator="$t('to')"
+                                            :start-placeholder="$t('el.datepicker.startDate')"
+                                            :end-placeholder="$t('el.datepicker.endDate')"
                                             :value-format="item.comSearchRender == 'date' ? 'YYYY-MM-DD' : 'YYYY-MM-DD HH:mm:ss'"
                                         />
                                     </div>
                                 </div>
                             </el-col>
-                            <el-col v-else :span="6">
+                            <el-col v-else :xs="24" :sm="6">
                                 <div class="com-search-col">
                                     <div class="com-search-col-label">{{ item.label }}</div>
                                     <!-- 数字范围 -->
@@ -32,12 +32,14 @@
                                             :placeholder="item.operatorPlaceholder"
                                             type="string"
                                             v-model="baTable.comSearch.form[item.prop! + '-start']"
+                                            :clearable="true"
                                         ></el-input>
                                         <div class="range-separator">{{ $t('to') }}</div>
                                         <el-input
                                             :placeholder="item.operatorPlaceholder"
                                             type="string"
                                             v-model="baTable.comSearch.form[item.prop! + '-end']"
+                                            :clearable="true"
                                         ></el-input>
                                     </div>
                                     <!-- 是否 [NOT] NULL -->
@@ -58,6 +60,7 @@
 
                                         <!-- tag、select -->
                                         <el-select
+                                            class="w100"
                                             :placeholder="item.operatorPlaceholder"
                                             v-else-if="(item.render == 'tag' || item.comSearchRender == 'select') && item.replaceValue"
                                             v-model="baTable.comSearch.form[item.prop!]"
@@ -90,6 +93,7 @@
                                             v-else-if="item.render == 'switch'"
                                             v-model="baTable.comSearch.form[item.prop!]"
                                             :clearable="true"
+                                            class="w100"
                                         >
                                             <template v-if="!isEmpty(item.replaceValue)">
                                                 <el-option
@@ -111,13 +115,14 @@
                                             v-else
                                             type="string"
                                             v-model="baTable.comSearch.form[item.prop!]"
+                                            :clearable="true"
                                         ></el-input>
                                     </div>
                                 </div>
                             </el-col>
                         </template>
                     </template>
-                    <el-col :span="6">
+                    <el-col :xs="24" :sm="6">
                         <div class="com-search-col pl-20">
                             <el-button v-blur @click="onComSearch" type="primary">{{ $t('search') }}</el-button>
                             <el-button @click="onResetForm()">{{ $t('Reset') }}</el-button>

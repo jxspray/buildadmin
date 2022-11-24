@@ -1,6 +1,6 @@
 /* 修复 Chrome 浏览器输入框内选中字符行高异常的bug-s */
 .el-input .el-input__inner {
-    line-height: 29px;
+    line-height: calc(var(--el-input-height, 40px) - 4px);
 }
 /* 修复 Chrome 浏览器输入框内选中字符行高异常的bug-e */
 
@@ -32,10 +32,12 @@
 }
 
 /* dialog滚动条-s */
-.el-overlay-dialog {
+.el-overlay-dialog,
+.ba-scroll-style {
     scrollbar-width: none;
     &::-webkit-scrollbar {
         width: 5px;
+        height: 5px;
     }
     &::-webkit-scrollbar-thumb {
         background: #eaeaea;

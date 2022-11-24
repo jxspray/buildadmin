@@ -5,6 +5,7 @@ import { useBaAccount } from '/@/stores/baAccount'
 const userControllerUrl = '/api/user/'
 const captchaUrl = '/api/common/captcha'
 const moduleControllerUrl = '/admin/module/'
+const storeUrl = '/api/v1.store/'
 
 export function index(params: anyObj = {}) {
     return createAxios({
@@ -17,7 +18,7 @@ export function index(params: anyObj = {}) {
 export function modules(params: anyObj = {}) {
     const siteConfig = useSiteConfig()
     return createAxios({
-        url: siteConfig.api_url + '/api/store/modules',
+        url: siteConfig.api_url + storeUrl + 'modules',
         method: 'get',
         params: params,
     })
@@ -28,7 +29,7 @@ export function info(params: anyObj) {
     const siteConfig = useSiteConfig()
     return createAxios(
         {
-            url: siteConfig.api_url + '/api/store/info',
+            url: siteConfig.api_url + storeUrl + 'info',
             method: 'get',
             params: params,
         },
@@ -69,12 +70,26 @@ export function checkIn(method: 'get' | 'post', params: object = {}): ApiPromise
     ) as ApiPromise
 }
 
+export function getUserInfo(): ApiPromise {
+    const baAccount = useBaAccount()
+    const siteConfig = useSiteConfig()
+    return createAxios(
+        {
+            url: siteConfig.api_url + userControllerUrl + 'info',
+            method: 'get',
+        },
+        {
+            anotherToken: baAccount.getToken('auth'),
+        }
+    ) as ApiPromise
+}
+
 export function createOrder(params: object = {}): ApiPromise {
     const baAccount = useBaAccount()
     const siteConfig = useSiteConfig()
     return createAxios(
         {
-            url: siteConfig.api_url + '/api/store/order',
+            url: siteConfig.api_url + storeUrl + 'order',
             method: 'post',
             params: params,
         },
@@ -89,7 +104,7 @@ export function payOrder(orderId: number, payType: number): ApiPromise {
     const siteConfig = useSiteConfig()
     return createAxios(
         {
-            url: siteConfig.api_url + '/api/store/pay',
+            url: siteConfig.api_url + storeUrl + 'pay',
             method: 'post',
             params: {
                 order_id: orderId,

@@ -17,6 +17,7 @@ export const adminUploadUrl = '/admin/ajax/upload'
 export const adminBuildSuffixSvgUrl = '/admin/ajax/buildSuffixSvg'
 export const adminAreaUrl = '/admin/ajax/area'
 export const getTablePkUrl = '/admin/ajax/getTablePk'
+export const getTableFieldListUrl = '/admin/ajax/getTableFieldList'
 export const terminalUrl = '/admin/Terminal/index'
 export const changeTerminalConfigUrl = '/admin/ajax/changeTerminalConfig'
 export const clearCacheUrl = '/admin/ajax/clearCache'
@@ -216,6 +217,22 @@ export function getTablePk(table: string) {
     })
 }
 
+/**
+ * 获取数据表的字段
+ * @param table 数据表名
+ * @param clean 只要干净的字段注释（只要字段标题）
+ */
+export function getTableFieldList(table: string, clean = true) {
+    return createAxios({
+        url: getTableFieldListUrl,
+        method: 'get',
+        params: {
+            table: table,
+            clean: clean ? 1 : 0,
+        },
+    })
+}
+
 export function refreshToken(): ApiPromise {
     const adminInfo = useAdminInfo()
     const userInfo = useUserInfo()
@@ -267,7 +284,7 @@ export class baTableApi {
             {
                 url: this.actionUrl.get('del'),
                 method: 'DELETE',
-                data: {
+                params: {
                     ids: ids,
                 },
             },

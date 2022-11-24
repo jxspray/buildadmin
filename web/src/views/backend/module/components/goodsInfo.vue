@@ -108,7 +108,11 @@
                                 </template>
                             </el-dropdown>
                             <el-button
-                                v-if="!state.goodsInfo.purchased && installButtonState.buy.includes(state.goodsInfo.state)"
+                                v-if="
+                                    !state.goodsInfo.purchased &&
+                                    installButtonState.buy.includes(state.goodsInfo.state) &&
+                                    state.goodsInfo.type == 'online'
+                                "
                                 @click="onBuy"
                                 v-blur
                                 class="basic-button-item"
@@ -146,6 +150,14 @@
                                 class="basic-button-item"
                             >
                                 {{ t('module.installed') }} v{{ state.goodsInfo.version }}
+                            </el-button>
+                            <el-button
+                                v-if="state.goodsInfo.type == 'local' && !installButtonState.alreadyInstalled.includes(state.goodsInfo.state)"
+                                v-blur
+                                :disabled="true"
+                                class="basic-button-item"
+                            >
+                                {{ t('module.Local module') }} v{{ state.goodsInfo.version }}
                             </el-button>
                             <el-button
                                 v-if="state.goodsInfo.new_version && installButtonState.updateButton.includes(state.goodsInfo.state)"
@@ -207,10 +219,10 @@
                 <div class="goods-detail ba-markdown" v-html="state.goodsInfo.detail_editor"></div>
                 <div class="goods-version">
                     <h1>{{ t('module.Update Log') }}</h1>
-                    <div class="version-timeline">
+                    <div class="version-timeline" v-if="state.goodsInfo.version_log">
                         <el-timeline>
                             <el-timeline-item
-                                v-for="(version, idx) in state.goodsInfo.version"
+                                v-for="(version, idx) in state.goodsInfo.version_log"
                                 :key="idx"
                                 :timestamp="timeFormat(version.createtime)"
                                 placement="top"
@@ -231,6 +243,7 @@
                             </el-timeline-item>
                         </el-timeline>
                     </div>
+                    <div v-else class="empty-update-log">{{ $t('module.No detailed update log') }}</div>
                 </div>
             </el-scrollbar>
         </el-dialog>
@@ -507,6 +520,11 @@ const onUpdate = (uid: string, order: number) => {
         justify-content: space-between;
         align-items: center;
     }
+}
+.empty-update-log {
+    display: flex;
+    justify-content: center;
+    color: var(--el-color-info);
 }
 /* 商品详情弹窗-s */
 @media screen and (max-width: 1440px) {

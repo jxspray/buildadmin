@@ -309,6 +309,10 @@ INSERT INTO `__PREFIX__menu_rule` VALUES ('80', '78', 'button', '安装', 'modul
 INSERT INTO `__PREFIX__menu_rule` VALUES ('81', '78', 'button', '调整状态', 'moduleStore/moduleStore/changeState', '', '', null, '', '', '0', 'none', '', '3', '1', '1648065864', '1647806112');
 INSERT INTO `__PREFIX__menu_rule` VALUES ('82', '78', 'button', '卸载', 'moduleStore/moduleStore/uninstall', '', '', null, '', '', '0', 'none', '', '4', '1', '1648065864', '1647806112');
 INSERT INTO `__PREFIX__menu_rule` VALUES ('83', '78', 'button', '更新', 'moduleStore/moduleStore/update', '', '', null, '', '', '0', 'none', '', '5', '1', '1648065864', '1647806112');
+INSERT INTO `__PREFIX__menu_rule` VALUES ('84', '0', 'menu', 'CRUD代码生成', 'crud/crud', 'crud/crud', 'fa fa-code', 'tab', '', '/src/views/backend/crud/index.vue', '1', 'none', '', '80', '1', '1668848266', '1668848266');
+INSERT INTO `__PREFIX__menu_rule` VALUES ('85', '84', 'button', '查看', 'crud/crud/index', '', '', null, '', '', '0', 'none', '', '3', '1', '1668848809', '1668848770');
+INSERT INTO `__PREFIX__menu_rule` VALUES ('86', '84', 'button', '生成', 'crud/crud/generate', '', '', null, '', '', '0', 'none', '', '2', '1', '1668848809', '1668848770');
+INSERT INTO `__PREFIX__menu_rule` VALUES ('87', '84', 'button', '删除', 'crud/crud/delete', '', '', null, '', '', '0', 'none', '', '1', '1', '1668848921', '1668848921');
 COMMIT;
 
 -- ----------------------------
@@ -413,13 +417,13 @@ CREATE TABLE `__PREFIX__security_sensitive_data_log` (
 DROP TABLE IF EXISTS `__PREFIX__test_build`;
 CREATE TABLE `__PREFIX__test_build` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
-    `title` varchar(100) NOT NULL DEFAULT '' COMMENT '标题',
-    `keyword_rows` varchar(100) NOT NULL DEFAULT '' COMMENT '关键词',
+    `title` varchar(100) DEFAULT NULL COMMENT '标题',
+    `keyword_rows` varchar(100) DEFAULT NULL COMMENT '关键词',
     `content` text NOT NULL COMMENT '内容',
     `views` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '浏览量',
     `likes` mediumint(9) unsigned NOT NULL DEFAULT '0' COMMENT '有帮助数',
     `dislikes` mediumint(9) unsigned NOT NULL DEFAULT '0' COMMENT '无帮助数',
-    `note_textarea` varchar(100) NOT NULL DEFAULT '' COMMENT '备注',
+    `note_textarea` varchar(100) DEFAULT NULL COMMENT '备注',
     `status` enum('1','0') NOT NULL DEFAULT '1' COMMENT '状态:0=隐藏,1=正常',
     `weigh` int(10) NOT NULL DEFAULT '0' COMMENT '权重',
     `updatetime` int(10) unsigned DEFAULT NULL COMMENT '更新时间',
@@ -569,3 +573,17 @@ CREATE TABLE `__PREFIX__user_score_log` (
     `createtime` int(10) unsigned DEFAULT NULL COMMENT '创建时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='会员积分变动表';
+
+-- ----------------------------
+-- Table structure for `__PREFIX__crud_log`
+-- ----------------------------
+DROP TABLE IF EXISTS `__PREFIX__crud_log`;
+CREATE TABLE `__PREFIX__crud_log` (
+    `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+    `table_name` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '数据表名',
+    `table` text COLLATE utf8mb4_unicode_ci COMMENT '数据表数据',
+    `fields` text COLLATE utf8mb4_unicode_ci COMMENT '字段数据',
+    `status` enum('delete','success','error','start') COLLATE utf8mb4_unicode_ci DEFAULT 'start' COMMENT '状态:delete=已删除,success=成功,error=失败,start=生成中',
+    `create_time` bigint(16) DEFAULT NULL COMMENT '创建时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='crud记录';

@@ -173,14 +173,14 @@
                                     </el-button>
                                     <el-button
                                         v-if="state.form.tab == 'register'"
-                                        @click="state.form.tab = 'login'"
+                                        @click="switchTab(formRef, 'login')"
                                         round
                                         plain
                                         type="info"
                                         size="large"
                                         >{{ t('user.user.Back to login') }}</el-button
                                     >
-                                    <el-button v-else @click="state.form.tab = 'register'" round plain type="info" size="large">
+                                    <el-button v-else @click="switchTab(formRef, 'register')" round plain type="info" size="large">
                                         {{ t('user.user.No account yet? Click Register') }}
                                     </el-button>
                                 </el-form-item>
@@ -299,8 +299,8 @@ import { onResetForm } from '/@/utils/common'
 import { useUserInfo } from '/@/stores/userInfo'
 import { useRouter } from 'vue-router'
 import { useRoute } from 'vue-router'
-import type { ElForm, FormItemRule } from 'element-plus'
-var timer: NodeJS.Timer
+import type { FormItemRule, FormInstance } from 'element-plus'
+let timer: NodeJS.Timer
 
 const { t } = useI18n()
 const route = useRoute()
@@ -308,8 +308,8 @@ const router = useRouter()
 const userInfo = useUserInfo()
 const siteConfig = useSiteConfig()
 const memberCenter = useMemberCenter()
-const formRef = ref<InstanceType<typeof ElForm>>()
-const retrieveFormRef = ref<InstanceType<typeof ElForm>>()
+const formRef = ref<FormInstance>()
+const retrieveFormRef = ref<FormInstance>()
 
 interface State {
     form: {
@@ -413,7 +413,7 @@ const onChangeCaptcha = () => {
     state.form.captcha = ''
     state.form.captchaId = uuid()
 }
-const onSubmit = (formRef: InstanceType<typeof ElForm> | undefined = undefined) => {
+const onSubmit = (formRef: FormInstance | undefined = undefined) => {
     formRef!.validate((valid) => {
         if (valid) {
             state.formLoading = true
@@ -432,7 +432,7 @@ const onSubmit = (formRef: InstanceType<typeof ElForm> | undefined = undefined) 
         }
     })
 }
-const onSubmitRetrieve = (formRef: InstanceType<typeof ElForm> | undefined = undefined) => {
+const onSubmitRetrieve = (formRef: FormInstance | undefined = undefined) => {
     formRef!.validate((valid) => {
         if (valid) {
             state.submitRetrieveLoading = true
@@ -453,7 +453,7 @@ const onSubmitRetrieve = (formRef: InstanceType<typeof ElForm> | undefined = und
     })
 }
 
-const sendRegisterCaptcha = (formRef: InstanceType<typeof ElForm> | undefined = undefined) => {
+const sendRegisterCaptcha = (formRef: FormInstance | undefined = undefined) => {
     if (state.codeSendCountdown > 0) return
     formRef!.validateField([state.form.registerType, 'username', 'password']).then((valid) => {
         if (valid) {
@@ -470,7 +470,7 @@ const sendRegisterCaptcha = (formRef: InstanceType<typeof ElForm> | undefined = 
     })
 }
 
-const sendRetrieveCaptcha = (formRef: InstanceType<typeof ElForm> | undefined = undefined) => {
+const sendRetrieveCaptcha = (formRef: FormInstance | undefined = undefined) => {
     if (state.codeSendCountdown > 0) return
     formRef!.validateField('account').then((valid) => {
         if (valid) {
@@ -485,6 +485,12 @@ const sendRetrieveCaptcha = (formRef: InstanceType<typeof ElForm> | undefined = 
                 })
         }
     })
+}
+
+const switchTab = (formRef: FormInstance | undefined = undefined, tab: 'login' | 'register') => {
+    state.form.tab = tab
+    if (tab == 'register') state.form.username = ''
+    if (formRef) formRef.clearValidate()
 }
 
 const startTiming = (seconds: number) => {
