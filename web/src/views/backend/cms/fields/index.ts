@@ -58,9 +58,9 @@ export const fieldItem: {
 } = {
     common: [
         {
-            title: i18n.global.t('单行文本'),
+            title: i18n.global.t('crud.state.Primary key'),
             name: 'id',
-            type: 'text',
+            type: 'int',
             length: 10,
             precision: 0,
             default: '',

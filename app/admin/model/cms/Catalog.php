@@ -53,6 +53,6 @@ class Catalog extends Model
     }
 
     public function fields(){
-        return $this->belongsTo("fields", 'moduleid', 'moduleid')->joinType("left");
+        return $this->hasMany("fields", 'moduleid', 'moduleid');
     }
 }

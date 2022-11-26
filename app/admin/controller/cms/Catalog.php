@@ -95,7 +95,7 @@ class Catalog extends Backend
     public function edit()
     {
         $id  = $this->request->param($this->model->getPk());
-        $row = $this->model->withJoin(['catalogExtend'])->find($id);
+        $row = $this->model->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
         }
