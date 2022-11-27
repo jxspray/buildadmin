@@ -6,6 +6,25 @@
             </div>
         </router-link>
         <el-dropdown
+            @visible-change="onCurrentNavMenu($event, 'mode')"
+            class="h100"
+            size="large"
+            :hide-timeout="50"
+            placement="bottom"
+            trigger="click"
+            :hide-on-click="true"
+        >
+            <div class="nav-menu-item pt2" :class="state.currentNavMenu == 'mode' ? 'hover' : ''">
+                <Icon :color="configStore.getColorVal('headerBarTabColor')" class="nav-menu-icon" name="local-lang" size="18" />
+            </div>
+            <template #dropdown>
+                <el-dropdown-menu class="dropdown-menu-box">
+                    <el-dropdown-item key="运营者模式" @click="editDefaultMode('production')">运营者模式</el-dropdown-item>
+                    <el-dropdown-item key="开发者模式" @click="editDefaultMode('develop')">开发者模式</el-dropdown-item>
+                </el-dropdown-menu>
+            </template>
+        </el-dropdown>
+        <el-dropdown
             @visible-change="onCurrentNavMenu($event, 'lang')"
             class="h100"
             size="large"
@@ -169,6 +188,12 @@ const onClearCache = (type: string) => {
         if (type == 'storage') return
     }
     postClearCache(type).then(() => {})
+}
+
+
+const editDefaultMode = (mode: string) => {
+    Local.set("runMode", mode)
+    console.log(router.currentRoute.value.query)
 }
 </script>
 

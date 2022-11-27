@@ -25,7 +25,7 @@ class Catalog extends Backend
      */
     protected $tree = null;
 
-    protected $preExcludeFields = ['createtime', 'updatetime'];
+    protected $preExcludeFields = ['createtime', 'updatetime', 'fields'];
 
     protected $quickSearchField = 'title';
 
