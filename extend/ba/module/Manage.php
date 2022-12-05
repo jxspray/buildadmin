@@ -274,16 +274,20 @@ class Manage
 
     public function enable(string $trigger)
     {
+        // 安装 WebBootstrap
+        Server::installWebBootstrap($this->uid, $this->modulesDir);
+
+        $this->conflictHandle($trigger);
+
         // 执行启用脚本
         Server::execEvent($this->uid, 'enable');
 
-        $this->conflictHandle($trigger);
         $this->dependUpdateHandle();
     }
 
     public function disable()
     {
-        $upadte                 = request()->post("upadte/b", false);
+        $update                 = request()->post("update/b", false);
         $confirmConflict        = request()->post("confirmConflict/b", false);
         $dependConflictSolution = request()->post("dependConflictSolution/a", []);
 
@@ -319,6 +323,9 @@ class Manage
                 'dependConflict' => $dependConflictTemp,
             ]);
         }
+
+        // 执行禁用脚本
+        Server::execEvent($this->uid, 'disable', ['update' => $update]);
 
         // 是否需要备份依赖？
         $delNpmDepend      = false;
@@ -408,18 +415,18 @@ class Manage
         // 删除解压后的备份文件
         deldir($zipDir);
 
-        // 执行禁用脚本
-        Server::execEvent($this->uid, 'disable');
+        // 卸载 WebBootstrap
+        Server::uninstallWebBootstrap($this->uid, $this->modulesDir);
 
         $this->setInfo([
             'state' => self::DISABLE,
         ]);
 
-        if ($upadte) {
+        if ($update) {
             $token = request()->post("token/s", '');
             $order = request()->post("order/d", 0);
             $this->update($token, $order);
-            throw new moduleException('upadte', -3, [
+            throw new moduleException('update', -3, [
                 'uid' => $this->uid,
             ]);
         }

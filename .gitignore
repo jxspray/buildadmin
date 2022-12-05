@@ -1,7 +1,7 @@
 /nbproject
 /runtime/*
 /install
-/vendor/
+/vendor
 node_modules
 dist
 dist-ssr
@@ -10,7 +10,10 @@ dist-ssr
 .DS_Store
 composer.lock
 pnpm-lock.yaml
+package-lock.json
 yarn.lock
+/.env
+Desktop.ini
 
 # Log files
 *.log

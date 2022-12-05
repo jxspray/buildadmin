@@ -248,6 +248,7 @@
             </el-scrollbar>
         </el-dialog>
         <Buy />
+        <Pay />
     </div>
 </template>
 
@@ -262,6 +263,7 @@ import { ElMessageBox } from 'element-plus'
 import { useBaAccount } from '/@/stores/baAccount'
 import { useI18n } from 'vue-i18n'
 import Buy from './buy.vue'
+import Pay from './pay.vue'
 
 const installButtonState = {
     InstallNow: [moduleInstallState.UNINSTALLED, moduleInstallState.WAIT_INSTALL],
@@ -334,7 +336,7 @@ const onUpdate = (uid: string, order: number) => {
                         state.common.disableParams = {
                             uid: uid,
                             state: 0,
-                            upadte: 1,
+                            update: 1,
                             order: order,
                             token: baAccount.token,
                         }
@@ -394,6 +396,10 @@ const onUpdate = (uid: string, order: number) => {
                 font-size: var(--el-font-size-base);
                 color: var(--el-text-color-secondary);
                 width: 80px;
+            }
+            .basic-item-price {
+                font-size: 16px;
+                color: var(--el-color-danger);
             }
             .basic-item-content {
                 font-size: var(--el-font-size-base);

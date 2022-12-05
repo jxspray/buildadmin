@@ -505,6 +505,88 @@ export const fieldItem: {
             table: {},
             form: {},
         },
+        {
+            title: i18n.global.t('utils.color picker'),
+            name: 'color',
+            type: 'varchar',
+            length: 30,
+            precision: 0,
+            default: 'empty string',
+            null: false,
+            primaryKey: false,
+            unsigned: false,
+            autoIncrement: false,
+            comment: i18n.global.t('utils.color picker'),
+            designType: 'color',
+            table: {},
+            form: {},
+        },
+        {
+            title: i18n.global.t('utils.image') + i18n.global.t('crud.state.Multi'),
+            name: 'images',
+            type: 'varchar',
+            length: 255,
+            precision: 0,
+            default: 'empty string',
+            null: false,
+            primaryKey: false,
+            unsigned: false,
+            autoIncrement: false,
+            comment: i18n.global.t('utils.image'),
+            designType: 'images',
+            table: {},
+            form: {},
+        },
+        {
+            title: i18n.global.t('utils.file') + i18n.global.t('crud.state.Multi'),
+            name: 'files',
+            type: 'varchar',
+            length: 255,
+            precision: 0,
+            default: 'empty string',
+            null: false,
+            primaryKey: false,
+            unsigned: false,
+            autoIncrement: false,
+            comment: i18n.global.t('utils.file'),
+            designType: 'files',
+            tableBuildExclude: true,
+            table: {},
+            form: {},
+        },
+        {
+            title: i18n.global.t('utils.select') + i18n.global.t('crud.state.Multi'),
+            name: 'selects',
+            type: 'varchar',
+            length: 100,
+            precision: 0,
+            default: 'empty string',
+            null: false,
+            primaryKey: false,
+            unsigned: false,
+            autoIncrement: false,
+            comment: i18n.global.t('crud.state.Select:0=Option1,1=Option2'),
+            designType: 'selects',
+            table: {},
+            form: {},
+        },
+        {
+            title: i18n.global.t('crud.state.Remote Select (Multi)'),
+            name: 'user_ids',
+            type: 'varchar',
+            length: 100,
+            precision: 0,
+            default: 'empty string',
+            null: false,
+            primaryKey: false,
+            unsigned: true,
+            autoIncrement: false,
+            comment: i18n.global.t('utils.remote select'),
+            designType: 'remoteSelects',
+            tableBuildExclude: true,
+            table: {},
+            form: {},
+        },
     ],
 }
 
@@ -522,6 +604,7 @@ const tableBaseAttr = {
             tags: 'Tags',
             url: 'URL',
             datetime: i18n.global.t('utils.time date'),
+            color: i18n.global.t('utils.color'),
         },
     },
     operator: {
@@ -791,6 +874,20 @@ export const designTypes: anyObj = {
             },
         },
     },
+    selects: {
+        name: i18n.global.t('utils.select'),
+        table: {
+            ...tableBaseAttr,
+            render: getTableAttr('render', 'tags'),
+        },
+        form: {
+            ...formBaseAttr,
+            'select-multi': {
+                type: 'switch',
+                value: true,
+            },
+        },
+    },
     remoteSelect: {
         name: i18n.global.t('utils.remote select') + i18n.global.t('utils.choice'),
         table: {
@@ -801,6 +898,48 @@ export const designTypes: anyObj = {
             'select-multi': {
                 type: 'switch',
                 value: false,
+            },
+            'remote-pk': {
+                type: 'string',
+                value: 'id',
+            },
+            'remote-field': {
+                type: 'string',
+                value: 'name',
+            },
+            'remote-table': {
+                type: 'string',
+                value: '',
+            },
+            'remote-controller': {
+                type: 'string',
+                value: '',
+            },
+            'remote-model': {
+                type: 'string',
+                value: '',
+            },
+            'relation-fields': {
+                type: 'string',
+                value: '',
+            },
+            'remote-url': {
+                type: 'string',
+                value: '',
+                placeholder: i18n.global.t('crud.state.If it is not input, it will be automatically analyzed by the controller'),
+            },
+        },
+    },
+    remoteSelects: {
+        name: i18n.global.t('utils.remote select') + i18n.global.t('utils.choice'),
+        table: {
+            operator: getTableAttr('operator', 'LIKE'),
+        },
+        form: {
+            ...formBaseAttr,
+            'select-multi': {
+                type: 'switch',
+                value: true,
             },
             'remote-pk': {
                 type: 'string',
@@ -846,7 +985,7 @@ export const designTypes: anyObj = {
     city: {
         name: i18n.global.t('utils.city select'),
         table: {
-            operator: getTableAttr('operator', 'LIKE'),
+            operator: getTableAttr('operator', 'false'),
         },
         form: formBaseAttr,
     },
@@ -864,6 +1003,20 @@ export const designTypes: anyObj = {
             },
         },
     },
+    images: {
+        name: i18n.global.t('utils.image') + i18n.global.t('Upload'),
+        table: {
+            render: getTableAttr('render', 'images'),
+            operator: getTableAttr('operator', 'false'),
+        },
+        form: {
+            ...formBaseAttr,
+            'image-multi': {
+                type: 'switch',
+                value: true,
+            },
+        },
+    },
     file: {
         name: i18n.global.t('utils.file') + i18n.global.t('Upload'),
         table: {
@@ -878,10 +1031,32 @@ export const designTypes: anyObj = {
             },
         },
     },
+    files: {
+        name: i18n.global.t('utils.file') + i18n.global.t('Upload'),
+        table: {
+            render: getTableAttr('render', 'none'),
+            operator: getTableAttr('operator', 'false'),
+        },
+        form: {
+            ...formBaseAttr,
+            'file-multi': {
+                type: 'switch',
+                value: true,
+            },
+        },
+    },
     icon: {
         name: i18n.global.t('utils.icon select'),
         table: {
             render: getTableAttr('render', 'icon'),
+            operator: getTableAttr('operator', 'false'),
+        },
+        form: formBaseAttr,
+    },
+    color: {
+        name: i18n.global.t('utils.color picker'),
+        table: {
+            render: getTableAttr('render', 'color'),
             operator: getTableAttr('operator', 'false'),
         },
         form: formBaseAttr,

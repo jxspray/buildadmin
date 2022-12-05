@@ -1,6 +1,12 @@
 <template>
     <!-- 对话框表单 -->
-    <el-dialog class="ba-operate-dialog" :close-on-click-modal="false" :model-value="baTable.form.operate ? true : false" @close="baTable.toggleForm">
+    <el-dialog
+        class="ba-operate-dialog"
+        :close-on-click-modal="false"
+        :model-value="baTable.form.operate ? true : false"
+        @close="baTable.toggleForm"
+        :destroy-on-close="true"
+    >
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
                 {{ baTable.form.operate ? t(baTable.form.operate) : '' }}
@@ -40,9 +46,10 @@
                         v-model="baTable.form.items!.group_arr"
                         prop="group_arr"
                         type="remoteSelect"
+                        :key="('group-' + baTable.form.items!.id)"
                         :input-attr="{
                             multiple: true,
-                            params: { isTree: true },
+                            params: { isTree: true, absoluteAuth: adminInfo.id == baTable.form.items!.id ? 0 : 1 },
                             field: 'name',
                             'remote-url': authGroup + 'index',
                             placeholder: t('Click Select'),
@@ -111,17 +118,16 @@ import { regularPassword, buildValidatorData } from '/@/utils/validate'
 import type { ElForm, FormItemRule } from 'element-plus'
 import FormItem from '/@/components/formItem/index.vue'
 import { authGroup } from '/@/api/controllerUrls'
+import { useAdminInfo } from '/@/stores/adminInfo'
 
+const adminInfo = useAdminInfo()
 const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
 
 const { t } = useI18n()
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
-    username: [
-        buildValidatorData({ name: 'required', title: t('auth.admin.username') }),
-        buildValidatorData({ name: 'account', message: t('Please enter the correct field', { field: t('auth.admin.username') }) }),
-    ],
+    username: [buildValidatorData({ name: 'required', title: t('auth.admin.username') }), buildValidatorData({ name: 'account' })],
     nickname: [buildValidatorData({ name: 'required', title: t('auth.admin.nickname') })],
     group_arr: [buildValidatorData({ name: 'required', message: t('Please select field', { field: t('auth.admin.grouping') }) })],
     email: [buildValidatorData({ name: 'email', message: t('Please enter the correct field', { field: t('auth.admin.mailbox') }) })],

@@ -168,6 +168,7 @@
                         <div class="design-field">
                             <span>{{ t('crud.crud.Field Name') }}：</span>
                             <BaInput
+                                @pointerdown.stop
                                 class="design-field-name-input"
                                 v-model="field.name"
                                 type="string"
@@ -180,6 +181,7 @@
                         <div class="design-field">
                             <span>{{ t('crud.crud.field comment') }}：</span>
                             <BaInput
+                                @pointerdown.stop
                                 class="design-field-name-comment"
                                 v-model="field.comment"
                                 type="string"
@@ -190,7 +192,7 @@
                         </div>
                         <div class="design-field-right">
                             <el-button
-                                v-if="field.designType == 'remoteSelect'"
+                                v-if="['remoteSelect', 'remoteSelects'].includes(field.designType)"
                                 @click.stop="onEditField(index, field)"
                                 type="primary"
                                 size="small"
@@ -673,7 +675,7 @@ const showRemoteSelectPre = (index: number, hideDelField = false) => {
 }
 
 const onEditField = (index: number, field: FieldItem) => {
-    if (field.designType == 'remoteSelect') return showRemoteSelectPre(index)
+    if (['remoteSelect', 'remoteSelects'].includes(field.designType)) return showRemoteSelectPre(index)
 }
 
 const closeConfirmGenerate = () => {
@@ -813,7 +815,7 @@ const loadData = () => {
                 if (!['id', 'update_time', 'create_time', 'updatetime', 'createtime'].includes(field.name)) {
                     state.table.formFields.push(field.name)
                 }
-                if (!['textarea', 'file', 'editor', 'password', 'array'].includes(field.designType)) {
+                if (!['textarea', 'file', 'files', 'editor', 'password', 'array'].includes(field.designType)) {
                     state.table.columnFields.push(field.name)
                 }
                 if (field.designType == 'pk') {
@@ -880,7 +882,7 @@ onMounted(() => {
                 state.fields.splice(evt.newIndex!, 0, data)
 
                 // 远程下拉参数预填
-                if (data.designType == 'remoteSelect') {
+                if (['remoteSelect', 'remoteSelects'].includes(data.designType)) {
                     showRemoteSelectPre(evt.newIndex!, true)
                 }
 
@@ -1071,7 +1073,7 @@ const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reacti
         font-size: var(--el-font-size-small);
         border-bottom-left-radius: 50px;
         border-bottom-right-radius: 50px;
-        background-color: var(--el-color-white);
+        background-color: var(--ba-bg-color-overlay);
         color: var(--el-color-info);
         cursor: pointer;
         user-select: none;
@@ -1083,7 +1085,7 @@ const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reacti
 .header-senior-config-box {
     width: 100%;
     padding: 10px;
-    background-color: var(--el-color-white);
+    background-color: var(--ba-bg-color-overlay);
 }
 .header-senior-config-form {
     width: 50%;
@@ -1096,7 +1098,7 @@ const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reacti
     align-items: center;
     height: 60px;
     padding: 10px;
-    background-color: var(--el-color-white);
+    background-color: var(--ba-bg-color-overlay);
     border-radius: var(--el-border-radius-base);
     .header,
     .header-item-box {
@@ -1149,7 +1151,7 @@ const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reacti
     overflow-x: auto;
     height: calc(100vh - 200px);
     border-radius: var(--el-border-radius-base);
-    background-color: var(--el-color-white);
+    background-color: var(--ba-bg-color-overlay);
     .design-field-box {
         display: flex;
         padding: 10px;
@@ -1190,7 +1192,7 @@ const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reacti
     overflow-x: auto;
     height: calc(100vh - 200px);
     padding: 20px;
-    background-color: var(--el-color-white);
+    background-color: var(--ba-bg-color-overlay);
 }
 :deep(.confirm-generate-dialog) .el-dialog__body {
     height: unset;

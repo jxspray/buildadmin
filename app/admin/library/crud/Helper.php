@@ -178,6 +178,11 @@ class Helper
             'type'  => ['set'],
             'value' => 'checkbox',
         ],
+        // 颜色选择器
+        [
+            'suffix' => ['color'],
+            'value'  => 'color',
+        ],
     ];
 
     /**
@@ -529,13 +534,7 @@ class Helper
      */
     public static function handleTableColumn(&$column)
     {
-        // designType转换为前端兼容的格式
-        $multipleDesignType = ['selects', 'images', 'files', 'remoteSelects'];
-        if (in_array($column['designType'], $multipleDesignType)) {
-            $column['designType']      = rtrim($column['designType'], 's');
-            $multiKey                  = $column['designType'] == 'remoteSelect' ? 'select-multi' : $column['designType'] . '-multi';
-            $column['form'][$multiKey] = true;
-        }
+        // 预留
     }
 
     public static function analyseFieldType($field): string
@@ -692,6 +691,13 @@ class Helper
         return file_put_contents($path, $content);
     }
 
+    public static function buildModelAppend($append): string
+    {
+        if (!$append) return '';
+        $append = self::buildFormatSimpleArray($append);
+        return "\n" . self::tab() . "// 追加属性" . "\n" . self::tab() . "protected \$append = $append;\n";
+    }
+
     public static function buildModelFieldType(array $fieldType): string
     {
         if (!$fieldType) return '';
@@ -718,6 +724,7 @@ class Helper
         }
         $modelMethodList        = isset($modelData['relationMethodList']) ? array_merge($modelData['methods'], $modelData['relationMethodList']) : $modelData['methods'];
         $modelData['methods']   = $modelMethodList ? "\n" . implode("\n", $modelMethodList) : '';
+        $modelData['append']    = self::buildModelAppend($modelData['append']);
         $modelData['fieldType'] = self::buildModelFieldType($modelData['fieldType']);
         $modelFileContent       = self::assembleStub('mixins/model/model', $modelData);
         self::writeFile($modelFile['parseFile'], $modelFileContent);
@@ -852,17 +859,39 @@ class Helper
         return $itemJson;
     }
 
-    public static function buildSimpleArray($arr): string
+    public static function getQuote(string $value): string
     {
-        $json = '';
+        return stripos($value, "'") === false ? "'" : '"';
+    }
+
+    public static function buildFormatSimpleArray($arr, int $tab = 2): string
+    {
+        if (!$arr) return '[]';
+        $str = '[' . PHP_EOL;
         foreach ($arr as $item) {
             if ($item == 'undefined' || $item == 'false' || is_numeric($item)) {
-                $json .= $item . ', ';
+                $str .= self::tab($tab) . $item . ',' . PHP_EOL;
             } else {
-                $json .= '\'' . $item . '\', ';
+                $quote = self::getQuote($item);
+                $str   .= self::tab($tab) . "$quote$item$quote," . PHP_EOL;
             }
         }
-        return '[' . rtrim($json, ", ") . ']';
+        return $str . self::tab($tab - 1) . ']';
+    }
+
+    public static function buildSimpleArray($arr): string
+    {
+        if (!$arr) return '[]';
+        $str = '';
+        foreach ($arr as $item) {
+            if ($item == 'undefined' || $item == 'false' || is_numeric($item)) {
+                $str .= $item . ', ';
+            } else {
+                $quote = self::getQuote($item);
+                $str   .= "$quote$item$quote, ";
+            }
+        }
+        return '[' . rtrim($str, ", ") . ']';
     }
 
     public static function buildDefaultOrder(string $field, string $type): string
@@ -897,7 +926,7 @@ class Helper
                 } elseif (isset($item[0]) && $item[0] == '[' && substr($item, -1, 1) == ']') {
                     $jsonStr .= $keyStr . $item . ',';
                 } else {
-                    $quote   = stripos($item, "'") === false ? "'" : '"';
+                    $quote   = self::getQuote($item);
                     $jsonStr .= $keyStr . "$quote$item$quote,";
                 }
             }

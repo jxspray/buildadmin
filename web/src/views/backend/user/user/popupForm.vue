@@ -1,6 +1,12 @@
 <template>
     <!-- 对话框表单 -->
-    <el-dialog class="ba-operate-dialog" :close-on-click-modal="false" :model-value="baTable.form.operate ? true : false" @close="baTable.toggleForm">
+    <el-dialog
+        class="ba-operate-dialog"
+        :close-on-click-modal="false"
+        :destroy-on-close="true"
+        :model-value="baTable.form.operate ? true : false"
+        @close="baTable.toggleForm"
+    >
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
                 {{ baTable.form.operate ? t(baTable.form.operate) : '' }}
@@ -47,11 +53,11 @@
                         }"
                     />
                     <FormItem :label="t('user.user.head portrait')" type="image" v-model="baTable.form.items!.avatar" />
-                    <el-form-item prop="email" :label="t('user.user.mailbox')">
+                    <el-form-item prop="email" :label="t('user.user.email')">
                         <el-input
                             v-model="baTable.form.items!.email"
                             type="string"
-                            :placeholder="t('Please input field', { field: t('user.user.mailbox') })"
+                            :placeholder="t('Please input field', { field: t('user.user.email') })"
                         ></el-input>
                     </el-form-item>
                     <el-form-item prop="mobile" :label="t('user.user.mobile')">
@@ -152,7 +158,7 @@ const { t } = useI18n()
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
     username: [buildValidatorData({ name: 'required', title: t('user.user.User name') }), buildValidatorData({ name: 'account' })],
     nickname: [buildValidatorData({ name: 'required', title: t('user.user.nickname') })],
-    email: [buildValidatorData({ name: 'email', title: t('user.user.mailbox') })],
+    email: [buildValidatorData({ name: 'email', title: t('user.user.email') })],
     mobile: [buildValidatorData({ name: 'mobile' })],
     password: [
         {
