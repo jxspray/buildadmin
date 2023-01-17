@@ -5,7 +5,7 @@
             <el-main class="main">
                 <div class="main-container">
                     <div class="main-left">
-                        <div class="main-title">{{ siteConfig.site_name }}</div>
+                        <div class="main-title">{{ siteConfig.siteName }}</div>
                         <div class="main-content">
                             {{ $t('index.Steve Jobs') }}
                         </div>
@@ -16,7 +16,7 @@
                             color="#ffffff"
                             size="large"
                         >
-                            {{ $t('index.Member Center') }}
+                            {{ $t('Member Center') }}
                         </el-button>
                     </div>
                     <div class="main-right">

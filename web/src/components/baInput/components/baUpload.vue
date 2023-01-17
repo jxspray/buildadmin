@@ -19,7 +19,7 @@
             <template v-else #default>
                 <template v-if="type == 'image' || type == 'images'">
                     <div v-if="!hideSelectFile" @click.stop="state.selectFile.show = true" class="ba-upload-select-image">
-                        {{ $t('routine.attachment.choice') }}
+                        {{ $t('utils.choice') }}
                     </div>
                     <Icon class="ba-upload-icon" name="el-icon-Plus" size="30" color="#c0c4cc" />
                 </template>
@@ -30,7 +30,7 @@
                     </el-button>
                     <el-button v-if="!hideSelectFile" @click.stop="state.selectFile.show = true" type="success">
                         <Icon name="fa fa-th-list" size="14px" color="#ffffff" />
-                        <span class="ml-6">{{ $t('routine.attachment.choice') }}</span>
+                        <span class="ml-6">{{ $t('utils.choice') }}</span>
                     </el-button>
                 </template>
             </template>
@@ -39,7 +39,9 @@
             <template v-if="slots.file" #file><slot name="file"></slot></template>
         </el-upload>
         <el-dialog v-model="state.preview.show" class="ba-upload-preview">
-            <img :src="state.preview.url" class="ba-upload-preview-img" alt="" />
+            <div class="ba-upload-preview-scroll ba-scroll-style">
+                <img :src="state.preview.url" class="ba-upload-preview-img" alt="" />
+            </div>
         </el-dialog>
         <SelectFile v-model="state.selectFile.show" v-bind="state.selectFile" @choice="onChoice" />
     </div>
@@ -136,7 +138,7 @@ const onElChange = (file: UploadFileExt) => {
     if (!file || !file.raw) return
     if (typeof state.events['beforeUpload'] == 'function' && state.events['beforeUpload'](file) === false) return
     let fd = new FormData()
-    fd.append('file', file.raw!)
+    fd.append('file', file.raw)
     fd = formDataAppend(fd)
     state.uploading++
     fileUpload(fd, { uuid: uuid() })
@@ -159,8 +161,9 @@ const onElChange = (file: UploadFileExt) => {
         })
 }
 
-const onBeforeRemove = (rawFile: UploadRawFile) => {
-    if (typeof state.events['beforeRemove'] == 'function' && state.events['beforeRemove'](rawFile) === false) return false
+const onBeforeRemove: UploadProps['beforeRemove'] = (uploadFile, uploadFiles) => {
+    if (typeof state.events['beforeRemove'] == 'function' && state.events['beforeRemove'](uploadFile, uploadFiles) === false) return false
+    return true
 }
 
 const onElRemove = (file: UploadUserFile) => {
@@ -211,15 +214,17 @@ onMounted(() => {
         state.attr = { ...state.attr, accept: 'image/*', listType: 'picture-card' }
     }
 
+    const addProps: anyObj = {}
     const evtArr = ['onPreview', 'onRemove', 'onSuccess', 'onError', 'onChange', 'onExceed', 'beforeUpload', 'beforeRemove', 'onProgress']
     for (const key in props.attr) {
         if (evtArr.includes(key)) {
             state.events[key] = props.attr[key as keyof typeof props.attr]
-            delete props.attr[key as keyof typeof props.attr]
+        } else {
+            addProps[key] = props.attr[key as keyof typeof props.attr]
         }
     }
 
-    state.attr = { ...state.attr, ...props.attr }
+    state.attr = { ...state.attr, ...addProps }
     if (state.attr.limit) state.selectFile.limit = state.attr.limit
 
     init(props.modelValue)
@@ -330,9 +335,21 @@ defineExpose({
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 10px;
+    height: auto;
+}
+.ba-upload-preview-scroll {
+    max-height: 70vh;
+    overflow: auto;
 }
 .ba-upload-preview-img {
     max-width: 100%;
+    max-height: 100%;
+}
+:deep(.el-dialog__headerbtn) {
+    top: 2px;
+    width: 37px;
+    height: 37px;
 }
 .ba-upload.image :deep(.el-upload--picture-card),
 .ba-upload.images :deep(.el-upload--picture-card) {

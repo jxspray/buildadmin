@@ -10,16 +10,14 @@
         >
             <div>
                 <div class="header-box">
-                    <img class="wechat-pay-logo" src="https://ba.buildadmin.com/static/images/wechat-pay.png" alt="" />
+                    <img class="wechat-pay-logo" src="https://buildadmin.com/static/images/wechat-pay.png" alt="" />
                 </div>
                 <div class="pay-box">
                     <div class="left">
                         <div class="order-info">
                             <div class="order-info-items">{{ t('module.Order title') }}：{{ state.payInfo.info.title }}</div>
                             <div class="order-info-items">{{ t('module.Order No') }}：{{ state.payInfo.info.sn }}</div>
-                            <div class="order-info-items">
-                                {{ t('module.Purchase user') }}：{{ baAccount.nickname + '（' + baAccount.email + '）' }}
-                            </div>
+                            <div class="order-info-items">{{ t('module.Purchase user') }}：{{ specificUserName(baAccount) }}</div>
                             <div class="order-info-items">
                                 {{ t('module.Order price') }}：<span class="rmb-symbol"
                                     >￥<span class="amount">{{ state.payInfo.info.amount }}</span></span
@@ -40,7 +38,7 @@
                         </el-alert>
                     </div>
                     <div class="right">
-                        <img class="wechat-pay-logo" src="https://ba.buildadmin.com/static/images/screenshot-wechat.png" alt="" />
+                        <img class="wechat-pay-logo" src="https://buildadmin.com/static/images/screenshot-wechat.png" alt="" />
                     </div>
                 </div>
             </div>
@@ -53,6 +51,7 @@ import { state } from '../store'
 import { useI18n } from 'vue-i18n'
 import { useBaAccount } from '/@/stores/baAccount'
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
+import { specificUserName } from '../index'
 
 const { t } = useI18n()
 const baAccount = useBaAccount()

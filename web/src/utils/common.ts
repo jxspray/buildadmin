@@ -65,7 +65,7 @@ export function setTitleFromRoute() {
         }
         const title = useTitle()
         const siteConfig = useSiteConfig()
-        title.value = `${webTitle}${siteConfig.site_name ? ' - ' + siteConfig.site_name : ''}`
+        title.value = `${webTitle}${siteConfig.siteName ? ' - ' + siteConfig.siteName : ''}`
     })
 }
 
@@ -76,7 +76,7 @@ export function setTitleFromRoute() {
 export function setTitle(webTitle: string) {
     const title = useTitle()
     const siteConfig = useSiteConfig()
-    title.value = `${webTitle}${siteConfig.site_name ? ' - ' + siteConfig.site_name : ''}`
+    title.value = `${webTitle}${siteConfig.siteName ? ' - ' + siteConfig.siteName : ''}`
 }
 
 /**
@@ -148,12 +148,25 @@ export const buildJsonToElTreeData = (data: any): ElTreeData[] => {
 
 /**
  * 是否在后台应用内
+ * @param path 不传递则通过当前路由 path 检查
  */
-export const isAdminApp = () => {
+export const isAdminApp = (path = '') => {
+    if (path) {
+        return /^\/admin/.test(path)
+    }
     if (/^\/admin/.test(router.currentRoute.value.fullPath) || window.location.hash.indexOf('#/admin') === 0) {
         return true
     }
     return false
+}
+
+/**
+ * 是否为手机设备
+ */
+export const isMobile = () => {
+    return !!navigator.userAgent.match(
+        /android|webos|ip(hone|ad|od)|opera (mini|mobi|tablet)|iemobile|windows.+(phone|touch)|mobile|fennec|kindle (Fire)|Silk|maemo|blackberry|playbook|bb10\; (touch|kbd)|Symbian(OS)|Ubuntu Touch/i
+    )
 }
 
 /**
@@ -187,7 +200,7 @@ export const auth = (name: string) => {
 export const fullUrl = (relativeUrl: string, domain = '') => {
     const siteConfig = useSiteConfig()
     if (!domain) {
-        domain = siteConfig.cdn_url ? siteConfig.cdn_url : getUrl()
+        domain = siteConfig.cdnUrl ? siteConfig.cdnUrl : getUrl()
     }
     if (!relativeUrl) return domain
 
@@ -210,7 +223,7 @@ export const checkFileMimetype = (fileName: string, fileType: string) => {
     const siteConfig = useSiteConfig()
     const mimetype = siteConfig.upload.mimetype.toLowerCase().split(',')
 
-    const fileSuffix = fileName.substring(fileName.lastIndexOf('.') + 1)
+    const fileSuffix = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase()
     if (siteConfig.upload.mimetype === '*' || mimetype.includes(fileSuffix) || mimetype.includes('.' + fileSuffix)) {
         return true
     }

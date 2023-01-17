@@ -4,13 +4,13 @@
             <el-col class="header-row" :span="16" :xs="24">
                 <div :class="userInfo.isLogin() ? 'hidden-sm-and-down' : ''" @click="router.push({ name: '/' })" class="header-logo">
                     <img src="~assets/logo.png" />
-                    <span class="hidden-xs-only">{{ siteConfig.site_name }}</span>
+                    <span class="hidden-xs-only">{{ siteConfig.siteName }}</span>
                 </div>
                 <div v-if="userInfo.isLogin()" @click="memberCenter.toggleMenuExpand(true)" class="user-menus-expand hidden-md-and-up">
                     <Icon name="fa fa-indent" color="var(--el-color-primary)" size="20" />
                 </div>
                 <el-menu :default-active="state.activeMenu" class="frontend-header-menu" mode="horizontal" :ellipsis="false">
-                    <el-menu-item @click="router.push({ name: '/' })" v-blur index="index">{{ $t('index.index') }}</el-menu-item>
+                    <el-menu-item @click="router.push({ name: '/' })" v-blur index="index">{{ $t('Home') }}</el-menu-item>
 
                     <template v-if="memberCenter.state.open">
                         <el-sub-menu v-if="userInfo.isLogin()" v-blur index="user">
@@ -24,16 +24,14 @@
                                     {{ userInfo.nickname }}
                                 </div>
                             </template>
-                            <el-menu-item @click="router.push({ name: 'user' })" v-blur index="user-index">{{
-                                $t('index.Member Center')
-                            }}</el-menu-item>
-                            <el-menu-item @click="userInfo.logout()" v-blur index="user-logout">{{ $t('user.user.Logout login') }}</el-menu-item>
+                            <el-menu-item @click="router.push({ name: 'user' })" v-blur index="user-index">{{ $t('Member Center') }}</el-menu-item>
+                            <el-menu-item @click="userInfo.logout()" v-blur index="user-logout">{{ $t('Logout login') }}</el-menu-item>
                         </el-sub-menu>
-                        <el-menu-item v-else @click="router.push({ name: 'user' })" v-blur index="user">{{ $t('index.Member Center') }}</el-menu-item>
+                        <el-menu-item v-else @click="router.push({ name: 'user' })" v-blur index="user">{{ $t('Member Center') }}</el-menu-item>
                     </template>
 
                     <el-sub-menu v-blur index="switch-language">
-                        <template #title>{{ $t('index.language') }}</template>
+                        <template #title>{{ $t('Language') }}</template>
                         <el-menu-item
                             @click="editDefaultLang(item.name)"
                             v-for="item in config.lang.langArray"
@@ -49,7 +47,7 @@
             </el-col>
         </el-row>
         <el-drawer
-            custom-class="aside-drawer"
+            class="aside-drawer"
             :append-to-body="true"
             v-model="memberCenter.state.menuExpand"
             :with-header="false"

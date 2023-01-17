@@ -240,12 +240,35 @@ class Auth extends \ba\Auth
             $this->setError('Password is incorrect');
             return false;
         }
+        if (Config::get('buildadmin.user_sso')) {
+            Token::clear('user', $this->model->id);
+            Token::clear('user-refresh', $this->model->id);
+        }
 
         if ($keeptime) {
             $this->setRefreshToken(2592000);
         }
         $this->loginSuccessful();
         return true;
+    }
+
+    /**
+     * 直接登录会员账号
+     * @param int $userId 用户ID
+     * @return bool
+     * @throws DataNotFoundException
+     * @throws DbException
+     * @throws ModelNotFoundException
+     */
+    public function direct(int $userId): bool
+    {
+        $this->model = User::find($userId);
+        if (!$this->model) return false;
+        if (Config::get('buildadmin.user_sso')) {
+            Token::clear('user', $this->model->id);
+            Token::clear('user-refresh', $this->model->id);
+        }
+        return $this->loginSuccessful();
     }
 
     /**

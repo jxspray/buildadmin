@@ -7,11 +7,15 @@ return [
     // 允许跨域访问的域名
     'cors_request_domain'  => 'localhost,127.0.0.1',
     // 是否开启管理员登录验证码
-    'admin_login_captcha'  => false,
+    'admin_login_captcha'  => true,
     // 会员登录失败可重试次数,false则无限
     'user_login_retry'     => 10,
     // 管理员登录失败可重试次数,false则无限
     'admin_login_retry'    => 10,
+    // 开启管理员单点登录
+    'admin_sso'            => false,
+    // 开启会员单点登录
+    'user_sso'             => false,
     // 表格拖拽排序时,两个权重相等则自动重新整理;控制器类中也有此项（作为单控制器自定义配置）
     'auto_sort_eq_weight'  => false,
     // 开启前台会员中心
@@ -55,7 +59,7 @@ return [
     // 内容分发网络URL，末尾不带`/`
     'cdn_url'              => '',
     // 版本号
-    'version'              => 'v1.1.0',
+    'version'              => 'v1.1.2',
     // 接口地址
-    'api_url'              => 'https://ba.buildadmin.com',
+    'api_url'              => 'https://buildadmin.com',
 ];

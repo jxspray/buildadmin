@@ -14,12 +14,14 @@
                     </div>
                     <p class="username">{{ baAccount.nickname }}</p>
                     <p class="user-integral">
-                        <span>{{ $t('user.user.integral') + ' ' + baAccount.score }}</span>
-                        <span>{{ $t('user.user.balance') + ' ' + baAccount.money }}</span>
+                        <span>{{ $t('module.Integral') + ' ' + baAccount.score }}</span>
+                        <span>{{ $t('module.Balance') + ' ' + baAccount.money }}</span>
                     </p>
                     <div class="userinfo-buttons">
-                        <!-- <el-button v-blur size="default" type="primary">{{ $('module.My module') }}</el-button> -->
-                        <el-button @click="baAccount.logout()" v-blur size="default" type="warning">{{ $t('user.user.Logout login') }}</el-button>
+                        <el-button @click="openUrl('https://buildadmin.com/user/account/moduleOrders')" v-blur size="default" type="primary">
+                            {{ $t('module.My module') }}
+                        </el-button>
+                        <el-button @click="baAccount.logout()" v-blur size="default" type="warning">{{ $t('module.Logout login') }}</el-button>
                     </div>
                 </div>
             </template>
@@ -73,7 +75,7 @@
                             <el-button @click="onBaAccountSubmit(baAccountFormRef)" :loading="user.loading" round type="primary" size="large">
                                 {{ t('module.Sign in') }}
                             </el-button>
-                            <a target="_blank" class="ba-account-register" href="https://ba.buildadmin.com/#/user/login?type=register">
+                            <a target="_blank" class="ba-account-register" href="https://buildadmin.com/user/login?type=register">
                                 <el-button round plain type="info" size="large"> {{ t('module.Register') }} </el-button>
                             </a>
                         </el-form-item>
@@ -121,10 +123,14 @@ const user: {
 })
 
 const baAccountFormRules: Partial<Record<string, FormItemRule[]>> = reactive({
-    username: [buildValidatorData({ name: 'required', title: t('user.user.User name') })],
-    captcha: [buildValidatorData({ name: 'required', title: t('user.user.Verification Code') })],
-    password: [buildValidatorData({ name: 'required', title: t('user.user.password') }), buildValidatorData({ name: 'password' })],
+    username: [buildValidatorData({ name: 'required', title: t('module.User name') })],
+    captcha: [buildValidatorData({ name: 'required', title: t('module.Verification Code') })],
+    password: [buildValidatorData({ name: 'required', title: t('module.Password') }), buildValidatorData({ name: 'password' })],
 })
+
+const openUrl = (url: string) => {
+    window.open(url)
+}
 
 const onBaAccountSubmit = (formRef: FormInstance | undefined = undefined) => {
     formRef!.validate((valid) => {
@@ -134,7 +140,7 @@ const onBaAccountSubmit = (formRef: FormInstance | undefined = undefined) => {
                 .then((res) => {
                     state.dialog.baAccount = false
                     user.loading = false
-                    baAccount.dataFill(res.data.userinfo)
+                    baAccount.dataFill(res.data.userInfo)
                 })
                 .catch(() => {
                     user.loading = false

@@ -406,7 +406,7 @@ class Helper
             $webDir['lang'] = array_merge($pathArr, [$lastName]);
             $langDir        = ['en', 'zh-cn'];
             foreach ($langDir as $item) {
-                $webDir[$item] = "web/src/lang/pages/$item" . ($pathArr ? '/' . implode('/', $pathArr) : '') . "/$lastName";
+                $webDir[$item] = "web/src/lang/backend/$item" . ($pathArr ? '/' . implode('/', $pathArr) : '') . "/$lastName";
             }
         }
         foreach ($webDir as &$item) {
@@ -429,7 +429,7 @@ class Helper
      */
     public static function getMenuName(array $webDir): string
     {
-        return ($webDir['path'] ? implode('.', $webDir['path']) . '/' : '') . $webDir['originalLastName'];
+        return ($webDir['path'] ? implode('/', $webDir['path']) . '/' : '') . $webDir['originalLastName'];
     }
 
     /**
@@ -669,13 +669,9 @@ class Helper
         foreach ($langData as $lang => $langDatum) {
             $langTsContent = '';
             foreach ($langDatum as $key => $item) {
-                $quote = stripos($item, "'") === false ? "'" : '"';
-                if (preg_match("/^[a-zA-Z][a-zA-Z0-9_]+$/", $key)) {
-                    $langTsContent .= self::tab() . $key . ": $quote$item$quote,\n";
-                } else {
-                    $keyQuote      = stripos($key, "'") === false ? "'" : '"';
-                    $langTsContent .= self::tab() . "$keyQuote$key$keyQuote: $quote$item$quote,\n";
-                }
+                $quote         = self::getQuote($item);
+                $keyStr        = self::formatObjectKey($key);
+                $langTsContent .= self::tab() . $keyStr . ": $quote$item$quote,\n";
             }
             $langTsContent = "export default {\n" . $langTsContent . "}\n";
             self::writeFile(root_path() . $webLangDir[$lang] . '.ts', $langTsContent);
@@ -840,6 +836,7 @@ class Helper
 
     public static function buildTableColumnKey($key, $item): string
     {
+        $key = self::formatObjectKey($key);
         if (is_array($item)) {
             $itemJson = ' ' . $key . ': {';
             foreach ($item as $ik => $iitem) {
@@ -857,6 +854,16 @@ class Helper
             }
         }
         return $itemJson;
+    }
+
+    public static function formatObjectKey(string $keyName): string
+    {
+        if (preg_match("/^[a-zA-Z0-9_]+$/", $keyName)) {
+            return $keyName;
+        } else {
+            $quote = self::getQuote($keyName);
+            return "$quote$keyName$quote";
+        }
     }
 
     public static function getQuote(string $value): string
@@ -914,7 +921,7 @@ class Helper
         if (is_array($arr)) {
             $jsonStr = '';
             foreach ($arr as $key => $item) {
-                $keyStr = preg_match("/^[a-zA-Z][a-zA-Z0-9_]+$/", $key) ? ' ' . $key . ': ' : ' \'' . $key . '\': ';
+                $keyStr = ' ' . self::formatObjectKey($key) . ': ';
                 if (is_array($item)) {
                     $jsonStr .= $keyStr . self::getJsonFromArray($item) . ',';
                 } elseif ($item === 'false' || $item === 'true') {

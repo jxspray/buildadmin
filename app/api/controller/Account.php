@@ -55,7 +55,7 @@ class Account extends Frontend
     public function profile()
     {
         if ($this->request->isPost()) {
-            $data = $this->request->only(['avatar', 'nickname', 'gender', 'birthday', 'motto']);
+            $data = $this->request->only(['id', 'avatar', 'username', 'nickname', 'gender', 'birthday', 'motto']);
             if (!isset($data['birthday'])) $data['birthday'] = null;
 
             Db::startTrans();
@@ -109,9 +109,10 @@ class Account extends Frontend
         $user    = $this->auth->getUser();
 
         if ($user[$params['type']]) {
-            if (!Token::check($params['accountVerificationToken'], $params['type'] . '-pass', $user->id)) {
+            if (!Token::check($params['accountVerificationToken'], $params['type'] . '-pass', $user->id, false)) {
                 $this->error(__('You need to verify your account before modifying the binding information'));
             }
+            Token::delete($params['accountVerificationToken']);
         } else {
             // 验证账户密码
             if (!isset($params['password']) || $user->password != encrypt_password($params['password'], $user->salt)) {

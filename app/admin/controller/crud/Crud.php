@@ -210,7 +210,7 @@ class Crud extends Backend
             if ($weighKey !== false) {
                 $this->indexVueData['enableDragSort'] = true;
                 $this->modelData['afterInsert']       = Helper::assembleStub('mixins/model/afterInsert', [
-                    'field' => $fieldsMap[$weighKey]
+                    'field' => $weighKey
                 ]);
             }
 
@@ -531,7 +531,7 @@ class Crud extends Backend
                     $this->controllerData['relationVisibleFieldList'][$relationData['relationMethod']] = $relationFields;
                 }
             } elseif ($field['designType'] == 'remoteSelects') {
-                $this->modelData['append'][]  = parse_name($tableName, 0, false);
+                $this->modelData['append'][]  = parse_name($tableName, 1, false);
                 $this->modelData['methods'][] = Helper::assembleStub('mixins/model/getters/remoteSelectLabels', [
                     'field'          => parse_name($tableName, 1),
                     'className'      => str_replace(['.php', '/'], ['', '\\'], '\\' . $field['form']['remote-model']),

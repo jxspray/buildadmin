@@ -133,9 +133,7 @@ class Backend extends Api
             }
             if (!action_in_arr($this->noNeedPermission)) {
                 if (!$this->auth->check($routePath)) {
-                    $this->error(__('You have no permission'), [
-                        'routePath' => '/admin'
-                    ], 302);
+                    $this->error(__('You have no permission'), [], 401);
                 }
             }
         } else {
@@ -199,8 +197,7 @@ class Backend extends Api
         }
 
         // 通用搜索组装
-        foreach ($search as $item) {
-            $field = json_decode($item, true);
+        foreach ($search as $field) {
             if (!is_array($field) || !isset($field['operator']) || !isset($field['field'])) {
                 continue;
             }
