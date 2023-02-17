@@ -22,7 +22,14 @@
             :label="item[field]"
             :value="item[state.primaryKey].toString()"
             :key="item[state.primaryKey]"
-        ></el-option>
+        >
+            <el-tooltip placement="right" effect="light" v-if="!isEmpty(tooltipParams)">
+                <template #content>
+                    <p v-for="(tooltipParam, key) in tooltipParams" :key="key">{{ key }}: {{ item[tooltipParam] }}</p>
+                </template>
+                <div>{{ item[field] }}</div>
+            </el-tooltip>
+        </el-option>
         <el-pagination
             v-if="state.total"
             :currentPage="state.currentPage"
@@ -40,6 +47,7 @@ import { reactive, watch, onMounted, ref, nextTick } from 'vue'
 import { getSelectData } from '/@/api/common'
 import { uuid } from '/@/utils/random'
 import type { ElSelect } from 'element-plus'
+import { isEmpty } from 'lodash-es'
 
 const selectRef = ref<InstanceType<typeof ElSelect> | undefined>()
 type valType = string | number | string[] | number[]
@@ -52,6 +60,7 @@ interface Props {
     remoteUrl: string
     modelValue: valType
     labelFormatter?: (optionData: anyObj, optionKey: string) => string
+    tooltipParams?: anyObj
 }
 const props = withDefaults(defineProps<Props>(), {
     pk: 'id',
@@ -62,6 +71,9 @@ const props = withDefaults(defineProps<Props>(), {
     remoteUrl: '',
     modelValue: '',
     multiple: false,
+    tooltipParams: () => {
+        return {}
+    },
 })
 
 const state: {
@@ -198,7 +210,7 @@ onMounted(() => {
 watch(
     () => props.modelValue,
     (newVal) => {
-        if (state.value.toString() != newVal.toString()) {
+        if (String(state.value) != String(newVal)) {
             state.value = newVal ? newVal : ''
             initDefaultValue()
         }
