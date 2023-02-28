@@ -6,9 +6,10 @@
 <script setup lang="ts">
 import { useConfig } from '/@/stores/config'
 import { useNavTabs } from '/@/stores/navTabs'
-import DefaultNavBar from './navBar/default.vue'
-import ClassicNavBar from './navBar/classic.vue'
-import StreamlineNavBar from './menuHorizontal.vue'
+import DefaultNavBar from '/@/layouts/backend/components/navBar/default.vue'
+import ClassicNavBar from '/@/layouts/backend/components/navBar/classic.vue'
+import StreamlineNavBar from '/@/layouts/backend/components/menus/menuHorizontal.vue'
+import DoubleNavBar from '/@/layouts/backend/components/navBar/double.vue'
 
 const config = useConfig()
 const navTabs = useNavTabs()
@@ -18,7 +19,7 @@ const navTabs = useNavTabs()
 import { defineComponent } from 'vue'
 export default defineComponent({
     name: 'layout/header',
-    components: { DefaultNavBar, ClassicNavBar, StreamlineNavBar },
+    components: { DefaultNavBar, ClassicNavBar, StreamlineNavBar, DoubleNavBar },
 })
 </script>
 

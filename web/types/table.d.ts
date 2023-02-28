@@ -2,6 +2,8 @@ import type { TagProps, ButtonType, ElForm, FormInstance, ButtonProps } from 'el
 import { Component, ComponentPublicInstance } from 'vue'
 import Table from '/@/components/table/index.vue'
 import { TableColumnCtx } from 'element-plus/es/components/table/src/table-column/defaults'
+import type { PopconfirmProps } from 'element-plus'
+import { Mutable } from 'element-plus/es/utils'
 
 declare global {
     /* baTable */
@@ -190,15 +192,16 @@ declare global {
 
     /* 表格右侧操作按钮 */
     interface OptButton {
-        // 渲染方式:tipButton=带tip的按钮,confirmButton=带确认框的按钮,moveButton=移动按钮
-        render: string
+        // 渲染方式:tipButton=带tip的按钮,confirmButton=带确认框的按钮,moveButton=移动按钮,basicButton=普通按钮
+        render: 'tipButton' | 'confirmButton' | 'moveButton' | 'basicButton'
         name: string
+        // 自动使用 t() 包裹，请使用语言翻译key，比如 admin.infoBtn
         title?: string
         text?: string
         class?: string
         type: ButtonType
         icon: string
-        popconfirm?: any
+        popconfirm?: Partial<Mutable<PopconfirmProps>>
         disabledTip?: boolean
         // 自定义点击事件
         click?: (row: TableRow, field: TableColumn) => void
@@ -207,7 +210,7 @@ declare global {
         // 按钮是否禁用，请返回布尔值
         disabled?: (row: TableRow, field: TableColumn) => boolean
         // 自定义el-button属性
-        attr?: Partial<ButtonProps>
+        attr?: Partial<Mutable<ButtonProps>>
     }
 
     /* 表格行 */
