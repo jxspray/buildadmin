@@ -3,6 +3,7 @@
 namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
+use app\index\logics\CmsLogic;
 
 /**
  * 模型字段管理
@@ -53,5 +54,14 @@ class Fields extends Backend
             'total'  => $res->total(),
             'remark' => get_route_remark(),
         ]);
+    }
+
+    public function getFields(){
+        $route = $this->request->get('route');
+        if ($route && $module = \app\admin\model\cms\Module::where('path', $route)->find()) {
+            $res = $this->model->where('moduleid', $module['id'])->select();
+            $this->success('', $res);
+        }
+        $this->error("参数错误");
     }
 }

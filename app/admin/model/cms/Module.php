@@ -31,7 +31,19 @@ class Module extends Model
         if (SqlField::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
 
         $name = strtolower($model['name']);
+        $model['path'] = "cms/content/$name";
         if (empty($name)) return false;
+        return true;
+    }
+
+    public static function onAfterInsert(Model $model): void
+    {
+        if ($model->weigh == 0) {
+            $pk = $model->getPk();
+            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
+        }
+
+        $name = strtolower($model['name']);
         $model['path'] = "cms/content/$name";
         /* 添加菜单 */
         $menu = [
@@ -52,15 +64,6 @@ class Module extends Model
             ]
         ];
         Menu::create([$menu], 'cms');
-        return true;
-    }
-
-    public static function onAfterInsert(Model $model): void
-    {
-        if ($model->weigh == 0) {
-            $pk = $model->getPk();
-            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
-        }
     }
 
     public static function onAfterWrite(self $model): void

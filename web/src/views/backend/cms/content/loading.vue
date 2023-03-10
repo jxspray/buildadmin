@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+import createAxios from '/@/utils/axios'
 import { ref, provide, onMounted } from 'vue'
 import baTableClass from '/@/utils/baTable'
 import { defaultOptButtons } from '/@/components/table'
@@ -52,9 +53,23 @@ const baTable = new baTableClass(
         defaultItems: {"links_type":"0","blank":"0","show":"1","status":"1"},
     }
 )
+baTable.api.actionUrl.set('getFields', '/admin/cms.fields/getFields')
+
+createAxios(
+    {
+        url: '/admin/cms.fields/getFields',
+        method: 'get',
+        params: { route: route.name },
+    },
+    {
+        showSuccessMessage: false,
+    }
+).then(function(res){
+    baTable.form.extend = { fields: res.data };
+    return true;
+})
 
 provide('baTable', baTable)
-console.log(route.name);
 onMounted(() => {
     baTable.table.ref = tableRef.value
     baTable.mount()

@@ -26,7 +26,7 @@
                     :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules"
                 >
-                
+
                 <FormItem :label="t('cms.field.field')" type="string" v-model="baTable.form.items!.field" prop="field" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.field') }) }" />
                 <FormItem :label="t('cms.field.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.name') }) }" />
                 <!-- 字段属性 -->
@@ -56,6 +56,7 @@ import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
 import CustomField from './customField.vue'
+import { buildValidatorData } from '/@/utils/validate'
 
 
 const formRef = ref<InstanceType<typeof ElForm>>()
@@ -64,7 +65,21 @@ const baTable = inject('baTable') as baTableClass
 const { t } = useI18n()
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
-    
+    field: [buildValidatorData({ name: 'required', title: t('cms.field.field') }),
+        {
+            validator: (rule: any, val: string, callback: Function) => {
+                if (!val) {
+                    return callback()
+                }
+                if (!/(^_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)/.test(val)) {
+                    return callback(new Error(t('字段名格式错误！')))
+                }
+                return callback()
+            },
+            trigger: 'blur',
+        }],
+        name: [buildValidatorData({ name: 'required', title: t('cms.field.name') })],
+        type: [buildValidatorData({ name: 'required', title: t('cms.field.type') })]
 })
 
 </script>

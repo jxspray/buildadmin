@@ -78,7 +78,7 @@ class SqlField
         $sqlList = [];
         switch ($moduleRow['template']) {
             case 'article':
-                $data[] = $this->catid('catid', ['remark' => '栏目']);
+                $data[] = $this->select('column', ['remark' => '栏目']);
                 $data[] = $this->title('title', ['remark' => '标题']);
                 $data[] = $this->text('keywords', ['remark' => '关键词']);
                 $data[] = $this->textarea('description', ['remark' => '描述']);
@@ -176,7 +176,6 @@ class SqlField
         }
         if (method_exists($this, $data['type'])) {
             list($sql, $setup) = $this->{$data['type']}($data);
-//            var_dump("{$this->getHead($data['field'], $originData['field']??'')} $sql");
             $sql = "{$this->getHead($data['field'], $originData['field']??'')} $sql";
             $data['setup'] = $setup;
             return [$sql, $data];
@@ -241,6 +240,12 @@ class SqlField
     }
 
     public function text(array $res): array
+    {
+        extract($res);
+        return [$this->_varchar($setup, $comment ?? ''), $setup];
+    }
+
+    public function select(array $res): array
     {
         extract($res);
         return [$this->_varchar($setup, $comment ?? ''), $setup];
@@ -399,9 +404,9 @@ class SqlField
         $default = NULL;
         extract($args);
         $options = array_keys($options);
-        if (in_array($default, $options)) $default = "NOT NULL DEFAULT '$default'";
-        else if ($default === NULL) $default = "DEFAULT NULL";
-
+//        if (in_array($default, $options)) $default = "NOT NULL DEFAULT '$default'";
+//        else if ($default === NULL) $default = "DEFAULT NULL";
+        $default = "DEFAULT NULL";
         $str = '';
         foreach ($options as $option) {
             if ($str) $str .= ", ";

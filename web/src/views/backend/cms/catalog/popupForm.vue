@@ -67,7 +67,7 @@
                     <el-tab-pane :label="t('cms.catalog.extend')">
                         <template v-for="item in state.fields">
                             <FormItem v-if="item.type == 'text'" :label="item.name" type="string" v-model="state.catalogExtend[item.field]" :prop="item.field" :input-attr="{ placeholder: t('Please input field', { field: item.name }) }" />
-                            <FormItem v-if="item.type == 'image'" :label="item.name" type="image" v-model="state.catalogExtend[item.field]" />
+                            <FormItem v-else :label="item.name" :type="item.type" v-model="state.catalogExtend[item.field]" />
                         </template>
                     </el-tab-pane>
                 </el-tabs>

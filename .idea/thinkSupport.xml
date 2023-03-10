@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ThinkSupport">
-    <option name="envFileName" value=".env-webcms" />
-    <option name="envName" value="env-webcms" />
-    <option name="globalTablePrefix" value="ba_" />
+    <option name="envFileName" value=".env-example" />
+    <option name="envName" value="env-example" />
     <option name="hasDatabaseConfig" value="true" />
     <option name="hasEnvs" value="true" />
     <option name="hasInterpreter" value="true" />
     <option name="pluginEnabled" value="true" />
+    <option name="tablePrefix" value="ba_" />
     <option name="tp" value="true" />
     <option name="tpContainer">
       <map>

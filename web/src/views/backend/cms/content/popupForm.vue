@@ -1,6 +1,7 @@
 <template>
     <!-- 对话框表单 -->
     <el-dialog
+        :fullscreen="true"
         class="ba-operate-dialog"
         :close-on-click-modal="false"
         :model-value="baTable.form.operate ? true : false"
@@ -26,24 +27,52 @@
                     :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules"
                 >
-                <FormItem :label="t('cms.catalog.pid')" type="number" prop="pid" v-model.number="baTable.form.items!.pid" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.pid') }) }" />
-                <FormItem :label="t('cms.catalog.num')" type="number" prop="num" v-model.number="baTable.form.items!.num" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.num') }) }" />
-                <FormItem :label="t('cms.catalog.title')" type="string" v-model="baTable.form.items!.title" prop="title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.title') }) }" />
-                <FormItem :label="t('cms.catalog.description')" type="string" v-model="baTable.form.items!.description" prop="description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.description') }) }" />
-                <FormItem :label="t('cms.catalog.template_list')" type="select" v-model="baTable.form.items!.template_list" prop="template_list" :data="{ content: { } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.template_list') }) }" />
-                <FormItem :label="t('cms.catalog.template_info')" type="string" v-model="baTable.form.items!.template_info" prop="template_info" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.template_info') }) }" />
-                <FormItem :label="t('cms.catalog.seo_url')" type="string" v-model="baTable.form.items!.seo_url" prop="seo_url" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_url') }) }" />
-                <FormItem :label="t('cms.catalog.seo_title')" type="string" v-model="baTable.form.items!.seo_title" prop="seo_title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_title') }) }" />
-                <FormItem :label="t('cms.catalog.seo_keywords')" type="string" v-model="baTable.form.items!.seo_keywords" prop="seo_keywords" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_keywords') }) }" />
-                <FormItem :label="t('cms.catalog.seo_description')" type="string" v-model="baTable.form.items!.seo_description" prop="seo_description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_description') }) }" />
-                <FormItem :label="t('cms.catalog.links_type')" type="radio" v-model="baTable.form.items!.links_type" prop="links_type" :data="{ content: { 0: t('cms.catalog.links_type 0'), 1: t('cms.catalog.links_type 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.links_type') }) }" />
-                <FormItem :label="t('cms.catalog.links_value')" type="textarea" v-model="baTable.form.items!.links_value" prop="links_value" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.catalog.links_value') }) }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" />
-                <FormItem :label="t('cms.catalog.weigh')" type="number" prop="weigh" v-model.number="baTable.form.items!.weigh" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.weigh') }) }" />
-                <FormItem :label="t('cms.catalog.module')" type="string" v-model="baTable.form.items!.module" prop="module" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.module') }) }" />
-                <FormItem :label="t('cms.catalog.moduleid')" type="number" prop="moduleid" v-model.number="baTable.form.items!.moduleid" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.moduleid') }) }" />
-                <FormItem :label="t('cms.catalog.blank')" type="radio" v-model="baTable.form.items!.blank" prop="blank" :data="{ content: { 0: t('cms.catalog.blank 0'), 1: t('cms.catalog.blank 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.blank') }) }" />
-                <FormItem :label="t('cms.catalog.show')" type="radio" v-model="baTable.form.items!.show" prop="show" :data="{ content: { 0: t('cms.catalog.show 0'), 1: t('cms.catalog.show 1'), 2: t('cms.catalog.show 2'), 3: t('cms.catalog.show 3') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.show') }) }" />
-                <FormItem :label="t('cms.catalog.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.catalog.status 0'), 1: t('cms.catalog.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.status') }) }" />
+                <el-tabs tab-position="left" class="catalog-tabs">
+                    <el-tab-pane :label="t('cms.catalog.base')">
+                        <div v-for="item in baseFields">
+                            <FormItem
+                                type="remoteSelect"
+                                :label="t(item.name)"
+                                v-model="baTable.form.items!.moduleid"
+                                :input-attr="{
+                                    field: 'title',
+                                    'remote-url': '/admin/cms.module/index',
+                                    placeholder: t('Please select field', { field: t('cms.catalog.moduleid') })
+                                }"
+                            />
+                        </div>
+                        <FormItem
+                            type="remoteSelect"
+                            :label="t('cms.catalog.pid')"
+                            v-model="baTable.form.items!.pid"
+                            :placeholder="t('Click Select')"
+                            :input-attr="{
+                                params: { isTree: true },
+                                field: 'title',
+                                'remote-url': '/admin/cms.catalog/index',
+                            }"
+                        />
+                        <FormItem :label="t('cms.catalog.title')" type="string" v-model="baTable.form.items!.title" prop="title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.title') }) }" />
+                        <FormItem :label="t('cms.catalog.description')" type="textarea" v-model="baTable.form.items!.description" prop="description" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.catalog.description') }) }" />
+                        <FormItem :label="t('cms.catalog.weigh')" type="number" prop="weigh" v-model.number="baTable.form.items!.weigh" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.weigh') }) }" />
+                        <FormItem :label="t('cms.catalog.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.catalog.status 0'), 1: t('cms.catalog.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.status') }) }" />
+                        <!-- <FormItem :label="t('cms.catalog.template_list')" type="select" v-model="baTable.form.items!.template_list" prop="template_list" :data="{ content: { } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.template_list') }) }" />
+                        <FormItem :label="t('cms.catalog.template_info')" type="string" v-model="baTable.form.items!.template_info" prop="template_info" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.template_info') }) }" /> -->
+                        <!-- <FormItem :label="t('cms.catalog.blank')" type="radio" v-model="baTable.form.items!.blank" prop="blank" :data="{ content: { 0: t('cms.catalog.blank 0'), 1: t('cms.catalog.blank 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.blank') }) }" />
+                        <FormItem :label="t('cms.catalog.show')" type="radio" v-model="baTable.form.items!.show" prop="show" :data="{ content: { 0: t('cms.catalog.show 0'), 1: t('cms.catalog.show 1'), 2: t('cms.catalog.show 2'), 3: t('cms.catalog.show 3') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.show') }) }" /> -->
+                    </el-tab-pane>
+                    <el-tab-pane :label="t('cms.catalog.seo')">
+                        <FormItem :label="t('cms.catalog.seo_title')" type="string" v-model="baTable.form.items!.seo_title" prop="seo_title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_title') }) }" />
+                        <FormItem :label="t('cms.catalog.seo_keywords')" type="string" v-model="baTable.form.items!.seo_keywords" prop="seo_keywords" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_keywords') }) }" />
+                        <FormItem :label="t('cms.catalog.seo_description')" type="textarea" v-model="baTable.form.items!.seo_description" prop="seo_description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_description') }) }" />
+                    </el-tab-pane>
+                    <el-tab-pane :label="t('cms.catalog.extend')">
+                        <template v-for="item in state.fields">
+                            <FormItem v-if="item.type == 'text'" :label="item.name" type="string" v-model="state.catalogExtend[item.field]" :prop="item.field" :input-attr="{ placeholder: t('Please input field', { field: item.name }) }" />
+                            <FormItem v-else :label="item.name" :type="item.type" v-model="state.catalogExtend[item.field]" />
+                        </template>
+                    </el-tab-pane>
+                </el-tabs>
                 </el-form>
             </div>
         </el-scrollbar>
@@ -70,24 +99,58 @@ import { buildValidatorData } from '/@/utils/validate'
 const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
 
+const state: {
+    catalogExtend: any,
+    fields: any[]
+} = reactive({
+    catalogExtend: {},
+    fields: []
+})
+// 获取模块字段信息
+
+const baseType = ['text', 'textarea', 'number', 'radio', 'checkbox', 'select'];
+const baseFields: any[] = [];
+
+baTable.before = {
+    onSubmit: function (res: any) {
+        baTable.form.items!.catalogExtend = state.catalogExtend
+    }
+}
+baTable.after = {
+    getIndex: function() {
+        baTable.form.extend!.fields.forEach((item: any) => {
+            if (item.type == 'select') {
+                if (item.setup.type == 'remote') item.formType = 'remoteSelect';
+            }
+            if (baseType.includes(item.type)) baseFields.push(item);
+        });
+    },
+    requestEdit: function (res: any) {
+        let fields = []
+        for(const key in res.res.data.fields) {
+            fields.push(res.res.data.fields[key])
+        }
+        state.fields = fields
+    }
+}
+
 const { t } = useI18n()
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
-    // pid: [buildValidatorData('required', t('cms.catalog.pid'))],
-    // num: [buildValidatorData('required', t('cms.catalog.num'))],
-    // title: [buildValidatorData('required', t('cms.catalog.title'))],
-    // description: [buildValidatorData('required', t('cms.catalog.description'))],
-    // template_list: [buildValidatorData('required', t('cms.catalog.template_list'))],
-    // template_info: [buildValidatorData('required', t('cms.catalog.template_info'))],
-    // seo_url: [buildValidatorData('required', t('cms.catalog.seo_url'))],
-    // seo_title: [buildValidatorData('required', t('cms.catalog.seo_title'))],
-    // seo_keywords: [buildValidatorData('required', t('cms.catalog.seo_keywords'))],
-    // seo_description: [buildValidatorData('required', t('cms.catalog.seo_description'))],
-    // links_value: [buildValidatorData('required', t('cms.catalog.links_value'))],
-    // weigh: [buildValidatorData('required', t('cms.catalog.weigh'))],
-    // module: [buildValidatorData('required', t('cms.catalog.module'))],
 })
 
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+// .catalog-tabs .el-tabs__content {
+//     padding: 32px;
+//     color: #6b778c;
+//     font-size: 32px;
+//     font-weight: 600;
+// }
+
+// .el-tabs--right .el-tabs__content,
+// .el-tabs--left .el-tabs__content {
+//   height: 100%;
+// }
+</style>
