@@ -27,7 +27,7 @@
                     :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules"
                 >
-                <el-tabs :tab-position="tabPosition" class="catalog-tabs">
+                <el-tabs tab-position="left" class="catalog-tabs">
                     <el-tab-pane :label="t('cms.catalog.base')">
                         <FormItem
                             type="remoteSelect"
@@ -94,7 +94,6 @@ import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 
 
-const tabPosition = ref('left')
 const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
 

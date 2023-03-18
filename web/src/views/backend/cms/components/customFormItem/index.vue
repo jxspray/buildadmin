@@ -1,23 +1,66 @@
-<template>
-    <FormItem v-if="item.type == 'text'" :label="item.name" type="string" v-model="state.catalogExtend[item.field]" :prop="item.field" :input-attr="{ placeholder: t('Please input field', { field: item.name }) }" />
-    <FormItem v-else :label="item.name" :type="item.type" v-model="state.catalogExtend[item.field]" />
-</template>
 <script lang="ts">
 import { createVNode, defineComponent, resolveComponent, PropType, computed } from 'vue'
 import { inputTypes, modelValueTypes, InputAttr, InputData } from '/@/components/baInput'
-import FormItem from '/@/components/formItem/index.vue'
+import { FormItemAttr } from '/@/components/formItem'
 import BaInput from '/@/components/baInput/index.vue'
 
+const remoteUrls: any = {
+    catalog: '/admin/cms.catalog/index'
+}
+
 export default defineComponent({
-    name: 'customFormItem',
+    name: 'formItem',
     props: {
-        item: {
+        // el-form-item的label
+        label: {
+            type: String,
+        },
+        // 输入框类型,支持的输入框见 inputTypes
+        type: {
+            type: String,
+            required: true,
+            validator: (value: string) => {
+                return inputTypes.includes(value)
+            },
+        },
+        // 双向绑定值
+        modelValue: {
+            required: true,
+        },
+        option: {
+            type: Object,
+            default: () => {},
+        },
+        // 输入框的附加属性
+        inputAttr: {
+            type: Object as PropType<InputAttr>,
+            default: () => {},
+        },
+        // el-form-item的附加属性
+        attr: {
+            type: Object as PropType<FormItemAttr>,
+            default: () => {},
+        },
+        // 额外数据,radio、checkbox的选项等数据
+        data: {
             type: Object as PropType<InputData>,
             default: () => {},
-        }
+        },
+        prop: {
+            type: String,
+            default: '',
+        },
+        placeholder: {
+            type: String,
+            default: '',
+        },
     },
     emits: ['update:modelValue'],
     setup(props, { emit }) {
+        let { type, inputAttr, data } = props
+        if (props.type == 'remoteSelect') {
+            inputAttr = { field: props.option.setup.valueField, 'remote-url': remoteUrls[props.option.setup.remoteName] }
+        }
         const onValueUpdate = (value: modelValueTypes) => {
             emit('update:modelValue', value)
         }
@@ -26,12 +69,37 @@ export default defineComponent({
             return props.attr && props.attr['block-help'] ? props.attr['block-help'] : ''
         })
 
+        const needHandlerOption = [
+            'select',
+            'selects',
+            'radio',
+            'checkbox'
+        ]
+        if (needHandlerOption.includes(type)) {
+            let content:any = {};
+            props.option.setup.options.forEach((item: any) => {
+                content[item.key] = item.value
+            });
+            data = { content: content }
+        }
+
+        const needMultiple = [
+            'select',
+            'remoteSelect'
+        ]
+        if (needMultiple.includes(type)) {
+            if (props.option.setup.maxSelect > 1) {
+                inputAttr['multiple'] = true
+                // inputAttr['max'] = props.option.setup.maxselect
+            }
+        }
+
         // el-form-item 的默认插槽,生成一个baInput
         const defaultSlot = () => {
             let inputNode = createVNode(BaInput, {
-                type: props.type,
-                attr: { placeholder: props.placeholder, ...props.inputAttr },
-                data: props.data,
+                type: type,
+                attr: { placeholder: props.placeholder, ...inputAttr },
+                data: data,
                 modelValue: props.modelValue,
                 'onUpdate:modelValue': onValueUpdate,
             })
@@ -50,6 +118,7 @@ export default defineComponent({
             }
             return inputNode
         }
+
 
         // 不带独立label输入框
         const noNeedLabelSlot = [
@@ -72,7 +141,7 @@ export default defineComponent({
         // 需要独立label的输入框
         const needLabelSlot = ['radio', 'checkbox', 'switch', 'array', 'image', 'images', 'file', 'files', 'editor']
 
-        if (noNeedLabelSlot.includes(props.type)) {
+        if (noNeedLabelSlot.includes(type)) {
             return () =>
                 createVNode(
                     resolveComponent('el-form-item'),
@@ -85,7 +154,7 @@ export default defineComponent({
                         default: defaultSlot,
                     }
                 )
-        } else if (needLabelSlot.includes(props.type)) {
+        } else if (needLabelSlot.includes(type)) {
             // 带独立label的输入框
             let title = props.data && props.data.title ? props.data.title : props.label
             const labelSlot = () => {
@@ -113,7 +182,7 @@ export default defineComponent({
                 createVNode(
                     resolveComponent('el-form-item'),
                     {
-                        class: 'ba-input-item-' + props.type,
+                        class: 'ba-input-item-' + type,
                         prop: props.prop,
                         ...props.attr,
                         label: props.label,

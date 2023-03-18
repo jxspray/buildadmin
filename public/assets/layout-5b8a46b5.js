@@ -1,0 +1,1 @@
+import{n,u as s}from"./common-535f3731.js";import{u as o}from"./index-ae07247d.js";function c(a=0){let t=a;const i={Default:70,Classic:50,Streamline:60};if(n()){const e=o();s().state.tabFullScreen||(t+=i[e.layout.layoutMode])}else t+=60;return{height:"calc(100vh - "+t.toString()+"px)"}}export{c as m};

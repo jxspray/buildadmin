@@ -78,8 +78,8 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
             },
             trigger: 'blur',
         }],
-        name: [buildValidatorData({ name: 'required', title: t('cms.field.name') })],
-        type: [buildValidatorData({ name: 'required', title: t('cms.field.type') })]
+    name: [buildValidatorData({ name: 'required', title: t('cms.field.name') })],
+    type: [buildValidatorData({ name: 'required', title: t('cms.field.type') })]
 })
 
 </script>
