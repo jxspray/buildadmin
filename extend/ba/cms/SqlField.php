@@ -302,18 +302,11 @@ class SqlField
         }
     }
 
-    public function checkbox($field, $args = []): array
+    public function checkbox(array $res): array
     {
-        $data = [];
-        extract($args);
-        $default = $default ?? '';
-        $remark = $remark ?? '多选';
-        $options = $options ?? [];
-        return [$this->_varchar($field, ['maxlength' => 120, 'default' => $default], $remark), $this->handleData($field, array_merge([
-            'type' => __FUNCTION__,
-            'name' => $remark,
-            'setup' => $this->handleSetup('checkbox', ['options' => $options, 'labelwidth' => 60])
-        ], $data))];
+        extract($res);
+        $setup['options'] = $setup['options'] ?? [];
+        return [$this->_varchar($setup, $comment ?? ''), $setup];
     }
 
     public function image(array $res): array
@@ -322,17 +315,10 @@ class SqlField
         return [$this->_varchar($setup, $comment ?? ''), $setup];
     }
 
-    public function editor($field, $args = []): array
+    public function editor(array $res): array
     {
-        $data = [];
-        extract($args);
-        $default = $default ?? '';
-        $remark = $remark ?? '内容';
-        return [$this->_tinyint($field, ['default' => $default], $remark), $this->handleData($field, array_merge([
-            'type' => __FUNCTION__,
-            'name' => $remark,
-            'setup' => $this->handleSetup('editor')
-        ], $data))];
+        extract($res);
+        return [$this->_text($setup, $comment ?? ''), $setup];
     }
 
     private function getLength($type, $length): int
@@ -359,6 +345,15 @@ class SqlField
         if (!empty($comment)) $comment = "COMMENT '$comment'";
 
         return "VARCHAR( $maxlength ) $default $comment";
+    }
+
+    private function _text(&$args = [], $comment = ''): string
+    {
+        if (($res = sql_inject($args)) !== true) abort(502, $res);
+        extract($args);
+        if (!empty($comment)) $comment = "COMMENT '$remark'";
+
+        return "TEXT $comment";
     }
 
     private function _smallint($field, $args = [], $remark = ''): string
@@ -427,16 +422,5 @@ class SqlField
         if (!empty($remark)) $remark = "COMMENT '$remark'";
 
         return "{$this->getHead()} `$field` TINYINT( $maxlength ) $default $remark";
-    }
-
-    private function _text($field, $args = [], $remark = ''): string
-    {
-        $default = NULL;
-        extract($args);
-        if ($default === NULL) $default = "";
-        else $default = "NOT NULL";
-        if (!empty($remark)) $remark = "COMMENT '$remark'";
-
-        return "{$this->getHead()} `$field` $default TEXT $remark";
     }
 }

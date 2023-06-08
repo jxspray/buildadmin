@@ -5,7 +5,7 @@ namespace app\index\model\web;
 use think\Model;
 use think\model\concern\SoftDelete;
 
-class Module extends Content implements \app\admin\model\cms\CmsModelInterface
+class Catalog extends Content implements \app\admin\model\cms\CmsModelInterface
 {
 //    use SoftDelete;
 //    protected $autoWriteTimestamp = 'int';
@@ -13,7 +13,7 @@ class Module extends Content implements \app\admin\model\cms\CmsModelInterface
 //    protected $createTime = 'createtime';
 //    protected $updateTime = 'updatetime';
 
-    protected $name = "cms_module";
+    protected $name = "cms_catalog";
 
     public function getColumnAll($param = null): array
     {

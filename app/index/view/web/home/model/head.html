@@ -1,0 +1,37 @@
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>{$seo_title}-{$site_name}</title>
+<meta name="description" content="{$seo_description}" />
+<meta name="keywords" content="{$seo_keywords}" />
+<link rel="icon" href="{$ico_image}" mce_href="{$ico_image}" type="image/x-icon" />
+
+
+<!-- CSS-COM -->
+<link rel="stylesheet" href="__TEMP_LANG__/css/bootstrap.min.css">
+<link rel="stylesheet" href="__TEMP_LANG__/css/common.css">
+<link rel="stylesheet" href="__TEMP_LANG__/css/banner.css">
+<link rel="stylesheet" href="__TEMP_LANG__/css/right.css">
+<link rel="stylesheet" href="__TEMP_LANG__/css/sys.css">
+<link rel="stylesheet" href="__TEMP_LANG__/css/nav.css">
+<link rel="stylesheet" href="__TEMP_LANG__/css/animate.min.css">
+<link rel="stylesheet" href="__TEMP_LANG__/js/swiper/swiper-bundle.min.css">
+<!-- CSS-PAGE -->
+<link rel="stylesheet" href="__TEMP_LANG__/xm_xiangshengwang/css/style.css?t=8">
+<link rel="stylesheet" href="__TEMP_LANG__/xm_xiangshengwang/css/style_yhy.css?t=12">
+<link rel="stylesheet" href="__TEMP_LANG__/xm_xiangshengwang/css/style_ly.css?t=15">
+<link rel="stylesheet" href="__TEMP_LANG__/xm_xiangshengwang/css/media_yhy.css?t=7">
+<link rel="stylesheet" href="__TEMP_LANG__/xm_xiangshengwang/css/media_ly.css?t=7">
+<!-- JS-COM -->
+
+<!-- 异步加载，会有延迟问题 -->
+<!--<script src="/Public/assets/js/require.js" charset="utf-8" data-main="__TEMP_LANG__/Public/config.js"></script>-->
+<!--并行加载没有延迟问题-->
+<script src="/Public/assets/js/require.js" charset="utf-8" ></script>
+<script type="text/javascript" src="__TEMP_LANG__/Public/config.js?aa=1"></script>
+<php> jovo_block('pc_shangqiao','content');</php>
+<php> jovo_block('head','content'); </php>
+
+<!-- 设置视频显示图片 -->
+<script>function returnThumb() { return "{$thumb}"; }</script>

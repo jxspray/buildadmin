@@ -1,9 +1,36 @@
 <script lang="ts">
 import { createVNode, defineComponent, resolveComponent, PropType, computed } from 'vue'
-import { inputTypes, modelValueTypes, InputAttr, InputData } from '/@/components/baInput'
+import { modelValueTypes, InputAttr, InputData } from '/@/components/baInput'
 import { FormItemAttr } from '/@/components/formItem'
 import BaInput from '/@/components/baInput/index.vue'
+import { ca } from 'element-plus/es/locale'
 
+export const inputTypes = [
+    'text',
+    'string',
+    'password',
+    'number',
+    'radio',
+    'checkbox',
+    'switch',
+    'textarea',
+    'array',
+    'datetime',
+    'year',
+    'date',
+    'time',
+    'select',
+    'selects',
+    'remoteSelect',
+    'editor',
+    'city',
+    'image',
+    'images',
+    'file',
+    'files',
+    'icon',
+    'color',
+]
 const remoteUrls: any = {
     catalog: '/admin/cms.catalog/index'
 }
@@ -57,9 +84,19 @@ export default defineComponent({
     },
     emits: ['update:modelValue'],
     setup(props, { emit }) {
-        let { type, inputAttr, data } = props
-        if (props.type == 'remoteSelect') {
-            inputAttr = { field: props.option.setup.valueField, 'remote-url': remoteUrls[props.option.setup.remoteName] }
+        let { type, inputAttr, data, option } = props
+        const needTreeApi = [
+            'catalog'
+        ]
+        if (type == 'remoteSelect') {
+            inputAttr = { field: option.setup.valueField, 'remote-url': remoteUrls[option.setup.remoteName] }
+
+            if (needTreeApi.includes(option.setup.remoteName)) {
+                inputAttr['params'] = { isTree: true }
+            }
+        }
+        if (type == 'text') {
+            type = option.setup.type;
         }
         const onValueUpdate = (value: modelValueTypes) => {
             emit('update:modelValue', value)
@@ -77,7 +114,7 @@ export default defineComponent({
         ]
         if (needHandlerOption.includes(type)) {
             let content:any = {};
-            props.option.setup.options.forEach((item: any) => {
+            option.setup.options.forEach((item: any) => {
                 content[item.key] = item.value
             });
             data = { content: content }
@@ -88,9 +125,9 @@ export default defineComponent({
             'remoteSelect'
         ]
         if (needMultiple.includes(type)) {
-            if (props.option.setup.maxSelect > 1) {
+            if (option.setup.maxSelect > 1) {
                 inputAttr['multiple'] = true
-                // inputAttr['max'] = props.option.setup.maxselect
+                // inputAttr['max'] = option.setup.maxselect
             }
         }
 

@@ -6,7 +6,7 @@ class Page extends \think\Model implements \app\admin\model\cms\CmsModelInterfac
 {
     protected $name = "cms_page";
 
-    public function getColumnAll(): array
+    public function getColumnAll($param = null): array
     {
         return $this->column("*", 'id');
     }

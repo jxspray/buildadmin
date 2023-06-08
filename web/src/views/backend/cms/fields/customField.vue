@@ -116,13 +116,13 @@
         <div style="text-align: center;margin-bottom: 10px;">
             <el-button type="success" @click="addOption({ key: '', value: '', type: 'select' })">添加</el-button>
         </div>
-        <FormItem :label="t('最多选择数')" type="number" prop="weigh" v-model.number="form.setup!.maxselect" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('最多选择数') }) }" />
+        <FormItem :label="t('最多选择数')" type="number" prop="weigh" v-model.number="form.setup!.maxSelect" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('最多选择数') }) }" />
     </template>
     <template v-if="baTable.form.items!.type == 'remoteSelect'">
         <FormItem :label="t('接口名')" type="string" v-model="form.setup!.remoteName" prop="remoteName" :input-attr="{ placeholder: t('Please input field', { field: t('接口名') }) }" />
         <FormItem :label="t('键字段')" type="string" v-model="form.setup!.keyField" prop="keyField" :input-attr="{ placeholder: t('Please input field', { field: t('键字段') }) }" />
         <FormItem :label="t('值字段')" type="string" v-model="form.setup!.valueField" prop="valueField" :input-attr="{ placeholder: t('Please input field', { field: t('值字段') }) }" />
-        <FormItem :label="t('最多选择数')" type="number" prop="weigh" v-model.number="form.setup!.maxselect" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('最多选择数') }) }" />
+        <FormItem :label="t('最多选择数')" type="number" prop="weigh" v-model.number="form.setup!.maxSelect" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('最多选择数') }) }" />
     </template>
     <template v-if="baTable.form.items!.type == 'datePicker'">
         <FormItem
@@ -268,14 +268,14 @@ const form: {
         select: {
             type: 'key',
             options: [],
-            maxselect: 1
+            maxSelect: 1
         },
         remoteSelect: {
             type: 'key',
             keyField: 'id',
             valueField: 'title',
             remoteName: '',
-            maxselect: 1
+            maxSelect: 1
         },
         datePicker: {
             type: 'datetime'

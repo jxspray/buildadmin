@@ -88,10 +88,10 @@ const state: {
 })
 // 获取模块字段信息
 
-const baseType = ['text', 'textarea', 'number', 'radio', 'checkbox', 'select'];
+const baseType = ['text', 'number', 'radio', 'checkbox', 'select', 'remoteSelect'];
 const baseFields: any[] = [];
 
-const seoField = ['seo_title', 'seo_keyword', 'seo_description'];
+const seoField = ['seo_title', 'seo_keywords', 'seo_description'];
 const seoFields: any[] = [];
 
 // const extendType = ['text', 'textarea', 'number', 'radio', 'checkbox', 'select'];
@@ -104,7 +104,7 @@ baTable.before = {
 baTable.after = {
     getIndex: function() {
         baTable.form.extend!.fields.forEach((item: any) => {
-            if (seoField.includes(item.type)) seoFields.push(item)
+            if (seoField.includes(item.field)) seoFields.push(item)
             else if (baseType.includes(item.type)) baseFields.push(item);
             else extendFields.push(item)
         });

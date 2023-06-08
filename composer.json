@@ -32,7 +32,8 @@
         "ext-bcmath": "*",
         "ext-iconv": "*",
         "ext-json": "*",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "topthink/think-view": "^1.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^4.2",

@@ -64,11 +64,14 @@
                         <FormItem :label="t('cms.catalog.seo_keywords')" type="string" v-model="baTable.form.items!.seo_keywords" prop="seo_keywords" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_keywords') }) }" />
                         <FormItem :label="t('cms.catalog.seo_description')" type="textarea" v-model="baTable.form.items!.seo_description" prop="seo_description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_description') }) }" />
                     </el-tab-pane>
-                    <el-tab-pane :label="t('cms.catalog.extend')">
-                        <template v-for="item in state.fields">
-                            <FormItem v-if="item.type == 'text'" :label="item.name" type="string" v-model="state.catalogExtend[item.field]" :prop="item.field" :input-attr="{ placeholder: t('Please input field', { field: item.name }) }" />
-                            <FormItem v-else :label="item.name" :type="item.type" v-model="state.catalogExtend[item.field]" />
-                        </template>
+                    <el-tab-pane :label="t('cms.catalog.extend')" v-if="state.fields.length > 0">
+                        <CustomFormItem
+                            v-for="item in state.fields"
+                            :type="item.type"
+                            :label="t(item.name)"
+                            v-model="baTable.form.items![item.field]"
+                            :option="item"
+                        />
                     </el-tab-pane>
                 </el-tabs>
                 </el-form>
@@ -92,6 +95,7 @@ import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
+import CustomFormItem from '../components/CustomFormItem/index.vue'
 
 
 const formRef = ref<InstanceType<typeof ElForm>>()
@@ -123,19 +127,6 @@ baTable.after = {
 const { t } = useI18n()
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
-    // pid: [buildValidatorData('required', t('cms.catalog.pid'))],
-    // num: [buildValidatorData('required', t('cms.catalog.num'))],
-    // title: [buildValidatorData('required', t('cms.catalog.title'))],
-    // description: [buildValidatorData('required', t('cms.catalog.description'))],
-    // template_list: [buildValidatorData('required', t('cms.catalog.template_list'))],
-    // template_info: [buildValidatorData('required', t('cms.catalog.template_info'))],
-    // seo_url: [buildValidatorData('required', t('cms.catalog.seo_url'))],
-    // seo_title: [buildValidatorData('required', t('cms.catalog.seo_title'))],
-    // seo_keywords: [buildValidatorData('required', t('cms.catalog.seo_keywords'))],
-    // seo_description: [buildValidatorData('required', t('cms.catalog.seo_description'))],
-    // links_value: [buildValidatorData('required', t('cms.catalog.links_value'))],
-    // weigh: [buildValidatorData('required', t('cms.catalog.weigh'))],
-    // module: [buildValidatorData('required', t('cms.catalog.module'))],
 })
 
 </script>

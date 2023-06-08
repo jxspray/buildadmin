@@ -436,3 +436,6 @@ if (!function_exists('sql_check_inject')) {
         return true;
     }
 }
+
+
+require __DIR__ . '/index/common_web.php';

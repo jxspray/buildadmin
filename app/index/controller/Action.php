@@ -15,6 +15,11 @@ class Action extends \app\BaseController
     private static $verityAction = ['index', 'catalog', 'info'];
     protected $app, $module, $action;
 
+    protected $layout = "default";
+
+    /**
+     * @var \think\View
+     */
     protected $view;
 
     public function __construct(\think\App $app)
@@ -59,24 +64,32 @@ class Action extends \app\BaseController
         $this->view->assign($name, $value);
     }
 
-    public function display($value)
+    public function display($value, $layout = true)
     {
         $template = $value;
         try {
+            $this->setLayout($layout);
             return $this->view->display($template);
         } catch (\Exception $e) {
             abort(404, "Template does not exist: $value");
         }
     }
 
-    public function fetch($value)
+    public function fetch($value, $layout = true)
     {
-        $template = app()->getBasePath() . "/view/web/{$this->app}/$value.html";
+        $template = app()->getAppPath() . "/view/web/{$this->app}/$value.html";
         try {
+            $this->setLayout($layout);
             return $this->view->fetch($template);
         } catch (\Exception $e) {
             abort(404, $e->getMessage());
         }
+    }
+
+    private function setLayout($layout){
+        if (!$layout) return;
+        if ($layout === true) $layout = $this->layout;
+        $this->view->layout("web/{$this->app}/layout/$layout");
     }
 
     public function __call($name, $arguments)

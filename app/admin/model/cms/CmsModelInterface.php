@@ -4,5 +4,5 @@ namespace app\admin\model\cms;
 
 interface CmsModelInterface
 {
-    public function getColumnAll(): array;
+    public function getColumnAll($param = null): array;
 }

@@ -3,6 +3,7 @@
 namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
+use app\index\logics\CmsLogic;
 use ba\Tree;
 use think\db\exception\PDOException;
 use think\exception\ValidateException;
@@ -87,6 +88,7 @@ class Catalog extends Backend
 
         // 读取用户组所有权限规则
         return $this->model
+            ->with('module')
             ->where($where)
             ->order('weigh desc,id asc')
             ->select()->toArray();
@@ -140,7 +142,7 @@ class Catalog extends Backend
 
         $this->success('', [
             'row' => $row,
-            'fields' => $row->fields
+            'fields' => CmsLogic::field_1()
         ]);
     }
 }

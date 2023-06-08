@@ -12,7 +12,7 @@ class Content extends Model implements \app\admin\model\cms\CmsModelInterface
         parent::__construct($data);
     }
 
-    public function getColumnAll(): array
+    public function getColumnAll($param = null): array
     {
         return $this->column("*", 'id');
     }

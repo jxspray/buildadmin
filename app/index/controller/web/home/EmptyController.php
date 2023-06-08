@@ -18,7 +18,7 @@ class EmptyController extends Action
     }
 
     public function _empty() {
-        $catalogs = CmsLogic::$catalogList;
+        $catalogs = CmsLogic::$catalog;
         /* 路由判断 */
         $id = $this->request->param('id', '', 'intval');
         $catid = $this->request->param('catid', '', 'intval');
@@ -26,7 +26,7 @@ class EmptyController extends Action
         if ($this->module == "urlRule") {
             $catdir = $this->request->param('catdir');
             if ($catdir) {
-                $catid = $catid ?: CmsLogic::$ruleList[$catdir];
+                $catid = $catid ?: CmsLogic::$rule[$catdir];
             }
             if ($catid) {
                 if ($catalogs[$catid]['moduleid'] > 0) {

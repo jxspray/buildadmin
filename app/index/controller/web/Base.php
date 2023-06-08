@@ -13,7 +13,10 @@ class Base extends \app\index\controller\Action
         parent::__construct($app);
         // 设置终端
         $this->settingTerminal();
-        $this->categorys = \app\index\logics\CmsLogic::$catalogList;
+        $this->categorys = cms('catalog');
+        // 设置语言数据
+        $this->settingLangData();
+        $this->assign($this->Config);
     }
 
     public function catalog($catid = '', $module = ''){
@@ -57,5 +60,41 @@ class Base extends \app\index\controller\Action
 //        else if ($_SERVER['SERVER_NAME'] == $this->Config['wap_url']) $terminal = 'wap'; // 如果是手机端域名访问，则设置为手机端
 //        elseif (cookie('phone') == 1) $terminal = 'wap'; // 如果是手机端标识COOKIE存在，则为手机端访问
         return $terminal;
+    }
+    /**
+     * 设置语言
+     */
+    public function settingLangData()
+    {
+        $this->Config = F('Config_' . LANG_NAME); // 获取站点配置
+        $this->categorys = F('Category_' . LANG_NAME); // 获取栏目
+        cookie('think_language', LANG_NAME); // 设置语言
+        define('TABLE_CATEGORY', 'category' . (LANG_NAME != 'cn' ? '_' . LANG_NAME : ''));
+
+        // 通用参数独立设置
+        foreach ($this->categorys as $category) {
+            $sysparam = trim($category['sysparam']);
+            if ($sysparam) {
+                $cateAll[$sysparam . 'Id'] = $category['id'];
+                $cateAll[$sysparam . 'Url'] = $category['url'];
+                $cateAll[$sysparam . 'Name'] = $category['catname'];
+                $cateAll[$sysparam . 'SubName'] = $category['titlesub'];
+                $cateAll[$sysparam . 'Thumb'] = $category['thumb'];
+                $cateAll[$sysparam . 'Banner'] = $this->getTerminalValue($category, 'banner');
+                $cateAll[$sysparam . 'Remark'] = $category['remark'];
+                $cateAll[$sysparam . 'Module'] = $category['module'];
+            }
+        }
+        $this->assign($cateAll);
+    }
+
+    // 前端模板设置  Home/Defalut或者Home/En或者Wap/En
+    public function jovo_template_path()
+    {
+        // 终端模板切换
+        $path = strtr(THEME_PATH, array('home' => $this->app));
+        // 语言模板判断
+        if (LANG_NAME != 'cn') $path = strtr($path, array('Default' => ucfirst(LANG_NAME)));
+        return $this->template = $path; // 设置模板目录
     }
 }

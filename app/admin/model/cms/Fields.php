@@ -2,7 +2,6 @@
 
 namespace app\admin\model\cms;
 
-use app\index\logics\CmsLogic;
 use ba\cms\SqlField;
 use think\Model;
 
@@ -50,7 +49,7 @@ class Fields extends Model
         static $instance = null;
         if ($instance === null) {
             $data = $this->getOriginData();
-            $module = CmsLogic::getInstance()->module;
+            $module = cms("module");
             $moduleInfo = $module[$data['moduleid']] ?? [];
             if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
             $instance = SqlField::getInstance($moduleInfo['name']);

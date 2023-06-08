@@ -38,3 +38,17 @@ function check_mobile(): bool
     }
     return false;
 }
+
+
+if (!function_exists("cms")) {
+    function cms($name, $type = 'cache')
+    {
+        switch ($type) {
+            case 'cache':
+                $typeItem = \app\index\logics\CmsLogic::getInstance()->getTypeItem();
+                $cmsCache = \app\index\logics\handler\CmsCache::getInstance($name);
+                if ($typeItem->setModule($name) && in_array($name, $typeItem->getType())) return $cmsCache->checkCache()->cache();
+                return false;
+        }
+    }
+}

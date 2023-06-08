@@ -2,6 +2,8 @@
 
 namespace app\admin\model\cms;
 
+use app\index\logics\CmsLogic;
+use app\index\logics\handler\CmsCache;
 use think\Model;
 use think\model\concern\SoftDelete;
 
@@ -33,6 +35,11 @@ class Catalog extends Model
         }
     }
 
+    public static function onAfterWrite(Model $model): void
+    {
+//        CmsLogic::getInstance()->forceUpdate('catalog');
+    }
+
     public function getGroupIdAttr($value, $row)
     {
         return !$value ? '' : $value;
@@ -52,7 +59,11 @@ class Catalog extends Model
         return $this->belongsTo("app\\admin\\model\\cms\\contents\\Page", 'id')->joinType("left");
     }
 
-    public function fields(){
-        return $this->hasMany("fields", 'moduleid', 'moduleid');
+//    public function fields(){
+//        return $this->hasMany("fields", 'moduleid', 'moduleid');
+//    }
+
+    public function module(){
+        return $this->belongsTo("module", 'moduleid')->joinType("left");
     }
 }

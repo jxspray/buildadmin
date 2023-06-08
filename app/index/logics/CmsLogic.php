@@ -2,111 +2,95 @@
 
 namespace app\index\logics;
 
-use app\admin\model\cms\Catalog;
+use app\index\logics\handler\CmsCache;
+use app\index\logics\handler\Type;
+use app\index\model\web\Catalog;
 use think\facade\Cache;
 
 /**
  * Created by JOVO.
  *
  * CMS static logic class
- * @property array module
  *
  * @Class CmsLogic
  * @namespace app\index\logics
  * @Description
  * @Author jxspray@163.com
  * @Time 2022/9/1
+ * @property $field_1
+ * @property $module
+ * @property $catalog
+ * @property $rule
  */
 class CmsLogic
 {
     const PREFIX = "cms_";
-    const CACHE_GET = 'get';
-    const CACHE_SET = 'set';
-    const CACHE_HAS = 'has';
     const basePath = "app\\index\\controller\\web";
+    const ALLOW_TYPE = ['module', 'catalog', 'rule', 'field'];
 
-    public static $catalogList = false;
-    public static $catalogCache = 'cms_catalog';
-
-    public static $ruleList = false;
-    public static $ruleCache = 'cms_rule';
-
-    public static $cmsCache = [];
-
-    const ALLOW_TYPE = ['module', 'catalog', 'rule'];
+    private $typeItem;
 
     /**
      * @var self
      */
     private static $instance = false;
 
-    public static function init()
+    public function __construct()
     {
-        foreach (self::ALLOW_TYPE as $value) {
-            if (self::cmsCache($value, self::CACHE_HAS)) self::$cmsCache[$value] = self::cmsCache($value);
-            else self::forceUpdate($value);
+        $this->typeItem = new Type(self::ALLOW_TYPE);
+        CmsCache::setLogic($this);
+        foreach ($this->typeItem as $value) {
+            CmsCache::getInstance($value)->checkCache();
         }
     }
 
-    public static function getInstance(){
+    public static function init()
+    {
+        self::getInstance();
+    }
+
+    public static function getInstance(): self
+    {
         if (self::$instance === false) self::$instance = new self();
         return self::$instance;
     }
 
-    public static function cmsCache($name, $type = self::CACHE_GET)
+    public function forceUpdate($type = null)
     {
-        if (is_array($name)) {
-            list($name, $data) = $name;
-            $type = self::CACHE_SET;
-        }
-        $name = self::PREFIX . $name;
-        switch ($type) {
-            case self::CACHE_HAS:
-                return Cache::has($name);
-            case self::CACHE_SET:
-                Cache::set($name, $data);
-                return true;
-            case self::CACHE_GET:
-            default:
-                return Cache::get($name);
-        }
-    }
-
-    public static function forceUpdate($type = null)
-    {
-        if (!$type || $type === true) $type = self::ALLOW_TYPE;
-        if (is_string($type)) $type = explode(",", $type);
-        foreach ($type as $item) {
-            $item = trim($item);
-            if (!in_array($item, self::ALLOW_TYPE)) continue;
+        foreach ($this->typeItem->handleType($type) as $item) {
+            if ($param = $this->typeItem->getParam($item)) {
+                $item = $param['type'];
+            }
             $name = ucfirst($item);
             $method = "update{$name}";
-            if (method_exists(self::class, $method)) self::$method(true);
+            if (method_exists(self::class, $method)) $data = self::$method(true);
             else if ($name == 'Module') {
                 $namespace = "\\app\\index\\model\\web\\$name";
                 if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
                 $instance = new $namespace();
                 $data = $instance->getColumnAll();
-                self::cmsCache([$item, $data]);
+            } else if ($name == 'Field') {
+                $namespace = "\\app\\index\\model\\web\\Fields";
+                $instance = new $namespace();
+                $data = $instance->getColumnAll($param);
             } else {
                 $namespace = "\\app\\index\\model\\web\\contents\\$name";
                 if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
                 $instance = new $namespace();
                 $data = $instance->getColumnAll();
-                self::cmsCache([$item, $data]);
             }
+            CmsCache::getInstance($item)->cache($data);
         }
     }
 
-    public static function update($instance, &$data, $cache, $value, $isDelete)
+    public static function update($instance, $data, $value, $isDelete)
     {
         if (is_numeric($value) && $isDelete && isset($data[$value])) {
             unset($data[$value]);
-            Cache::set($cache, $data);
         } else if (isset($value[$instance->getPk()])) {
             $data[$value[$instance->getPk()]] = $value;
-            Cache::set($cache, $data);
         }
+        return $data;
     }
 
     public static function updateCatalog($value = [], $isDelete = false)
@@ -114,31 +98,21 @@ class CmsLogic
         static $instance = false;
         if ($instance === false) $instance = new Catalog();
         if ($value === true) {
-            $data = $instance::getColumnAll();
-            Cache::set(self::$catalogCache, $data);
+            $data = $instance->getColumnAll();
         } else {
-            self::update($instance, self::$catalogList, self::$catalogCache, $value, $isDelete);
+            $data = self::update($instance, cms('catalog'), $value, $isDelete);
         }
+        return $data;
     }
 
-    public static function updateRule($value = [], $isDelete = false)
+    public function getTypeItem(): Type
     {
-        static $instance = false;
-        if ($instance === false) $instance = new Catalog();
-
-        if ($value === true) {
-            $data = $instance::getColumnRuleAll();
-            Cache::set(self::$ruleCache, $data);
-        } else {
-            self::update($instance, self::$ruleList, self::$ruleCache, $value, $isDelete);
-        }
+        return $this->typeItem;
     }
 
-    public function __get($name)
+    public static function __callStatic($name, $arguments)
     {
-        if (in_array($name, self::ALLOW_TYPE)) {
-            if (!self::cmsCache($name, self::CACHE_HAS)) self::forceUpdate($name);
-            return self::cmsCache($name);
-        } else abort('error', "变量{$name}不存在");
+        if ($name == 'forceUpdate') return self::getInstance()->forceUpdate($arguments[0]);
+        abort(500, "方法{$name}不存在");
     }
 }
