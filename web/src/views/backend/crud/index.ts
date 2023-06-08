@@ -74,6 +74,21 @@ export const fieldItem: {
             autoIncrement: true,
         },
         {
+            title: i18n.global.t('crud.state.Primary key (Snowflake ID)'),
+            name: 'id',
+            comment: 'ID',
+            designType: 'spk',
+            formBuildExclude: true,
+            table: {},
+            form: {},
+            ...fieldData.number,
+            type: 'bigint',
+            length: 20,
+            default: '',
+            primaryKey: true,
+            unsigned: true,
+        },
+        {
             title: i18n.global.t('crud.state.Weight (drag and drop sorting)'),
             name: 'weigh',
             comment: i18n.global.t('weigh'),
@@ -188,11 +203,13 @@ export const fieldItem: {
         {
             title: i18n.global.t('utils.select'),
             name: 'select',
-            comment: i18n.global.t('crud.state.Select:0=Option1,1=Option2'),
+            dataType: "enum('opt0','opt1')",
+            comment: i18n.global.t('crud.state.Select:opt0=Option1,opt1=Option2'),
             designType: 'select',
             table: {},
             form: {},
             ...fieldData.select,
+            default: 'opt0',
         },
         {
             title: i18n.global.t('utils.switch'),
@@ -366,7 +383,7 @@ export const fieldItem: {
         {
             title: i18n.global.t('utils.select') + i18n.global.t('crud.state.Multi'),
             name: 'selects',
-            comment: i18n.global.t('crud.state.Select:0=Option1,1=Option2'),
+            comment: i18n.global.t('crud.state.Select:opt0=Option1,opt1=Option2'),
             designType: 'selects',
             table: {},
             form: {},
@@ -375,17 +392,12 @@ export const fieldItem: {
         {
             title: i18n.global.t('crud.state.Remote Select (Multi)'),
             name: 'user_ids',
-            type: 'varchar',
-            length: 100,
-            precision: 0,
-            default: 'empty string',
-            ...npuaFalse(),
-            unsigned: true,
             comment: i18n.global.t('utils.remote select'),
             designType: 'remoteSelects',
             tableBuildExclude: true,
             table: {},
             form: {},
+            ...fieldData.remoteSelects,
         },
     ],
 }
@@ -482,6 +494,18 @@ export const designTypes: anyObj = {
         },
         form: {},
     },
+    spk: {
+        name: i18n.global.t('crud.state.Primary key (Snowflake ID)'),
+        table: {
+            width: {
+                type: 'number',
+                value: 180,
+            },
+            operator: getTableAttr('operator', 'RANGE'),
+            sortable: getTableAttr('sortable', 'custom'),
+        },
+        form: {},
+    },
     weigh: {
         name: i18n.global.t('crud.state.Weight (automatically generate drag sort button)'),
         table: {
@@ -571,6 +595,7 @@ export const designTypes: anyObj = {
         table: {
             ...tableBaseAttr,
             render: getTableAttr('render', 'tags'),
+            operator: getTableAttr('operator', 'FIND_IN_SET'),
         },
         form: formBaseAttr,
     },
@@ -651,7 +676,7 @@ export const designTypes: anyObj = {
         name: i18n.global.t('utils.select'),
         table: {
             ...tableBaseAttr,
-            render: getTableAttr('render', 'tags'),
+            render: getTableAttr('render', 'tag'),
         },
         form: {
             ...formBaseAttr,
@@ -666,6 +691,7 @@ export const designTypes: anyObj = {
         table: {
             ...tableBaseAttr,
             render: getTableAttr('render', 'tags'),
+            operator: getTableAttr('operator', 'FIND_IN_SET'),
         },
         form: {
             ...formBaseAttr,

@@ -17,6 +17,19 @@ export function validatorMobile(rule: any, mobile: string | number, callback: Fu
 }
 
 /**
+ * 身份证号验证
+ */
+export function validatorIdNumber(rule: any, idNumber: string | number, callback: Function) {
+    if (!idNumber) {
+        return callback()
+    }
+    if (!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(idNumber.toString())) {
+        return callback(new Error(i18n.global.t('validate.Please enter the correct ID number')))
+    }
+    return callback()
+}
+
+/**
  * 账户名验证
  */
 export function validatorAccount(rule: any, val: string, callback: Function) {
@@ -74,6 +87,7 @@ export function validatorEditorRequired(rule: any, val: string, callback: Functi
 export const validatorType = {
     required: i18n.global.t('validate.required'),
     mobile: i18n.global.t('utils.mobile'),
+    idNumber: i18n.global.t('utils.Id number'),
     account: i18n.global.t('utils.account'),
     password: i18n.global.t('utils.password'),
     varName: i18n.global.t('utils.variable name'),
@@ -87,8 +101,21 @@ export const validatorType = {
 }
 
 export interface buildValidatorParams {
-    // 规则名:required=必填,mobile=手机号,account=账户,password=密码,varName=变量名,editorRequired=富文本必填,number、integer、float、date、url、email
-    name: 'required' | 'mobile' | 'account' | 'password' | 'varName' | 'editorRequired' | 'number' | 'integer' | 'float' | 'date' | 'url' | 'email'
+    // 规则名:required=必填,mobile=手机号,idNumber=身份证号,account=账户,password=密码,varName=变量名,editorRequired=富文本必填,number、integer、float、date、url、email
+    name:
+        | 'required'
+        | 'mobile'
+        | 'idNumber'
+        | 'account'
+        | 'password'
+        | 'varName'
+        | 'editorRequired'
+        | 'number'
+        | 'integer'
+        | 'float'
+        | 'date'
+        | 'url'
+        | 'email'
     // 自定义验证错误消息
     message?: string
     // 验证项的标题，这些验证方式不支持:mobile、account、password、varName、editorRequired
@@ -124,6 +151,7 @@ export function buildValidatorData({ name, message, title, trigger = 'blur' }: b
     // 自定义验证方法
     const validatorCustomFun: anyObj = {
         mobile: validatorMobile,
+        idNumber: validatorIdNumber,
         account: validatorAccount,
         password: validatorPassword,
         varName: validatorVarName,

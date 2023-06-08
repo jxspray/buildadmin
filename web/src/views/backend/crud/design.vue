@@ -85,6 +85,18 @@
                             </el-select>
                         </el-form-item>
                         <FormItem
+                            :label="t('crud.crud.The relative path to the generated code')"
+                            v-model="state.table.generateRelativePath"
+                            type="string"
+                            :attr="{
+                                'label-width': 140,
+                                'block-help': t('crud.crud.For quick combination code generation location, please fill in the relative path'),
+                            }"
+                            :input-attr="{
+                                onChange: onTableChange,
+                            }"
+                        />
+                        <FormItem
                             :label="t('crud.crud.Generated Controller Location')"
                             v-model="state.table.controllerFile"
                             type="string"
@@ -92,14 +104,20 @@
                                 'label-width': 140,
                             }"
                         />
-                        <FormItem
-                            :label="t('crud.crud.Generated Data Model Location')"
-                            v-model="state.table.modelFile"
-                            type="string"
-                            :attr="{
-                                'label-width': 140,
-                            }"
-                        />
+                        <el-form-item :label="t('crud.crud.Generated Data Model Location')" :label-width="140">
+                            <el-input v-model="state.table.modelFile" type="string">
+                                <template #append>
+                                    <el-checkbox
+                                        @change="onChangeCommonModel"
+                                        v-model="state.table.isCommonModel"
+                                        :label="t('crud.crud.Common model')"
+                                        size="small"
+                                        :true-label="1"
+                                        :false-label="0"
+                                    />
+                                </template>
+                            </el-input>
+                        </el-form-item>
                         <FormItem
                             :label="t('crud.crud.Generated Validator Location')"
                             v-model="state.table.validateFile"
@@ -156,7 +174,7 @@
                 </el-collapse>
             </el-col>
             <el-col :xs="24" :span="12">
-                <div ref="designWindowRef" class="design-window ba-scroll-style" :class="state.fields.length ? '' : 'design-window-empty'">
+                <div ref="designWindowRef" class="design-window ba-scroll-style">
                     <div
                         v-for="(field, index) in state.fields"
                         :key="index"
@@ -206,7 +224,7 @@
                             </el-button>
                         </div>
                     </div>
-                    <div class="design-field-empty" v-if="!state.fields.length">
+                    <div class="design-field-empty" v-if="!state.fields.length && !state.draggingField">
                         {{ t('crud.crud.Drag the left element here to start designing CRUD') }}
                     </div>
                 </div>
@@ -234,6 +252,7 @@
                                 type="textarea"
                                 :input-attr="{
                                     rows: 2,
+                                    onChange: onFieldCommentChange,
                                 }"
                                 :placeholder="
                                     t(
@@ -519,6 +538,8 @@ const state: {
         formFields: string[]
         columnFields: string[]
         defaultSortType: string
+        generateRelativePath: string
+        isCommonModel: number
         modelFile: string
         controllerFile: string
         validateFile: string
@@ -551,6 +572,7 @@ const state: {
         table: boolean
         controller: boolean
     }
+    draggingField: boolean
 } = reactive({
     loading: {
         init: false,
@@ -565,6 +587,8 @@ const state: {
         formFields: [],
         columnFields: [],
         defaultSortType: 'desc',
+        generateRelativePath: '',
+        isCommonModel: 0,
         modelFile: '',
         controllerFile: '',
         validateFile: '',
@@ -597,6 +621,7 @@ const state: {
         table: false,
         controller: false,
     },
+    draggingField: false,
 })
 
 type TableKey = keyof typeof state.table
@@ -619,7 +644,7 @@ const onFieldDesignTypeChange = () => {
 const onFieldNameChange = (val: string) => {
     for (const key in tableFieldsKey) {
         for (const idx in state.table[tableFieldsKey[key] as TableKey] as string[]) {
-            if (!getArrayKey(state.fields, 'name', state.table[tableFieldsKey[key] as TableKey][idx])) {
+            if (!getArrayKey(state.fields, 'name', (state.table[tableFieldsKey[key] as TableKey] as string[])[idx])) {
                 ;(state.table[tableFieldsKey[key] as TableKey] as string[])[idx] = val
             }
         }
@@ -813,6 +838,37 @@ const handleFieldAttr = (field: FieldItem) => {
     return field
 }
 
+/**
+ * 根据字段字典重新生成字段的数据类型
+ */
+const onFieldCommentChange = (comment: string) => {
+    if (['enum', 'set'].includes(state.fields[state.activateField].type)) {
+        if (!comment) {
+            state.fields[state.activateField].dataType = `${state.fields[state.activateField].type}()`
+            return
+        }
+        comment = comment.replaceAll('：', ':')
+        comment = comment.replaceAll('，', ',')
+        let comments = comment.split(':')
+        if (comments[1]) {
+            comments = comments[1].split(',')
+            comments = comments
+                .map((value) => {
+                    if (!value) return ''
+                    let temp = value.split('=')
+                    if (temp[0] && temp[1]) {
+                        return `'${temp[0]}'`
+                    }
+                    return ''
+                })
+                .filter((str: string) => str != '')
+
+            // 字段数据类型
+            state.fields[state.activateField].dataType = `${state.fields[state.activateField].type}(${comments.join(',')})`
+        }
+    }
+}
+
 const loadData = () => {
     if (!['db', 'sql', 'log'].includes(crudState.type)) return
 
@@ -823,6 +879,7 @@ const loadData = () => {
         postLogStart(parseInt(crudState.startData.logId))
             .then((res) => {
                 state.table = res.data.table
+                state.table.isCommonModel = parseInt(res.data.table.isCommonModel)
                 const fields = res.data.fields
                 for (const key in fields) {
                     const field = handleFieldAttr(cloneDeep(fields[key]))
@@ -950,18 +1007,29 @@ onMounted(() => {
             setData: (dataTransfer) => {
                 dataTransfer.setData('name', Object.keys(fieldItem)[index])
             },
+            onStart: () => {
+                state.draggingField = true
+            },
+            onEnd: () => {
+                state.draggingField = false
+            },
         })
     })
 })
 
 const onTableChange = (val: string) => {
     if (!val) return
-    getFileData(val).then((res) => {
+    getFileData(val, state.table.isCommonModel).then((res) => {
         state.table.modelFile = res.data.modelFile
         state.table.controllerFile = res.data.controllerFile
         state.table.validateFile = res.data.validateFile
         state.table.webViewsDir = res.data.webViewsDir
+        state.table.generateRelativePath = val.replaceAll('/', '\\')
     })
+}
+
+const onChangeCommonModel = () => {
+    onTableChange(state.table.generateRelativePath)
 }
 
 const onJoinTableChange = (val: string) => {
@@ -1165,9 +1233,6 @@ const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reacti
 .fields-box {
     margin-top: 36px;
 }
-.design-window.design-window-empty {
-    border: 1px dashed var(--el-border-color);
-}
 .design-field-empty {
     display: flex;
     height: 100%;
@@ -1181,6 +1246,7 @@ const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reacti
     height: calc(100vh - 200px);
     border-radius: var(--el-border-radius-base);
     background-color: var(--ba-bg-color-overlay);
+    border: v-bind('state.draggingField ? "1px dashed var(--el-color-primary)":(state.fields.length ? "none":"1px dashed var(--el-border-color)")');
     .design-field-box {
         display: flex;
         padding: 10px;

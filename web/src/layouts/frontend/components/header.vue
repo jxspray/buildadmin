@@ -11,6 +11,8 @@
                 </div>
                 <el-menu :default-active="state.activeMenu" class="frontend-header-menu" mode="horizontal" :ellipsis="false">
                     <el-menu-item @click="router.push({ name: '/' })" v-blur index="index">{{ $t('Home') }}</el-menu-item>
+                    <!-- 动态菜单项 -->
+                    <HeaderDynamicMenus :menus="siteConfig.headNav" />
 
                     <template v-if="memberCenter.state.open">
                         <el-sub-menu v-if="userInfo.isLogin()" v-blur index="user">
@@ -25,6 +27,8 @@
                                 </div>
                             </template>
                             <el-menu-item @click="router.push({ name: 'user' })" v-blur index="user-index">{{ $t('Member Center') }}</el-menu-item>
+                            <!-- 动态菜单项 -->
+                            <HeaderDynamicMenus :menus="memberCenter.state.navUserMenus" />
                             <el-menu-item @click="userInfo.logout()" v-blur index="user-logout">{{ $t('Logout login') }}</el-menu-item>
                         </el-sub-menu>
                         <el-menu-item v-else @click="router.push({ name: 'user' })" v-blur index="user">{{ $t('Member Center') }}</el-menu-item>
@@ -73,6 +77,7 @@ import Aside from '/@/layouts/frontend/components/aside.vue'
 import DarkSwitch from '/@/layouts/common/components/darkSwitch.vue'
 import toggleDark from '/@/utils/useDark'
 import { fullUrl } from '/@/utils/common'
+import HeaderDynamicMenus from '/@/layouts/frontend/components/headerDynamicMenus.vue'
 
 const state = reactive({
     activeMenu: '',
@@ -94,6 +99,9 @@ switch (route.name) {
         break
 }
 
+/**
+ * 前端初始化请求，获取站点配置信息，动态路由信息等
+ */
 index()
 </script>
 

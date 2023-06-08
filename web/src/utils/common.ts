@@ -4,6 +4,7 @@ import * as elIcons from '@element-plus/icons-vue'
 import router from '/@/router/index'
 import Icon from '/@/components/icon/index.vue'
 import { useNavTabs } from '/@/stores/navTabs'
+import { useMemberCenter } from '/@/stores/memberCenter'
 import { ElForm } from 'element-plus'
 import { useSiteConfig } from '../stores/siteConfig'
 import { useTitle } from '@vueuse/core'
@@ -100,7 +101,7 @@ export const debounce = (fn: Function, ms: number) => {
         if (window.lazy) {
             clearTimeout(window.lazy)
         }
-        window.lazy = setTimeout(() => {
+        window.lazy = window.setTimeout(() => {
             fn(...args)
         }, ms)
     }
@@ -112,7 +113,7 @@ export const debounce = (fn: Function, ms: number) => {
  * @param pk
  * @param value
  */
-export const getArrayKey = (arr: any, pk: string, value: string): any => {
+export const getArrayKey = (arr: any, pk: string, value: any): any => {
     for (const key in arr) {
         if (arr[key][pk] == value) {
             return key
@@ -186,9 +187,9 @@ export const getFileNameFromPath = (path: string) => {
  * @param name
  */
 export const auth = (name: string) => {
-    const navTabs = useNavTabs()
-    if (navTabs.state.authNode.has(router.currentRoute.value.path)) {
-        if (navTabs.state.authNode.get(router.currentRoute.value.path)!.some((v: string) => v == router.currentRoute.value.path + '/' + name)) {
+    const store = isAdminApp() ? useNavTabs() : useMemberCenter()
+    if (store.state.authNode.has(router.currentRoute.value.path)) {
+        if (store.state.authNode.get(router.currentRoute.value.path)!.some((v: string) => v == router.currentRoute.value.path + '/' + name)) {
             return true
         }
     }
@@ -225,6 +226,7 @@ export const fullUrl = (relativeUrl: string, domain = '') => {
 export const __ = (key: string, named?: Record<string, unknown>, options?: TranslateOptions<string>) => {
     let path = router.currentRoute.value.path
     if (path == '/') path = trimStart(window.location.hash, '#')
+    if (path.indexOf('?') !== -1) path = path.replace(/\?.*/, '')
     let langPath = ''
     if (isAdminApp()) {
         langPath = path.slice(path.indexOf(adminBaseRoute.path) + adminBaseRoute.path.length)

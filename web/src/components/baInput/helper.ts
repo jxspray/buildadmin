@@ -104,10 +104,10 @@ export const fieldData: FieldData = {
         null: true,
     },
     select: {
-        type: 'tinyint',
-        length: 1,
+        type: 'enum',
+        length: 0,
         precision: 0,
-        default: '0',
+        default: '',
         ...npuaFalse(),
     },
     selects: {
@@ -124,6 +124,13 @@ export const fieldData: FieldData = {
         default: '0',
         ...npuaFalse(),
         unsigned: true,
+    },
+    remoteSelects: {
+        type: 'varchar',
+        length: 100,
+        precision: 0,
+        default: 'empty string',
+        ...npuaFalse(),
     },
     editor: {
         type: 'text',

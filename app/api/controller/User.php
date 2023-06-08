@@ -3,11 +3,14 @@
 namespace app\api\controller;
 
 use ba\Captcha;
+use ba\ClickCaptcha;
+use ba\Tree;
 use think\facade\Config;
 use app\common\facade\Token;
 use app\common\controller\Frontend;
 use think\exception\ValidateException;
 use app\api\validate\User as UserValidate;
+use think\facade\Db;
 
 class User extends Frontend
 {
@@ -28,15 +31,19 @@ class User extends Frontend
             $this->error(__('No action available, please contact the administrator~'));
         }
 
+        $rules     = [];
         $userMenus = [];
         foreach ($menus as $menu) {
             if ($menu['type'] == 'menu_dir') {
                 $userMenus[] = $menu;
+            } else {
+                $rules[] = $menu;
             }
         }
         $this->success('', [
             'userInfo' => $userInfo,
             'menus'    => $userMenus,
+            'rules'    => $rules,
         ]);
     }
 
@@ -58,8 +65,8 @@ class User extends Frontend
         }
 
         if ($this->request->isPost()) {
-            $params = $this->request->post(['tab', 'email', 'mobile', 'username', 'password', 'keep', 'captcha', 'captchaId', 'registerType']);
-            if ($params['tab'] != 'login' && $params['tab'] != 'register') {
+            $params = $this->request->post(['tab', 'email', 'mobile', 'username', 'password', 'keep', 'captcha', 'captchaId', 'captchaInfo', 'registerType']);
+            if (!in_array($params['tab'], ['login', 'register'])) {
                 $this->error(__('Unknown operation'));
             }
 
@@ -69,14 +76,15 @@ class User extends Frontend
             } catch (ValidateException $e) {
                 $this->error($e->getMessage());
             }
-            $captchaObj = new Captcha();
 
             if ($params['tab'] == 'login') {
-                if (!$captchaObj->check($params['captcha'], $params['captchaId'])) {
-                    $this->error(__('Please enter the correct verification code'));
+                $captchaObj = new ClickCaptcha();
+                if (!$captchaObj->check($params['captchaId'], $params['captchaInfo'])) {
+                    $this->error(__('Captcha error'));
                 }
                 $res = $this->auth->login($params['username'], $params['password'], (bool)$params['keep']);
             } elseif ($params['tab'] == 'register') {
+                $captchaObj = new Captcha();
                 if (!$captchaObj->check($params['captcha'], ($params['registerType'] == 'email' ? $params['email'] : $params['mobile']) . 'user_register')) {
                     $this->error(__('Please enter the correct verification code'));
                 }

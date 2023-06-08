@@ -9,7 +9,7 @@
                             <div class="login-title">
                                 {{ t('user.login.' + state.form.tab) + t('user.login.reach') + siteConfig.siteName }}
                             </div>
-                            <el-form ref="formRef" @keyup.enter="onSubmit(formRef)" :rules="rules" :model="state.form">
+                            <el-form ref="formRef" @keyup.enter="onSubmitPre" :rules="rules" :model="state.form">
                                 <!-- 注册验证方式 -->
                                 <el-form-item v-if="state.form.tab == 'register'">
                                     <el-radio-group size="large" v-model="state.form.registerType">
@@ -18,15 +18,17 @@
                                             label="email"
                                             :disabled="!state.accountVerificationType.includes('email')"
                                             border
-                                            >{{ t('user.login.Via email') + t('user.login.register') }}</el-radio
                                         >
+                                            {{ t('user.login.Via email') + t('user.login.register') }}
+                                        </el-radio>
                                         <el-radio
                                             class="register-verification-radio"
                                             label="mobile"
                                             :disabled="!state.accountVerificationType.includes('mobile')"
                                             border
-                                            >{{ t('user.login.Via mobile number') + t('user.login.register') }}</el-radio
                                         >
+                                            {{ t('user.login.Via mobile number') + t('user.login.register') }}
+                                        </el-radio>
                                     </el-radio-group>
                                 </el-form-item>
 
@@ -61,33 +63,6 @@
                                             <Icon name="fa fa-unlock-alt" size="16" color="var(--el-input-icon-color)" />
                                         </template>
                                     </el-input>
-                                </el-form-item>
-
-                                <!-- 登录验证码 -->
-                                <el-form-item v-if="state.form.tab == 'login'" prop="captcha">
-                                    <el-row class="w100">
-                                        <el-col :span="16">
-                                            <el-input
-                                                v-model="state.form.captcha"
-                                                clearable
-                                                autocomplete="off"
-                                                :placeholder="t('Please input field', { field: t('user.login.Verification Code') })"
-                                                size="large"
-                                            >
-                                                <template #prefix>
-                                                    <Icon name="fa fa-ellipsis-h" size="16" color="var(--el-input-icon-color)" />
-                                                </template>
-                                            </el-input>
-                                        </el-col>
-                                        <el-col class="captcha-box" :span="8">
-                                            <img
-                                                @click="onChangeCaptcha"
-                                                class="captcha-img"
-                                                :src="buildCaptchaUrl() + '&id=' + state.form.captchaId"
-                                                alt=""
-                                            />
-                                        </el-col>
-                                    </el-row>
                                 </el-form-item>
 
                                 <!-- 注册手机号 -->
@@ -136,16 +111,17 @@
                                         <el-col class="captcha-box" :span="8">
                                             <el-button
                                                 size="large"
-                                                @click="sendRegisterCaptcha(formRef)"
+                                                @click="sendRegisterCaptchaPre"
                                                 :loading="state.sendCaptchaLoading"
                                                 :disabled="state.codeSendCountdown <= 0 ? false : true"
                                                 type="primary"
-                                                >{{
+                                            >
+                                                {{
                                                     state.codeSendCountdown <= 0
                                                         ? t('user.login.send')
                                                         : state.codeSendCountdown + t('user.login.seconds')
-                                                }}</el-button
-                                            >
+                                                }}
+                                            </el-button>
                                         </el-col>
                                     </el-row>
                                 </el-form-item>
@@ -161,14 +137,7 @@
                                     </div>
                                 </div>
                                 <el-form-item class="form-buttons">
-                                    <el-button
-                                        class="login-btn"
-                                        @click="onSubmit(formRef)"
-                                        :loading="state.formLoading"
-                                        round
-                                        type="primary"
-                                        size="large"
-                                    >
+                                    <el-button class="login-btn" @click="onSubmitPre" :loading="state.formLoading" round type="primary" size="large">
                                         {{ t('user.login.' + state.form.tab) }}
                                     </el-button>
                                     <el-button
@@ -178,8 +147,9 @@
                                         plain
                                         type="info"
                                         size="large"
-                                        >{{ t('user.login.Back to login') }}</el-button
                                     >
+                                        {{ t('user.login.Back to login') }}
+                                    </el-button>
                                     <el-button v-else @click="switchTab(formRef, 'register')" round plain type="info" size="large">
                                         {{ t('user.login.No account yet? Click Register') }}
                                     </el-button>
@@ -212,12 +182,12 @@
                 >
                     <el-form-item :label="t('user.login.Retrieval method')">
                         <el-radio-group v-model="state.retrievePasswordForm.type">
-                            <el-radio label="email" :disabled="!state.accountVerificationType.includes('email')" border>{{
-                                t('user.login.Via email')
-                            }}</el-radio>
-                            <el-radio label="mobile" :disabled="!state.accountVerificationType.includes('mobile')" border>{{
-                                t('user.login.Via mobile number')
-                            }}</el-radio>
+                            <el-radio label="email" :disabled="!state.accountVerificationType.includes('email')" border>
+                                {{ t('user.login.Via email') }}
+                            </el-radio>
+                            <el-radio label="mobile" :disabled="!state.accountVerificationType.includes('mobile')" border>
+                                {{ t('user.login.Via mobile number') }}
+                            </el-radio>
                         </el-radio-group>
                     </el-form-item>
                     <el-form-item prop="account" :label="state.retrievePasswordForm.type == 'email' ? t('user.login.email') : t('user.login.mobile')">
@@ -250,14 +220,13 @@
                             </el-col>
                             <el-col class="captcha-box" :span="8">
                                 <el-button
-                                    @click="sendRetrieveCaptcha(retrieveFormRef)"
+                                    @click="sendRetrieveCaptchaPre"
                                     :loading="state.sendCaptchaLoading"
                                     :disabled="state.codeSendCountdown <= 0 ? false : true"
                                     type="primary"
-                                    >{{
-                                        state.codeSendCountdown <= 0 ? t('user.login.send') : state.codeSendCountdown + t('user.login.seconds')
-                                    }}</el-button
                                 >
+                                    {{ state.codeSendCountdown <= 0 ? t('user.login.send') : state.codeSendCountdown + t('user.login.seconds') }}
+                                </el-button>
                             </el-col>
                         </el-row>
                     </el-form-item>
@@ -274,9 +243,9 @@
                     </el-form-item>
                     <el-form-item>
                         <el-button @click="state.showRetrievePasswordDialog = false">{{ t('Cancel') }}</el-button>
-                        <el-button :loading="state.submitRetrieveLoading" @click="onSubmitRetrieve(retrieveFormRef)" type="primary">{{
-                            t('user.login.second')
-                        }}</el-button>
+                        <el-button :loading="state.submitRetrieveLoading" @click="onSubmitRetrieve(retrieveFormRef)" type="primary">
+                            {{ t('user.login.second') }}
+                        </el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -290,7 +259,7 @@ import Header from '/@/layouts/frontend/components/header.vue'
 import Footer from '/@/layouts/frontend/components/footer.vue'
 import { useSiteConfig } from '/@/stores/siteConfig'
 import { useMemberCenter } from '/@/stores/memberCenter'
-import { buildCaptchaUrl, sendEms, sendSms } from '/@/api/common'
+import { sendEms, sendSms } from '/@/api/common'
 import { uuid } from '/@/utils/random'
 import { useI18n } from 'vue-i18n'
 import { buildValidatorData, validatorAccount } from '/@/utils/validate'
@@ -303,7 +272,8 @@ import { useRoute } from 'vue-router'
 import loginMounted from '/@/components/mixins/loginMounted'
 import LoginFooterMixin from '/@/components/mixins/loginFooter.vue'
 import type { FormItemRule, FormInstance } from 'element-plus'
-let timer: NodeJS.Timer
+import clickCaptcha from '/@/components/clickCaptcha'
+let timer: number
 
 const { t } = useI18n()
 const route = useRoute()
@@ -324,10 +294,10 @@ interface State {
         captcha: string
         keep: boolean
         captchaId: string
+        captchaInfo: string
         registerType: 'email' | 'mobile'
     }
     formLoading: boolean
-    showCaptcha: boolean
     showRetrievePasswordDialog: boolean
     retrievePasswordForm: {
         type: 'email' | 'mobile'
@@ -352,10 +322,10 @@ const state: State = reactive({
         captcha: '',
         keep: false,
         captchaId: uuid(),
+        captchaInfo: '',
         registerType: 'email',
     },
     formLoading: false,
-    showCaptcha: false,
     showRetrievePasswordDialog: false,
     retrievePasswordForm: {
         type: 'email',
@@ -412,28 +382,27 @@ const resize = () => {
     state.dialogWidth = width
 }
 
-const onChangeCaptcha = () => {
-    state.form.captcha = ''
-    state.form.captchaId = uuid()
-}
-const onSubmit = (formRef: FormInstance | undefined = undefined) => {
-    formRef!.validate((valid) => {
-        if (valid) {
-            state.formLoading = true
-            checkIn('post', state.form)
-                .then((res) => {
-                    state.formLoading = false
-                    userInfo.dataFill(res.data.userInfo)
-                    router.push({ path: res.data.routePath })
-                })
-                .catch(() => {
-                    state.formLoading = false
-                    onChangeCaptcha()
-                })
+const onSubmitPre = () => {
+    formRef.value?.validate((valid) => {
+        if (!valid) return
+        if (state.form.tab == 'login') {
+            clickCaptcha(state.form.captchaId, (captchaInfo: string) => onSubmit(captchaInfo))
         } else {
-            onChangeCaptcha()
+            onSubmit()
         }
     })
+}
+const onSubmit = (captchaInfo = '') => {
+    state.formLoading = true
+    state.form.captchaInfo = captchaInfo
+    checkIn('post', state.form)
+        .then((res) => {
+            userInfo.dataFill(res.data.userInfo)
+            router.push({ path: res.data.routePath })
+        })
+        .finally(() => {
+            state.formLoading = false
+        })
 }
 const onSubmitRetrieve = (formRef: FormInstance | undefined = undefined) => {
     formRef!.validate((valid) => {
@@ -444,7 +413,6 @@ const onSubmitRetrieve = (formRef: FormInstance | undefined = undefined) => {
                     state.submitRetrieveLoading = false
                     if (res.code == 1) {
                         state.showRetrievePasswordDialog = false
-                        onChangeCaptcha()
                         endTiming()
                         onResetForm(formRef)
                     }
@@ -456,38 +424,48 @@ const onSubmitRetrieve = (formRef: FormInstance | undefined = undefined) => {
     })
 }
 
-const sendRegisterCaptcha = (formRef: FormInstance | undefined = undefined) => {
+const sendRegisterCaptchaPre = () => {
     if (state.codeSendCountdown > 0) return
-    formRef!.validateField([state.form.registerType, 'username', 'password']).then((valid) => {
-        if (valid) {
-            state.sendCaptchaLoading = true
-            const func = state.form.registerType == 'email' ? sendEms : sendSms
-            func(state.form[state.form.registerType], 'user_register')
-                .then((res) => {
-                    if (res.code == 1) startTiming(60)
-                })
-                .finally(() => {
-                    state.sendCaptchaLoading = false
-                })
-        }
+    formRef.value!.validateField([state.form.registerType, 'username', 'password']).then((valid) => {
+        if (!valid) return
+        clickCaptcha(state.form.captchaId, (captchaInfo: string) => sendRegisterCaptcha(captchaInfo))
     })
 }
-
-const sendRetrieveCaptcha = (formRef: FormInstance | undefined = undefined) => {
-    if (state.codeSendCountdown > 0) return
-    formRef!.validateField('account').then((valid) => {
-        if (valid) {
-            state.sendCaptchaLoading = true
-            const func = state.retrievePasswordForm.type == 'email' ? sendEms : sendSms
-            func(state.retrievePasswordForm.account, 'user_retrieve_pwd')
-                .then((res) => {
-                    if (res.code == 1) startTiming(60)
-                })
-                .finally(() => {
-                    state.sendCaptchaLoading = false
-                })
-        }
+const sendRegisterCaptcha = (captchaInfo: string) => {
+    state.sendCaptchaLoading = true
+    const func = state.form.registerType == 'email' ? sendEms : sendSms
+    func(state.form[state.form.registerType], 'user_register', {
+        captchaInfo,
+        captchaId: state.form.captchaId,
     })
+        .then((res) => {
+            if (res.code == 1) startTiming(60)
+        })
+        .finally(() => {
+            state.sendCaptchaLoading = false
+        })
+}
+
+const sendRetrieveCaptchaPre = () => {
+    if (state.codeSendCountdown > 0) return
+    retrieveFormRef.value!.validateField('account').then((valid) => {
+        if (!valid) return
+        clickCaptcha(state.form.captchaId, (captchaInfo: string) => sendRetrieveCaptcha(captchaInfo))
+    })
+}
+const sendRetrieveCaptcha = (captchaInfo: string) => {
+    state.sendCaptchaLoading = true
+    const func = state.retrievePasswordForm.type == 'email' ? sendEms : sendSms
+    func(state.retrievePasswordForm.account, 'user_retrieve_pwd', {
+        captchaInfo,
+        captchaId: state.form.captchaId,
+    })
+        .then((res) => {
+            if (res.code == 1) startTiming(60)
+        })
+        .finally(() => {
+            state.sendCaptchaLoading = false
+        })
 }
 
 const switchTab = (formRef: FormInstance | undefined = undefined, tab: 'login' | 'register') => {
@@ -498,7 +476,7 @@ const switchTab = (formRef: FormInstance | undefined = undefined, tab: 'login' |
 
 const startTiming = (seconds: number) => {
     state.codeSendCountdown = seconds
-    timer = setInterval(() => {
+    timer = window.setInterval(() => {
         state.codeSendCountdown--
         if (state.codeSendCountdown <= 0) {
             endTiming()
@@ -562,10 +540,6 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    .captcha-img {
-        width: 90%;
-        margin-left: auto;
-    }
     .el-button {
         width: 90%;
         height: 100%;
@@ -603,9 +577,6 @@ onUnmounted(() => {
             --el-button-bg-color: var(--el-color-primary-light-5);
             --el-button-border-color: rgba(240, 252, 241, 0.1);
         }
-    }
-    .captcha-img {
-        filter: brightness(61%);
     }
 }
 </style>

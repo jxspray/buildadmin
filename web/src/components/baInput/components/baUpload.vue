@@ -10,7 +10,6 @@
             @remove="onElRemove"
             @preview="onElPreview"
             @exceed="onElExceed"
-            :before-remove="onBeforeRemove"
             v-bind="state.attr"
             :key="state.key"
         >
@@ -24,11 +23,11 @@
                     <Icon class="ba-upload-icon" name="el-icon-Plus" size="30" color="#c0c4cc" />
                 </template>
                 <template v-else>
-                    <el-button type="primary">
+                    <el-button v-blur type="primary">
                         <Icon name="el-icon-Plus" color="#ffffff" />
                         <span>{{ $t('Upload') }}</span>
                     </el-button>
-                    <el-button v-if="!hideSelectFile" @click.stop="state.selectFile.show = true" type="success">
+                    <el-button v-blur v-if="!hideSelectFile" @click.stop="state.selectFile.show = true" type="success">
                         <Icon name="fa fa-th-list" size="14px" color="#ffffff" />
                         <span class="ml-6">{{ $t('utils.choice') }}</span>
                     </el-button>
@@ -49,13 +48,14 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, watch, useSlots } from 'vue'
-import { UploadInstance, UploadUserFile, UploadProps, genFileId, UploadRawFile } from 'element-plus'
+import { UploadInstance, UploadUserFile, UploadProps, genFileId, UploadRawFile, UploadFiles } from 'element-plus'
 import { stringToArray } from '/@/components/baInput/helper'
-import { fullUrl, arrayFullUrl, getFileNameFromPath } from '/@/utils/common'
+import { fullUrl, arrayFullUrl, getFileNameFromPath, getArrayKey } from '/@/utils/common'
 import { fileUpload } from '/@/api/common'
 import SelectFile from '/@/components/baInput/components/selectFile.vue'
 import { uuid } from '/@/utils/random'
 import { cloneDeep, isEmpty } from 'lodash-es'
+import { AxiosProgressEvent } from 'axios'
 
 type Writeable<T> = { -readonly [P in keyof T]: T[P] }
 interface Props {
@@ -69,9 +69,14 @@ interface Props {
     hideSelectFile?: boolean
     // 可自定义el-upload的其他属性
     attr?: Partial<Writeable<UploadProps>>
+    // 强制上传到本地存储
+    forceLocal?: boolean
 }
 interface UploadFileExt extends UploadUserFile {
     serverUrl?: string
+}
+interface UploadProgressEvent extends AxiosProgressEvent {
+    percent: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -85,6 +90,7 @@ const props = withDefaults(defineProps<Props>(), {
     attr: () => {
         return {}
     },
+    forceLocal: false,
 })
 
 const emits = defineEmits<{
@@ -134,47 +140,54 @@ const state: {
     events: [],
 })
 
-const onElChange = (file: UploadFileExt) => {
+const onElChange = (file: UploadFileExt, files: UploadFiles) => {
+    // 将 file 换为 files 中的对象，以便修改属性等操作
+    const fileIndex = getArrayKey(files, 'uid', file.uid!)
+    if (!fileIndex) return
+    file = files[fileIndex] as UploadFileExt
     if (!file || !file.raw) return
     if (typeof state.events['beforeUpload'] == 'function' && state.events['beforeUpload'](file) === false) return
     let fd = new FormData()
     fd.append('file', file.raw)
     fd = formDataAppend(fd)
     state.uploading++
-    fileUpload(fd, { uuid: uuid() })
+    fileUpload(fd, { uuid: uuid() }, props.forceLocal, {
+        onUploadProgress: (evt: AxiosProgressEvent) => {
+            const progressEvt = evt as UploadProgressEvent
+            if (evt.total && evt.total > 0) {
+                progressEvt.percent = (evt.loaded / evt.total) * 100
+                file.status = 'uploading'
+                file.percentage = Math.round(progressEvt.percent)
+                typeof state.events['onProgress'] == 'function' && state.events['onProgress'](progressEvt, file, files)
+            }
+        },
+    })
         .then((res) => {
             if (res.code == 1) {
                 file.serverUrl = res.data.file.url
                 file.status = 'success'
-                const urls = getAllUrls()
-                typeof state.events['onSuccess'] == 'function' && state.events['onSuccess'](res, file, urls)
-                emits('update:modelValue', urls)
+                emits('update:modelValue', getAllUrls())
+                typeof state.events['onSuccess'] == 'function' && state.events['onSuccess'](res, file, files)
             } else {
                 file.status = 'fail'
-                state.fileList.splice(state.fileList.indexOf(file), 1)
-                typeof state.events['onError'] == 'function' && state.events['onError'](res, file, getAllUrls())
+                files.splice(fileIndex, 1)
+                typeof state.events['onError'] == 'function' && state.events['onError'](res, file, files)
             }
         })
         .catch((res) => {
             file.status = 'fail'
-            state.fileList.splice(state.fileList.indexOf(file), 1)
-            typeof state.events['onError'] == 'function' && state.events['onError'](res, file, getAllUrls())
+            files.splice(fileIndex, 1)
+            typeof state.events['onError'] == 'function' && state.events['onError'](res, file, files)
         })
         .finally(() => {
             state.uploading--
-            typeof state.events['onChange'] == 'function' && state.events['onChange'](file, getAllUrls())
+            typeof state.events['onChange'] == 'function' && state.events['onChange'](file, files)
         })
 }
 
-const onBeforeRemove: UploadProps['beforeRemove'] = (uploadFile, uploadFiles) => {
-    if (typeof state.events['beforeRemove'] == 'function' && state.events['beforeRemove'](uploadFile, uploadFiles) === false) return false
-    return true
-}
-
-const onElRemove = (file: UploadUserFile) => {
-    const urls = getAllUrls()
-    typeof state.events['onRemove'] == 'function' && state.events['onRemove'](file, urls)
-    emits('update:modelValue', urls)
+const onElRemove = (file: UploadUserFile, files: UploadFiles) => {
+    typeof state.events['onRemove'] == 'function' && state.events['onRemove'](file, files)
+    emits('update:modelValue', getAllUrls())
 }
 
 const onElPreview = (file: UploadFileExt) => {
@@ -201,9 +214,8 @@ const onChoice = (files: string[]) => {
     let oldValArr = getAllUrls('array') as string[]
     files = oldValArr.concat(files)
     init(files)
-    const urls = getAllUrls()
-    emits('update:modelValue', urls)
-    typeof state.events['onChange'] == 'function' && state.events['onChange'](files, urls)
+    emits('update:modelValue', getAllUrls())
+    typeof state.events['onChange'] == 'function' && state.events['onChange'](files, state.fileList)
     state.selectFile.show = false
 }
 
@@ -220,7 +232,7 @@ onMounted(() => {
     }
 
     const addProps: anyObj = {}
-    const evtArr = ['onPreview', 'onRemove', 'onSuccess', 'onError', 'onChange', 'onExceed', 'beforeUpload', 'beforeRemove', 'onProgress']
+    const evtArr = ['onPreview', 'onRemove', 'onSuccess', 'onError', 'onChange', 'onExceed', 'beforeUpload', 'onProgress']
     for (const key in props.attr) {
         if (evtArr.includes(key)) {
             state.events[key] = props.attr[key as keyof typeof props.attr]

@@ -280,7 +280,7 @@ class Helper
             $null          = $field['null'] ? ' NULL' : ' NOT NULL';
             $autoIncrement = $field['autoIncrement'] ? ' AUTO_INCREMENT' : '';
             $default       = '';
-            if (strtolower($field['default']) == 'null') {
+            if (strtolower((string)$field['default']) == 'null') {
                 $default = ' DEFAULT NULL';
             } elseif ($field['default'] == '0') {
                 $default = " DEFAULT '0'";
@@ -301,7 +301,7 @@ class Helper
         return [$pk];
     }
 
-    public static function parseNameData($app, $table, $name, $type, $value = ''): array
+    public static function parseNameData($app, $table, $type, $value = ''): array
     {
         $pathArr = [];
         if ($value) {
@@ -318,24 +318,17 @@ class Helper
                     $pathArr[] = $item;
                 }
             }
-            $originalLastName = array_pop($pathArr);
-            $lastName         = ucfirst($originalLastName);
         } else {
-            if (!$name) {
-                if (isset(self::$parseNamePresets[$type]) && array_key_exists($table, self::$parseNamePresets[$type])) {
-                    $pathArr          = self::$parseNamePresets[$type][$table];
-                    $originalLastName = array_pop($pathArr);
-                    $lastName         = ucfirst($originalLastName);
-                } else {
-                    $originalLastName = $lastName = parse_name($table, 1);
-                }
+            if (isset(self::$parseNamePresets[$type]) && array_key_exists($table, self::$parseNamePresets[$type])) {
+                $pathArr = self::$parseNamePresets[$type][$table];
             } else {
-                $name             = str_replace(['.', '/', '\\', '_'], '/', $name);
-                $pathArr          = explode('/', $name);
-                $originalLastName = array_pop($pathArr);
-                $lastName         = ucfirst($originalLastName);
+                $table   = str_replace(['.', '/', '\\', '_'], '/', $table);
+                $pathArr = explode('/', $table);
             }
         }
+        $originalLastName = array_pop($pathArr);
+        $pathArr          = array_map('strtolower', $pathArr);
+        $lastName         = ucfirst($originalLastName);
 
         // 类名不能为内部关键字
         if (in_array(strtolower($originalLastName), self::$reservedKeywords)) {
@@ -357,7 +350,7 @@ class Helper
         ];
     }
 
-    public static function parseWebDirNameData($table, $name, $type, $value = ''): array
+    public static function parseWebDirNameData($table, $type, $value = ''): array
     {
         $pathArr = [];
         if ($value) {
@@ -378,24 +371,17 @@ class Helper
                     $pathArr[] = $item;
                 }
             }
-            $originalLastName = array_pop($pathArr);
-            $lastName         = lcfirst($originalLastName);
         } else {
-            if (!$name) {
-                if (array_key_exists($table, self::$parseWebDirPresets[$type])) {
-                    $pathArr          = self::$parseWebDirPresets[$type][$table];
-                    $originalLastName = array_pop($pathArr);
-                    $lastName         = lcfirst($originalLastName);
-                } else {
-                    $originalLastName = $lastName = parse_name($table, 1, false);
-                }
+            if (array_key_exists($table, self::$parseWebDirPresets[$type])) {
+                $pathArr = self::$parseWebDirPresets[$type][$table];
             } else {
-                $name             = str_replace(['.', '/', '\\', '_'], '/', $name);
-                $pathArr          = explode('/', $name);
-                $originalLastName = array_pop($pathArr);
-                $lastName         = lcfirst($originalLastName);
+                $table   = str_replace(['.', '/', '\\', '_'], '/', $table);
+                $pathArr = explode('/', $table);
             }
         }
+        $originalLastName = array_pop($pathArr);
+        $pathArr          = array_map('strtolower', $pathArr);
+        $lastName         = lcfirst($originalLastName);
 
         $webDir['path']             = $pathArr;
         $webDir['lastName']         = $lastName;
@@ -505,12 +491,13 @@ class Helper
         $columns     = [];
         $tableColumn = Db::query($sql, [config('database.connections.mysql.database'), self::getTableName($table)]);
         foreach ($tableColumn as $item) {
-            $column = [
+            $isNullAble = $item['IS_NULLABLE'] == 'YES';
+            $column     = [
                 'name'          => $item['COLUMN_NAME'],
                 'type'          => $item['DATA_TYPE'],
                 'dataType'      => stripos($item['COLUMN_TYPE'], '(') !== false ? substr_replace($item['COLUMN_TYPE'], '', stripos($item['COLUMN_TYPE'], ')') + 1) : $item['COLUMN_TYPE'],
-                'default'       => $item['COLUMN_DEFAULT'],
-                'null'          => $item['IS_NULLABLE'] == 'YES',
+                'default'       => ($isNullAble && is_null($item['COLUMN_DEFAULT'])) ? 'null' : $item['COLUMN_DEFAULT'],
+                'null'          => $isNullAble,
                 'primaryKey'    => $item['COLUMN_KEY'] == 'PRI',
                 'unsigned'      => (bool)stripos($item['COLUMN_TYPE'], 'unsigned'),
                 'autoIncrement' => stripos($item['EXTRA'], 'auto_increment') !== false,
@@ -722,7 +709,19 @@ class Helper
         $modelData['methods']   = $modelMethodList ? "\n" . implode("\n", $modelMethodList) : '';
         $modelData['append']    = self::buildModelAppend($modelData['append']);
         $modelData['fieldType'] = self::buildModelFieldType($modelData['fieldType']);
-        $modelFileContent       = self::assembleStub('mixins/model/model', $modelData);
+
+        // 生成雪花ID？
+        if (isset($modelData['beforeInsertMixins']['snowflake'])) {
+            // beforeInsert 组装
+            $modelData['beforeInsert'] = Helper::assembleStub('mixins/model/beforeInsert', [
+                'setSnowFlakeIdCode' => $modelData['beforeInsertMixins']['snowflake']
+            ]);
+        }
+        if ($modelData['afterInsert'] && $modelData['beforeInsert']) {
+            $modelData['afterInsert'] = "\n" . $modelData['afterInsert'];
+        }
+
+        $modelFileContent = self::assembleStub('mixins/model/model', $modelData);
         self::writeFile($modelFile['parseFile'], $modelFileContent);
     }
 
@@ -926,10 +925,10 @@ class Helper
                     $jsonStr .= $keyStr . self::getJsonFromArray($item) . ',';
                 } elseif ($item === 'false' || $item === 'true') {
                     $jsonStr .= $keyStr . ($item === 'false' ? 'false' : 'true') . ',';
-                } elseif (strpos($item, "t('") === 0 || strpos($item, "t(\"") === 0 || $item == '[]' || in_array($key, ['step', 'rows'], true)) {
-                    $jsonStr .= $keyStr . $item . ',';
                 } elseif ($item === null) {
                     $jsonStr .= $keyStr . 'null,';
+                } elseif (strpos($item, "t('") === 0 || strpos($item, "t(\"") === 0 || $item == '[]' || in_array(gettype($item), ['integer', 'double'])) {
+                    $jsonStr .= $keyStr . $item . ',';
                 } elseif (isset($item[0]) && $item[0] == '[' && substr($item, -1, 1) == ']') {
                     $jsonStr .= $keyStr . $item . ',';
                 } else {

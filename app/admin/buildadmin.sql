@@ -148,11 +148,11 @@ CREATE TABLE `__PREFIX__attachment` (
 DROP TABLE IF EXISTS `__PREFIX__captcha`;
 CREATE TABLE `__PREFIX__captcha` (
     `key` varchar(32) NOT NULL DEFAULT '' COMMENT '验证码Key',
-    `code` varchar(32) NOT NULL DEFAULT '' COMMENT '验证码(加密后的,用于验证)',
-    `captcha` varchar(6) NOT NULL DEFAULT '' COMMENT '验证码(供UniApp安卓二次生成图片)',
+    `code` varchar(32) NOT NULL DEFAULT '' COMMENT '验证码(加密后)',
+    `captcha` text NULL COMMENT '验证码数据',
     `createtime` int(10) unsigned DEFAULT NULL COMMENT '创建时间',
     `expiretime` int(10) unsigned DEFAULT NULL COMMENT '过期时间',
-    PRIMARY KEY (`key`)
+    PRIMARY KEY (`key`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='验证码表';
 
 -- ----------------------------
@@ -527,7 +527,7 @@ DROP TABLE IF EXISTS `__PREFIX__user_rule`;
 CREATE TABLE `__PREFIX__user_rule` (
     `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '上级菜单',
-    `type` enum('route','menu_dir','menu') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'menu' COMMENT '类型:route=路由,menu_dir=菜单目录,menu=菜单项',
+    `type` enum('route','menu_dir','menu','nav_user_menu','nav','button') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'menu' COMMENT '类型:route=路由,menu_dir=菜单目录,menu=菜单项,nav_user_menu=顶栏会员菜单下拉项,nav=顶栏菜单项,button=页面按钮',
     `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '标题',
     `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '规则名称',
     `path` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '路由路径',
@@ -535,6 +535,7 @@ CREATE TABLE `__PREFIX__user_rule` (
     `menu_type` enum('tab','link','iframe') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'tab' COMMENT '菜单类型:tab=选项卡,link=链接,iframe=Iframe',
     `url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'Url',
     `component` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '组件路径',
+    `no_login_valid` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '未登录有效:0=否,1=是',
     `extend` enum('none','add_rules_only','add_menu_only') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none' COMMENT '扩展属性:none=无,add_rules_only=只添加为路由,add_menu_only=只添加为菜单',
     `remark` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '备注',
     `weigh` int(10) NOT NULL DEFAULT '0' COMMENT '权重(排序)',
@@ -550,12 +551,12 @@ CREATE TABLE `__PREFIX__user_rule` (
 -- Records of __PREFIX__user_rule
 -- ----------------------------
 BEGIN;
-INSERT INTO `__PREFIX__user_rule` VALUES ('1', '0', 'menu_dir', '我的账户', 'account', 'account', 'fa fa-user-circle', 'tab', '', '', 'none', '', '98', '1', '1655970295', '1648156017');
-INSERT INTO `__PREFIX__user_rule` VALUES ('2', '1', 'menu', '账户概览', 'account/overview', 'account/overview', 'fa fa-home', 'tab', '', '/src/views/frontend/user/account/overview.vue', 'none', '', '99', '1', '1655879438', '1655820267');
-INSERT INTO `__PREFIX__user_rule` VALUES ('3', '1', 'menu', '个人资料', 'account/profile', 'account/profile', 'fa fa-user-circle-o', 'tab', '', '/src/views/frontend/user/account/profile.vue', 'none', '', '98', '1', '1655972096', '1655820365');
-INSERT INTO `__PREFIX__user_rule` VALUES ('4', '1', 'menu', '修改密码', 'account/changePassword', 'account/changePassword', 'fa fa-shield', 'tab', '', '/src/views/frontend/user/account/changePassword.vue', 'none', '', '97', '1', '1655980365', '1655820461');
-INSERT INTO `__PREFIX__user_rule` VALUES ('5', '1', 'menu', '积分记录', 'account/integral', 'account/integral', 'fa fa-tag', 'tab', '', '/src/views/frontend/user/account/integral.vue', 'none', '', '96', '1', '1655985356', '1655820507');
-INSERT INTO `__PREFIX__user_rule` VALUES ('6', '1', 'menu', '余额记录', 'account/balance', 'account/balance', 'fa fa-money', 'tab', '', '/src/views/frontend/user/account/balance.vue', 'none', '', '95', '1', '1655985373', '1655820593');
+INSERT INTO `__PREFIX__user_rule` VALUES ('1', '0', 'menu_dir', '我的账户', 'account', 'account', 'fa fa-user-circle', 'tab', '', '', '0', 'none', '', '98', '1', '1655970295', '1648156017');
+INSERT INTO `__PREFIX__user_rule` VALUES ('2', '1', 'menu', '账户概览', 'account/overview', 'account/overview', 'fa fa-home', 'tab', '', '/src/views/frontend/user/account/overview.vue', '0', 'none', '', '99', '1', '1655879438', '1655820267');
+INSERT INTO `__PREFIX__user_rule` VALUES ('3', '1', 'menu', '个人资料', 'account/profile', 'account/profile', 'fa fa-user-circle-o', 'tab', '', '/src/views/frontend/user/account/profile.vue', '0', 'none', '', '98', '1', '1655972096', '1655820365');
+INSERT INTO `__PREFIX__user_rule` VALUES ('4', '1', 'menu', '修改密码', 'account/changePassword', 'account/changePassword', 'fa fa-shield', 'tab', '', '/src/views/frontend/user/account/changePassword.vue', '0', 'none', '', '97', '1', '1655980365', '1655820461');
+INSERT INTO `__PREFIX__user_rule` VALUES ('5', '1', 'menu', '积分记录', 'account/integral', 'account/integral', 'fa fa-tag', 'tab', '', '/src/views/frontend/user/account/integral.vue', '0', 'none', '', '96', '1', '1655985356', '1655820507');
+INSERT INTO `__PREFIX__user_rule` VALUES ('6', '1', 'menu', '余额记录', 'account/balance', 'account/balance', 'fa fa-money', 'tab', '', '/src/views/frontend/user/account/balance.vue', '0', 'none', '', '95', '1', '1655985373', '1655820593');
 COMMIT;
 
 -- ----------------------------

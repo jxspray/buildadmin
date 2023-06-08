@@ -164,10 +164,24 @@ export default defineComponent({
         const upload = () => {
             return () =>
                 createVNode(BaUpload, {
+                    type: props.type,
+                    data: props.attr ? props.attr.data : {},
                     modelValue: props.modelValue,
                     'onUpdate:modelValue': onValueUpdate,
-                    type: props.type,
+                    returnFullUrl: props.attr ? props.attr.returnFullUrl || props.attr['return-full-url'] : false,
+                    hideSelectFile: props.attr ? props.attr.hideSelectFile || props.attr['hide-select-file'] : false,
                     attr: props.attr,
+                    forceLocal: props.attr ? props.attr.forceLocal || props.attr['force-local'] : false,
+                })
+        }
+
+        // remoteSelect remoteSelects
+        const remoteSelect = () => {
+            return () =>
+                createVNode(RemoteSelect, {
+                    modelValue: props.modelValue,
+                    'onUpdate:modelValue': onValueUpdate,
+                    multiple: props.type == 'remoteSelect' ? false : true,
                     ...props.attr,
                 })
         }
@@ -264,17 +278,8 @@ export default defineComponent({
                         })
                 },
             ],
-            [
-                'remoteSelect',
-                () => {
-                    return () =>
-                        createVNode(RemoteSelect, {
-                            modelValue: props.modelValue,
-                            'onUpdate:modelValue': onValueUpdate,
-                            ...props.attr,
-                        })
-                },
-            ],
+            ['remoteSelect', remoteSelect],
+            ['remoteSelects', remoteSelect],
             [
                 'city',
                 () => {

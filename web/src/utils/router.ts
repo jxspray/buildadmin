@@ -3,11 +3,14 @@ import { isNavigationFailure, NavigationFailureType, RouteRecordRaw, RouteLocati
 import { ElNotification } from 'element-plus'
 import { useConfig } from '/@/stores/config'
 import { useNavTabs } from '/@/stores/navTabs'
+import { useSiteConfig } from '/@/stores/siteConfig'
 import { useMemberCenter } from '/@/stores/memberCenter'
 import { closeShade } from '/@/utils/pageShade'
 import { adminBaseRoute, memberCenterBaseRoute } from '/@/router/static'
 import { i18n } from '/@/lang/index'
 import { isAdminApp } from '/@/utils/common'
+import { Menus } from '/@/stores/interface'
+import { compact, reverse } from 'lodash-es'
 
 /**
  * 导航失败有错误消息的路由push
@@ -89,16 +92,38 @@ export const onClickMenu = (menu: RouteRecordRaw) => {
 
 /**
  * 处理会员中心的路由
+ * 会员中心虽然也是前台的路由，但需要动态注册的路由是根据登录会员的权限来的，所以需要单独处理
  */
-export const handleMemberCenterRoute = (routes: any) => {
+export const handleMemberCenterRoute = (routes: any, rules: any) => {
     const viewsComponent = import.meta.glob('/src/views/frontend/**/*.vue')
     addRouteAll(viewsComponent, routes, memberCenterBaseRoute.name as string)
     const menuMemberCenterBaseRoute = '/' + (memberCenterBaseRoute.name as string) + '/'
-    const menuRule = handleMenuRule(routes, menuMemberCenterBaseRoute, menuMemberCenterBaseRoute)
+    const menuRule = handleMenuRule(routes, menuMemberCenterBaseRoute, 'user')
 
+    const siteConfig = useSiteConfig()
     const memberCenter = useMemberCenter()
     memberCenter.setViewRoutes(menuRule)
     memberCenter.setShowHeadline(routes.length > 1 ? true : false)
+    memberCenter.mergeAuthNode(handleAuthNode(routes, menuMemberCenterBaseRoute))
+
+    addRouteAll(viewsComponent, rules, '', true)
+    memberCenter.mergeAuthNode(handleAuthNode(rules, '/'))
+    memberCenter.setNavUserMenus(handleMenus(rules, '/', 'nav_user_menu'))
+    siteConfig.setHeadNav(handleMenus(rules, '/', 'nav'))
+}
+
+/**
+ * 处理前台的路由
+ */
+export const handleFrontendRoute = (routes: any) => {
+    const viewsComponent = import.meta.glob('/src/views/frontend/**/*.vue')
+    addRouteAll(viewsComponent, routes, '', true)
+
+    const siteConfig = useSiteConfig()
+    const memberCenter = useMemberCenter()
+    memberCenter.mergeAuthNode(handleAuthNode(routes, '/'))
+    memberCenter.setNavUserMenus(handleMenus(routes, '/', 'nav_user_menu'))
+    siteConfig.setHeadNav(handleMenus(routes, '/', 'nav'))
 }
 
 /**
@@ -108,10 +133,12 @@ export const handleAdminRoute = (routes: any) => {
     const viewsComponent = import.meta.glob('/src/views/backend/**/*.vue')
     addRouteAll(viewsComponent, routes, adminBaseRoute.name as string)
     const menuAdminBaseRoute = '/' + (adminBaseRoute.name as string) + '/'
-    const menuRule = handleMenuRule(routes, menuAdminBaseRoute, menuAdminBaseRoute)
+    const menuRule = handleMenuRule(routes, menuAdminBaseRoute, 'admin')
+
     // 更新stores中的路由菜单数据
     const navTabs = useNavTabs()
     navTabs.setTabsViewRoutes(menuRule)
+    navTabs.fillAuthNode(handleAuthNode(routes, menuAdminBaseRoute))
 }
 
 /**
@@ -129,11 +156,10 @@ export const getMenuPaths = (menus: RouteRecordRaw[]): string[] => {
 }
 
 /**
- * 菜单处理
+ * 会员中心和后台的菜单处理
  */
-const handleMenuRule = (routes: any, pathPrefix = '/', parent = '/', module = 'admin') => {
+const handleMenuRule = (routes: any, pathPrefix = '/', module = 'admin') => {
     const menuRule: RouteRecordRaw[] = []
-    const authNode: string[] = []
     for (const key in routes) {
         if (routes[key].extend == 'add_rules_only') {
             continue
@@ -145,7 +171,7 @@ const handleMenuRule = (routes: any, pathPrefix = '/', parent = '/', module = 'a
             const currentPath = routes[key].menu_type == 'link' || routes[key].menu_type == 'iframe' ? routes[key].url : pathPrefix + routes[key].path
             let children: RouteRecordRaw[] = []
             if (routes[key].children && routes[key].children.length > 0) {
-                children = handleMenuRule(routes[key].children, pathPrefix, currentPath)
+                children = handleMenuRule(routes[key].children, pathPrefix, module)
             }
             menuRule.push({
                 path: currentPath,
@@ -159,27 +185,43 @@ const handleMenuRule = (routes: any, pathPrefix = '/', parent = '/', module = 'a
                 },
                 children: children,
             })
-        } else {
-            // 权限节点
-            authNode.push(pathPrefix + routes[key].name)
-        }
-    }
-    if (authNode.length) {
-        if (module == 'admin') {
-            const navTabs = useNavTabs()
-            navTabs.setAuthNode(parent, authNode)
-        } else if (module == 'user') {
-            const memberCenter = useMemberCenter()
-            memberCenter.setAuthNode(parent, authNode)
         }
     }
     return menuRule
 }
 
 /**
- * 动态添加路由-带子路由
+ * 处理权限节点
+ * @param routes 路由数据
+ * @param prefix 节点前缀
+ * @returns 组装好的权限节点
  */
-export const addRouteAll = (viewsComponent: Record<string, any>, routes: any, parentName: string) => {
+const handleAuthNode = (routes: any, prefix = '/') => {
+    const authNode: Map<string, string[]> = new Map([])
+    assembleAuthNode(routes, authNode, prefix, prefix)
+    return authNode
+}
+const assembleAuthNode = (routes: any, authNode: Map<string, string[]>, prefix = '/', parent = '/') => {
+    const authNodeTemp = []
+    for (const key in routes) {
+        if (routes[key].type == 'button') authNodeTemp.push(prefix + routes[key].name)
+        if (routes[key].children && routes[key].children.length > 0) {
+            assembleAuthNode(routes[key].children, authNode, prefix, prefix + routes[key].name)
+        }
+    }
+    if (authNodeTemp && authNodeTemp.length > 0) {
+        authNode.set(parent, authNodeTemp)
+    }
+}
+
+/**
+ * 动态添加路由-带子路由
+ * @param viewsComponent
+ * @param routes
+ * @param parentName
+ * @param analyticRelation 根据 name 从已注册路由分析父级路由
+ */
+export const addRouteAll = (viewsComponent: Record<string, any>, routes: any, parentName: string, analyticRelation = false) => {
     for (const idx in routes) {
         if (routes[idx].extend == 'add_menu_only') {
             continue
@@ -187,23 +229,24 @@ export const addRouteAll = (viewsComponent: Record<string, any>, routes: any, pa
         if (routes[idx].type == 'menu' && routes[idx].menu_type == 'tab' && !viewsComponent[routes[idx].component] && /^cms\/content/.test(routes[idx].name)) {
             routes[idx].component = "/src/views/backend/cms/content/loading.vue"
         }
-        if (
-            routes[idx].type == 'menu' &&
-            ((routes[idx].menu_type == 'tab' && viewsComponent[routes[idx].component]) || routes[idx].menu_type == 'iframe')
-        ) {
-            addRouteItem(viewsComponent, routes[idx], parentName)
+        if ((routes[idx].menu_type == 'tab' && viewsComponent[routes[idx].component]) || routes[idx].menu_type == 'iframe') {
+            addRouteItem(viewsComponent, routes[idx], parentName, analyticRelation)
         }
 
         if (routes[idx].children && routes[idx].children.length > 0) {
-            addRouteAll(viewsComponent, routes[idx].children, parentName)
+            addRouteAll(viewsComponent, routes[idx].children, parentName, analyticRelation)
         }
     }
 }
 
 /**
  * 动态添加路由
+ * @param viewsComponent
+ * @param route
+ * @param parentName
+ * @param analyticRelation 根据 name 从已注册路由分析父级路由
  */
-export const addRouteItem = (viewsComponent: Record<string, any>, route: any, parentName: string) => {
+export const addRouteItem = (viewsComponent: Record<string, any>, route: any, parentName: string, analyticRelation: boolean) => {
     let path = '',
         component
     if (route.menu_type == 'iframe') {
@@ -213,6 +256,19 @@ export const addRouteItem = (viewsComponent: Record<string, any>, route: any, pa
         path = parentName ? route.path : '/' + route.path
         component = viewsComponent[route.component]
     }
+
+    if (route.menu_type == 'tab' && analyticRelation) {
+        const parentNames = getParentNames(route.name)
+        if (parentNames.length) {
+            for (const key in parentNames) {
+                if (router.hasRoute(parentNames[key])) {
+                    parentName = parentNames[key]
+                    break
+                }
+            }
+        }
+    }
+
     const routeBaseInfo: RouteRecordRaw = {
         path: path,
         name: route.name,
@@ -233,4 +289,54 @@ export const addRouteItem = (viewsComponent: Record<string, any>, route: any, pa
     } else {
         router.addRoute(routeBaseInfo)
     }
+}
+
+/**
+ * 根据name字符串，获取父级name组合的数组
+ * @param name
+ */
+const getParentNames = (name: string) => {
+    const names = compact(name.split('/'))
+    const tempNames = []
+    const parentNames = []
+    for (const key in names) {
+        tempNames.push(names[key])
+        if (parseInt(key) != names.length - 1) {
+            parentNames.push(tempNames.join('/'))
+        }
+    }
+    return reverse(parentNames)
+}
+
+export const handleMenus = (rules: anyObj, prefix = '/', type = 'nav') => {
+    const menus: Menus[] = []
+    for (const key in rules) {
+        if (rules[key].extend == 'add_rules_only' || !rules[key].component) {
+            continue
+        }
+        let children: Menus[] = []
+        if (rules[key].children && rules[key].children.length > 0) {
+            children = handleMenus(rules[key].children, prefix)
+        }
+
+        if (rules[key].type == type) {
+            let path = ''
+            if ('link' == rules[key].menu_type) {
+                path = rules[key].url
+            } else if ('iframe' == rules[key].menu_type) {
+                path = '/user/iframe/' + encodeURIComponent(rules[key].url)
+            } else {
+                path = prefix + rules[key].path
+            }
+            menus.push({
+                ...rules[key],
+                meta: {
+                    type: rules[key].menu_type,
+                },
+                path: path,
+                children: children,
+            })
+        }
+    }
+    return menus
 }

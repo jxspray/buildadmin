@@ -200,7 +200,7 @@ class Backend extends Api
 
         // 通用搜索组装
         foreach ($search as $field) {
-            if (!is_array($field) || !isset($field['operator']) || !isset($field['field'])) {
+            if (!is_array($field) || !isset($field['operator']) || !isset($field['field']) || !isset($field['val'])) {
                 continue;
             }
 
@@ -263,7 +263,13 @@ class Backend extends Api
                     $where[] = [$fieldName, $field['operator'], intval($field['val'])];
                     break;
                 case 'FIND_IN_SET':
-                    $where[] = [$fieldName, 'find in set', $field['val']];
+                    if (is_array($field['val'])) {
+                        foreach ($field['val'] as $val) {
+                            $where[] = [$fieldName, 'find in set', $val];
+                        }
+                    } else {
+                        $where[] = [$fieldName, 'find in set', $field['val']];
+                    }
                     break;
                 case 'IN':
                 case 'NOT IN':
@@ -271,7 +277,7 @@ class Backend extends Api
                     break;
                 case 'NULL':
                 case 'NOT NULL':
-                    $where[] = [$fieldName, strtolower($field['operator'])];
+                    $where[] = [$fieldName, strtolower($field['operator']), ''];
                     break;
             }
         }

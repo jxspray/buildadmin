@@ -49,6 +49,9 @@ const baTable = new baTableClass(
                     menu: t('user.rule.Member center menu items'),
                     menu_dir: t('user.rule.Member center menu contents'),
                     route: t('user.rule.Normal routing'),
+                    nav: t('user.rule.Top bar menu items'),
+                    button: t('user.rule.Page button'),
+                    nav_user_menu: t('user.rule.Top bar user dropdown'),
                 },
             },
             { label: t('state'), prop: 'status', align: 'center', width: '80', render: 'switch' },
@@ -63,6 +66,7 @@ const baTable = new baTableClass(
             type: 'route',
             menu_type: 'tab',
             extend: 'none',
+            no_login_valid: '0',
             keepalive: 0,
             status: '1',
             icon: 'el-icon-Minus',
@@ -72,6 +76,13 @@ const baTable = new baTableClass(
         // 获得编辑数据后
         requestEdit: () => {
             if (baTable.form.items && !baTable.form.items.icon) baTable.form.items.icon = 'el-icon-Minus'
+        },
+        onSubmit: () => {
+            if (baTable.form.items!.type == 'route') {
+                baTable.form.items!.menu_type = 'tab'
+            } else if (['menu', 'menu_dir', 'nav_user_menu'].includes(baTable.form.items!.type)) {
+                baTable.form.items!.no_login_valid = '0'
+            }
         },
     }
 )

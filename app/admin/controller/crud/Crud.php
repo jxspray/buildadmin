@@ -87,11 +87,11 @@ class Crud extends Backend
             $tableComment = mb_substr($table['comment'], -1) == '表' ? mb_substr($table['comment'], 0, -1) . '管理' : $table['comment'];
 
             // 生成文件信息解析
-            $modelFile      = Helper::parseNameData('admin', $tableName, '', 'model', $table['modelFile']);
-            $validateFile   = Helper::parseNameData('admin', $tableName, '', 'validate', $table['validateFile']);
-            $controllerFile = Helper::parseNameData('admin', $tableName, '', 'controller', $table['controllerFile']);
-            $webViewsDir    = Helper::parseWebDirNameData($tableName, '', 'views', $table['webViewsDir']);
-            $webLangDir     = Helper::parseWebDirNameData($tableName, '', 'lang', $table['webViewsDir']);
+            $modelFile      = Helper::parseNameData($table['isCommonModel'] ? 'common' : 'admin', $tableName, 'model', $table['modelFile']);
+            $validateFile   = Helper::parseNameData('admin', $tableName, 'validate', $table['validateFile']);
+            $controllerFile = Helper::parseNameData('admin', $tableName, 'controller', $table['controllerFile']);
+            $webViewsDir    = Helper::parseWebDirNameData($tableName, 'views', $table['webViewsDir']);
+            $webLangDir     = Helper::parseWebDirNameData($tableName, 'lang', $table['webViewsDir']);
 
             // 语言翻译前缀
             $this->webTranslate = implode('.', $webLangDir['lang']) . '.';
@@ -108,6 +108,8 @@ class Crud extends Backend
             $this->modelData['fieldType']          = [];
             $this->modelData['createTime']         = '';
             $this->modelData['updateTime']         = '';
+            $this->modelData['beforeInsertMixins'] = [];
+            $this->modelData['beforeInsert']       = '';
             $this->modelData['afterInsert']        = '';
             $this->modelData['name']               = $tableName;
             $this->modelData['className']          = $modelFile['lastName'];
@@ -290,7 +292,7 @@ class Crud extends Backend
         if (!$info) {
             $this->error(__('Record not found'));
         }
-        $webLangDir = Helper::parseWebDirNameData($info['table']['name'], '', 'lang', $info['table']['webViewsDir']);
+        $webLangDir = Helper::parseWebDirNameData($info['table']['name'], 'lang', $info['table']['webViewsDir']);
         $files      = [
             $webLangDir['en'] . '.ts',
             $webLangDir['zh-cn'] . '.ts',
@@ -324,17 +326,18 @@ class Crud extends Backend
 
     public function getFileData()
     {
-        $table = $this->request->get('table');
+        $table       = $this->request->get('table');
+        $commonModel = $this->request->get('commonModel/b');
 
         if (!$table) {
             $this->error(__('Parameter error'));
         }
 
         try {
-            $modelFile      = Helper::parseNameData('admin', $table, '', 'model');
-            $validateFile   = Helper::parseNameData('admin', $table, '', 'validate');
-            $controllerFile = Helper::parseNameData('admin', $table, '', 'controller');
-            $webViewsDir    = Helper::parseWebDirNameData($table, '', 'views');
+            $modelFile      = Helper::parseNameData($commonModel ? 'common' : 'admin', $table, 'model');
+            $validateFile   = Helper::parseNameData('admin', $table, 'validate');
+            $controllerFile = Helper::parseNameData('admin', $table, 'controller');
+            $webViewsDir    = Helper::parseWebDirNameData($table, 'views');
         } catch (Exception $e) {
             $this->error($e->getMessage());
         }
@@ -416,7 +419,7 @@ class Crud extends Backend
 
         try {
             if (!$controllerFile) {
-                $controllerFile = Helper::parseNameData('admin', $table, '', 'controller')['rootFileName'];
+                $controllerFile = Helper::parseNameData('admin', $table, 'controller')['rootFileName'];
             }
         } catch (Exception $e) {
             $this->error($e->getMessage());
@@ -455,6 +458,7 @@ class Crud extends Backend
         $tables    = get_table_list();
         $pattern   = '/^' . $tablePrefix . '/i';
         foreach ($tables as $table => $tableComment) {
+            if (!preg_match($pattern, $table)) continue;
             $table = preg_replace($pattern, '', $table);
             if (!in_array($table, $outExcludeTable)) {
                 $outTables[$table] = $tableComment;
@@ -483,19 +487,21 @@ class Crud extends Backend
 
             // 建立关联模型代码文件
             if (!$field['form']['remote-model'] || !file_exists(root_path() . $field['form']['remote-model'])) {
-                $joinModelFile = Helper::parseNameData('admin', $tableName, '', 'model', $field['form']['remote-model']);
+                $joinModelFile = Helper::parseNameData('admin', $tableName, 'model', $field['form']['remote-model']);
                 if (!file_exists(root_path() . $joinModelFile['rootFileName'])) {
-                    $joinModelData['append']      = [];
-                    $joinModelData['methods']     = [];
-                    $joinModelData['fieldType']   = [];
-                    $joinModelData['createTime']  = '';
-                    $joinModelData['updateTime']  = '';
-                    $joinModelData['afterInsert'] = '';
-                    $joinModelData['name']        = $tableName;
-                    $joinModelData['className']   = $joinModelFile['lastName'];
-                    $joinModelData['namespace']   = $joinModelFile['namespace'];
-                    $joinTablePk                  = 'id';
-                    $joinFieldsMap                = [];
+                    $joinModelData['append']             = [];
+                    $joinModelData['methods']            = [];
+                    $joinModelData['fieldType']          = [];
+                    $joinModelData['createTime']         = '';
+                    $joinModelData['updateTime']         = '';
+                    $joinModelData['beforeInsertMixins'] = [];
+                    $joinModelData['beforeInsert']       = '';
+                    $joinModelData['afterInsert']        = '';
+                    $joinModelData['name']               = $tableName;
+                    $joinModelData['className']          = $joinModelFile['lastName'];
+                    $joinModelData['namespace']          = $joinModelFile['namespace'];
+                    $joinTablePk                         = 'id';
+                    $joinFieldsMap                       = [];
                     foreach ($columns as $column) {
                         $joinFieldsMap[$column['name']] = $column['designType'];
                         $this->parseModelMethods($column, $joinModelData);
@@ -560,6 +566,7 @@ class Crud extends Backend
                 // 表格列
                 $columns[$relationField]['table']['render']   = 'tags';
                 $columns[$relationField]['table']['operator'] = 'LIKE';
+                $columns[$relationField]['designType']        = $field['designType'];
                 $this->indexVueData['tableColumn'][]          = $this->getTableColumn($columns[$relationField], $columnDict, $relationFieldPrefix, $relationFieldLangPrefix);
             }
         }
@@ -577,6 +584,11 @@ class Crud extends Backend
             $modelData['fieldType'][$field['name']] = 'json';
         } elseif (!in_array($field['name'], ['create_time', 'update_time', 'updatetime', 'createtime']) && $field['designType'] == 'datetime' && (in_array($field['type'], ['int', 'bigint']))) {
             $modelData['fieldType'][$field['name']] = 'timestamp:Y-m-d H:i:s';
+        }
+
+        // beforeInsertMixins
+        if ($field['designType'] == 'spk') {
+            $modelData['beforeInsertMixins']['snowflake'] = Helper::assembleStub('mixins/model/mixins/beforeInsertWithSnowflake', []);
         }
 
         // methods
@@ -598,6 +610,10 @@ class Crud extends Backend
             ]);
         } elseif ($field['designType'] == 'editor') {
             $modelData['methods'][] = Helper::assembleStub('mixins/model/getters/htmlDecode', [
+                'field' => $fieldName
+            ]);
+        } elseif ($field['designType'] == 'spk') {
+            $modelData['methods'][] = Helper::assembleStub('mixins/model/getters/string', [
                 'field' => $fieldName
             ]);
         } elseif ($field['originalDesignType'] == 'float') {
@@ -653,19 +669,15 @@ class Crud extends Backend
                 'content' => $columnDict,
             ];
         } elseif ($field['designType'] == 'textarea') {
-            $formField[':input-attr']['rows'] = $field['form']['rows'] ?? 3;
+            $formField[':input-attr']['rows'] = (int)($field['form']['rows'] ?? 3);
             $formField['@keyup.enter.stop']   = '';
             $formField['@keyup.ctrl.enter']   = 'baTable.onSubmit(formRef)';
         } elseif ($field['designType'] == 'remoteSelect' || $field['designType'] == 'remoteSelects') {
             $formField[':input-attr']['pk']         = Helper::getTableName($field['form']['remote-table'], false) . '.' . ($field['form']['remote-pk'] ?? 'id');
             $formField[':input-attr']['field']      = $field['form']['remote-field'] ?? 'name';
             $formField[':input-attr']['remote-url'] = $this->getRemoteSelectUrl($field);
-            if ($field['designType'] == 'remoteSelects') {
-                $formField['type']                    = 'remoteSelect';
-                $formField[':input-attr']['multiple'] = 'true';
-            }
         } elseif ($field['designType'] == 'number') {
-            $formField[':input-attr']['step'] = $field['form']['step'] ?? 1;
+            $formField[':input-attr']['step'] = (int)($field['form']['step'] ?? 1);
             $formField['v-model.number']      = $formField['v-model'];
             unset($formField['v-model']);
         } elseif ($field['designType'] == 'icon') {
@@ -691,12 +703,15 @@ class Crud extends Backend
         if ($field['default'] == 'null') {
             $this->indexVueData['defaultItems'][$field['name']] = null;
         } elseif ($field['default'] == '0' && in_array($field['designType'], ['radio', 'checkbox', 'select', 'selects'])) {
+            // 防止为`0`时无法设置上默认值
             $this->indexVueData['defaultItems'][$field['name']] = '0';
         }
         if ($field['designType'] == 'array') {
             $this->indexVueData['defaultItems'][$field['name']] = "[]";
         } elseif (in_array($field['designType'], $this->dtStringToArray) && stripos($field['default'], ',') !== false) {
             $this->indexVueData['defaultItems'][$field['name']] = Helper::buildSimpleArray(explode(',', $field['default']));
+        } elseif (in_array($field['designType'], ['weigh', 'number', 'float'])) {
+            $this->indexVueData['defaultItems'][$field['name']] = (float)$field['default'];
         }
         return $formField;
     }

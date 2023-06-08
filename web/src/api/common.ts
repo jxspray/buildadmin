@@ -6,6 +6,7 @@ import { useUserInfo } from '/@/stores/userInfo'
 import { ElNotification, UploadRawFile } from 'element-plus'
 import { useSiteConfig } from '/@/stores/siteConfig'
 import { state as uploadExpandState, fileUpload as uploadExpand } from '/@/components/mixins/baUpload'
+import { AxiosRequestConfig } from 'axios'
 import { i18n } from '../lang'
 
 /*
@@ -24,6 +25,8 @@ export const clearCacheUrl = '/admin/ajax/clearCache'
 
 // 公共
 export const captchaUrl = '/api/common/captcha'
+export const clickCaptchaUrl = '/api/common/clickCaptcha'
+export const checkClickCaptchaUrl = '/api/common/checkClickCaptcha'
 export const refreshTokenUrl = '/api/common/refreshToken'
 
 // api模块(前台)
@@ -36,7 +39,7 @@ export const apiSendEms = '/api/Ems/send'
 /**
  * 上传文件
  */
-export function fileUpload(fd: FormData, params: anyObj = {}, forceLocal = false): ApiPromise {
+export function fileUpload(fd: FormData, params: anyObj = {}, forceLocal = false, config: AxiosRequestConfig = {}): ApiPromise {
     let errorMsg = ''
     const file = fd.get('file') as UploadRawFile
     const siteConfig = useSiteConfig()
@@ -68,6 +71,7 @@ export function fileUpload(fd: FormData, params: anyObj = {}, forceLocal = false
         data: fd,
         params: params,
         timeout: 0,
+        ...config,
     }) as ApiPromise
 }
 
@@ -210,6 +214,33 @@ export function buildCaptchaUrl() {
     return getUrl() + captchaUrl + '?server=1'
 }
 
+export function getCaptchaData(id: string) {
+    return createAxios({
+        url: clickCaptchaUrl,
+        method: 'get',
+        params: {
+            id,
+        },
+    })
+}
+
+export function checkClickCaptcha(id: string, info: string, unset: boolean) {
+    return createAxios(
+        {
+            url: checkClickCaptchaUrl,
+            method: 'post',
+            data: {
+                id,
+                info,
+                unset,
+            },
+        },
+        {
+            showCodeMessage: false,
+        }
+    )
+}
+
 export function getTablePk(table: string) {
     return createAxios({
         url: getTablePkUrl,
@@ -298,12 +329,9 @@ export class baTableApi {
     }
 
     postData(action: string, data: anyObj) {
-        if (!this.actionUrl.has(action)) {
-            throw new Error('action does not exist')
-        }
         return createAxios(
             {
-                url: this.actionUrl.get(action),
+                url: this.actionUrl.has(action) ? this.actionUrl.get(action) : this.controllerUrl + action,
                 method: 'post',
                 data: data,
             },

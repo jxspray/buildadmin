@@ -32,11 +32,14 @@ onMounted(async () => {
 
     if (!userInfo.token) return router.push({ name: 'userLogin' })
 
+    /**
+     * 会员中心初始化请求，获取会员中心菜单信息等
+     */
     index().then((res) => {
         res.data.userInfo.refreshToken = userInfo.refreshToken
         userInfo.dataFill(res.data.userInfo)
         if (res.data.menus) {
-            handleMemberCenterRoute(res.data.menus)
+            handleMemberCenterRoute(res.data.menus, res.data.rules)
 
             if (ret.type == 'jump') return router.push(ret.url)
 
@@ -51,14 +54,16 @@ onMounted(async () => {
             }
 
             // 跳转到第一个菜单
-            let firstRoute = getFirstRoute(memberCenter.state.viewRoutes)
-            if (firstRoute) {
-                router.push({ path: firstRoute.path })
-            } else {
-                ElNotification({
-                    type: 'error',
-                    message: t('No route found to jump~'),
-                })
+            if (route.name == 'userMainLoading') {
+                let firstRoute = getFirstRoute(memberCenter.state.viewRoutes)
+                if (firstRoute) {
+                    router.push({ path: firstRoute.path })
+                } else {
+                    ElNotification({
+                        type: 'error',
+                        message: t('No route found to jump~'),
+                    })
+                }
             }
         }
     })
