@@ -5,7 +5,7 @@ import { useBaAccount } from '/@/stores/baAccount'
 const userControllerUrl = '/api/user/'
 const captchaUrl = '/api/common/captcha'
 const moduleControllerUrl = '/admin/module/'
-const storeUrl = '/api/v4.store/'
+const storeUrl = '/api/v5.store/'
 
 export function index(params: anyObj = {}) {
     return createAxios({
@@ -160,6 +160,7 @@ export function postInstallModule(uid: string, orderId: number, extend: anyObj =
             data: {
                 extend: extend,
             },
+            timeout: 3000 * 10,
         },
         {
             showCodeMessage: false,
@@ -180,6 +181,7 @@ export function postUpdate(uid: string, orderId: number, extend: anyObj = {}) {
         data: {
             extend: extend,
         },
+        timeout: 3000 * 10,
     })
 }
 
