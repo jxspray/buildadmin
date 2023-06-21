@@ -58,7 +58,7 @@
         :close-on-press-escape="false"
         :show-close="false"
         :destroy-on-close="true"
-        custom-class="ba-terminal-dialog"
+        class="ba-terminal-dialog"
         :title="t('Ready to start')"
         center
     >
@@ -145,7 +145,7 @@ const state: CheckState = reactive({
     showPortErrorPrompt: false,
 })
 
-const modules = import.meta.globEager('../assets/img/install/*.png')
+const modules:Record<string, any> = import.meta.glob('../assets/img/install/*.png', {eager: true})
 const getSrc = (name: string) => {
     const path = `../assets/img/install/${name}.png`
     return modules[path].default

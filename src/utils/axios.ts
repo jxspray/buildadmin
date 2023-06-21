@@ -16,7 +16,7 @@ export const getUrl = () => {
 // baseUrl 在正式环境中，使用当前协议与域名
 export const Axios = axios.create({
     baseURL: getUrl(),
-    timeout: 50000,
+    timeout: 1000 * 10,
     headers: {
         'Content-Type': 'application/json',
         'think-lang': langValue,

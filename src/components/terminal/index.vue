@@ -3,7 +3,7 @@
         v-bind="$attrs"
         v-model="terminal.state.show"
         :title="t('terminal.Terminal') + ' - ' + terminal.state.packageManager"
-        custom-class="ba-terminal-dialog"
+        class="ba-terminal-dialog"
         :append-to-body="true"
         :close-on-click-modal="false"
     >
@@ -94,7 +94,7 @@
     <el-dialog
         @close="terminal.togglePackageManagerDialog(false)"
         v-model="terminal.state.showPackageManagerDialog"
-        custom-class="ba-terminal-dialog"
+        class="ba-terminal-dialog"
         :title="t('Please select package manager')"
         center
     >
