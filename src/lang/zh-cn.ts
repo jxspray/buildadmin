@@ -25,6 +25,7 @@ export default {
     php_pdo: 'PHP PDO 扩展',
     php_safe_mode: 'PHP安全模式',
     php_proc: 'PHP 程序执行函数(proc)',
+    php_gd2: 'PHP gd2或freeType',
     npm_version: 'NPM 版本',
     npm_package_manager: '包管理器',
     nodejs_version: 'node.js 版本',

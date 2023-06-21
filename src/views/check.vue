@@ -145,7 +145,7 @@ const state: CheckState = reactive({
     showPortErrorPrompt: false,
 })
 
-const modules:Record<string, any> = import.meta.glob('../assets/img/install/*.png', {eager: true})
+const modules: Record<string, any> = import.meta.glob('../assets/img/install/*.png', { eager: true })
 const getSrc = (name: string) => {
     const path = `../assets/img/install/${name}.png`
     return modules[path].default
@@ -363,7 +363,7 @@ const closeTableLabel = (idx: any) => {
  */
 const checkSubmit = () => {
     state.checkTypeIndex = 'done'
-    let dataKey = ['php_version', 'config_is_writable', 'public_is_writable', 'php_pdo']
+    let dataKey = ['php_version', 'config_is_writable', 'public_is_writable', 'php_pdo', 'php_gd2']
     for (const key in dataKey) {
         if (!state.envCheckData[dataKey[key] as any] || state.envCheckData[dataKey[key] as any]['state'] != 'ok') {
             state.checkDoneIndex = 'fail'

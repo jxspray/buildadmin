@@ -25,6 +25,7 @@ export default {
     php_pdo: 'PHP PDO extension',
     php_safe_mode: 'PHP security mode',
     php_proc: 'PHP proc_open and proc_close permission',
+    php_gd2: 'PHP gd2 or freeType extensions',
     npm_version: 'NPM Version',
     npm_package_manager: 'NPM package manager',
     nodejs_version: 'node.js Version',
