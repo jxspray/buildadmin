@@ -397,6 +397,7 @@ const execWebCommand = () => {
     terminal.addTaskPM('web-install', true, '', (res: number, idx: number) => {
         if (res == taskStatus.Success) {
             terminal.addTaskPM('web-build', true, '', (res: number) => {
+                state.baseConfigSubmitState = false
                 if (res == taskStatus.Success) {
                     commandExecComplete({ type: 'web' })
                     terminal.toggle(false)
@@ -410,6 +411,7 @@ const execWebCommand = () => {
                 state.commandFailureCount++
                 terminal.retryTask(idx)
             } else {
+                state.baseConfigSubmitState = false
                 commandFail()
             }
         }
@@ -442,9 +444,10 @@ const submitBaseConfig = (formEl: InstanceType<typeof ElForm> | undefined = unde
                                     message: res.data.msg,
                                     center: true,
                                 })
+                                state.baseConfigSubmitState = false
                             }
                         })
-                        .finally(() => {
+                        .catch(() => {
                             state.baseConfigSubmitState = false
                         })
                 } else {
