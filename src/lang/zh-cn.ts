@@ -100,7 +100,7 @@ export default {
     'Duplicate administrator password': '重复管理员密码',
     'Site name': '站点名称',
     'Site configuration': '站点配置',
-    'The entered database was not found!': '输入的数据库没有找到!',
+    'The entered database was not found!': '数据表不存在，安装时将自动建立！',
     'Duplicate passwords do not match': '重复密码不匹配',
     'Command execution failed': '命令执行失败',
     Installing: '正在安装...',
@@ -149,4 +149,13 @@ export default {
     'Port error prompt 1': '当前安装程序站点的端口不是8000，您可能以错误的方式启动了安装服务，请参考',
     'Get started quickly': '快速上手文档',
     'Port error prompt 3': '进行安装。',
+    'Table migration failed': '数据表迁移失败',
+    'We use Phinx to manage the data table, which can version the data table': '我们使用`Phinx`管理数据表，它可以对数据表进行版本化管理。',
+    'Data table automatic migration failed, please manually migrate as follows:': '数据表自动迁移失败了，请按以下方法手动迁移：',
+    'If the command fails to be executed, add sudo or press the error message': '若命令执行失败，请尝试加 sudo，或按报错解决即可',
+    'Migration check': '迁移检查',
+    'When the command is executed successfully, the output is similar to:': '命令执行成功时，输出类似于：',
+    'After the command is executed successfully, multiple data tables will be automatically created in the database, and then click below to ':
+        '命令执行成功后，数据库内将自动建立多个数据表，然后请您点击下方的',
+    'continue install': '继续安装',
 }

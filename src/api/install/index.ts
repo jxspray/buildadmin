@@ -4,11 +4,11 @@ import { useTerminal } from '/@/stores/terminal'
 
 const entryFile = '/index.php'
 
-export const envBaseCheckUrl = entryFile + '/api/install/envbasecheck'
-export const envNpmCheckUrl = entryFile + '/api/install/envnpmcheck'
-export const testDatabaseUrl = entryFile + '/api/install/testdatabase'
-export const baseConfigUrl = entryFile + '/api/install/baseconfig'
-export const commandExecCompleteUrl = entryFile + '/api/install/commandexeccomplete'
+export const envBaseCheckUrl = entryFile + '/api/install/envBaseCheck'
+export const envNpmCheckUrl = entryFile + '/api/install/envNpmCheck'
+export const testDatabaseUrl = entryFile + '/api/install/testDatabase'
+export const baseConfigUrl = entryFile + '/api/install/baseConfig'
+export const commandExecCompleteUrl = entryFile + '/api/install/commandExecComplete'
 export const mvDistUrl = entryFile + '/api/install/mvDist'
 export const manualInstallUrl = entryFile + '/api/install/manualInstall'
 export const terminalUrl = entryFile + '/api/install/terminal'
@@ -55,8 +55,8 @@ export const postBaseConfig = (values: anyObj) => {
 /**
  * 标记命令执行完毕
  */
-export const commandExecComplete = () => {
-    Axios.post(commandExecCompleteUrl).then((res) => {
+export const commandExecComplete = (params: anyObj) => {
+    return Axios.post(commandExecCompleteUrl, params).then((res) => {
         if (res.data.code != 1) {
             ElMessage({
                 type: 'error',

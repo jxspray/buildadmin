@@ -1,6 +1,8 @@
 <template>
-    <Header />
-    <ManualInstall />
+    <div>
+        <Header />
+        <ManualInstall />
+    </div>
 </template>
 
 <script setup lang="ts">

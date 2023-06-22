@@ -1,73 +1,128 @@
 <template>
-    <Header />
-    <div class="container">
-        <div class="table-title">{{ t('Site configuration') }}</div>
-        <div v-if="state.showInstallTips" class="install-tips-box">
-            <div class="install-tips">
-                <img
-                    class="install-tips-close"
-                    @click="state.showInstallTips = false"
-                    src="~assets/img/install/fail.png"
-                    :alt="t('Close the prompt of completing unfinished matters manually')"
-                />
-                <div class="install-tips-title">
-                    <span>{{ t('Install Tips Title 1') }}</span>
-                    <span class="change-route" @click="common.setStep('check')">
-                        {{ t('Back to previous page') }}
-                    </span>
-                    <span>{{ t('Install Tips Title 2') }}</span>
+    <div>
+        <Header />
+        <div class="container">
+            <div class="table-title">{{ t('Site configuration') }}</div>
+            <div v-if="state.showInstallTips" class="install-tips-box">
+                <div class="install-tips">
+                    <img
+                        class="install-tips-close"
+                        @click="state.showInstallTips = false"
+                        src="~assets/img/install/fail.png"
+                        :alt="t('Close the prompt of completing unfinished matters manually')"
+                    />
+                    <div class="install-tips-title">
+                        <span>{{ t('Install Tips Title 1') }}</span>
+                        <span class="change-route" @click="common.setStep('check')">
+                            {{ t('Back to previous page') }}
+                        </span>
+                        <span>{{ t('Install Tips Title 2') }}</span>
+                    </div>
+                    <div class="install-tips-item">
+                        {{ t("If you don't want to open the corresponding permission due to some security factors, please check ") }}
+                        <span @click="goUrl('https://wonderful-code.gitee.io/guide/install/senior.html')" class="change-route">
+                            {{ t('how installation services ensure system security') }}
+                        </span>
+                    </div>
+                    <div class="install-tips-item">
+                        {{ t("If you really can't adjust all the tests to pass, please ") }}
+                        <a class="change-route" href="https://gitee.com/wonderful-code/buildadmin/issues" target="_blank">
+                            {{ t('click to feed back to us') }}
+                        </a>
+                        {{ t('continue installation') }}
+                    </div>
                 </div>
-                <div class="install-tips-item">
-                    {{ t("If you don't want to open the corresponding permission due to some security factors, please check ") }}
-                    <span @click="goUrl('https://wonderful-code.gitee.io/guide/install/senior.html')" class="change-route">
-                        {{ t('how installation services ensure system security') }}
-                    </span>
+            </div>
+            <div class="table">
+                <el-form ref="formRef" label-width="150px" @keyup.enter="submitBaseConfig(formRef)" :rules="rules" :model="state.formItem">
+                    <transition name="slide-bottom">
+                        <div v-show="state.showError" class="table-column table-error">{{ state.showError }}</div>
+                    </transition>
+                    <transition-group name="slide-bottom">
+                        <div v-show="state.showFormItem" v-for="(item, idx) in state.formItem" :key="idx">
+                            <div v-if="item.type == 'br'" class="table-item-br"></div>
+                            <div v-else class="table-column table-item">
+                                <el-form-item :prop="item.name" class="table-label" :label="item.label">
+                                    <el-input
+                                        :placeholder="item.placeholder ? item.placeholder : ''"
+                                        v-model="item.value"
+                                        class="table-input"
+                                        :type="item.type"
+                                    ></el-input>
+                                    <div class="block-help" v-if="item.blockHelp">{{ item.blockHelp }}</div>
+                                </el-form-item>
+                            </div>
+                        </div>
+                    </transition-group>
+                    <transition name="slide-bottom">
+                        <div v-show="state.showFormItem">
+                            <div v-show="state.databaseCheck == 'connecting'" class="connecting-prompt">
+                                <span>{{ t('Test connection to data server') }}</span>
+                            </div>
+                            <div class="footer-buttons">
+                                <el-button class="button" @click="common.setStep('check')">{{ t('Previous step') }}</el-button>
+                                <el-button type="primary" class="button" @click="submitBaseConfig(formRef)" :loading="state.baseConfigSubmitState">
+                                    {{ t('Install now') }}
+                                </el-button>
+                            </div>
+                        </div>
+                    </transition>
+                </el-form>
+            </div>
+        </div>
+    </div>
+    <el-dialog
+        v-model="state.execMigrateFail"
+        top="5vh"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :show-close="false"
+        :title="t('Table migration failed')"
+    >
+        <el-alert :title="t('We use Phinx to manage the data table, which can version the data table')" :closable="false" center type="info" />
+        <div class="phinx-fail-box">
+            <div class="title">
+                {{ t('Data table automatic migration failed, please manually migrate as follows:') }}
+            </div>
+            <div class="content-item">1、{{ t('Open terminal (windows PowerShell)') }}</div>
+            <div class="content-item">
+                <div>2、{{ t('Execute command') }}</div>
+                <div class="command">cd {{ state.rootPath }}</div>
+            </div>
+            <div class="content-item">
+                <div>3、{{ t('Execute command') }}</div>
+                <div class="command">php think migrate:run</div>
+                <div class="block-help">
+                    {{ t('If the command fails to be executed, add sudo or press the error message') }}
                 </div>
-                <div class="install-tips-item">
-                    {{ t("If you really can't adjust all the tests to pass, please ") }}
-                    <a class="change-route" href="https://gitee.com/wonderful-code/buildadmin/issues" target="_blank">
-                        {{ t('click to feed back to us') }}
-                    </a>
-                    {{ t('continue installation') }}
+            </div>
+            <div class="content-item">
+                <div>4、{{ t('Migration check') }}</div>
+                <div class="text">
+                    {{ t('When the command is executed successfully, the output is similar to:') }}
+                </div>
+                <div class="output-box">
+                    <div class="output">PS E:\build-admin> php think migrate:run</div>
+                    <div class="output mt10">== 20230620180908 Install: migrating</div>
+                    <div class="output">== 20230620180908 Install: migrated 0.0165s</div>
+                    <div class="output mt10">== 20230620180916 InstallData: migrating</div>
+                    <div class="output">== 20230620180916 InstallData: migrated 0.0573s</div>
+                    <div class="output mt10">All Done. Took 0.0898s</div>
+                </div>
+                <div class="block-help mt10">
+                    {{
+                        t(
+                            'After the command is executed successfully, multiple data tables will be automatically created in the database, and then click below to '
+                        )
+                    }}
+                    <span class="command">{{ t('continue install') }}</span>
                 </div>
             </div>
         </div>
-        <div class="table">
-            <el-form ref="formRef" label-width="150px" @keyup.enter="submitBaseConfig(formRef)" :rules="rules" :model="state.formItem">
-                <transition name="slide-bottom">
-                    <div v-show="state.showError" class="table-column table-error">{{ state.showError }}</div>
-                </transition>
-                <transition-group name="slide-bottom">
-                    <div v-show="state.showFormItem" v-for="(item, idx) in state.formItem" :key="idx">
-                        <div v-if="item.type == 'br'" class="table-item-br"></div>
-                        <div v-else class="table-column table-item">
-                            <el-form-item :prop="item.name" class="table-label" :label="item.label">
-                                <el-input
-                                    :placeholder="item.placeholder ? item.placeholder : ''"
-                                    v-model="item.value"
-                                    class="table-input"
-                                    :type="item.type"
-                                ></el-input>
-                            </el-form-item>
-                        </div>
-                    </div>
-                </transition-group>
-                <transition name="slide-bottom">
-                    <div v-show="state.showFormItem">
-                        <div v-show="state.databaseCheck == 'connecting'" class="connecting-prompt">
-                            <span>{{ t('Test connection to data server') }}</span>
-                        </div>
-                        <div class="footer-buttons">
-                            <el-button class="button" @click="common.setStep('check')">{{ t('Previous step') }}</el-button>
-                            <el-button type="primary" class="button" @click="submitBaseConfig(formRef)" :loading="state.baseConfigSubmitState">
-                                {{ t('Install now') }}
-                            </el-button>
-                        </div>
-                    </div>
-                </transition>
-            </el-form>
+        <div class="phinx-fail-footer-button">
+            <el-button type="primary" @click="migrateDone">{{ t('continue install') }}</el-button>
         </div>
-    </div>
+    </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -119,6 +174,7 @@ const state: ConfigState = reactive({
             value: '',
             name: 'database',
             type: 'text',
+            blockHelp: '',
         },
         prefix: {
             label: t('MySQL data table prefix'),
@@ -168,6 +224,10 @@ const state: ConfigState = reactive({
     // 失败自动重试1次，目前只用于 install 命令
     maximumCommandFailures: 1,
     commandFailureCount: 0,
+    executionWebCommand: true,
+    execMigrateFail: false,
+    execMigrateIdx: 0,
+    rootPath: '',
 })
 
 const connectDatabase = async () => {
@@ -184,7 +244,7 @@ const connectDatabase = async () => {
             if (res.data.code == 1) {
                 state.databaseCheck = 'connect-ok'
                 state.databases = res.data.data.databases
-                if (state.formItem.database.value) validation.findDatabase(state.formItem.database.value, true, null)
+                if (state.formItem.database.value) validation.findDatabase(state.formItem.database.value)
             } else {
                 state.databaseCheck = 'wait'
                 state.databases = []
@@ -206,32 +266,17 @@ const validation = {
         }
         return callback()
     },
-    findDatabase: (database: string, showError: boolean, callback: any = null) => {
-        if (state.databaseCheck != 'connect-ok') {
-            if (callback != null) {
-                return callback()
-            }
-            return
-        }
-        if (database) {
-            if (state.databases.indexOf(database) === -1) {
-                if (showError) {
-                    ElMessage({
-                        type: 'error',
-                        message: t('The entered database was not found!'),
-                        center: true,
-                    })
-                } else {
-                    return callback(t('The entered database was not found!'))
-                }
-            }
-        }
-        if (callback != null) {
-            return callback()
+    findDatabase: (database: string) => {
+        if (state.databaseCheck != 'connect-ok') return
+        if (database && state.databases.indexOf(database) === -1) {
+            state.formItem.database.blockHelp = t('The entered database was not found!')
+        } else {
+            state.formItem.database.blockHelp = ''
         }
     },
     database: (rule: any, field: { value: string; label: string }, callback: any) => {
-        validation.findDatabase(field.value, false, callback)
+        validation.findDatabase(field.value)
+        return callback()
     },
     connect: (rule: any, field: { value: string; label: string }, callback: any) => {
         let flag = false
@@ -312,13 +357,48 @@ const setGlobalError = (msg: string) => {
     state.showError = msg
 }
 
-const execCommand = () => {
+/**
+ * 执行`php think migrate:run`命令
+ */
+const execMigrate = () => {
+    terminal.addTask('migrate.run', true, '', (res: number, idx: number) => {
+        if (res == taskStatus.Success) {
+            migrateDone()
+        } else {
+            state.execMigrateIdx = idx
+            state.execMigrateFail = true
+        }
+    })
+}
+
+const migrateDone = () => {
+    if (state.execMigrateIdx) terminal.delTask(state.execMigrateIdx)
+    commandExecComplete({
+        type: 'migrate',
+        adminname: state.formItem.adminname.value,
+        adminpassword: state.formItem.adminpassword.value,
+        sitename: state.formItem.sitename.value,
+    }).then(() => {
+        execWebCommand()
+    })
+}
+
+/**
+ * 执行`npm install`和`npm build`命令
+ */
+const execWebCommand = () => {
+    state.execMigrateFail = false
+    if (!state.executionWebCommand) {
+        state.showInstallTips = false // 隐藏手动操作安装未尽事宜提示
+        common.setStep('manualInstall') // 跳转到手动完成未尽事宜页面
+        return
+    }
     terminal.toggle(true)
     terminal.addTaskPM('web-install', true, '', (res: number, idx: number) => {
         if (res == taskStatus.Success) {
             terminal.addTaskPM('web-build', true, '', (res: number) => {
                 if (res == taskStatus.Success) {
-                    commandExecComplete()
+                    commandExecComplete({ type: 'web' })
                     terminal.toggle(false)
                     common.setStep('done')
                 } else if (res == taskStatus.Failed) {
@@ -353,12 +433,9 @@ const submitBaseConfig = (formEl: InstanceType<typeof ElForm> | undefined = unde
                     postBaseConfig(values)
                         .then((res) => {
                             if (res.data.code == 1) {
-                                if (res.data.data.execution) {
-                                    execCommand()
-                                } else {
-                                    state.showInstallTips = false // 隐藏手动操作安装未尽事宜提示
-                                    common.setStep('manualInstall') // 跳转到手动完成未尽事宜页面
-                                }
+                                state.rootPath = res.data.data.rootPath
+                                state.executionWebCommand = res.data.data.executionWebCommand
+                                execMigrate()
                             } else {
                                 ElMessage({
                                     type: 'error',
@@ -382,7 +459,9 @@ const submitBaseConfig = (formEl: InstanceType<typeof ElForm> | undefined = unde
 
 getBaseConfig().then((res) => {
     if (res.data.code == 1) {
-        state.showInstallTips = !res.data.data.envOk
+        state.rootPath = res.data.data.rootPath
+        state.showInstallTips = !res.data.data.executionWebCommand
+        state.executionWebCommand = res.data.data.executionWebCommand
     } else if (res.data.code == 0) {
         ElMessage({
             type: 'error',
@@ -390,9 +469,6 @@ getBaseConfig().then((res) => {
             center: true,
             duration: 0,
         })
-    } else if (res.data.code == 302) {
-        // 安装配置完成但命令未完成执行
-        execCommand()
     } else {
         state.showInstallTips = true
     }
@@ -420,6 +496,57 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="scss">
+.phinx-fail-box {
+    display: block;
+    margin-top: 20px;
+    padding: 15px;
+    margin: 15px auto;
+    background-color: #fff;
+    border-radius: 4px;
+    .content-item {
+        line-height: 1.3;
+        border-radius: 4px;
+        padding: 10px;
+        background-color: #f5f5f5;
+        word-break: break-all;
+        font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+        margin: 15px 0;
+        .command {
+            line-height: 2;
+            font-weight: bold;
+        }
+        .block-help {
+            display: inline-block;
+            line-height: 2;
+            font-size: 13px;
+            color: #909399;
+        }
+        .text {
+            padding: 6px 0;
+            font-size: 14px;
+        }
+        .output-box {
+            position: relative;
+            border-radius: 5px;
+            box-shadow: #0005 0 2px 2px;
+            padding: 5px;
+            font-size: 13px;
+            background-color: #282c34;
+        }
+        .output {
+            color: #a9b7c6;
+        }
+        .mt10 {
+            margin-top: 10px;
+        }
+    }
+}
+.phinx-fail-footer-button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .container {
     margin-top: 10px;
     .table-title {
@@ -465,6 +592,14 @@ onUnmounted(() => {
                 flex: 1;
                 font-size: 15px;
                 margin-bottom: 0;
+                .block-help {
+                    display: block;
+                    width: 100%;
+                    color: #909399;
+                    font-size: 13px;
+                    line-height: 16px;
+                    padding: 0 11px;
+                }
             }
         }
     }

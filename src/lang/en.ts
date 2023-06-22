@@ -102,7 +102,7 @@ export default {
     'Duplicate administrator password': 'Duplicate administrator password',
     'Site name': 'Site Name',
     'Site configuration': 'Site Configuration',
-    'The entered database was not found!': 'The entered database was not found!',
+    'The entered database was not found!': 'The data table does not exist and will be created automatically during installation',
     'Duplicate passwords do not match': 'Duplicate passwords mismatch',
     'Command execution failed': 'Command execution failed',
     Installing: 'Installing',
@@ -155,4 +155,16 @@ export default {
         'The current installation site port is not 8000. You may have started the installation service in the wrong way. Please refer to the',
     'Get started quickly': ' Quick Start documentation ',
     'Port error prompt 3': ' for installation.',
+    'Table migration failed': 'Table migration failed',
+    'We use Phinx to manage the data table, which can version the data table':
+        "We use 'Phinx' to manage the data table, which can version the data table",
+    'Data table automatic migration failed, please manually migrate as follows:':
+        'Data table automatic migration failed, please manually migrate as follows:',
+    'If the command fails to be executed, add sudo or press the error message':
+        'If the command fails to be executed, add sudo or press the error message',
+    'Migration check': 'Migration check',
+    'When the command is executed successfully, the output is similar to:': 'When the command is executed successfully, the output is similar to:',
+    'After the command is executed successfully, multiple data tables will be automatically created in the database, and then click below to ':
+        'After the command is executed successfully, multiple data tables will be automatically created in the database, and then click below to ',
+    'continue install': 'continue the installation',
 }

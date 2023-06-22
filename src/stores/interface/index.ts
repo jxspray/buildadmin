@@ -84,6 +84,10 @@ export interface ConfigState {
     autoJumpSeconds: number
     maximumCommandFailures: number
     commandFailureCount: number
+    executionWebCommand: boolean
+    execMigrateFail: boolean
+    execMigrateIdx: number
+    rootPath: string
 }
 
 export interface DatabaseData {

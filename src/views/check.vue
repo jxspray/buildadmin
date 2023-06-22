@@ -1,103 +1,105 @@
 <template>
-    <Header />
-    <div class="container">
-        <div class="table-title">{{ t('Environmental inspection') }}</div>
-        <div class="table">
-            <div v-if="state.showPortErrorPrompt" class="global-warning">
-                <el-alert :closable="false" center type="error">
-                    <template #default>
-                        {{ t('Port error prompt 1') }}
-                        <a target="_blank" href="https://wonderful-code.gitee.io/guide/install/start.html">{{ t('Get started quickly') }}</a>
-                        {{ t('Port error prompt 3') }}
-                    </template>
-                </el-alert>
-            </div>
-            <transition-group name="slide-bottom">
-                <div class="table-item" :class="idx" v-for="(item, idx) in state.envCheckData" :key="idx + item.describe + item.state">
-                    <div class="table-label">
-                        {{ idx.toString() == 'npm_package_manager' ? t(idx) + ' ' + getAmicablePackageManager() : t(idx) }}
-                        <template v-if="item.link && item.link.length > 0">
-                            <span
-                                v-for="(link, linkidx) in item.link"
-                                :key="linkidx"
-                                :title="link.title ? link.title : ''"
-                                @click="onLabelNeed(link)"
-                                class="label-need"
-                                :class="link.type"
-                                >{{ link.name }}</span
-                            >
+    <div>
+        <Header />
+        <div class="container">
+            <div class="table-title">{{ t('Environmental inspection') }}</div>
+            <div class="table">
+                <div v-if="state.showPortErrorPrompt" class="global-warning">
+                    <el-alert :closable="false" center type="error">
+                        <template #default>
+                            {{ t('Port error prompt 1') }}
+                            <a target="_blank" href="https://wonderful-code.gitee.io/guide/install/start.html">{{ t('Get started quickly') }}</a>
+                            {{ t('Port error prompt 3') }}
                         </template>
+                    </el-alert>
+                </div>
+                <transition-group name="slide-bottom">
+                    <div class="table-item" :class="idx" v-for="(item, idx) in state.envCheckData" :key="idx + item.describe + item.state">
+                        <div class="table-label">
+                            {{ idx.toString() == 'npm_package_manager' ? t(idx) + ' ' + getAmicablePackageManager() : t(idx) }}
+                            <template v-if="item.link && item.link.length > 0">
+                                <span
+                                    v-for="(link, linkidx) in item.link"
+                                    :key="linkidx"
+                                    :title="link.title ? link.title : ''"
+                                    @click="onLabelNeed(link)"
+                                    class="label-need"
+                                    :class="link.type"
+                                    >{{ link.name }}</span
+                                >
+                            </template>
+                        </div>
+                        <div class="table-value">
+                            {{ item.describe }}
+                            <img :title="t(state.stateTitle[item.state])" class="data-state" :src="getSrc(item.state)" :alt="item.state" />
+                        </div>
                     </div>
+                </transition-group>
+
+                <div v-if="state.checkTypeIndex != 'done'" class="table-item">
+                    <div class="table-label">{{ t('Checking installation environment') }}</div>
                     <div class="table-value">
-                        {{ item.describe }}
-                        <img :title="t(state.stateTitle[item.state])" class="data-state" :src="getSrc(item.state)" :alt="item.state" />
+                        {{ t(state.checkType[state.checkTypeIndex]) }}
+                        <img
+                            :title="t('Current execution to:') + t(state.checkType[state.checkTypeIndex])"
+                            class="data-state"
+                            src="~assets/img/install/loading.gif"
+                            :alt="t(state.checkType[state.checkTypeIndex])"
+                        />
                     </div>
                 </div>
-            </transition-group>
 
-            <div v-if="state.checkTypeIndex != 'done'" class="table-item">
-                <div class="table-label">{{ t('Checking installation environment') }}</div>
-                <div class="table-value">
-                    {{ t(state.checkType[state.checkTypeIndex]) }}
-                    <img
-                        :title="t('Current execution to:') + t(state.checkType[state.checkTypeIndex])"
-                        class="data-state"
-                        src="~assets/img/install/loading.gif"
-                        :alt="t(state.checkType[state.checkTypeIndex])"
-                    />
-                </div>
+                <div class="check-done" :class="state.checkDoneIndex">{{ t(state.checkDone[state.checkDoneIndex]) }}</div>
+                <div class="button" @click="goConfig" :class="state.checkDoneIndex == 'ok' ? 'pass' : ''">{{ t('Step 2 site configuration') }}</div>
             </div>
-
-            <div class="check-done" :class="state.checkDoneIndex">{{ t(state.checkDone[state.checkDoneIndex]) }}</div>
-            <div class="button" @click="goConfig" :class="state.checkDoneIndex == 'ok' ? 'pass' : ''">{{ t('Step 2 site configuration') }}</div>
         </div>
+        <el-dialog
+            v-model="common.state.showStartDialog"
+            :close-on-click-modal="false"
+            :close-on-press-escape="false"
+            :show-close="false"
+            :destroy-on-close="true"
+            class="ba-terminal-dialog"
+            :title="t('Ready to start')"
+            center
+        >
+            <el-form @keyup.enter="startInstall" class="start-from" label-position="left" label-width="120px" :model="state.startForm">
+                <el-form-item :label="t('language')">
+                    <el-select @change="changeLang" class="w100" v-model="state.startForm.lang">
+                        <el-option label="中文简体" value="zh-cn"></el-option>
+                        <el-option label="English" value="en"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item :label="t('NPM package manager')">
+                    <el-select class="w100" v-model="state.startForm.packageManager">
+                        <el-option label="npm" value="npm"></el-option>
+                        <el-option label="cnpm" value="cnpm"></el-option>
+                        <el-option :label="'pnpm' + t('recommend')" value="pnpm"></el-option>
+                        <el-option :label="'yarn' + t('recommend')" value="yarn"></el-option>
+                        <el-option label="ni" value="ni"></el-option>
+                        <el-option :label="t('I want to execute the command manually')" value="none"></el-option>
+                    </el-select>
+                    <div class="block-help">
+                        {{ t('The system has a Web terminal. Please select an installed or your favorite NPM package manager') }}
+                    </div>
+                </el-form-item>
+                <el-form-item :label="t('Set NPM source')">
+                    <el-radio-group v-model="state.startForm.setNpmRegistry" class="ml-4">
+                        <el-radio label="none" size="large">{{ t('Use current source') }}</el-radio>
+                        <el-radio label="taobao" size="large">{{ t('TaoBao') }}</el-radio>
+                        <el-radio label="npm" size="large">NPM</el-radio>
+                        <el-radio label="rednpm" size="large">RedNPM</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="startInstall" type="primary" size="large" round>
+                    <el-icon><Promotion /></el-icon>
+                    <span class="start-install">{{ t('Start installation') }}</span>
+                </el-button>
+            </template>
+        </el-dialog>
     </div>
-    <el-dialog
-        v-model="common.state.showStartDialog"
-        :close-on-click-modal="false"
-        :close-on-press-escape="false"
-        :show-close="false"
-        :destroy-on-close="true"
-        class="ba-terminal-dialog"
-        :title="t('Ready to start')"
-        center
-    >
-        <el-form @keyup.enter="startInstall" class="start-from" label-position="left" label-width="120px" :model="state.startForm">
-            <el-form-item :label="t('language')">
-                <el-select @change="changeLang" class="w100" v-model="state.startForm.lang">
-                    <el-option label="中文简体" value="zh-cn"></el-option>
-                    <el-option label="English" value="en"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item :label="t('NPM package manager')">
-                <el-select class="w100" v-model="state.startForm.packageManager">
-                    <el-option label="npm" value="npm"></el-option>
-                    <el-option label="cnpm" value="cnpm"></el-option>
-                    <el-option :label="'pnpm' + t('recommend')" value="pnpm"></el-option>
-                    <el-option :label="'yarn' + t('recommend')" value="yarn"></el-option>
-                    <el-option label="ni" value="ni"></el-option>
-                    <el-option :label="t('I want to execute the command manually')" value="none"></el-option>
-                </el-select>
-                <div class="block-help">
-                    {{ t('The system has a Web terminal. Please select an installed or your favorite NPM package manager') }}
-                </div>
-            </el-form-item>
-            <el-form-item :label="t('Set NPM source')">
-                <el-radio-group v-model="state.startForm.setNpmRegistry" class="ml-4">
-                    <el-radio label="none" size="large">{{ t('Use current source') }}</el-radio>
-                    <el-radio label="taobao" size="large">{{ t('TaoBao') }}</el-radio>
-                    <el-radio label="npm" size="large">NPM</el-radio>
-                    <el-radio label="rednpm" size="large">RedNPM</el-radio>
-                </el-radio-group>
-            </el-form-item>
-        </el-form>
-        <template #footer>
-            <el-button @click="startInstall" type="primary" size="large" round>
-                <el-icon><Promotion /></el-icon>
-                <span class="start-install">{{ t('Start installation') }}</span>
-            </el-button>
-        </template>
-    </el-dialog>
 </template>
 
 <script setup lang="ts">
