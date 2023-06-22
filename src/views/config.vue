@@ -11,23 +11,24 @@
                     :alt="t('Close the prompt of completing unfinished matters manually')"
                 />
                 <div class="install-tips-title">
-                    {{ t('Install Tips Title 1') }}<span class="change-route" @click="common.setStep('check')">{{ t('Back to previous page') }}</span
-                    >{{ t('Install Tips Title 2') }}
+                    <span>{{ t('Install Tips Title 1') }}</span>
+                    <span class="change-route" @click="common.setStep('check')">
+                        {{ t('Back to previous page') }}
+                    </span>
+                    <span>{{ t('Install Tips Title 2') }}</span>
                 </div>
                 <div class="install-tips-item">
-                    {{ t("If you don't want to open the corresponding permission due to some security factors, please check ")
-                    }}<span @click="goUrl('https://wonderful-code.gitee.io/guide/install/senior.html')" class="change-route">{{
-                        t('how installation services ensure system security')
-                    }}</span>
+                    {{ t("If you don't want to open the corresponding permission due to some security factors, please check ") }}
+                    <span @click="goUrl('https://wonderful-code.gitee.io/guide/install/senior.html')" class="change-route">
+                        {{ t('how installation services ensure system security') }}
+                    </span>
                 </div>
                 <div class="install-tips-item">
                     {{ t("If you really can't adjust all the tests to pass, please ") }}
-                    <a class="change-route" href="mailto:hi@buildadmin.com" target="_blank">{{ t('click to feed back to us') }}</a>
-                    {{
-                        t(
-                            ' and continue the installation. The subsequent installation program will guide you on how to manually complete the outstanding matters.'
-                        )
-                    }}
+                    <a class="change-route" href="https://gitee.com/wonderful-code/buildadmin/issues" target="_blank">
+                        {{ t('click to feed back to us') }}
+                    </a>
+                    {{ t('continue installation') }}
                 </div>
             </div>
         </div>
@@ -58,9 +59,9 @@
                         </div>
                         <div class="footer-buttons">
                             <el-button class="button" @click="common.setStep('check')">{{ t('Previous step') }}</el-button>
-                            <el-button type="primary" class="button" @click="submitBaseConfig(formRef)" :loading="state.baseConfigSubmitState">{{
-                                t('Install now')
-                            }}</el-button>
+                            <el-button type="primary" class="button" @click="submitBaseConfig(formRef)" :loading="state.baseConfigSubmitState">
+                                {{ t('Install now') }}
+                            </el-button>
                         </div>
                     </div>
                 </transition>

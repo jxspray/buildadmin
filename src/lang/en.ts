@@ -86,7 +86,7 @@ export default {
     'how installation services ensure system security': 'how installation services ensure system security',
     "If you really can't adjust all the tests to pass, please ": "If you really can't adjust all the tests to pass, please ",
     'click to feed back to us': 'click to feed back to us',
-    ' and continue the installation. The subsequent installation program will guide you on how to manually complete the outstanding matters.':
+    'continue installation':
         ' and continue the installation. The subsequent installation program will guide you on how to manually complete the outstanding matters.',
     'Close the prompt of completing unfinished matters manually': 'Close the prompt of completing unfinished matters manually',
     'Test connection to data server': 'Test connection to data server',

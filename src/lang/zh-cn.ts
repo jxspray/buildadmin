@@ -85,8 +85,7 @@ export default {
     'how installation services ensure system security': '安装服务如何保障系统安全',
     "If you really can't adjust all the tests to pass, please ": '如果您确实无法将所有检测调整到通过状态，请',
     'click to feed back to us': '点击向我们反馈',
-    ' and continue the installation. The subsequent installation program will guide you on how to manually complete the outstanding matters.':
-        '，并继续安装，安装程序后续将引导您，如何手动完成未尽事宜。',
+    'continue installation': '，并继续安装，安装程序后续将引导您，如何手动完成未尽事宜。',
     'Close the prompt of completing unfinished matters manually': '关闭手动完成未尽事宜提示',
     'Test connection to data server': '测试连接数据服务器...',
     'Install now': '立即安装',
