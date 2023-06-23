@@ -6,6 +6,17 @@
                     <div class="header-item-box">
                         <FormItem
                             class="mr-20 table-name-item"
+                            :label="t('cms.module.title')"
+                            v-model="state.table.name"
+                            type="string"
+                            :placeholder="t('crud.crud.Name of the data table')"
+                            :input-attr="{
+                                onChange: onTableCheck,
+                            }"
+                            :error="state.tableNameError"
+                        />
+                        <FormItem
+                            class="mr-20 table-name-item"
                             :label="t('crud.log.table_name')"
                             v-model="state.table.name"
                             type="string"

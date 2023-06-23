@@ -121,6 +121,11 @@ body,
     padding-top: 0;
     padding-bottom: 52px;
 }
+.ba-design-dialog .el-dialog__body {
+    height: 76vh;
+    padding-top: 0;
+    padding-bottom: 52px;
+}
 .ba-operate-dialog .el-dialog__footer {
     padding: 10px var(--el-dialog-padding-primary);
     box-shadow: var(--el-box-shadow);

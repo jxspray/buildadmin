@@ -32,7 +32,17 @@ import TableHeader from '/@/components/table/header/index.vue'
 const { t } = useI18n()
 const tableRef = ref()
 const router = useRouter()
-let optButtons: OptButton[] = [
+let optButtons: {
+    name: string;
+    icon: string;
+    text: string;
+    title: string;
+    type: string;
+    render: string;
+    class: string;
+    click: (row: TableRow) => void;
+    disabledTip: boolean
+}[] = [
     {
         render: 'tipButton',
         name: 'fields',
@@ -76,6 +86,13 @@ const baTable = new baTableClass(
         defaultItems: {"template":"empty","type":"1","issystem":"1","issearch":"1","status":"1"},
     }
 )
+// baTable.before = {
+//     onTableHeaderAction({ event, data }) {
+//         if (event == 'add') {
+//             return false;
+//         }
+//     }
+// }
 
 provide('baTable', baTable)
 
@@ -91,6 +108,7 @@ onMounted(() => {
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import baTable from '/@/utils/baTable'
 export default defineComponent({
     name: 'routine/cms/module',
 })
