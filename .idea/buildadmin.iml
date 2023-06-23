@@ -49,6 +49,8 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/container" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/psr/http-client" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/topthink/think-template" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/topthink/think-view" />
     </content>
     <content url="file://$MODULE_DIR$/runtime" />
     <content url="file://$MODULE_DIR$/web/node_modules" />
