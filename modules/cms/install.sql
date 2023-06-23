@@ -59,7 +59,7 @@ CREATE TABLE `__PREFIX__cms_catalog`
 DROP TABLE IF EXISTS `__PREFIX__cms_module`;
 CREATE TABLE `__PREFIX__cms_module`
 (
-    `id`          int(11) NOT NULL COMMENT 'ID',
+    `id`          int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `name`        varchar(50)    DEFAULT NULL COMMENT '模型',
     `title`       varchar(255)   DEFAULT NULL COMMENT '模型名称',
     `description` varchar(255)   DEFAULT NULL COMMENT '模型描述',

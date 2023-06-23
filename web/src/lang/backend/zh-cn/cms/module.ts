@@ -2,6 +2,7 @@ export default {
     "template": "创建表字段规则",
     "empty template": "空表字段",
     "article template": "常规文章字段",
+    "design": "字段管理",
     "id": "ID",
     "name": "模型表",
     "title": "模型名称",

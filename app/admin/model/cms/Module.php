@@ -68,7 +68,7 @@ class Module extends Model
 
     public static function onAfterWrite(self $model): void
     {
-        CmsLogic::forceUpdate('module');
+        CmsLogic::getInstance()->forceUpdate('module');
     }
 
     public static function onBeforeDelete(self $model): bool

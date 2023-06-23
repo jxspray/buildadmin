@@ -7,7 +7,8 @@
             :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
             :quick-search-placeholder="t('quick Search Placeholder', { fields: t('cms.module.quick Search Fields') })"
             @action="baTable.onTableHeaderAction"
-        />
+        >
+        </TableHeader>
 
         <!-- 表格 -->
         <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
@@ -29,6 +30,7 @@ import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
 
+
 const { t } = useI18n()
 const tableRef = ref()
 const router = useRouter()
@@ -45,7 +47,7 @@ let optButtons: {
 }[] = [
     {
         render: 'tipButton',
-        name: 'fields',
+        name: 'design',
         title: '字段管理',
         text: '字段管理',
         type: 'primary',
@@ -53,7 +55,9 @@ let optButtons: {
         class: 'table-row-info',
         disabledTip: false,
         click: (row: TableRow) => {
-            router.push({ path: '/admin/cms/fields', query: { id: row[baTable.table.pk!] } })
+            baTable.form.operate = 'design';
+            baTable.form.loading = false;
+            // router.push({ path: '/admin/cms/fields', query: { id: row[baTable.table.pk!] } })
         },
     }
 ]

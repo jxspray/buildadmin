@@ -110,6 +110,11 @@ class CmsLogic
         return $this->typeItem;
     }
 
+    public function __call($name, $arguments)
+    {
+        // TODO: Implement __call() method.
+    }
+
     public static function __callStatic($name, $arguments)
     {
         if ($name == 'forceUpdate') return self::getInstance()->forceUpdate($arguments[0]);

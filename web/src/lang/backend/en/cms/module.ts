@@ -2,6 +2,7 @@ export default {
     "template": "create_template",
     "empty template": "empty template",
     "article template": "article template",
+    "design": "field management",
     "id": "id",
     "name": "name",
     "title": "title",
