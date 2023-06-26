@@ -6,6 +6,9 @@ use app\common\library\Menu;
 use app\index\logics\CmsLogic;
 use ba\cms\SqlField;
 use ba\Terminal;
+use think\db\exception\DataNotFoundException;
+use think\db\exception\DbException;
+use think\db\exception\ModelNotFoundException;
 use think\facade\Config;
 use think\facade\Db;
 use think\Model;
@@ -20,10 +23,13 @@ class Module extends Model
     protected $name = 'cms_module';
 
     // 自动写入时间戳字段
-    protected $autoWriteTimestamp = false;
+    protected $autoWriteTimestamp = 'int';
 
-    protected $createTime = false;
-    protected $updateTime = false;
+    protected $createTime = 'createtime';
+    protected $updateTime = 'updatetime';
+
+    protected $type = [
+    ];
 
     public static function onBeforeInsert(self $model): bool
     {
@@ -36,6 +42,11 @@ class Module extends Model
         return true;
     }
 
+    /**
+     * @throws ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     */
     public static function onAfterInsert(Model $model): void
     {
         if ($model->weigh == 0) {
@@ -71,12 +82,31 @@ class Module extends Model
         CmsLogic::getInstance()->forceUpdate('module');
     }
 
+    /**
+     * @throws ModelNotFoundException
+     * @throws DataNotFoundException
+     * @throws DbException
+     */
     public static function onBeforeDelete(self $model): bool
     {
+        // 执行模型卸载程序
         $sqlFieldInstance = SqlField::getInstance($model['name']);
-        /* 检查数据库是否存在 */
-        if (!$sqlFieldInstance->tableExists()
-            || ($sqlFieldInstance->deleteTable() && \app\admin\model\cms\Fields::where('moduleid', $model['id'])->delete())) return Menu::delete($model['path'], true);
-        else return false;
+        /* 删除表 */
+        $sqlFieldInstance->tableExists() && $sqlFieldInstance->deleteTable();
+        /* 清空字段 */
+        (new Fields)->where('moduleid', $model['id'])->delete();
+        /* 删除菜单 */
+        return Menu::delete($model['path'], true);
+    }
+
+    public function setGenerateAttr($value, $data): string
+    {
+        $value['table']['name'] = $data['name'];
+        return json_encode($value, JSON_UNESCAPED_UNICODE);
+    }
+
+    public function getGenerateAttr($value, $data)
+    {
+        return json_decode($value, true);
     }
 }

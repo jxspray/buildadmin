@@ -87,7 +87,28 @@ const baTable = new baTableClass(
         defaultOrder: { prop: 'weigh', order: 'desc' },
     },
     {
-        defaultItems: {"template":"empty","type":"1","issystem":"1","issearch":"1","status":"1"},
+        defaultItems: {"template":"empty","type":"1","issystem":"1","issearch":"1","status":"1","generate": {
+            "table": {
+                "name": "",
+                "comment": "",
+                "quickSearchField": [
+                    "id"
+                ],
+                "defaultSortField": "id",
+                "formFields": [],
+                "columnFields": [
+                    "id"
+                ],
+                "defaultSortType": "desc",
+                "generateRelativePath": "",
+                "isCommonModel": 0,
+                "modelFile": "",
+                "controllerFile": "",
+                "validateFile": "",
+                "webViewsDir": ""
+            },
+            "fields": []
+        }},
     }
 )
 // baTable.before = {

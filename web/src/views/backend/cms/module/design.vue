@@ -6,24 +6,10 @@
                     <div class="header-item-box">
                         <FormItem
                             class="mr-20 table-name-item"
-                            :label="t('cms.module.title')"
-                            v-model="state.table.name"
-                            type="string"
-                            :placeholder="t('crud.crud.Name of the data table')"
-                            :input-attr="{
-                                onChange: onTableCheck,
-                            }"
-                            :error="state.tableNameError"
-                        />
-                        <FormItem
-                            class="mr-20 table-name-item"
                             :label="t('crud.log.table_name')"
                             v-model="state.table.name"
                             type="string"
                             :placeholder="t('crud.crud.Name of the data table')"
-                            :input-attr="{
-                                onChange: onTableCheck,
-                            }"
                             :error="state.tableNameError"
                         />
                         <FormItem
@@ -513,7 +499,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import { ref, reactive, inject, onMounted, nextTick } from 'vue'
 import BaInput from '/@/components/baInput/index.vue'
 import FormItem from '/@/components/formItem/index.vue'
 import { fieldItem, designTypes, tableFieldsKey } from '/@/views/backend/crud/index'
@@ -523,19 +509,23 @@ import Sortable, { SortableEvent } from 'sortablejs'
 import { useTemplateRefsList } from '@vueuse/core'
 import { changeStep, state as crudState, getTableAttr } from '/@/views/backend/crud/index'
 import { ElNotification, FormItemRule, FormInstance, ElMessageBox } from 'element-plus'
-import { getDatabaseList, getFileData, generateCheck, generate, parseFieldData, postLogStart } from '/@/api/backend/crud'
+import { getDatabaseList, getFileData, generateCheck, parseFieldData, postLogStart } from '/@/api/backend/crud'
+import { generate } from '/@/api/backend/cms/fields'
 import { getTableFieldList } from '/@/api/common'
 import { buildValidatorData, regularVarName } from '/@/utils/validate'
 import { getArrayKey } from '/@/utils/common'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+// import type baTableClass from '/@/utils/baTable'
 
 const { t } = useI18n()
 const router = useRouter()
 const designWindowRef = ref()
 const formRef = ref<FormInstance>()
+// const baTable = inject('baTable') as baTableClass
 const tabsRefs = useTemplateRefsList<HTMLElement>()
 let nameRepeatCount = 1
+changeStep('start')
 const state: {
     loading: {
         init: boolean
