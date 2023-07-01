@@ -1,6 +1,6 @@
 <template>
     <div class="default-main">
-        <div class="header-config-box">
+        <!-- <div class="header-config-box">
             <el-row class="header-box">
                 <div class="header">
                     <div class="header-item-box">
@@ -144,7 +144,7 @@
                     :name="state.showHeaderSeniorConfig ? 'el-icon-ArrowUp' : 'el-icon-ArrowDown'"
                 />
             </div>
-        </div>
+        </div> -->
         <el-row v-loading="state.loading.init" class="fields-box" :gutter="20">
             <el-col :xs="24" :span="6">
                 <el-collapse class="field-collapse" v-model="state.fieldCollapseName">
@@ -502,7 +502,7 @@
 import { ref, reactive, inject, onMounted, nextTick } from 'vue'
 import BaInput from '/@/components/baInput/index.vue'
 import FormItem from '/@/components/formItem/index.vue'
-import { fieldItem, designTypes, tableFieldsKey } from '/@/views/backend/crud/index'
+import { fieldItem, designTypes, tableFieldsKey } from '/@/views/backend/cms/crud/index'
 import type { FieldItem } from '/@/views/backend/crud/index'
 import { cloneDeep, range, isEmpty } from 'lodash-es'
 import Sortable, { SortableEvent } from 'sortablejs'

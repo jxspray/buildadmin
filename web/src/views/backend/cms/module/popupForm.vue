@@ -9,7 +9,7 @@
         top="5vh"
         @close="baTable.toggleForm">
         <template #header>
-            <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
+            <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-design-dialog'">
                 {{ baTable.form.operate ? t("cms.module.design") : '' }}
             </div>
         </template>
