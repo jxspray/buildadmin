@@ -516,13 +516,29 @@ import { buildValidatorData, regularVarName } from '/@/utils/validate'
 import { getArrayKey } from '/@/utils/common'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-// import type baTableClass from '/@/utils/baTable'
+import type baTableClass from '/@/utils/baTable'
 
 const { t } = useI18n()
 const router = useRouter()
 const designWindowRef = ref()
 const formRef = ref<FormInstance>()
-// const baTable = inject('baTable') as baTableClass
+const baTable = inject('baTable') as baTableClass
+baTable.before = {
+    onSubmit: function (){
+        if (baTable.form.operate == 'design') {
+            onGenerate();
+            return false;
+        }
+    }
+}
+baTable.after = {
+    requestEdit: function (res: any) {
+        if (baTable.form.operate == 'design') {
+            state.table = res.res.data.row.generate.table
+            state.fields = res.res.data.row.generate.fields
+        }
+    }
+}
 const tabsRefs = useTemplateRefsList<HTMLElement>()
 let nameRepeatCount = 1
 changeStep('start')

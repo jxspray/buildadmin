@@ -57,6 +57,7 @@ let optButtons: {
         click: (row: TableRow) => {
             baTable.form.operate = 'design';
             baTable.form.loading = false;
+            baTable.requestEdit(row.id)
             // router.push({ path: '/admin/cms/fields', query: { id: row[baTable.table.pk!] } })
         },
     }
@@ -107,17 +108,32 @@ const baTable = new baTableClass(
                 "validateFile": "",
                 "webViewsDir": ""
             },
-            "fields": []
+            "fields": [
+                {
+                    "title": "主键",
+                    "name": "id",
+                    "comment": "ID",
+                    "designType": "pk",
+                    "formBuildExclude": "1",
+                    "table": {
+                        "width": "70",
+                        "operator": "RANGE",
+                        "sortable": "custom"
+                    },
+                    "form": [],
+                    "type": "int",
+                    "length": "10",
+                    "precision": "0",
+                    "default": "",
+                    "null": "",
+                    "primaryKey": "1",
+                    "unsigned": "1",
+                    "autoIncrement": "1"
+                }
+            ]
         }},
     }
 )
-// baTable.before = {
-//     onTableHeaderAction({ event, data }) {
-//         if (event == 'add') {
-//             return false;
-//         }
-//     }
-// }
 
 provide('baTable', baTable)
 
@@ -134,6 +150,7 @@ onMounted(() => {
 <script lang="ts">
 import { defineComponent } from 'vue'
 import baTable from '/@/utils/baTable'
+import { fa } from 'element-plus/es/locale'
 export default defineComponent({
     name: 'routine/cms/module',
 })
