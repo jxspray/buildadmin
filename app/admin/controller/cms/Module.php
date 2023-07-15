@@ -7,7 +7,6 @@ use app\index\logics\CmsLogic;
 use ba\cms\SqlField;
 use think\db\exception\PDOException;
 use think\exception\ValidateException;
-use think\facade\Db;
 
 /**
  * 模型管理
@@ -15,25 +14,17 @@ use think\facade\Db;
  */
 class Module extends Backend
 {
-    /**
-     * Module模型对象
-     * @var \app\admin\model\cms\Module
-     */
-    protected $model = null;
+    protected string|array $quickSearchField = ['id'];
 
-    protected $quickSearchField = ['id'];
+    protected string|array $defaultSortField = 'weigh,desc';
 
-    protected $defaultSortField = 'weigh,desc';
-
-    protected $preExcludeFields = [''];
-
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->model = new \app\admin\model\cms\Module;
     }
 
-    public function add()
+    public function add(): void
     {
         if ($this->request->isPost()) {
             $data = $this->request->post();
@@ -47,7 +38,7 @@ class Module extends Backend
             }
 
             $result = false;
-            Db::startTrans();
+            $this->model->startTrans();
             try {
                 // 模型验证
                 if ($this->modelValidate) {
@@ -59,9 +50,9 @@ class Module extends Backend
                     }
                 }
                 $result = $this->model->save($data);
-                Db::commit();
+                $this->model->commit();
             } catch (ValidateException|PDOException|\Exception $e) {
-                Db::rollback();
+                $this->model->rollback();
                 $this->error($e->getMessage());
             }
             if ($result !== false) {
@@ -74,7 +65,7 @@ class Module extends Backend
         $this->error(__('Parameter error'));
     }
 
-    public function edit()
+    public function edit(): void
     {
         $id  = $this->request->param($this->model->getPk());
         $row = $this->model->find($id);
@@ -95,7 +86,7 @@ class Module extends Backend
 
             $data   = $this->excludeFields($data);
             $result = false;
-            Db::startTrans();
+            $this->model->startTrans();
             try {
                 // 模型验证
                 if ($this->modelValidate) {
@@ -107,9 +98,9 @@ class Module extends Backend
                     }
                 }
                 $result = $row->save($data);
-                Db::commit();
+                $this->model->commit();
             } catch (ValidateException|PDOException|\Exception $e) {
-                Db::rollback();
+                $this->model->rollback();
                 $this->error($e->getMessage());
             }
             if ($result !== false) {
@@ -125,7 +116,8 @@ class Module extends Backend
         ]);
     }
 
-    public function createTemplateField(){
+    public function createTemplateField(): void
+    {
         $moduleid = $this->request->post('moduleid');
         $module = CmsLogic::getInstance()->module;
         $moduleInfo = $module[$moduleid] ?? [];

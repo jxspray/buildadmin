@@ -1,150 +1,5 @@
 <template>
     <div class="default-main">
-        <!-- <div class="header-config-box">
-            <el-row class="header-box">
-                <div class="header">
-                    <div class="header-item-box">
-                        <FormItem
-                            class="mr-20 table-name-item"
-                            :label="t('crud.log.table_name')"
-                            v-model="state.table.name"
-                            type="string"
-                            :placeholder="t('crud.crud.Name of the data table')"
-                            :error="state.tableNameError"
-                        />
-                        <FormItem
-                            class="table-comment-item"
-                            :label="t('crud.crud.Data Table Notes')"
-                            v-model="state.table.comment"
-                            type="string"
-                            :placeholder="t('crud.crud.For example: `user table` will be generated into `user management`')"
-                        />
-                    </div>
-                    <div class="header-right">
-                        <el-button type="primary" :loading="state.loading.generate" @click="onGenerate" v-blur>
-                            {{ t('crud.crud.Generate CRUD code') }}
-                        </el-button>
-                        <el-button @click="onAbandonDesign" type="danger" v-blur>{{ t('crud.crud.give up') }}</el-button>
-                    </div>
-                </div>
-            </el-row>
-            <transition :name="state.showHeaderSeniorConfig ? 'el-zoom-in-top' : 'el-zoom-in-bottom'">
-                <div v-if="state.showHeaderSeniorConfig" class="header-senior-config-box">
-                    <div class="header-senior-config-form">
-                        <el-form-item :label-width="140" :label="t('crud.crud.Table Quick Search Fields')">
-                            <el-select :clearable="true" :multiple="true" class="w100" v-model="state.table.quickSearchField" placement="bottom">
-                                <el-option
-                                    v-for="(item, idx) in state.fields"
-                                    :key="idx"
-                                    :label="item.name + (item.title ? '-' + item.title : '')"
-                                    :value="item.name"
-                                />
-                            </el-select>
-                        </el-form-item>
-                        <div class="default-sort-field-box">
-                            <el-form-item :label-width="140" class="default-sort-field" :label="t('crud.crud.Table Default Sort Fields')">
-                                <el-select :clearable="true" v-model="state.table.defaultSortField" placement="bottom">
-                                    <el-option
-                                        v-for="(item, idx) in state.fields"
-                                        :key="idx"
-                                        :label="item.name + (item.title ? '-' + item.title : '')"
-                                        :value="item.name"
-                                    />
-                                </el-select>
-                            </el-form-item>
-                            <FormItem
-                                class="default-sort-field-type"
-                                :label="t('crud.crud.sort order')"
-                                v-model="state.table.defaultSortType"
-                                type="select"
-                                :data="{
-                                    content: { desc: t('crud.crud.sort order desc'), asc: t('crud.crud.sort order asc') },
-                                }"
-                            />
-                        </div>
-                        <el-form-item :label-width="140" :label="t('crud.crud.Fields as Table Columns')">
-                            <el-select :clearable="true" :multiple="true" class="w100" v-model="state.table.columnFields" placement="bottom">
-                                <el-option
-                                    v-for="(item, idx) in state.fields"
-                                    :key="idx"
-                                    :label="item.name + (item.title ? '-' + item.title : '')"
-                                    :value="item.name"
-                                />
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item :label-width="140" :label="t('crud.crud.Fields as form items')">
-                            <el-select :clearable="true" :multiple="true" class="w100" v-model="state.table.formFields" placement="bottom">
-                                <el-option
-                                    v-for="(item, idx) in state.fields"
-                                    :key="idx"
-                                    :label="item.name + (item.title ? '-' + item.title : '')"
-                                    :value="item.name"
-                                />
-                            </el-select>
-                        </el-form-item>
-                        <FormItem
-                            :label="t('crud.crud.The relative path to the generated code')"
-                            v-model="state.table.generateRelativePath"
-                            type="string"
-                            :attr="{
-                                'label-width': 140,
-                                'block-help': t('crud.crud.For quick combination code generation location, please fill in the relative path'),
-                            }"
-                            :input-attr="{
-                                onChange: onTableChange,
-                            }"
-                        />
-                        <FormItem
-                            :label="t('crud.crud.Generated Controller Location')"
-                            v-model="state.table.controllerFile"
-                            type="string"
-                            :attr="{
-                                'label-width': 140,
-                            }"
-                        />
-                        <el-form-item :label="t('crud.crud.Generated Data Model Location')" :label-width="140">
-                            <el-input v-model="state.table.modelFile" type="string">
-                                <template #append>
-                                    <el-checkbox
-                                        @change="onChangeCommonModel"
-                                        v-model="state.table.isCommonModel"
-                                        :label="t('crud.crud.Common model')"
-                                        size="small"
-                                        :true-label="1"
-                                        :false-label="0"
-                                    />
-                                </template>
-                            </el-input>
-                        </el-form-item>
-                        <FormItem
-                            :label="t('crud.crud.Generated Validator Location')"
-                            v-model="state.table.validateFile"
-                            type="string"
-                            :attr="{
-                                'label-width': 140,
-                            }"
-                        />
-                        <FormItem
-                            :label="t('crud.crud.WEB end view directory')"
-                            v-model="state.table.webViewsDir"
-                            type="string"
-                            :attr="{
-                                'label-width': 140,
-                            }"
-                        />
-                    </div>
-                </div>
-            </transition>
-            <div @click="state.showHeaderSeniorConfig = !state.showHeaderSeniorConfig" class="header-senior-config">
-                <span>{{ t('crud.crud.Advanced Configuration') }}</span>
-                <Icon
-                    class="senior-config-arrow-icon"
-                    size="14"
-                    color="var(--el-text-color-primary)"
-                    :name="state.showHeaderSeniorConfig ? 'el-icon-ArrowUp' : 'el-icon-ArrowDown'"
-                />
-            </div>
-        </div> -->
         <el-row v-loading="state.loading.init" class="fields-box" :gutter="20">
             <el-col :xs="24" :span="6">
                 <el-collapse class="field-collapse" v-model="state.fieldCollapseName">
@@ -217,9 +72,9 @@
                             >
                                 <Icon color="var(--el-color-white)" size="15" name="fa fa-pencil icon" />
                             </el-button>
-                            <el-button @click.stop="onDelField(index)" type="danger" size="small" v-blur circle>
+                            <!-- <el-button @click.stop="onDelField(index)" type="danger" size="small" v-blur circle>
                                 <Icon color="var(--el-color-white)" size="15" name="fa fa-trash" />
-                            </el-button>
+                            </el-button> -->
                         </div>
                     </div>
                     <div class="design-field-empty" v-if="!state.fields.length && !state.draggingField">
@@ -227,6 +82,7 @@
                     </div>
                 </div>
             </el-col>
+            
             <el-col :xs="24" :span="6">
                 <div class="field-config ba-scroll-style">
                     <div v-if="state.activateField === -1" class="design-field-empty">
@@ -355,213 +211,30 @@
                 </div>
             </el-col>
         </el-row>
-        <el-dialog
-            @close="onCancelRemoteSelect"
-            class="ba-operate-dialog"
-            :model-value="state.remoteSelectPre.show"
-            :title="t('crud.crud.Remote drop-down association information')"
-            :close-on-click-modal="false"
-            @keyup.enter="onSaveRemoteSelect"
-        >
-            <div class="ba-operate-form" :style="'width: calc(100% - 80px)'">
-                <el-form
-                    ref="formRef"
-                    :model="state.remoteSelectPre.form"
-                    :rules="remoteSelectPreFormRules"
-                    v-loading="state.remoteSelectPre.loading"
-                    label-position="right"
-                    label-width="160px"
-                    :destroy-on-close="true"
-                >
-                    <FormItem
-                        prop="table"
-                        type="select"
-                        :label="t('crud.crud.Associated Data Table')"
-                        v-model="state.remoteSelectPre.form.table"
-                        :key="JSON.stringify(state.remoteSelectPre.dbList)"
-                        :data="{
-                            content: state.remoteSelectPre.dbList,
-                        }"
-                        :input-attr="{ onChange: onJoinTableChange }"
-                    />
-                    <div v-loading="state.loading.remoteSelect">
-                        <FormItem
-                            prop="pk"
-                            type="select"
-                            :label="t('crud.crud.Drop down value field')"
-                            v-model="state.remoteSelectPre.form.pk"
-                            :placeholder="t('crud.crud.Please select the value field of the select component')"
-                            :key="'select-value' + JSON.stringify(state.remoteSelectPre.fieldList)"
-                            :data="{
-                                content: state.remoteSelectPre.fieldList,
-                            }"
-                        />
-                        <FormItem
-                            prop="label"
-                            type="select"
-                            :label="t('crud.crud.Drop down label field')"
-                            v-model="state.remoteSelectPre.form.label"
-                            :placeholder="t('crud.crud.Please select the label field of the select component')"
-                            :key="'select-label' + JSON.stringify(state.remoteSelectPre.fieldList)"
-                            :data="{
-                                content: state.remoteSelectPre.fieldList,
-                            }"
-                        />
-                        <FormItem
-                            prop="joinField"
-                            type="selects"
-                            :label="t('crud.crud.Fields displayed in the table')"
-                            v-model="state.remoteSelectPre.form.joinField"
-                            :placeholder="t('crud.crud.Please select the fields displayed in the table')"
-                            :key="'join-field' + JSON.stringify(state.remoteSelectPre.fieldList)"
-                            :data="{
-                                content: state.remoteSelectPre.fieldList,
-                            }"
-                        />
-                        <FormItem
-                            prop="controllerFile"
-                            type="select"
-                            :label="t('crud.crud.Controller position')"
-                            v-model="state.remoteSelectPre.form.controllerFile"
-                            :placeholder="t('crud.crud.Please select the controller of the data table')"
-                            :key="'controller-file' + JSON.stringify(state.remoteSelectPre.controllerFileList)"
-                            :data="{
-                                content: state.remoteSelectPre.controllerFileList,
-                            }"
-                            :attr="{
-                                'block-help': t(
-                                    'crud.crud.The remote pull-down will request the corresponding controller to obtain data, so it is recommended that you create the CRUD of the associated table'
-                                ),
-                            }"
-                        />
-                        <FormItem
-                            type="select"
-                            :label="t('crud.crud.Data Model Location')"
-                            v-model="state.remoteSelectPre.form.modelFile"
-                            :placeholder="t('crud.crud.Please select the data model location of the data table')"
-                            :key="'model-file' + JSON.stringify(state.remoteSelectPre.modelFileList)"
-                            :data="{
-                                content: state.remoteSelectPre.modelFileList,
-                            }"
-                            :attr="{
-                                'block-help': t(
-                                    'crud.crud.If it is left blank, the model of the associated table will be generated automatically If the table already has a model, it is recommended to select it to avoid repeated generation'
-                                ),
-                            }"
-                        />
-                    </div>
-                </el-form>
-            </div>
-            <template #footer>
-                <div :style="'width: calc(100% - 88px)'">
-                    <el-button @click="onCancelRemoteSelect">{{ $t('Cancel') }}</el-button>
-                    <el-button v-blur @click="onSaveRemoteSelect" type="primary">
-                        {{ $t('Save') }}
-                    </el-button>
-                </div>
-            </template>
-        </el-dialog>
-        <el-dialog
-            @close="closeConfirmGenerate"
-            class="ba-operate-dialog confirm-generate-dialog"
-            :model-value="state.confirmGenerate.show"
-            :title="t('crud.crud.Confirm CRUD code generation')"
-        >
-            <div class="confirm-generate-dialog-body">
-                <el-alert
-                    v-if="state.confirmGenerate.controller"
-                    :title="t('crud.crud.The controller already exists Continuing to generate will automatically overwrite the existing code!')"
-                    center
-                    type="error"
-                />
-                <br />
-                <el-alert
-                    v-if="state.confirmGenerate.table"
-                    :title="
-                        t(
-                            'crud.crud.The data table already exists Continuing to generate will automatically delete the original table and create a new one!'
-                        )
-                    "
-                    center
-                    type="error"
-                />
-            </div>
-            <template #footer>
-                <div class="confirm-generate-dialog-footer">
-                    <el-button @click="closeConfirmGenerate">{{ $t('Cancel') }}</el-button>
-                    <el-button :loading="state.loading.generate" v-blur @click="startGenerate" type="primary">
-                        {{ t('crud.crud.Continue building') }}
-                    </el-button>
-                </div>
-            </template>
-        </el-dialog>
     </div>
 </template>
-
 <script setup lang="ts">
-import { ref, reactive, inject, onMounted, nextTick } from 'vue'
-import BaInput from '/@/components/baInput/index.vue'
-import FormItem from '/@/components/formItem/index.vue'
-import { fieldItem, designTypes, tableFieldsKey } from '/@/views/backend/cms/crud/index'
-import type { FieldItem } from '/@/views/backend/crud/index'
+import { ref, reactive, onMounted, nextTick } from 'vue'
+import { fieldItem, designTypes, getTableAttr } from '/@/views/backend/crud/index'
+import type { FieldItem } from '/@/views/backend/cms/module/fieldItem'
+import { ElNotification, FormItemRule, FormInstance, ElMessageBox } from 'element-plus'
 import { cloneDeep, range, isEmpty } from 'lodash-es'
 import Sortable, { SortableEvent } from 'sortablejs'
 import { useTemplateRefsList } from '@vueuse/core'
-import { changeStep, state as crudState, getTableAttr } from '/@/views/backend/crud/index'
-import { ElNotification, FormItemRule, FormInstance, ElMessageBox } from 'element-plus'
-import { getDatabaseList, getFileData, generateCheck, parseFieldData, postLogStart } from '/@/api/backend/crud'
-import { generate } from '/@/api/backend/cms/fields'
-import { getTableFieldList } from '/@/api/common'
-import { buildValidatorData, regularVarName } from '/@/utils/validate'
+import { getDatabaseList, getFileData } from '/@/api/backend/crud'
 import { getArrayKey } from '/@/utils/common'
-import { useRouter } from 'vue-router'
+import { getTableFieldList } from '/@/api/common'
+
 import { useI18n } from 'vue-i18n'
-import type baTableClass from '/@/utils/baTable'
 
 const { t } = useI18n()
-const router = useRouter()
 const designWindowRef = ref()
-const formRef = ref<FormInstance>()
-const baTable = inject('baTable') as baTableClass
-baTable.before = {
-    onSubmit: function (){
-        if (baTable.form.operate == 'design') {
-            onGenerate();
-            return false;
-        }
-    }
-}
-baTable.after = {
-    requestEdit: function (res: any) {
-        if (baTable.form.operate == 'design') {
-            state.table = res.res.data.row.generate.table
-            state.fields = res.res.data.row.generate.fields
-        }
-    }
-}
 const tabsRefs = useTemplateRefsList<HTMLElement>()
-let nameRepeatCount = 1
-changeStep('start')
 const state: {
     loading: {
         init: boolean
         generate: boolean
         remoteSelect: boolean
-    }
-    table: {
-        name: string
-        comment: string
-        quickSearchField: string[]
-        defaultSortField: string
-        formFields: string[]
-        columnFields: string[]
-        defaultSortType: string
-        generateRelativePath: string
-        isCommonModel: number
-        modelFile: string
-        controllerFile: string
-        validateFile: string
-        webViewsDir: string
     }
     fields: FieldItem[]
     activateField: number
@@ -584,34 +257,12 @@ const state: {
             controllerFile: string
         }
     }
-    showHeaderSeniorConfig: boolean
-    confirmGenerate: {
-        show: boolean
-        table: boolean
-        controller: boolean
-    }
     draggingField: boolean
-    tableNameError: string
 } = reactive({
     loading: {
         init: false,
         generate: false,
         remoteSelect: false,
-    },
-    table: {
-        name: '',
-        comment: '',
-        quickSearchField: [],
-        defaultSortField: '',
-        formFields: [],
-        columnFields: [],
-        defaultSortType: 'desc',
-        generateRelativePath: '',
-        isCommonModel: 0,
-        modelFile: '',
-        controllerFile: '',
-        validateFile: '',
-        webViewsDir: '',
     },
     fields: [],
     activateField: -1,
@@ -634,65 +285,18 @@ const state: {
             controllerFile: '',
         },
     },
-    showHeaderSeniorConfig: false,
-    confirmGenerate: {
-        show: false,
-        table: false,
-        controller: false,
-    },
     draggingField: false,
-    tableNameError: '',
 })
-
-type TableKey = keyof typeof state.table
 
 const onActivateField = (idx: number) => {
     state.activateField = idx
 }
 
-const onFieldDesignTypeChange = () => {
-    const field = cloneDeep(state.fields[state.activateField])
-    for (const tKey in field.table) {
-        field.table[tKey] = field.table[tKey].value
-    }
-    for (const tKey in field.form) {
-        field.form[tKey] = field.form[tKey].value
-    }
-    state.fields[state.activateField] = handleFieldAttr(field)
-}
-
 const onFieldNameChange = (val: string) => {
-    for (const key in tableFieldsKey) {
-        for (const idx in state.table[tableFieldsKey[key] as TableKey] as string[]) {
-            if (!getArrayKey(state.fields, 'name', (state.table[tableFieldsKey[key] as TableKey] as string[])[idx])) {
-                ;(state.table[tableFieldsKey[key] as TableKey] as string[])[idx] = val
-            }
-        }
-    }
-    if (state.table.defaultSortField) {
-        if (!getArrayKey(state.fields, 'name', state.table.defaultSortField)) {
-            state.table.defaultSortField = val
-        }
-    }
 }
 
-const onDelField = (index: number) => {
-    if (!state.fields[index]) return
-    state.activateField = -1
-    if (state.fields[index].name == state.table.defaultSortField) {
-        state.table.defaultSortField = ''
-    }
-
-    for (const key in tableFieldsKey) {
-        const delIdx = (state.table[tableFieldsKey[key] as TableKey] as string[]).findIndex((item) => {
-            return item == state.fields[index].name
-        })
-        if (delIdx != -1) {
-            ;(state.table[tableFieldsKey[key] as TableKey] as string[]).splice(delIdx, 1)
-        }
-    }
-
-    state.fields.splice(index, 1)
+const onEditField = (index: number, field: FieldItem) => {
+    if (['remoteSelect', 'remoteSelects'].includes(field.designType)) return showRemoteSelectPre(index)
 }
 
 const showRemoteSelectPre = (index: number, hideDelField = false) => {
@@ -732,113 +336,6 @@ const showRemoteSelectPre = (index: number, hideDelField = false) => {
         })
 }
 
-const onEditField = (index: number, field: FieldItem) => {
-    if (['remoteSelect', 'remoteSelects'].includes(field.designType)) return showRemoteSelectPre(index)
-}
-
-const closeConfirmGenerate = () => {
-    state.confirmGenerate.show = false
-}
-
-const startGenerate = () => {
-    state.loading.generate = true
-    const fields = cloneDeep(state.fields)
-    for (const key in fields) {
-        for (const tKey in fields[key].table) {
-            fields[key].table[tKey] = fields[key].table[tKey].value
-        }
-        for (const tKey in fields[key].form) {
-            fields[key].form[tKey] = fields[key].form[tKey].value
-        }
-    }
-    generate({
-        table: state.table,
-        fields: fields,
-    })
-        .then(() => {
-            router.go(0)
-        })
-        .finally(() => {
-            state.loading.generate = false
-            closeConfirmGenerate()
-        })
-}
-
-const onGenerate = () => {
-    let msg = ''
-
-    // 字段名检查
-    state.fields.find((item) => {
-        if (!regularVarName(item.name)) {
-            msg = t(
-                'crud.crud.Field name is invalid It starts with a letter or underscore and cannot contain any character other than letters, digits, or underscores',
-                { field: item.name }
-            )
-            return true
-        }
-    })
-
-    // 主键检查
-    const pkIndex = state.fields.findIndex((item) => {
-        return item.primaryKey
-    })
-    if (pkIndex === -1) {
-        msg = t('crud.crud.Please design the primary key field!')
-    }
-
-    // 表名检查
-    if (!state.table.name) msg = t('crud.crud.Please enter the data table name!')
-    if (state.tableNameError) msg = t('crud.crud.Please enter the correct table name!')
-
-    if (msg) {
-        ElNotification({
-            type: 'error',
-            message: msg,
-        })
-        return
-    }
-
-    state.loading.generate = true
-    generateCheck({
-        table: state.table.name,
-        controllerFile: state.table.controllerFile,
-    })
-        .then(() => {
-            startGenerate()
-        })
-        .catch((res) => {
-            state.loading.generate = false
-            if (res.code == -1) {
-                state.confirmGenerate.show = true
-                state.confirmGenerate.table = res.data.table
-                state.confirmGenerate.controller = res.data.controller
-            } else {
-                ElNotification({
-                    type: 'error',
-                    message: res.msg,
-                })
-            }
-        })
-}
-
-const onAbandonDesign = () => {
-    if (!state.table.name && !state.table.comment && !state.fields.length) {
-        return changeStep('start')
-    }
-    ElMessageBox.confirm(t('crud.crud.It is irreversible to give up the design Are you sure you want to give up?'), t('Reminder'), {
-        confirmButtonText: t('crud.crud.give up'),
-        cancelButtonText: t('Cancel'),
-        type: 'warning',
-    })
-        .then(() => {
-            changeStep('start')
-        })
-        .catch(() => {})
-}
-
-interface SortableEvt extends SortableEvent {
-    originalEvent?: DragEvent
-}
 
 /**
  * 处理字段的属性
@@ -859,95 +356,12 @@ const handleFieldAttr = (field: FieldItem) => {
     return field
 }
 
-/**
- * 根据字段字典重新生成字段的数据类型
- */
-const onFieldCommentChange = (comment: string) => {
-    if (['enum', 'set'].includes(state.fields[state.activateField].type)) {
-        if (!comment) {
-            state.fields[state.activateField].dataType = `${state.fields[state.activateField].type}()`
-            return
-        }
-        comment = comment.replaceAll('：', ':')
-        comment = comment.replaceAll('，', ',')
-        let comments = comment.split(':')
-        if (comments[1]) {
-            comments = comments[1].split(',')
-            comments = comments
-                .map((value) => {
-                    if (!value) return ''
-                    let temp = value.split('=')
-                    if (temp[0] && temp[1]) {
-                        return `'${temp[0]}'`
-                    }
-                    return ''
-                })
-                .filter((str: string) => str != '')
-
-            // 字段数据类型
-            state.fields[state.activateField].dataType = `${state.fields[state.activateField].type}(${comments.join(',')})`
-        }
-    }
+interface SortableEvt extends SortableEvent {
+    originalEvent?: DragEvent
 }
-
-const loadData = () => {
-    if (!['db', 'sql', 'log'].includes(crudState.type)) return
-
-    state.loading.init = true
-
-    // 从历史记录开始
-    if (crudState.type == 'log') {
-        postLogStart(parseInt(crudState.startData.logId))
-            .then((res) => {
-                state.table = res.data.table
-                state.table.isCommonModel = parseInt(res.data.table.isCommonModel)
-                const fields = res.data.fields
-                for (const key in fields) {
-                    const field = handleFieldAttr(cloneDeep(fields[key]))
-                    state.fields.push(field)
-                }
-            })
-            .finally(() => {
-                state.loading.init = false
-            })
-        return
-    }
-
-    // 从数据表或sql开始
-    parseFieldData(crudState.type, crudState.startData.db, crudState.startData.sql)
-        .then((res) => {
-            let fields = []
-            for (const key in res.data.columns) {
-                const field = handleFieldAttr(res.data.columns[key])
-                if (!['id', 'update_time', 'create_time', 'updatetime', 'createtime'].includes(field.name)) {
-                    state.table.formFields.push(field.name)
-                }
-                if (!['textarea', 'file', 'files', 'editor', 'password', 'array'].includes(field.designType)) {
-                    state.table.columnFields.push(field.name)
-                }
-                if (field.designType == 'pk') {
-                    state.table.defaultSortField = field.name
-                    state.table.quickSearchField.push(field.name)
-                }
-                if (field.designType == 'weigh') {
-                    state.table.defaultSortField = field.name
-                }
-                fields.push(field)
-            }
-            state.fields = fields
-            state.table.comment = res.data.comment
-            if (crudState.type == 'db' && crudState.startData.db) {
-                state.table.name = crudState.startData.db
-                onTableChange(crudState.startData.db)
-            }
-        })
-        .finally(() => {
-            state.loading.init = false
-        })
-}
-
+let nameRepeatCount = 1
 onMounted(() => {
-    loadData()
+    // loadData()
     const sortable = Sortable.create(designWindowRef.value, {
         group: 'design-field',
         animation: 200,
@@ -957,27 +371,6 @@ onMounted(() => {
             const field = fieldItem[name as keyof typeof fieldItem]
             if (field && field[evt.oldIndex!]) {
                 const data = handleFieldAttr(cloneDeep(field[evt.oldIndex!]))
-
-                // 主键重复检测
-                if (data.primaryKey == true) {
-                    const primaryKeyField = state.fields.find((item) => {
-                        return item.primaryKey
-                    })
-                    if (primaryKeyField) {
-                        ElNotification({
-                            type: 'error',
-                            message: t('crud.crud.There can only be one primary key field'),
-                        })
-                        return evt.item.remove()
-                    }
-                    state.table.defaultSortField = data.name
-                    state.table.quickSearchField.push(data.name)
-                }
-
-                // 出现权重字段则以其排序
-                if (data.designType == 'weigh') {
-                    state.table.defaultSortField = data.name
-                }
 
                 // name 重复字段自动重命名
                 const nameRepeatKey = getArrayKey(state.fields, 'name', data.name)
@@ -991,14 +384,6 @@ onMounted(() => {
                 // 远程下拉参数预填
                 if (['remoteSelect', 'remoteSelects'].includes(data.designType)) {
                     showRemoteSelectPre(evt.newIndex!, true)
-                }
-
-                // 表单表格字段预定义
-                if (!data.formBuildExclude) {
-                    state.table.formFields.push(data.name)
-                }
-                if (!data.tableBuildExclude) {
-                    state.table.columnFields.push(data.name)
                 }
             }
             evt.item.remove()
@@ -1038,119 +423,50 @@ onMounted(() => {
     })
 })
 
-const onTableCheck = (val: string) => {
-    if (!val) return (state.tableNameError = '')
-    if (/^[a-z_][a-z0-9_]*$/.test(val)) {
-        state.tableNameError = ''
-        onTableChange(val)
-    } else {
-        state.tableNameError = t('crud.crud.Use lower case underlined for table names')
+
+
+const onFieldDesignTypeChange = () => {
+    const field = cloneDeep(state.fields[state.activateField])
+    for (const tKey in field.table) {
+        field.table[tKey] = field.table[tKey].value
     }
+    for (const tKey in field.form) {
+        field.form[tKey] = field.form[tKey].value
+    }
+    state.fields[state.activateField] = handleFieldAttr(field)
 }
 
-const onTableChange = (val: string) => {
-    if (!val) return
-    getFileData(val, state.table.isCommonModel).then((res) => {
-        state.table.modelFile = res.data.modelFile
-        state.table.controllerFile = res.data.controllerFile
-        state.table.validateFile = res.data.validateFile
-        state.table.webViewsDir = res.data.webViewsDir
-        state.table.generateRelativePath = val.replaceAll('/', '\\')
-    })
-}
-
-const onChangeCommonModel = () => {
-    onTableChange(state.table.generateRelativePath)
-}
-
-const onJoinTableChange = (val: string) => {
-    if (!val) return
-    resetRemoteSelectForm()
-    state.remoteSelectPre.form.table = val
-    state.loading.remoteSelect = true
-    getTableFieldList(val)
-        .then((res) => {
-            state.remoteSelectPre.form.pk = res.data.pk
-
-            const preLabel = ['name', 'title', 'username', 'nickname']
-            for (const key in res.data.fieldList) {
-                if (preLabel.includes(key)) {
-                    state.remoteSelectPre.form.label = key
-                    state.remoteSelectPre.form.joinField.push(key)
-                    break
-                }
-            }
-
-            const fieldSelect: anyObj = {}
-            for (const key in res.data.fieldList) {
-                fieldSelect[key] = (key ? key + ' - ' : '') + res.data.fieldList[key]
-            }
-            state.remoteSelectPre.fieldList = fieldSelect
-        })
-        .finally(() => {
-            state.loading.remoteSelect = false
-        })
-
-    getFileData(val).then((res) => {
-        state.remoteSelectPre.modelFileList = res.data.modelFileList
-        state.remoteSelectPre.controllerFileList = res.data.controllerFileList
-
-        if (Object.keys(res.data.modelFileList).includes(res.data.modelFile)) {
-            state.remoteSelectPre.form.modelFile = res.data.modelFile
+/**
+ * 根据字段字典重新生成字段的数据类型
+ */
+const onFieldCommentChange = (comment: string) => {
+    if (['enum', 'set'].includes(state.fields[state.activateField].type)) {
+        if (!comment) {
+            state.fields[state.activateField].dataType = `${state.fields[state.activateField].type}()`
+            return
         }
-        if (Object.keys(res.data.controllerFileList).includes(res.data.controllerFile)) {
-            state.remoteSelectPre.form.controllerFile = res.data.controllerFile
-        }
-    })
-}
+        comment = comment.replaceAll('：', ':')
+        comment = comment.replaceAll('，', ',')
+        let comments = comment.split(':')
+        if (comments[1]) {
+            comments = comments[1].split(',')
+            comments = comments
+                .map((value) => {
+                    if (!value) return ''
+                    let temp = value.split('=')
+                    if (temp[0] && temp[1]) {
+                        return `'${temp[0]}'`
+                    }
+                    return ''
+                })
+                .filter((str: string) => str != '')
 
-const onSaveRemoteSelect = () => {
-    const submitCallback = () => {
-        state.fields[state.remoteSelectPre.index].form['remote-table'].value = state.remoteSelectPre.form.table
-        state.fields[state.remoteSelectPre.index].form['remote-pk'].value = state.remoteSelectPre.form.pk
-        state.fields[state.remoteSelectPre.index].form['remote-field'].value = state.remoteSelectPre.form.label
-        state.fields[state.remoteSelectPre.index].form['remote-controller'].value = state.remoteSelectPre.form.controllerFile
-        state.fields[state.remoteSelectPre.index].form['remote-model'].value = state.remoteSelectPre.form.modelFile
-        state.fields[state.remoteSelectPre.index].form['relation-fields'].value = state.remoteSelectPre.form.joinField.join(',')
-        state.remoteSelectPre.index = -1
-        state.remoteSelectPre.show = false
-        resetRemoteSelectForm()
-    }
-
-    if (formRef.value) {
-        formRef.value.validate((valid) => {
-            if (valid) {
-                submitCallback()
-            }
-        })
-    }
-}
-
-const onCancelRemoteSelect = () => {
-    state.remoteSelectPre.show = false
-    resetRemoteSelectForm()
-    if (state.remoteSelectPre.index !== -1 && state.remoteSelectPre.hideDelField) {
-        onDelField(state.remoteSelectPre.index)
-    }
-}
-
-const resetRemoteSelectForm = () => {
-    for (const key in state.remoteSelectPre.form) {
-        if (key == 'joinField') {
-            state.remoteSelectPre.form[key] = []
-        } else {
-            ;(state.remoteSelectPre.form[key as keyof typeof state.remoteSelectPre.form] as string) = ''
+            // 字段数据类型
+            state.fields[state.activateField].dataType = `${state.fields[state.activateField].type}(${comments.join(',')})`
         }
     }
 }
 
-const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reactive({
-    table: [buildValidatorData({ name: 'required', title: t('crud.crud.remote-table') })],
-    pk: [buildValidatorData({ name: 'required', title: t('crud.crud.Drop down value field') })],
-    label: [buildValidatorData({ name: 'required', title: t('crud.crud.Drop down label field') })],
-    joinField: [buildValidatorData({ name: 'required', title: t('crud.crud.Fields displayed in the table') })],
-    controllerFile: [buildValidatorData({ name: 'required', title: t('crud.crud.Controller position') })],
-})
 </script>
 
 <style scoped lang="scss">
@@ -1219,38 +535,6 @@ const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reacti
     width: 50%;
     :deep(.el-form-item__label) {
         justify-content: flex-start;
-    }
-}
-.header-box {
-    display: flex;
-    align-items: center;
-    height: v-bind("state.tableNameError ? '70px':'60px'");
-    padding: 10px;
-    background-color: var(--ba-bg-color-overlay);
-    border-radius: var(--el-border-radius-base);
-    transition: 0.1s;
-    .header,
-    .header-item-box {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        justify-content: center;
-        white-space: nowrap;
-        :deep(.el-form-item) {
-            margin-bottom: 0;
-        }
-    }
-    .header-item-box {
-        width: 50%;
-    }
-    .table-name-item {
-        flex: 3;
-    }
-    .table-comment-item {
-        flex: 4;
-    }
-    .header-right {
-        margin-left: auto;
     }
 }
 .default-sort-field-box {

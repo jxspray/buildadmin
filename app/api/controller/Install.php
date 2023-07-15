@@ -449,7 +449,7 @@ class Install extends Api
         }
 
         // 写入.env-example文件
-        $envFile        = root_path() . '.env-example';
+        $envFile        = root_path() . '.example.env';
         $envFileContent = @file_get_contents($envFile);
         if ($envFileContent && stripos($envFileContent, '[DATABASE]') === false) {
             $envFileContent .= "\n" . '[DATABASE]' . "\n";

@@ -28,12 +28,12 @@ class CmsLogic
     const basePath = "app\\index\\controller\\web";
     const ALLOW_TYPE = ['module', 'catalog', 'rule', 'field'];
 
-    private $typeItem;
+    private Type $typeItem;
 
     /**
      * @var self
      */
-    private static $instance = false;
+    private static CmsLogic $instance;
 
     public function __construct()
     {
@@ -44,18 +44,18 @@ class CmsLogic
         }
     }
 
-    public static function init()
+    public static function init(): void
     {
         self::getInstance();
     }
 
     public static function getInstance(): self
     {
-        if (self::$instance === false) self::$instance = new self();
+        if (!self::$instance) self::$instance = new self();
         return self::$instance;
     }
 
-    public function forceUpdate($type = null)
+    public function forceUpdate($type = null): void
     {
         foreach ($this->typeItem->handleType($type) as $item) {
             if ($param = $this->typeItem->getParam($item)) {

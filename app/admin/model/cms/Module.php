@@ -86,6 +86,7 @@ class Module extends Model
      * @throws ModelNotFoundException
      * @throws DataNotFoundException
      * @throws DbException
+     * @throws \Throwable
      */
     public static function onBeforeDelete(self $model): bool
     {
@@ -104,6 +105,7 @@ class Module extends Model
         $value['table']['name'] = $data['name'];
         return json_encode($value, JSON_UNESCAPED_UNICODE);
     }
+
 
     public function getGenerateAttr($value, $data)
     {
