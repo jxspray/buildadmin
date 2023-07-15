@@ -5,7 +5,7 @@
                 <el-form
                     v-if="!state.loading"
                     ref="formRef"
-                    @keyup.enter="onSubmit(formRef)"
+                    @keyup.enter="onSubmit()"
                     :model="state.form"
                     :rules="state.rules"
                     :label-position="'top'"
@@ -31,7 +31,7 @@
                                         :label="item.title"
                                         :type="item.type"
                                         @keyup.enter.stop=""
-                                        @keyup.ctrl.enter="onSubmit(formRef)"
+                                        @keyup.ctrl.enter="onSubmit()"
                                         v-model="state.form[item.name]"
                                         :attr="{ prop: item.name, ...item.extend }"
                                         :input-attr="{
@@ -49,7 +49,7 @@
                                         :label="item.title"
                                         :type="item.type"
                                         @keyup.enter.stop=""
-                                        @keyup.ctrl.enter="onSubmit(formRef)"
+                                        @keyup.ctrl.enter="onSubmit()"
                                         v-model="state.form[item.name]"
                                         :attr="{ prop: item.name, ...item.extend }"
                                         :input-attr="{ placeholder: item.tip, rows: 3, ...item.input_extend }"
@@ -71,7 +71,7 @@
                                         <el-popconfirm
                                             @confirm="onDelConfig(item)"
                                             v-if="item.allow_del"
-                                            :confirmButtonText="t('delete')"
+                                            :confirmButtonText="t('Delete')"
                                             :title="t('routine.config.Are you sure to delete the configuration item?')"
                                         >
                                             <template #reference>
@@ -84,7 +84,7 @@
                             <div v-if="group.name == 'mail'" class="send-test-mail">
                                 <el-button @click="onTestSendMail()">{{ t('routine.config.Test mail sending') }}</el-button>
                             </div>
-                            <el-button type="primary" @click="onSubmit(formRef)">{{ t('Save') }}</el-button>
+                            <el-button type="primary" @click="onSubmit()">{{ t('Save') }}</el-button>
                         </el-tab-pane>
                         <el-tab-pane
                             name="add_config"
@@ -111,7 +111,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import FormItem from '/@/components/formItem/index.vue'
 import { index, postData, del, postSendTestMail } from '/@/api/backend/routine/config'
-import { ElForm, FormItemRule, ElMessageBox, ElNotification } from 'element-plus'
+import { FormInstance, FormItemRule, ElMessageBox, ElNotification } from 'element-plus'
 import AddFrom from './add.vue'
 import { routePush } from '/@/utils/router'
 import { buildValidatorData, buildValidatorParams } from '/@/utils/validate'
@@ -120,10 +120,14 @@ import { SiteConfig } from '/@/stores/interface'
 import { useI18n } from 'vue-i18n'
 import { uuid } from '/@/utils/random'
 
+defineOptions({
+    name: 'routine/config',
+})
+
 const { t } = useI18n()
 const siteConfig = useSiteConfig()
 
-const formRef = ref<InstanceType<typeof ElForm>>()
+const formRef = ref<FormInstance>()
 
 const state: {
     loading: boolean
@@ -200,9 +204,9 @@ const onBeforeLeave = (newTabName: string | number) => {
     }
 }
 
-const onSubmit = (formEl: InstanceType<typeof ElForm> | undefined) => {
-    if (!formEl) return
-    formEl.validate((valid) => {
+const onSubmit = () => {
+    if (!formRef.value) return
+    formRef.value.validate((valid) => {
         if (valid) {
             // 只提交当前tab的表单数据
             const formData: anyObj = {}
@@ -265,13 +269,6 @@ const onTestSendMail = () => {
 
 onMounted(() => {
     getIndex()
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'routine/config',
 })
 </script>
 

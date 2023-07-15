@@ -1,6 +1,11 @@
 <template>
     <!-- 对话框表单 -->
-    <el-dialog class="ba-operate-dialog" :close-on-click-modal="false" :model-value="baTable.form.operate ? true : false" @close="baTable.toggleForm">
+    <el-dialog
+        class="ba-operate-dialog"
+        :close-on-click-modal="false"
+        :model-value="['Add', 'Edit'].includes(baTable.form.operate!)"
+        @close="baTable.toggleForm"
+    >
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
                 {{ baTable.form.operate ? t(baTable.form.operate) : '' }}
@@ -76,7 +81,7 @@
 
                     <hr class="form-hr" />
                     <FormItem
-                        :label="t('state')"
+                        :label="t('State')"
                         type="radio"
                         v-model="baTable.form.items!.status"
                         prop="status"
@@ -101,10 +106,10 @@ import { reactive, ref, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { sensitiveDataClass, DataFields } from './index'
 import FormItem from '/@/components/formItem/index.vue'
-import type { ElForm, FormItemRule } from 'element-plus'
+import type { FormInstance, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 
-const formRef = ref<InstanceType<typeof ElForm>>()
+const formRef = ref<FormInstance>()
 const baTable = inject('baTable') as sensitiveDataClass
 
 const { t } = useI18n()

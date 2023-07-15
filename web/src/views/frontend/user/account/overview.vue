@@ -61,9 +61,9 @@
                     </el-row>
                     <el-row class="data-item">
                         <el-col class="lastlogin title" :span="4">{{ $t('user.account.overview.Last login') }}</el-col>
-                        <el-col class="lastlogin value" :span="8">{{ timeFormat(userInfo.lastlogintime) }}</el-col>
+                        <el-col class="lastlogin value" :span="8">{{ timeFormat(userInfo.last_login_time) }}</el-col>
                         <el-col class="lastip" :span="4">{{ $t('user.account.overview.Last login IP') }}</el-col>
-                        <el-col class="lastip" :span="8">{{ userInfo.lastloginip }}</el-col>
+                        <el-col class="lastip" :span="8">{{ userInfo.last_login_ip }}</el-col>
                     </el-row>
                 </div>
             </div>
@@ -77,11 +77,10 @@
 <script setup lang="ts">
 import { ref, reactive, nextTick, onActivated, onMounted, onBeforeMount } from 'vue'
 import { useUserInfo } from '/@/stores/userInfo'
-import { timeFormat } from '/@/components/table'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts'
 import { useI18n } from 'vue-i18n'
-import { getGreet } from '/@/utils/common'
+import { getGreet, timeFormat } from '/@/utils/common'
 import { overview } from '/@/api/frontend/user/index'
 import { useEventListener } from '@vueuse/core'
 

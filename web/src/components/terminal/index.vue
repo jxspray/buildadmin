@@ -9,7 +9,7 @@
                 :class="'task-status-' + item.status"
                 :type="getTaskStatus(item.status)['statusType']"
                 center
-                :timestamp="item.createtime"
+                :timestamp="item.createTime"
                 placement="top"
             >
                 <el-card>
@@ -19,14 +19,16 @@
                             class="block-on-failure-tag"
                             v-if="(item.status == taskStatus.Failed || item.status == taskStatus.Unknown) && item.blockOnFailure"
                             type="warning"
-                            >{{ t('terminal.Failure to execute this command will block the execution of the queue') }}</el-tag
                         >
+                            {{ t('terminal.Failure to execute this command will block the execution of the queue') }}
+                        </el-tag>
                         <el-tag
                             class="block-on-failure-tag"
                             v-if="item.status == taskStatus.Executing || item.status == taskStatus.Connecting"
                             type="danger"
-                            >{{ t('terminal.Do not refresh the browser') }}</el-tag
                         >
+                            {{ t('terminal.Do not refresh the browser') }}
+                        </el-tag>
                         <span class="command">{{ item.command }}</span>
                         <div class="task-opt">
                             <el-button
@@ -41,7 +43,7 @@
                             />
                             <el-button
                                 @click="terminal.delTask(idx)"
-                                :title="t('delete')"
+                                :title="t('Delete')"
                                 size="small"
                                 v-blur
                                 type="danger"
@@ -68,7 +70,7 @@
                             class="exec-message"
                             :class="'exec-message-' + item.uuid"
                         >
-                            <div v-for="(msg, index) in item.message" :key="index" class="message-item">{{ msg }}</div>
+                            <pre v-for="(msg, index) in item.message" :key="index" class="message-item">{{ msg }}</pre>
                         </div>
                     </template>
                 </el-card>
@@ -77,24 +79,24 @@
         <el-empty v-else :image-size="80" :description="t('terminal.No mission yet')" />
 
         <el-button-group>
-            <el-button class="terminal-menu-item" icon="el-icon-MagicStick" v-blur @click="terminal.addTaskPM('test', false)">{{
-                t('terminal.Test command')
-            }}</el-button>
-            <el-button class="terminal-menu-item" icon="el-icon-Download" v-blur @click="terminal.addTaskPM('web-install')">{{
-                t('terminal.Install dependent packages')
-            }}</el-button>
+            <el-button class="terminal-menu-item" icon="el-icon-MagicStick" v-blur @click="terminal.addTaskPM('test', false)">
+                {{ t('terminal.Test command') }}
+            </el-button>
+            <el-button class="terminal-menu-item" icon="el-icon-Download" v-blur @click="terminal.addTaskPM('web-install')">
+                {{ t('terminal.Install dependent packages') }}
+            </el-button>
             <el-button class="terminal-menu-item" icon="el-icon-Sell" v-blur @click="webBuild()">{{ t('terminal.Republish') }}</el-button>
             <el-button v-if="!state.menuExpand" class="terminal-menu-item" icon="el-icon-Expand" v-blur @click="state.menuExpand = true"></el-button>
             <template v-else>
-                <el-button class="terminal-menu-item" icon="el-icon-Delete" v-blur @click="terminal.clearSuccessTask()">{{
-                    t('terminal.Clean up task list')
-                }}</el-button>
-                <el-button class="terminal-menu-item" icon="el-icon-Switch" v-blur @click="terminal.togglePackageManagerDialog(true)"
-                    >{{ t('terminal.Package manager') }} {{ terminal.state.packageManager.toUpperCase() }}</el-button
-                >
-                <el-button class="terminal-menu-item" icon="el-icon-Tools" v-blur @click="terminal.toggleConfigDialog()">{{
-                    t('terminal.Terminal settings')
-                }}</el-button>
+                <el-button class="terminal-menu-item" icon="el-icon-Delete" v-blur @click="terminal.clearSuccessTask()">
+                    {{ t('terminal.Clean up task list') }}
+                </el-button>
+                <el-button class="terminal-menu-item" icon="el-icon-Switch" v-blur @click="terminal.togglePackageManagerDialog(true)">
+                    {{ t('terminal.Package manager') }} {{ terminal.state.packageManager.toUpperCase() }}
+                </el-button>
+                <el-button class="terminal-menu-item" icon="el-icon-Tools" v-blur @click="terminal.toggleConfigDialog()">
+                    {{ t('terminal.Terminal settings') }}
+                </el-button>
             </template>
         </el-button-group>
     </el-dialog>
@@ -142,14 +144,14 @@
                 v-model="startCommand"
                 type="string"
                 :input-attr="{ disabled: true }"
-                :attr="{ 'block-help': t('terminal.Please execute this command to start the service (add Su under Linux)') }"
+                :attr="{ blockHelp: t('terminal.Please execute this command to start the service (add Su under Linux)') }"
             />
             <FormItem
                 :label="t('terminal.Installation service URL')"
                 v-model="serviceURL"
                 type="string"
                 :input-attr="{ disabled: true }"
-                :attr="{ 'block-help': t('terminal.Please access the site through the installation service URL (except in debug mode)') }"
+                :attr="{ blockHelp: t('terminal.Please access the site through the installation service URL (except in debug mode)') }"
             />
         </el-form>
         <FormItem
@@ -310,11 +312,11 @@ onMounted(() => {
     margin-top: 10px;
     min-height: 30px;
     max-height: 200px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: auto;
     scrollbar-width: none;
     &::-webkit-scrollbar {
         width: 5px;
+        height: 5px;
     }
     &::-webkit-scrollbar-thumb {
         background: #c8c9cc;

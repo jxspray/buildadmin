@@ -20,19 +20,32 @@
         >
             <slot name="columnPrepend"></slot>
             <template v-for="(item, key) in baTable.table.column">
-                <Column v-if="item.show !== false" :attr="item" :key="key + '-column'">
-                    <template v-if="item.render" #default="scope">
-                        <FieldRender
-                            :field="item"
-                            :row="scope.row"
-                            :column="scope.column"
-                            :index="scope.$index"
-                            :key="
-                                key + '-' + scope.$index + '-' + item.render + '-' + (item.prop ? '-' + item.prop + '-' + scope.row[item.prop] : '')
-                            "
-                        />
-                    </template>
-                </Column>
+                <template v-if="item.show !== false">
+                    <!-- 渲染为 slot -->
+                    <slot v-if="item.render == 'slot'" :name="item.slotName"></slot>
+
+                    <!-- Column 组件内部是 el-table-column -->
+                    <Column v-else :attr="item" :key="key + '-column'">
+                        <!-- baTable 预设的列 render 方案 -->
+                        <template v-if="item.render" #default="scope">
+                            <FieldRender
+                                :field="item"
+                                :row="scope.row"
+                                :column="scope.column"
+                                :index="scope.$index"
+                                :key="
+                                    key +
+                                    '-' +
+                                    scope.$index +
+                                    '-' +
+                                    item.render +
+                                    '-' +
+                                    (item.prop ? '-' + item.prop + '-' + scope.row[item.prop] : '')
+                                "
+                            />
+                        </template>
+                    </Column>
+                </template>
             </template>
             <slot name="columnAppend"></slot>
         </el-table>
@@ -54,17 +67,17 @@
 
 <script setup lang="ts">
 import { ref, nextTick, inject, computed } from 'vue'
-import type { ElTable } from 'element-plus'
+import type { TableInstance, TableProps } from 'element-plus'
 import Column from '/@/components/table/column/index.vue'
 import FieldRender from '/@/components/table/fieldRender/index.vue'
 import { useConfig } from '/@/stores/config'
 import type baTableClass from '/@/utils/baTable'
 
 const config = useConfig()
-const tableRef = ref<InstanceType<typeof ElTable>>()
+const tableRef = ref<TableInstance>()
 const baTable = inject('baTable') as baTableClass
 
-interface Props extends Partial<InstanceType<typeof ElTable>> {
+interface Props extends Partial<TableProps<anyObj>> {
     pagination?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {

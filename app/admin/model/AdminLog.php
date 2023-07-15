@@ -2,52 +2,73 @@
 
 namespace app\admin\model;
 
+use Throwable;
 use think\Model;
 use app\admin\library\Auth;
+use think\model\relation\BelongsTo;
 
 /**
  * AdminLog模型
- * @controllerUrl 'authAdminLog'
  */
 class AdminLog extends Model
 {
-    protected $autoWriteTimestamp = 'int';
+    protected $autoWriteTimestamp = true;
+    protected $updateTime         = false;
 
-    protected $createTime = 'createtime';
-    protected $updateTime = false;
+    /**
+     * 自定义日志标题
+     * @var string
+     */
+    protected static string $title = '';
 
-    // 自定义日志标题
-    protected static $title = '';
-    // 自定义日志内容
-    protected static $data = '';
+    /**
+     * 自定义日志内容
+     * @var string|array
+     */
+    protected static string|array $data = '';
 
-    // 忽略的链接正则列表
-    protected static $urlIgnoreRegex = [
+    /**
+     * 忽略的链接正则列表
+     * @var array
+     */
+    protected static array $urlIgnoreRegex = [
         '/^(.*)\/(select|index|logout)$/i',
     ];
 
-    public static function setTitle($title)
+    /**
+     * 设置标题
+     * @param string $title
+     */
+    public static function setTitle(string $title): void
     {
         self::$title = $title;
     }
 
-    public static function setData($data)
+    /**
+     * 设置日志内容
+     * @param string|array $data
+     */
+    public static function setData(string|array $data): void
     {
         self::$data = $data;
     }
 
-    public static function setUrlIgnoreRegex($regex = [])
+    /**
+     * 设置忽略的链接正则列表
+     * @param array|string $regex
+     */
+    public static function setUrlIgnoreRegex(array|string $regex = []): void
     {
         $regex                = is_array($regex) ? $regex : [$regex];
         self::$urlIgnoreRegex = array_merge(self::$urlIgnoreRegex, $regex);
     }
 
     /**
-     * 数据脱敏
-     * @param $data
-     * @return array
+     * 数据脱敏（只数组，根据数组 key 脱敏）
+     * @param array|string $data
+     * @return array|string
      */
-    protected static function pureData($data)
+    protected static function pureData(array|string $data): array|string
     {
         if (!is_array($data)) {
             return $data;
@@ -64,7 +85,13 @@ class AdminLog extends Model
         return $data;
     }
 
-    public static function record($title = '', $data = '')
+    /**
+     * 写入日志
+     * @param string            $title
+     * @param string|array|null $data
+     * @throws Throwable
+     */
+    public static function record(string $title = '', string|array $data = null): void
     {
         $auth     = Auth::instance();
         $admin_id = $auth->isLogin() ? $auth->id : 0;
@@ -83,12 +110,12 @@ class AdminLog extends Model
         $data = $data ?: self::$data;
         if (!$data) {
             $data = request()->param('', null, 'trim,strip_tags,htmlspecialchars');
-            $data = self::pureData($data);
         }
+        $data  = self::pureData($data);
         $title = $title ?: self::$title;
         if (!$title) {
-            $controllerTitle = MenuRule::where('name', $controller)->value('title');
-            $title           = MenuRule::where('name', $path)->value('title');
+            $controllerTitle = AdminRule::where('name', $controller)->value('title');
+            $title           = AdminRule::where('name', $path)->value('title');
             $title           = $title ?: __('Unknown') . '(' . $action . ')';
             $title           = $controllerTitle ? ($controllerTitle . '-' . $title) : $title;
         }
@@ -103,7 +130,7 @@ class AdminLog extends Model
         ]);
     }
 
-    public function admin()
+    public function admin(): BelongsTo
     {
         return $this->belongsTo(Admin::class);
     }

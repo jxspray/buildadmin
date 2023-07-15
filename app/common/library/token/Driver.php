@@ -10,13 +10,15 @@ use think\facade\Config;
 abstract class Driver
 {
     /**
-     * @var null 具体驱动的句柄 Mysql|Redis
+     * 具体驱动的句柄 Mysql|Redis
+     * @var object
      */
-    protected $handler = null;
+    protected object $handler;
+
     /**
      * @var array 配置数据
      */
-    protected $options = [];
+    protected array $options = [];
 
     /**
      * 设置 token
@@ -82,11 +84,11 @@ abstract class Driver
     }
 
     /**
-     * @param int $expiretime
+     * @param int $expireTime
      * @return int
      */
-    protected function getExpiredIn(int $expiretime): int
+    protected function getExpiredIn(int $expireTime): int
     {
-        return $expiretime ? max(0, $expiretime - time()) : 365 * 86400;
+        return $expireTime ? max(0, $expireTime - time()) : 365 * 86400;
     }
 }

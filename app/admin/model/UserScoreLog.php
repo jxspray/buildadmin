@@ -2,20 +2,23 @@
 
 namespace app\admin\model;
 
+use Throwable;
 use think\model;
 use think\Exception;
+use think\model\relation\BelongsTo;
 
 /**
  * UserScoreLog 模型
- * @controllerUrl 'userScoreLog'
  */
 class UserScoreLog extends model
 {
-    protected $autoWriteTimestamp = 'int';
+    protected $autoWriteTimestamp = true;
+    protected $updateTime         = false;
 
-    protected $createTime = 'createtime';
-    protected $updateTime = false;
-
+    /**
+     * 入库前
+     * @throws Throwable
+     */
     public static function onBeforeInsert($model)
     {
         $user = User::where('id', $model->user_id)->find();
@@ -29,6 +32,10 @@ class UserScoreLog extends model
         $model->after  = $user->score + $model->score;
     }
 
+    /**
+     * 入库后
+     * @throws Throwable
+     */
     public static function onAfterInsert($model)
     {
         $user = User::where('id', $model->user_id)->find();
@@ -40,12 +47,12 @@ class UserScoreLog extends model
         $user->save();
     }
 
-    public static function onBeforeDelete()
+    public static function onBeforeDelete(): bool
     {
         return false;
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
     }

@@ -6,7 +6,7 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'add', 'edit', 'delete', 'unfold', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('auth.group.GroupName') })"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('auth.group.GroupName') })"
         />
 
         <!-- 表格 -->
@@ -22,7 +22,6 @@
 import { onMounted, ref, provide } from 'vue'
 import baTableClass from '/@/utils/baTable'
 import { baTableApi } from '/@/api/common'
-import { authGroup } from '/@/api/controllerUrls'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
 import PopupForm from './popupForm.vue'
@@ -32,13 +31,17 @@ import { cloneDeep } from 'lodash-es'
 import { getArrayKey } from '/@/utils/common'
 import { useAdminInfo } from '/@/stores/adminInfo'
 
+defineOptions({
+    name: 'auth/group',
+})
+
 const formRef = ref()
 const tableRef = ref()
 const { t } = useI18n()
 const adminInfo = useAdminInfo()
 
 const baTable: baTableClass = new baTableClass(
-    new baTableApi(authGroup),
+    new baTableApi('/admin/auth.Group/'),
     {
         expandAll: true,
         dblClickNotEditColumn: [undefined],
@@ -47,16 +50,16 @@ const baTable: baTableClass = new baTableClass(
             { label: t('auth.group.Group name'), prop: 'name', align: 'left', width: '200' },
             { label: t('auth.group.jurisdiction'), prop: 'rules', align: 'center' },
             {
-                label: t('state'),
+                label: t('State'),
                 prop: 'status',
                 align: 'center',
                 render: 'tag',
                 custom: { '0': 'danger', '1': 'success' },
                 replaceValue: { '0': t('Disable'), '1': t('Enable') },
             },
-            { label: t('updatetime'), prop: 'updatetime', align: 'center', width: '160', render: 'datetime' },
-            { label: t('createtime'), prop: 'createtime', align: 'center', width: '160', render: 'datetime' },
-            { label: t('operate'), align: 'center', width: '130', render: 'buttons', buttons: defaultOptButtons(['edit', 'delete']) },
+            { label: t('Update time'), prop: 'update_time', align: 'center', width: '160', render: 'datetime' },
+            { label: t('Create time'), prop: 'create_time', align: 'center', width: '160', render: 'datetime' },
+            { label: t('Operate'), align: 'center', width: '130', render: 'buttons', buttons: defaultOptButtons(['edit', 'delete']) },
         ],
     },
     {
@@ -87,7 +90,7 @@ const baTable: baTableClass = new baTableClass(
                         baTable.form.submitLoading = false
                         baTable.form.operateIds?.shift()
                         if (baTable.form.operateIds!.length > 0) {
-                            baTable.toggleForm('edit', baTable.form.operateIds)
+                            baTable.toggleForm('Edit', baTable.form.operateIds)
                         } else {
                             baTable.toggleForm()
                         }
@@ -134,13 +137,6 @@ onMounted(() => {
     baTable.table.ref = tableRef.value
     baTable.mount()
     baTable.getIndex()
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'auth/group',
 })
 </script>
 

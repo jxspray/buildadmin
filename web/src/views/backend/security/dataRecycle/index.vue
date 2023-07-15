@@ -5,7 +5,7 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('security.dataRecycle.Rule name') })"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('security.dataRecycle.Rule name') })"
         />
 
         <!-- 表格 -->
@@ -20,8 +20,7 @@
 <script setup lang="ts">
 import { onMounted, ref, reactive, provide } from 'vue'
 import baTableClass from '/@/utils/baTable'
-import { securityDataRecycle } from '/@/api/controllerUrls'
-import { add } from '/@/api/backend/security/dataRecycle'
+import { add, url } from '/@/api/backend/security/dataRecycle'
 import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
@@ -29,11 +28,15 @@ import { defaultOptButtons } from '/@/components/table'
 import { baTableApi } from '/@/api/common'
 import { useI18n } from 'vue-i18n'
 
+defineOptions({
+    name: 'security/dataRecycle',
+})
+
 const { t } = useI18n()
 const tableRef = ref()
 const formRef = ref()
 const baTable = new baTableClass(
-    new baTableApi(securityDataRecycle),
+    new baTableApi(url),
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
@@ -62,17 +65,17 @@ const baTable = new baTableClass(
                 width: 100,
             },
             {
-                label: t('state'),
+                label: t('State'),
                 prop: 'status',
                 align: 'center',
                 render: 'tag',
                 custom: { '0': 'danger', '1': 'success' },
                 replaceValue: { '0': t('Disable'), '1': t('security.dataRecycle.Deleting monitoring') },
             },
-            { label: t('updatetime'), prop: 'updatetime', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
-            { label: t('createtime'), prop: 'createtime', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
+            { label: t('Update time'), prop: 'update_time', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
+            { label: t('Create time'), prop: 'create_time', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
             {
-                label: t('operate'),
+                label: t('Operate'),
                 align: 'center',
                 width: '130',
                 render: 'buttons',
@@ -90,7 +93,7 @@ const baTable = new baTableClass(
     {
         // 添加前获取控制器和数据表
         toggleForm: ({ operate }) => {
-            if (operate == 'add' || operate == 'edit') {
+            if (operate == 'Add' || operate == 'Edit') {
                 baTable.form.loading = true
                 add().then((res) => {
                     addFormData.tableList = res.data.tables
@@ -113,13 +116,6 @@ onMounted(() => {
     baTable.table.ref = tableRef.value
     baTable.mount()
     baTable.getIndex()
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'security/dataRecycle',
 })
 </script>
 

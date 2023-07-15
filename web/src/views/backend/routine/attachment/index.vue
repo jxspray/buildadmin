@@ -6,12 +6,12 @@
             <!-- 表格顶部菜单 -->
             <TableHeader
                 :buttons="['refresh', 'edit', 'comSearch', 'quickSearch', 'columnDisplay']"
-                :quick-search-placeholder="t('quick Search Placeholder', { fields: t('utils.Original name') })"
+                :quick-search-placeholder="t('Quick search placeholder', { fields: t('utils.Original name') })"
             >
                 <el-popconfirm
                     v-if="auth('del')"
                     @confirm="baTable.onTableHeaderAction('delete', {})"
-                    :confirm-button-text="t('delete')"
+                    :confirm-button-text="t('Delete')"
                     :cancel-button-text="t('Cancel')"
                     confirmButtonType="danger"
                     :title="t('routine.attachment.Files and records will be deleted at the same time Are you sure?')"
@@ -27,7 +27,7 @@
                                     type="danger"
                                 >
                                     <Icon color="#ffffff" name="fa fa-trash" />
-                                    <span class="table-header-operate-text">{{ t('delete') }}</span>
+                                    <span class="table-header-operate-text">{{ t('Delete') }}</span>
                                 </el-button>
                             </el-tooltip>
                         </div>
@@ -51,12 +51,15 @@ import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
 import baTableClass from '/@/utils/baTable'
-import { routineAttachment } from '/@/api/controllerUrls'
 import { defaultOptButtons } from '/@/components/table'
 import { previewRenderFormatter } from './index'
 import { baTableApi } from '/@/api/common'
 import { useI18n } from 'vue-i18n'
 import { auth } from '/@/utils/common'
+
+defineOptions({
+    name: 'routine/attachment',
+})
 
 const { t } = useI18n()
 const tableRef = ref()
@@ -64,10 +67,10 @@ const tableRef = ref()
 const optBtn = defaultOptButtons(['edit', 'delete'])
 optBtn[1].popconfirm!.title = t('routine.attachment.Files and records will be deleted at the same time Are you sure?')
 
-const baTable = new baTableClass(new baTableApi(routineAttachment), {
+const baTable = new baTableClass(new baTableApi('/admin/routine.Attachment/'), {
     column: [
         { type: 'selection', align: 'center', operator: false },
-        { label: t('id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
+        { label: t('Id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
         { label: t('utils.Breakdown'), prop: 'topic', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query') },
         {
             label: t('routine.attachment.Upload administrator'),
@@ -101,7 +104,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
             prop: 'mimetype',
             align: 'center',
             operator: 'LIKE',
-            'show-overflow-tooltip': true,
+            showOverflowTooltip: true,
             operatorPlaceholder: t('Fuzzy query'),
         },
         {
@@ -124,7 +127,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
             label: t('utils.Original name'),
             prop: 'name',
             align: 'center',
-            'show-overflow-tooltip': true,
+            showOverflowTooltip: true,
             operator: 'LIKE',
             operatorPlaceholder: t('Fuzzy query'),
         },
@@ -138,7 +141,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
         },
         {
             label: t('utils.Last upload time'),
-            prop: 'lastuploadtime',
+            prop: 'last_upload_time',
             align: 'center',
             render: 'datetime',
             operator: 'RANGE',
@@ -146,7 +149,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
             sortable: 'custom',
         },
         {
-            label: t('operate'),
+            label: t('Operate'),
             align: 'center',
             width: '100',
             render: 'buttons',
@@ -154,7 +157,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
             operator: false,
         },
     ],
-    defaultOrder: { prop: 'lastuploadtime', order: 'desc' },
+    defaultOrder: { prop: 'last_upload_time', order: 'desc' },
 })
 
 provide('baTable', baTable)
@@ -165,13 +168,6 @@ onMounted(() => {
     baTable.getIndex()?.then(() => {
         baTable.initSort()
     })
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'routine/attachment',
 })
 </script>
 

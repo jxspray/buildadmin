@@ -3,7 +3,7 @@
     <el-dialog
         class="ba-operate-dialog"
         :close-on-click-modal="false"
-        :model-value="baTable.form.operate ? true : false"
+        :model-value="['Add', 'Edit'].includes(baTable.form.operate!)"
         @close="baTable.toggleForm"
         :destroy-on-close="true"
     >
@@ -36,7 +36,7 @@
                             params: { isTree: true },
                             field: 'name',
                             'remote-url': baTable.api.actionUrl.get('index'),
-                            placeholder: t('Click Select'),
+                            placeholder: t('Click select'),
                         }"
                     />
 
@@ -60,7 +60,7 @@
                         />
                     </el-form-item>
                     <FormItem
-                        :label="t('state')"
+                        :label="t('State')"
                         v-model="baTable.form.items!.status"
                         type="radio"
                         :data="{ content: { '0': t('Disable'), '1': t('Enable') }, childrenAttr: { border: true } }"
@@ -84,8 +84,8 @@ import { reactive, ref, watch, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
-import { getMenuRules } from '/@/api/backend/auth/group'
-import type { ElForm, ElTree, FormItemRule } from 'element-plus'
+import { getAdminRules } from '/@/api/backend/auth/group'
+import type { FormInstance, ElTree, FormItemRule } from 'element-plus'
 import { uuid } from '/@/utils/random'
 import { buildValidatorData } from '/@/utils/validate'
 import type Node from 'element-plus/es/components/tree/src/model/node'
@@ -96,8 +96,8 @@ interface MenuRules {
     children: MenuRules[]
 }
 
+const formRef = ref<FormInstance>()
 const treeRef = ref<InstanceType<typeof ElTree>>()
-const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
 
 const { t } = useI18n()
@@ -142,7 +142,7 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
     ],
 })
 
-getMenuRules().then((res) => {
+getAdminRules().then((res) => {
     state.menuRules = res.data.list
 })
 

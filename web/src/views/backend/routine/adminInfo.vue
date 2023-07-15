@@ -22,12 +22,12 @@
                     <div class="admin-info-base">
                         <div class="admin-nickname">{{ state.adminInfo.nickname }}</div>
                         <div class="admin-other">
-                            <div>{{ t('routine.adminInfo.Last logged in on') }} {{ state.adminInfo.lastlogintime }}</div>
+                            <div>{{ t('routine.adminInfo.Last logged in on') }} {{ state.adminInfo.last_login_time }}</div>
                         </div>
                     </div>
                     <div class="admin-info-form">
                         <el-form
-                            @keyup.enter="onSubmit(formRef)"
+                            @keyup.enter="onSubmit()"
                             :key="state.formKey"
                             label-position="top"
                             :rules="rules"
@@ -55,7 +55,7 @@
                             <el-form-item :label="t('routine.adminInfo.autograph')" prop="motto">
                                 <el-input
                                     @keyup.enter.stop=""
-                                    @keyup.ctrl.enter="onSubmit(formRef)"
+                                    @keyup.ctrl.enter="onSubmit()"
                                     :placeholder="t('routine.adminInfo.This guy is lazy and doesn write anything')"
                                     type="textarea"
                                     v-model="state.adminInfo.motto"
@@ -69,9 +69,9 @@
                                 ></el-input>
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary" :loading="state.buttonLoading" @click="onSubmit(formRef)">{{
-                                    t('routine.adminInfo.Save changes')
-                                }}</el-button>
+                                <el-button type="primary" :loading="state.buttonLoading" @click="onSubmit()">
+                                    {{ t('routine.adminInfo.Save changes') }}
+                                </el-button>
                                 <el-button @click="onResetForm(formRef)">{{ t('Reset') }}</el-button>
                             </el-form-item>
                         </el-form>
@@ -81,7 +81,7 @@
             <el-col v-loading="state.logLoading" :xs="24" :sm="24" :md="24" :lg="12">
                 <el-card :header="t('routine.adminInfo.Operation log')" shadow="never">
                     <el-timeline>
-                        <el-timeline-item v-for="(item, idx) in state.log" :key="idx" size="large" :timestamp="timeFormat(item.createtime)">
+                        <el-timeline-item v-for="(item, idx) in state.log" :key="idx" size="large" :timestamp="timeFormat(item.create_time)">
                             {{ item.title }}
                         </el-timeline-item>
                     </el-timeline>
@@ -105,16 +105,19 @@
 import { ref, reactive } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { index, log, postData } from '/@/api/backend/routine/AdminInfo'
-import { ElForm, FormItemRule } from 'element-plus'
-import { onResetForm } from '/@/utils/common'
+import { FormInstance, FormItemRule } from 'element-plus'
+import { onResetForm, timeFormat } from '/@/utils/common'
 import { uuid } from '../../../utils/random'
 import { buildValidatorData } from '/@/utils/validate'
 import { fileUpload } from '/@/api/common'
 import { useAdminInfo } from '/@/stores/adminInfo'
-import { timeFormat } from '/@/components/table'
+
+defineOptions({
+    name: 'routine/adminInfo',
+})
 
 const { t } = useI18n()
-const formRef = ref<InstanceType<typeof ElForm>>()
+const formRef = ref<FormInstance>()
 
 const adminInfoStore = useAdminInfo()
 
@@ -124,7 +127,7 @@ const state: {
     buttonLoading: boolean
     log: {
         title: string
-        createtime: string
+        create_time: string
         url: string
     }[]
     logFilter: anyObj
@@ -209,12 +212,12 @@ const onAvatarBeforeUpload = (file: any) => {
     })
 }
 
-const onSubmit = (formEl: InstanceType<typeof ElForm> | undefined) => {
-    if (!formEl) return
-    formEl.validate((valid) => {
+const onSubmit = () => {
+    if (!formRef.value) return
+    formRef.value.validate((valid) => {
         if (valid) {
             let data = { ...state.adminInfo }
-            delete data.lastlogintime
+            delete data.last_login_time
             delete data.username
             delete data.avatar
             state.buttonLoading = true
@@ -229,13 +232,6 @@ const onSubmit = (formEl: InstanceType<typeof ElForm> | undefined) => {
         }
     })
 }
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'routine/adminInfo',
-})
 </script>
 
 <style scoped lang="scss">

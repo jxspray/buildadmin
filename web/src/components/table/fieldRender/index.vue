@@ -240,12 +240,11 @@
 
 <script setup lang="ts">
 import { ref, inject } from 'vue'
-import type { TagProps } from 'element-plus'
-import { timeFormat, openUrl } from '/@/components/table'
+import type { TagProps, TableColumnCtx } from 'element-plus'
+import { openUrl } from '/@/components/table'
 import { useI18n } from 'vue-i18n'
-import { fullUrl, arrayFullUrl } from '/@/utils/common'
+import { fullUrl, arrayFullUrl, timeFormat } from '/@/utils/common'
 import type baTableClass from '/@/utils/baTable'
-import { TableColumnCtx } from 'element-plus/es/components/table/src/table-column/defaults'
 
 const { t } = useI18n()
 const baTable = inject('baTable') as baTableClass

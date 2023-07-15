@@ -1,7 +1,6 @@
-import type { TagProps, ButtonType, ElForm, FormInstance, ButtonProps } from 'element-plus'
+import type { TagProps, ButtonType, FormInstance, ButtonProps, TableColumnCtx, ColProps } from 'element-plus'
 import { Component, ComponentPublicInstance } from 'vue'
 import Table from '/@/components/table/index.vue'
-import { TableColumnCtx } from 'element-plus/es/components/table/src/table-column/defaults'
 import type { PopconfirmProps } from 'element-plus'
 import { Mutable } from 'element-plus/es/utils'
 
@@ -29,7 +28,7 @@ declare global {
             page?: number
             limit?: number
             order?: string
-            quick_search?: string
+            quickSearch?: string
             search?: comSearchData[]
             [key: string]: any
         }
@@ -60,7 +59,7 @@ declare global {
     /* baTableForm */
     interface BaTableForm {
         // 表单ref，实例化表格时通常无需传递
-        ref?: InstanceType<typeof ElForm> | undefined
+        ref?: FormInstance | undefined
         // 表单项label的宽度
         labelWidth?: number
         // 当前操作:add=添加,edit=编辑
@@ -129,12 +128,12 @@ declare global {
     }
 
     /* 表格列 */
-    interface TableColumn extends ElTableColumn {
+    interface TableColumn extends Partial<TableColumnCtx<TableRow>> {
         // 是否显示
         show?: boolean
         // 是否在下拉菜单的复选框显示 默认为true显示
         enableColumnDisplayControl?: boolean
-        // 渲染为:icon|switch|image|images|tag|url|datetime|buttons|customTemplate|customRender
+        // 渲染为:icon|switch|image|images|tag|url|datetime|buttons|customTemplate|customRender|slot
         render?:
             | 'icon'
             | 'switch'
@@ -148,6 +147,7 @@ declare global {
             | 'buttons'
             | 'customTemplate'
             | 'customRender'
+            | 'slot'
         // 操作按钮组
         buttons?: OptButton[]
         // 渲染为Tag时:el-tag 组件的主题
@@ -160,6 +160,8 @@ declare global {
         customTemplate?: (row: TableRow, field: TableColumn, value: any, column: TableColumnCtx<TableRow>, index: number) => string
         // 自定义组件/函数渲染
         customRender?: string | Component
+        // 自定义渲染为 slot 时，slot的名称
+        slotName?: string
         // 渲染为链接时,链接的打开方式
         target?: aTarget
         // 渲染为:url 时的点击事件
@@ -177,9 +179,15 @@ declare global {
         // 通用搜索框的placeholder
         operatorPlaceholder?: string
         // 公共搜索渲染方式:上方的 render=tag|switch 时公共搜索也会渲染为下拉，数字会渲染为范围筛选，时间渲染为时间选择器等
-        comSearchRender?: 'remoteSelect' | 'select' | 'date' | 'customRender'
+        comSearchRender?: 'remoteSelect' | 'select' | 'date' | 'customRender' | 'slot'
         // 公共搜索自定义组件/函数渲染
         comSearchCustomRender?: string | Component
+        // 公共搜索自定义渲染为 slot 时，slot 的名称
+        comSearchSlotName?: string
+        // 公共搜索自定义渲染时，外层 el-col 的属性（仅 customRender、slot支持）
+        comSearchColAttr?: Partial<ColProps>
+        // 公共搜索，是否显示字段的 label
+        comSearchShowLabel?: boolean
         // 远程属性
         remote?: {
             pk?: string
@@ -254,39 +262,4 @@ declare global {
         label: string
         children?: ElTreeData[]
     }
-}
-
-/*
- * ElTableColumn可用属性
- * 未找到方法直接导出tableColumn的props类型定义
- * https://element-plus.org/zh-CN/component/table.html#table-column-attributes
- */
-interface ElTableColumn {
-    type?: 'selection' | 'index' | 'expand'
-    index?: number | Function
-    label?: string
-    'column-key'?: string
-    prop?: string
-    width?: string | number
-    'min-width'?: string | number
-    fixed?: string | boolean
-    'render-header'?: Function
-    sortable?: string | boolean
-    'sort-method'?: Function
-    'sort-by'?: Function
-    'sort-orders'?: string[] | null[]
-    resizable?: boolean
-    formatter?: Function
-    'show-overflow-tooltip'?: boolean
-    align?: 'left' | 'center' | 'right'
-    'header-align'?: 'left' | 'center' | 'right'
-    'class-name'?: string
-    'label-class-name'?: string
-    selectable?: Function
-    'reserve-selection'?: boolean
-    filters?: { key: string; value: string }[]
-    'filter-placement'?: string
-    'filter-multiple'?: boolean
-    'filter-method'?: Function
-    'filtered-value'?: any[]
 }

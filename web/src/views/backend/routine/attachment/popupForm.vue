@@ -1,6 +1,11 @@
 <template>
     <!-- 对话框表单 -->
-    <el-dialog class="ba-operate-dialog" :close-on-click-modal="false" :model-value="baTable.form.operate ? true : false" @close="baTable.toggleForm">
+    <el-dialog
+        class="ba-operate-dialog"
+        :close-on-click-modal="false"
+        :model-value="['Add', 'Edit'].includes(baTable.form.operate!)"
+        @close="baTable.toggleForm"
+    >
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
                 {{ baTable.form.operate ? t(baTable.form.operate) : '' }}
@@ -86,9 +91,13 @@
                             type="number"
                             :placeholder="t('routine.attachment.Upload (Reference) times of this file')"
                         ></el-input>
-                        <span class="block-help">{{
-                            t('routine.attachment.When the same file is uploaded multiple times, only one attachment record will be saved and added')
-                        }}</span>
+                        <span class="block-help">
+                            {{
+                                t(
+                                    'routine.attachment.When the same file is uploaded multiple times, only one attachment record will be saved and added'
+                                )
+                            }}
+                        </span>
                     </el-form-item>
                     <el-form-item :label="t('routine.attachment.Storage mode')">
                         <el-input

@@ -15,7 +15,7 @@
                     </div>
                     <div v-else class="log-change-amount reduce">{{ $t('Integral') + '：' + item.score }}</div>
                     <div class="log-after">{{ $t('user.account.integral.Points after change') + '：' + item.after }}</div>
-                    <div class="log-change-time">{{ $t('user.account.integral.Change time') + '：' + timeFormat(item.createtime) }}</div>
+                    <div class="log-change-time">{{ $t('user.account.integral.Change time') + '：' + timeFormat(item.create_time) }}</div>
                 </div>
             </div>
             <div v-if="state.total > 0" class="log-footer">
@@ -39,7 +39,7 @@
 import { reactive, onMounted } from 'vue'
 import { getIntegralLog } from '/@/api/frontend/user/index'
 import { useMemberCenter } from '/@/stores/memberCenter'
-import { timeFormat } from '/@/components/table'
+import { timeFormat } from '/@/utils/common'
 import { useUserInfo } from '/@/stores/userInfo'
 
 const userInfo = useUserInfo()
@@ -47,7 +47,7 @@ const memberCenter = useMemberCenter()
 const state: {
     logs: {
         memo: string
-        createtime: number
+        create_time: number
         score: number
         after: number
     }[]

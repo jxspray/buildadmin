@@ -5,7 +5,7 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('security.sensitiveData.controller') })"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('security.sensitiveData.controller') })"
         />
 
         <!-- 表格 -->
@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { onMounted, ref, provide } from 'vue'
 import { sensitiveDataClass } from './index'
-import { securitySensitiveData } from '/@/api/controllerUrls'
+import { url } from '/@/api/backend/security/sensitiveData'
 import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
@@ -28,11 +28,15 @@ import { defaultOptButtons } from '/@/components/table'
 import { baTableApi } from '/@/api/common'
 import { useI18n } from 'vue-i18n'
 
+defineOptions({
+    name: 'security/dataRecycle',
+})
+
 const { t } = useI18n()
 const tableRef = ref()
 const formRef = ref()
 const baTable = new sensitiveDataClass(
-    new baTableApi(securitySensitiveData),
+    new baTableApi(url),
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
@@ -69,17 +73,17 @@ const baTable = new sensitiveDataClass(
                 render: 'tags',
             },
             {
-                label: t('state'),
+                label: t('State'),
                 prop: 'status',
                 align: 'center',
                 render: 'tag',
                 custom: { '0': 'danger', '1': 'success' },
                 replaceValue: { '0': t('Disable'), '1': t('security.sensitiveData.Modifying monitoring') },
             },
-            { label: t('updatetime'), prop: 'updatetime', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
-            { label: t('createtime'), prop: 'createtime', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
+            { label: t('Update time'), prop: 'update_time', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
+            { label: t('Create time'), prop: 'create_time', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
             {
-                label: t('operate'),
+                label: t('Operate'),
                 align: 'center',
                 width: '130',
                 render: 'buttons',
@@ -111,13 +115,6 @@ onMounted(() => {
     baTable.table.ref = tableRef.value
     baTable.mount()
     baTable.getIndex()
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'security/dataRecycle',
 })
 </script>
 

@@ -2,23 +2,27 @@
 
 namespace app\admin\controller\routine;
 
-use Exception;
+use Throwable;
+use ba\Filesystem;
 use think\facade\Event;
 use app\common\controller\Backend;
 use app\common\model\Attachment as AttachmentModel;
-use think\db\exception\PDOException;
 
 class Attachment extends Backend
 {
-    protected $model = null;
+    /**
+     * @var object
+     * @phpstan-var AttachmentModel
+     */
+    protected object $model;
 
-    protected $quickSearchField = 'name';
+    protected string|array $quickSearchField = 'name';
 
-    protected $withJoinTable = ['admin', 'user'];
+    protected array $withJoinTable = ['admin', 'user'];
 
-    protected $defaultSortField = 'lastuploadtime,desc';
+    protected string|array $defaultSortField = 'last_upload_time,desc';
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->model = new AttachmentModel();
@@ -27,8 +31,9 @@ class Attachment extends Backend
     /**
      * 删除
      * @param array $ids
+     * @throws Throwable
      */
-    public function del(array $ids = [])
+    public function del(array $ids = []): void
     {
         if (!$this->request->isDelete() || !$ids) {
             $this->error(__('Parameter error'));
@@ -45,14 +50,14 @@ class Attachment extends Backend
         try {
             foreach ($data as $v) {
                 Event::trigger('AttachmentDel', $v);
-                $filePath = path_transform(public_path() . ltrim($v->url, '/'));
+                $filePath = Filesystem::fsFit(public_path() . ltrim($v->url, '/'));
                 if (file_exists($filePath)) {
                     unlink($filePath);
-                    del_empty_dir(dirname($filePath));
+                    Filesystem::delEmptyDir(dirname($filePath));
                 }
                 $count += $v->delete();
             }
-        } catch (PDOException|Exception $e) {
+        } catch (Throwable $e) {
             $this->error(__('%d records and files have been deleted', [$count]) . $e->getMessage());
         }
         if ($count) {

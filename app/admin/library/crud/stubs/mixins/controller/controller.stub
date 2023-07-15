@@ -1,21 +1,21 @@
 <?php
 
 namespace {%namespace%};
-
+{%use%}
 use app\common\controller\Backend;
 
 /**
  * {%tableComment%}
- *
  */
 class {%className%} extends Backend
 {
     /**
      * {%modelName%}模型对象
-     * @var \{%modelNamespace%}\{%modelName%}
+     * @var object
+     * @phpstan-var \{%modelNamespace%}\{%modelName%}
      */
-    protected $model = null;
-    {%attr%}{%initialize%}
+    protected object $model;
+{%attr%}{%initialize%}
 {%methods%}
 
     /**

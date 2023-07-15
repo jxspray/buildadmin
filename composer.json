@@ -1,33 +1,29 @@
 {
-    "name": "topthink/think",
-    "description": "the new thinkphp framework",
+    "name": "wonderful-code/buildadmin",
+    "description": "Build your admin framework",
     "type": "project",
     "keywords": [
-        "framework",
-        "thinkphp",
-        "ORM"
+        "buildadmin",
+        "thinkphp"
     ],
-    "homepage": "http://thinkphp.cn/",
+    "homepage": "https://buildadmin.com",
     "license": "Apache-2.0",
     "authors": [
         {
-            "name": "liu21st",
-            "email": "liu21st@gmail.com"
-        },
-        {
-            "name": "yunwuxin",
-            "email": "448901948@qq.com"
+            "name": "妙码生花",
+            "email": "hi@buildadmin.com"
         }
     ],
     "require": {
-        "php": ">=7.2.5",
-        "topthink/framework": "^6.0.0",
-        "topthink/think-orm": "^2.0",
+        "php": ">=8.0.2",
+        "topthink/framework": "^8.0.0",
+        "topthink/think-orm": "^3.0",
         "topthink/think-multi-app": "^1.0",
-        "topthink/think-throttle": "^1.3",
-        "phpmailer/phpmailer": "^6.6",
-        "w7corp/easywechat": "^4.6",
-        "nelexa/zip": "^3.3 || ^4.0.0",
+        "topthink/think-throttle": "v2.0.0",
+        "topthink/think-migration": "^3.0",
+        "phpmailer/phpmailer": "^6.8",
+        "w7corp/easywechat": "^6.12",
+        "nelexa/zip": "^4.0.0",
         "ext-calendar": "*",
         "ext-bcmath": "*",
         "ext-iconv": "*",

@@ -2,6 +2,7 @@
 
 namespace app\common\library\token\driver;
 
+use Throwable;
 use think\Response;
 use BadFunctionCallException;
 use app\common\library\token\Driver;
@@ -16,12 +17,13 @@ class Redis extends Driver
      * 默认配置
      * @var array
      */
-    protected $options = [];
+    protected array $options = [];
 
     /**
      * 构造函数
      * @access public
      * @param array $options 参数
+     * @throws Throwable
      */
     public function __construct(array $options = [])
     {
@@ -47,19 +49,22 @@ class Redis extends Driver
         }
     }
 
+    /**
+     * @throws Throwable
+     */
     public function set(string $token, string $type, int $user_id, int $expire = null): bool
     {
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
-        $expiretime = $expire !== 0 ? time() + $expire : 0;
+        $expireTime = $expire !== 0 ? time() + $expire : 0;
         $token      = $this->getEncryptedToken($token);
         $tokenInfo  = [
-            'token'      => $token,
-            'type'       => $type,
-            'user_id'    => $user_id,
-            'createtime' => time(),
-            'expiretime' => $expiretime,
+            'token'       => $token,
+            'type'        => $type,
+            'user_id'     => $user_id,
+            'create_time' => time(),
+            'expire_time' => $expireTime,
         ];
         $tokenInfo  = json_encode($tokenInfo, JSON_UNESCAPED_UNICODE);
         if ($expire) {
@@ -75,6 +80,9 @@ class Redis extends Driver
         return $result;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function get(string $token, bool $expirationException = true): array
     {
         $key  = $this->getEncryptedToken($token);
@@ -86,9 +94,9 @@ class Redis extends Driver
         // 返回未加密的token给客户端使用
         $data['token'] = $token;
         // 过期时间
-        $data['expires_in'] = $this->getExpiredIn($data['expiretime'] ?? 0);
+        $data['expires_in'] = $this->getExpiredIn($data['expire_time'] ?? 0);
 
-        if ($data['expiretime'] && $data['expiretime'] <= time() && $expirationException) {
+        if ($data['expire_time'] && $data['expire_time'] <= time() && $expirationException) {
             // token过期-触发前端刷新token
             $response = Response::create(['code' => 409, 'msg' => __('Token expiration'), 'data' => $data], 'json');
             throw new HttpResponseException($response);
@@ -96,13 +104,19 @@ class Redis extends Driver
         return $data;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function check(string $token, string $type, int $user_id, bool $expirationException = true): bool
     {
         $data = $this->get($token, $expirationException);
-        if (!$data || (!$expirationException && $data['expiretime'] && $data['expiretime'] <= time())) return false;
+        if (!$data || (!$expirationException && $data['expire_time'] && $data['expire_time'] <= time())) return false;
         return $data['type'] == $type && $data['user_id'] == $user_id;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function delete(string $token): bool
     {
         $data = $this->get($token, false);
@@ -115,6 +129,9 @@ class Redis extends Driver
         return true;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function clear(string $type, int $user_id): bool
     {
         $keys = $this->handler->sMembers($this->getUserKey($user_id));

@@ -1,32 +1,38 @@
 <template>
     <!-- 通用搜索 -->
     <transition name="el-zoom-in-bottom" mode="out-in">
-        <ComSearch v-show="props.buttons.includes('comSearch') && baTable.table.showComSearch" />
+        <ComSearch v-show="props.buttons.includes('comSearch') && baTable.table.showComSearch">
+            <template v-for="(slot, idx) in $slots" :key="idx" #[idx]>
+                <slot :name="idx"></slot>
+            </template>
+        </ComSearch>
     </transition>
 
     <!-- 操作按钮组 -->
     <div v-bind="$attrs" class="table-header ba-scroll-style">
-        <el-tooltip v-if="props.buttons.includes('refresh')" :content="t('refresh')" placement="top">
+        <slot name="refreshPrepend"></slot>
+        <el-tooltip v-if="props.buttons.includes('refresh')" :content="t('Refresh')" placement="top">
             <el-button v-blur @click="onAction('refresh', { loading: true })" color="#40485b" class="table-header-operate" type="info">
                 <Icon name="fa fa-refresh" />
             </el-button>
         </el-tooltip>
-        <el-tooltip v-if="props.buttons.includes('add') && auth('add')" :content="t('add')" placement="top">
+        <slot name="refreshAppend"></slot>
+        <el-tooltip v-if="props.buttons.includes('add') && auth('add')" :content="t('Add')" placement="top">
             <el-button v-blur @click="onAction('add')" class="table-header-operate" type="primary">
                 <Icon name="fa fa-plus" />
-                <span class="table-header-operate-text">{{ t('add') }}</span>
+                <span class="table-header-operate-text">{{ t('Add') }}</span>
             </el-button>
         </el-tooltip>
         <el-tooltip v-if="props.buttons.includes('edit') && auth('edit')" :content="t('Edit selected row')" placement="top">
             <el-button v-blur @click="onAction('edit')" :disabled="!enableBatchOpt" class="table-header-operate" type="primary">
                 <Icon name="fa fa-pencil" />
-                <span class="table-header-operate-text">{{ t('edit') }}</span>
+                <span class="table-header-operate-text">{{ t('Edit') }}</span>
             </el-button>
         </el-tooltip>
         <el-popconfirm
             v-if="props.buttons.includes('delete') && auth('del')"
             @confirm="onAction('delete')"
-            :confirm-button-text="t('delete')"
+            :confirm-button-text="t('Delete')"
             :cancel-button-text="t('Cancel')"
             confirmButtonType="danger"
             :title="t('Are you sure to delete the selected record?')"
@@ -37,7 +43,7 @@
                     <el-tooltip :content="t('Delete selected row')" placement="top">
                         <el-button v-blur :disabled="!enableBatchOpt" class="table-header-operate" type="danger">
                             <Icon name="fa fa-trash" />
-                            <span class="table-header-operate-text">{{ t('delete') }}</span>
+                            <span class="table-header-operate-text">{{ t('Delete') }}</span>
                         </el-button>
                     </el-tooltip>
                 </div>
@@ -45,7 +51,7 @@
         </el-popconfirm>
         <el-tooltip
             v-if="props.buttons.includes('unfold')"
-            :content="(baTable.table.expandAll ? t('shrink') : t('open')) + t('All submenus')"
+            :content="(baTable.table.expandAll ? t('Shrink') : t('Open')) + t('All submenus')"
             placement="top"
         >
             <el-button
@@ -63,13 +69,13 @@
 
         <!-- 右侧搜索框和工具按钮 -->
         <div class="table-search">
-            <slot name="prefixQuickSearch"></slot>
+            <slot name="quickSearchPrepend"></slot>
             <el-input
                 v-if="props.buttons.includes('quickSearch')"
                 v-model="state.quickSearch"
                 class="xs-hidden quick-search"
                 @input="debounce(onSearchInput, 500)()"
-                :placeholder="quickSearchPlaceholder ? quickSearchPlaceholder : t('search')"
+                :placeholder="quickSearchPlaceholder ? quickSearchPlaceholder : t('Search')"
             />
             <div class="table-search-button-group" v-if="props.buttons.includes('columnDisplay') || props.buttons.includes('comSearch')">
                 <el-dropdown v-if="props.buttons.includes('columnDisplay')" :max-height="380" :hide-on-click="false">

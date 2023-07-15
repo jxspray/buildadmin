@@ -3,7 +3,7 @@
     <el-dialog
         class="ba-operate-dialog"
         :close-on-click-modal="false"
-        :model-value="baTable.form.operate ? true : false"
+        :model-value="['Add', 'Edit'].includes(baTable.form.operate!)"
         @close="baTable.toggleForm"
         :destroy-on-close="true"
     >
@@ -51,8 +51,8 @@
                             multiple: true,
                             params: { isTree: true, absoluteAuth: adminInfo.id == baTable.form.items!.id ? 0 : 1 },
                             field: 'name',
-                            'remote-url': authGroup + 'index',
-                            placeholder: t('Click Select'),
+                            'remote-url': '/admin/auth.Group/index',
+                            placeholder: t('Click select'),
                         }"
                     />
                     <FormItem :label="t('auth.admin.head portrait')" type="image" v-model="baTable.form.items!.avatar" />
@@ -76,7 +76,7 @@
                         v-model="baTable.form.items!.password"
                         type="password"
                         :placeholder="
-                            baTable.form.operate == 'add'
+                            baTable.form.operate == 'Add'
                                 ? t('Please input field', { field: t('auth.admin.Password') })
                                 : t('auth.admin.Please leave blank if not modified')
                         "
@@ -91,7 +91,7 @@
                         ></el-input>
                     </el-form-item>
                     <FormItem
-                        :label="t('state')"
+                        :label="t('State')"
                         v-model="baTable.form.items!.status"
                         type="radio"
                         :data="{ content: { '0': t('Disable'), '1': t('Enable') }, childrenAttr: { border: true } }"
@@ -115,13 +115,12 @@ import { ref, reactive, inject, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
 import { regularPassword, buildValidatorData } from '/@/utils/validate'
-import type { ElForm, FormItemRule } from 'element-plus'
+import type { FormInstance, FormItemRule } from 'element-plus'
 import FormItem from '/@/components/formItem/index.vue'
-import { authGroup } from '/@/api/controllerUrls'
 import { useAdminInfo } from '/@/stores/adminInfo'
 
 const adminInfo = useAdminInfo()
-const formRef = ref<InstanceType<typeof ElForm>>()
+const formRef = ref<FormInstance>()
 const baTable = inject('baTable') as baTableClass
 
 const { t } = useI18n()
@@ -135,7 +134,7 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
     password: [
         {
             validator: (rule: any, val: string, callback: Function) => {
-                if (baTable.form.operate == 'add') {
+                if (baTable.form.operate == 'Add') {
                     if (!val) {
                         return callback(new Error(t('Please input field', { field: t('auth.admin.Password') })))
                     }
@@ -157,7 +156,7 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
 watch(
     () => baTable.form.operate,
     (newVal) => {
-        rules.password![0].required = newVal == 'add'
+        rules.password![0].required = newVal == 'Add'
     }
 )
 </script>

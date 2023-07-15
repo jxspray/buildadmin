@@ -2,30 +2,7 @@
     <div class="layouts-menu-horizontal-double">
         <el-scrollbar ref="horizontalMenusRef" class="double-menus-scrollbar">
             <el-menu class="menu-horizontal" mode="horizontal" :default-active="state.defaultActive" :key="state.menuKey">
-                <!-- 横向菜单直接使用 <MenuTree :menus="menus" /> 会报警告 -->
-                <template v-for="menu in menus">
-                    <template v-if="menu.children && menu.children.length > 0">
-                        <el-sub-menu :index="menu.path" :key="menu.path">
-                            <template #title>
-                                <Icon
-                                    :color="config.getColorVal('menuColor')"
-                                    :name="menu.meta?.icon ? menu.meta?.icon : config.layout.menuDefaultIcon"
-                                />
-                                <span>{{ menu.meta?.title ? menu.meta?.title : $t('noTitle') }}</span>
-                            </template>
-                            <menu-tree :menus="menu.children"></menu-tree>
-                        </el-sub-menu>
-                    </template>
-                    <template v-else>
-                        <el-menu-item v-blur :index="menu.path" :key="menu.path" @click="onClickMenu(menu)">
-                            <Icon
-                                :color="config.getColorVal('menuColor')"
-                                :name="menu.meta?.icon ? menu.meta?.icon : config.layout.menuDefaultIcon"
-                            />
-                            <span>{{ menu.meta?.title ? menu.meta?.title : $t('noTitle') }}</span>
-                        </el-menu-item>
-                    </template>
-                </template>
+                <MenuTree :menus="menus" />
             </el-menu>
         </el-scrollbar>
         <NavMenus />
@@ -38,13 +15,12 @@ import { useRoute, onBeforeRouteUpdate, RouteLocationNormalizedLoaded } from 'vu
 import { currentRouteTopActivity } from '/@/layouts/backend/components/menus/helper'
 import MenuTree from '/@/layouts/backend/components/menus/menuTree.vue'
 import NavMenus from '/@/layouts/backend/components/navMenus.vue'
-import type { ElScrollbar } from 'element-plus'
+import type { ScrollbarInstance } from 'element-plus'
 import { useNavTabs } from '/@/stores/navTabs'
 import { useConfig } from '/@/stores/config'
-import { onClickMenu } from '/@/utils/router'
 import { uuid } from '/@/utils/random'
 
-const horizontalMenusRef = ref<InstanceType<typeof ElScrollbar>>()
+const horizontalMenusRef = ref<ScrollbarInstance>()
 
 const config = useConfig()
 const navTabs = useNavTabs()

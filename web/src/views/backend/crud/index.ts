@@ -3,6 +3,26 @@ import { i18n } from '/@/lang/index'
 import { validatorType } from '/@/utils/validate'
 import { npuaFalse, fieldData } from '/@/components/baInput/helper'
 
+/**
+ * 字段修改类型标识
+ * 改排序需要在表结构变更完成之后再单独处理所以标识独立
+ */
+export type TableDesignChangeType = 'change-field-name' | 'del-field' | 'add-field' | 'change-field-attr' | 'change-field-order'
+
+export interface TableDesignChange {
+    type: TableDesignChangeType
+    // 字段在设计器中的数组 index
+    index?: number
+    // 字段旧名称（重命名、修改属性、删除）
+    oldName: string
+    // 字段新名称（重命名、添加）
+    newName: string
+    // 是否同步到数据表
+    sync?: boolean
+    // 此字段在 after 字段之后，值为`FIRST FIELD`表示它是第一个字段
+    after?: string
+}
+
 export const state: {
     step: 'Start' | 'Design'
     type: string
@@ -34,6 +54,7 @@ export const changeStep = (type: string) => {
 }
 
 export interface FieldItem {
+    index?: number
     title: string
     name: string
     type: string
@@ -68,7 +89,7 @@ export const fieldItem: {
             table: {},
             form: {},
             ...fieldData.number,
-            default: '',
+            default: 'none',
             primaryKey: true,
             unsigned: true,
             autoIncrement: true,
@@ -84,23 +105,23 @@ export const fieldItem: {
             ...fieldData.number,
             type: 'bigint',
             length: 20,
-            default: '',
+            default: 'none',
             primaryKey: true,
             unsigned: true,
         },
         {
             title: i18n.global.t('crud.state.Weight (drag and drop sorting)'),
             name: 'weigh',
-            comment: i18n.global.t('weigh'),
+            comment: i18n.global.t('Weigh'),
             designType: 'weigh',
             table: {},
             form: {},
             ...fieldData.number,
-            default: '',
+            default: '0',
             null: true,
         },
         {
-            title: i18n.global.t('state'),
+            title: i18n.global.t('State'),
             name: 'status',
             comment: i18n.global.t('crud.state.Status:0=Disabled,1=Enabled'),
             designType: 'switch',
@@ -119,9 +140,9 @@ export const fieldItem: {
             ...fieldData.textarea,
         },
         {
-            title: i18n.global.t('updatetime'),
+            title: i18n.global.t('Update time'),
             name: 'update_time',
-            comment: i18n.global.t('updatetime'),
+            comment: i18n.global.t('Update time'),
             designType: 'timestamp',
             formBuildExclude: true,
             table: {},
@@ -129,9 +150,9 @@ export const fieldItem: {
             ...fieldData.datetime,
         },
         {
-            title: i18n.global.t('createtime'),
+            title: i18n.global.t('Create time'),
             name: 'create_time',
-            comment: i18n.global.t('createtime'),
+            comment: i18n.global.t('Create time'),
             designType: 'timestamp',
             formBuildExclude: true,
             table: {},
@@ -140,7 +161,7 @@ export const fieldItem: {
         },
         {
             title: i18n.global.t('crud.state.Remote Select (association table)'),
-            name: 'user_id',
+            name: 'remote_select',
             comment: i18n.global.t('utils.remote select'),
             designType: 'remoteSelect',
             tableBuildExclude: true,
@@ -391,7 +412,7 @@ export const fieldItem: {
         },
         {
             title: i18n.global.t('crud.state.Remote Select (Multi)'),
-            name: 'user_ids',
+            name: 'remote_select',
             comment: i18n.global.t('utils.remote select'),
             designType: 'remoteSelects',
             tableBuildExclude: true,
@@ -407,7 +428,7 @@ const tableBaseAttr = {
         type: 'select',
         value: 'none',
         options: {
-            none: i18n.global.t('none'),
+            none: i18n.global.t('None'),
             icon: 'Icon',
             switch: i18n.global.t('utils.switch'),
             image: i18n.global.t('utils.image'),

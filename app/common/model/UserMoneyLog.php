@@ -6,37 +6,35 @@ use think\model;
 
 class UserMoneyLog extends model
 {
-    protected $autoWriteTimestamp = 'int';
+    protected $autoWriteTimestamp = true;
+    protected $updateTime         = false;
 
-    protected $createTime = 'createtime';
-    protected $updateTime = false;
-
-    public function getMoneyAttr($value)
+    public function getMoneyAttr($value): string
     {
         return bcdiv($value, 100, 2);
     }
 
-    public function setMoneyAttr($value)
+    public function setMoneyAttr($value): string
     {
         return bcmul($value, 100, 2);
     }
 
-    public function getBeforeAttr($value)
+    public function getBeforeAttr($value): string
     {
         return bcdiv($value, 100, 2);
     }
 
-    public function setBeforeAttr($value)
+    public function setBeforeAttr($value): string
     {
         return bcmul($value, 100, 2);
     }
 
-    public function getAfterAttr($value)
+    public function getAfterAttr($value): string
     {
         return bcdiv($value, 100, 2);
     }
 
-    public function setAfterAttr($value)
+    public function setAfterAttr($value): string
     {
         return bcmul($value, 100, 2);
     }

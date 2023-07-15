@@ -12,7 +12,7 @@
         >
             <TableHeader
                 :buttons="['refresh', 'comSearch', 'quickSearch', 'columnDisplay']"
-                :quick-search-placeholder="t('quick Search Placeholder', { fields: t('utils.Original name') })"
+                :quick-search-placeholder="t('Quick search placeholder', { fields: t('utils.Original name') })"
             >
                 <el-tooltip :content="t('utils.choice')" placement="top">
                     <el-button
@@ -44,7 +44,6 @@ import { useI18n } from 'vue-i18n'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
 import baTableClass from '/@/utils/baTable'
-import { routineAttachment } from '/@/api/controllerUrls'
 import { previewRenderFormatter } from '/@/views/backend/routine/attachment'
 import { baTableApi } from '/@/api/common'
 
@@ -90,7 +89,7 @@ const optBtn: OptButton[] = [
         },
     },
 ]
-const baTable = new baTableClass(new baTableApi(routineAttachment), {
+const baTable = new baTableClass(new baTableApi('/admin/routine.Attachment/'), {
     column: [
         {
             type: 'selection',
@@ -108,7 +107,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
             align: 'center',
             operator: false,
         },
-        { label: t('id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
+        { label: t('Id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
         { label: t('utils.Breakdown'), prop: 'topic', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query') },
         {
             label: t('utils.preview'),
@@ -123,7 +122,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
             prop: 'mimetype',
             align: 'center',
             operator: 'LIKE',
-            'show-overflow-tooltip': true,
+            showOverflowTooltip: true,
             operatorPlaceholder: t('Fuzzy query'),
         },
         {
@@ -141,7 +140,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
         },
         {
             label: t('utils.Last upload time'),
-            prop: 'lastuploadtime',
+            prop: 'last_upload_time',
             align: 'center',
             render: 'datetime',
             operator: 'RANGE',
@@ -161,12 +160,12 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
             label: t('utils.Original name'),
             prop: 'name',
             align: 'center',
-            'show-overflow-tooltip': true,
+            showOverflowTooltip: true,
             operator: 'LIKE',
             operatorPlaceholder: t('Fuzzy query'),
         },
         {
-            label: t('operate'),
+            label: t('Operate'),
             align: 'center',
             width: '100',
             render: 'buttons',
@@ -174,7 +173,7 @@ const baTable = new baTableClass(new baTableApi(routineAttachment), {
             operator: false,
         },
     ],
-    defaultOrder: { prop: 'lastuploadtime', order: 'desc' },
+    defaultOrder: { prop: 'last_upload_time', order: 'desc' },
 })
 
 provide('baTable', baTable)

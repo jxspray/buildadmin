@@ -2,6 +2,7 @@
 
 namespace app\api\controller;
 
+use Throwable;
 use ba\Captcha;
 use ba\ClickCaptcha;
 use think\facade\Validate;
@@ -12,9 +13,9 @@ use PHPMailer\PHPMailer\Exception as PHPMailerException;
 
 class Ems extends Frontend
 {
-    protected $noNeedLogin = ['send'];
+    protected array $noNeedLogin = ['send'];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
     }
@@ -23,6 +24,7 @@ class Ems extends Frontend
      * 发送邮件
      * event 事件:user_register=用户注册,user_change_email=用户修改邮箱,user_retrieve_pwd=用户找回密码,user_email_verify=验证账户
      * 不同的事件，会自动做各种必要检查，其中 验证账户 要求用户输入当前密码才能发送验证码邮件
+     * @throws Throwable
      */
     public function send()
     {
@@ -56,7 +58,7 @@ class Ems extends Frontend
 
         // 检查频繁发送
         $captcha = $captchaObj->getCaptchaData($params['email'] . $params['event']);
-        if ($captcha && time() - $captcha['createtime'] < 60) {
+        if ($captcha && time() - $captcha['create_time'] < 60) {
             $this->error(__('Frequent email sending'));
         }
 
@@ -97,7 +99,7 @@ class Ems extends Frontend
             $mail->setSubject($subject);
             $mail->Body = $body;
             $mail->send();
-        } catch (PHPMailerException $e) {
+        } catch (PHPMailerException) {
             $this->error($mail->ErrorInfo);
         }
 

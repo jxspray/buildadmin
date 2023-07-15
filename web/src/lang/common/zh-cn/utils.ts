@@ -79,4 +79,7 @@ export default {
     Rule: '验证规则',
     Extend: '扩展属性',
     Dict: '字典数据',
+    ArrayKey: '键名',
+    ArrayValue: '键值',
+    'No data': '无数据',
 }

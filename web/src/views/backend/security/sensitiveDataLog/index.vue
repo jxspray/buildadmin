@@ -5,7 +5,7 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('security.sensitiveDataLog.Rule name') })"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('security.sensitiveDataLog.Rule name') })"
         >
             <el-popconfirm
                 @confirm="onRollbackAction"
@@ -45,8 +45,7 @@
 <script setup lang="ts">
 import { provide, onMounted } from 'vue'
 import baTableClass from '/@/utils/baTable'
-import { securitySensitiveDataLog } from '/@/api/controllerUrls'
-import { info, rollback } from '/@/api/backend/security/sensitiveDataLog'
+import { info, rollback, url } from '/@/api/backend/security/sensitiveDataLog'
 import InfoDialog from './info.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
@@ -54,13 +53,17 @@ import { defaultOptButtons } from '/@/components/table'
 import { baTableApi } from '/@/api/common'
 import { useI18n } from 'vue-i18n'
 
+defineOptions({
+    name: 'security/sensitiveDataLog',
+})
+
 const { t } = useI18n()
 
 let optButtons: OptButton[] = [
     {
         render: 'tipButton',
         name: 'info',
-        title: 'info',
+        title: 'Info',
         text: '',
         type: 'primary',
         icon: 'fa fa-search-plus',
@@ -92,11 +95,11 @@ let optButtons: OptButton[] = [
 ]
 optButtons = optButtons.concat(defaultOptButtons(['delete']))
 const baTable = new baTableClass(
-    new baTableApi(securitySensitiveDataLog),
+    new baTableApi(url),
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
-            { label: t('id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
+            { label: t('Id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
             {
                 label: t('security.sensitiveDataLog.Operation administrator'),
                 prop: 'admin.nickname',
@@ -145,7 +148,7 @@ const baTable = new baTableClass(
                 align: 'center',
                 operator: 'LIKE',
                 operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
+                showOverflowTooltip: true,
             },
             {
                 label: t('security.sensitiveDataLog.After modification'),
@@ -153,12 +156,12 @@ const baTable = new baTableClass(
                 align: 'center',
                 operator: 'LIKE',
                 operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
+                showOverflowTooltip: true,
             },
             { label: 'IP', prop: 'ip', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query') },
             {
                 label: t('security.sensitiveDataLog.Modification time'),
-                prop: 'createtime',
+                prop: 'create_time',
                 align: 'center',
                 render: 'datetime',
                 sortable: 'custom',
@@ -166,7 +169,7 @@ const baTable = new baTableClass(
                 width: 160,
             },
             {
-                label: t('operate'),
+                label: t('Operate'),
                 align: 'center',
                 width: 120,
                 render: 'buttons',
@@ -197,7 +200,7 @@ const onRollbackAction = () => {
 
 const infoButtonClick = (id: string) => {
     baTable.form.extend!['info'] = {}
-    baTable.form.operate = 'info'
+    baTable.form.operate = 'Info'
     baTable.form.loading = true
     info(id).then((res) => {
         baTable.form.extend!['info'] = res.data.row
@@ -210,13 +213,6 @@ provide('baTable', baTable)
 onMounted(() => {
     baTable.mount()
     baTable.getIndex()
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'security/sensitiveDataLog',
 })
 </script>
 

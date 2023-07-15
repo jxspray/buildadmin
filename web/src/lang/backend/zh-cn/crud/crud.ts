@@ -47,6 +47,10 @@ export default {
     'experience 3 2': '生成CRUD代码',
     'experience 3 3': '，点击',
     'experience 3 4': '继续生成',
+    'experience 4 1': '您当前未在开发环境，请 ',
+    'experience 4 2': '搭建开发环境',
+    'experience 4 3': '，或生成好代码之后点击右上角终端内的',
+    'experience 4 4': '重新发布',
     // design
     'Name of the data table': '数据表的名称',
     'Data Table Notes': '数据表注释',
@@ -121,4 +125,25 @@ export default {
         '字段注释将作为 CRUD字典，冒号前将识别为字段标题，冒号后识别为数据字典',
     'Field name is invalid It starts with a letter or underscore and cannot contain any character other than letters, digits, or underscores':
         '字段名 {field} 不符合规范，请以 字母、_ 开头，不能出现 字母、数字、下划线 以外的字符',
+    'The selected table has already generated records You are advised to start with historical records':
+        '选择的表已有成功生成的记录，建议从历史记录开始~',
+    'Start with the historical record': '从历史记录开始',
+    'Add field': '添加字段',
+    'Modify field properties': '修改字段属性',
+    'Modify field name': '修改字段名称',
+    'Delete field': '删除字段',
+    'Modify field order': '修改字段顺序',
+    'First field': '第一个字段',
+    After: '之后',
+    'Table design change': '表设计变更',
+    'Data table design changes preview': '数据表设计变更预览',
+    designChangeTips: '取消勾选后，则该项变动不会尝试同步至数据表（通常用于已经手动修改过表结构等情况）',
+    tableReBuild: '删表重建',
+    tableReBuildBlockHelp: '不调整表结构，直接删除已有数据表并重建，此举可以确保CRUD代码/记录与数据表结构一致',
+    Yes: '是',
+    No: '否',
+    'If the data is abnormal, repeat the previous step': '数据异常，请重做上步操作',
+    'Field name duplication': '字段名称 {field} 重复！',
+    'Design remote select tips':
+        '将自动根据表名生成本字段的名称；确认生成时，字段名 user_id 生成的关联方法名为 user，字段名 developer_done_id 生成的关联方法名为 developerDone，请注意远程下拉字段的名称前缀不要重复',
 }

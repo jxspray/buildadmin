@@ -39,10 +39,22 @@
                             {{ t('crud.crud.experience 2 3') }}<code>test_build</code>{{ t('crud.crud.data sheet') }}
                         </li>
                         <li>
-                            {{ t('crud.crud.experience 3 1') }}<code>{{ t('crud.crud.experience 3 2') }}</code> {{ t('crud.crud.experience 3 3')
-                            }}<code>{{ t('crud.crud.experience 3 4') }}</code>
+                            {{ t('crud.crud.experience 3 1') }}<code>{{ t('crud.crud.experience 3 2') }}</code>
+                            {{ t('crud.crud.experience 3 3') }}
+                            <code>{{ t('crud.crud.experience 3 4') }}</code>
                         </li>
                     </ol>
+                    <el-alert v-if="!isDev()" class="no-dev" type="warning" :show-icon="true" :closable="false">
+                        <template #title>
+                            <span>{{ t('crud.crud.experience 4 1') }}</span>
+                            <a target="_blank" href="https://wonderful-code.gitee.io/guide/other/developerMustSee.html">
+                                {{ t('crud.crud.experience 4 2') }}
+                            </a>
+                            <span>
+                                {{ t('crud.crud.experience 4 3') }}<code>{{ t('crud.crud.experience 4 4') }}</code>
+                            </span>
+                        </template>
+                    </el-alert>
                 </el-col>
             </el-row>
 
@@ -50,8 +62,16 @@
                 class="ba-operate-dialog select-db-dialog"
                 v-model="state.dialog.visible"
                 :title="state.dialog.type == 'sql' ? t('crud.crud.Please enter SQL') : t('crud.crud.Please select a data table')"
+                :destroy-on-close="true"
             >
-                <el-form :label-width="140" @keyup.enter="onSubmit(formRef)" ref="formRef" :model="crudState.startData" :rules="rules">
+                <el-form
+                    :label-width="140"
+                    @keyup.enter="onSubmit()"
+                    class="select-db-form"
+                    ref="formRef"
+                    :model="crudState.startData"
+                    :rules="rules"
+                >
                     <template v-if="state.dialog.type == 'sql'">
                         <el-input
                             class="sql-input"
@@ -62,7 +82,7 @@
                             :placeholder="t('crud.crud.table create SQL')"
                             :rows="10"
                             @keyup.enter.stop=""
-                            @keyup.ctrl.enter="onSubmit(formRef)"
+                            @keyup.ctrl.enter="onSubmit()"
                         />
                     </template>
                     <template v-else-if="state.dialog.type == 'db'">
@@ -77,16 +97,30 @@
                                 content: state.dialog.dbList,
                             }"
                             :attr="{
-                                'block-help': t('crud.crud.data sheet help'),
+                                blockHelp: t('crud.crud.data sheet help'),
+                            }"
+                            :input-attr="{
+                                onChange: onDbStartChange,
                             }"
                             prop="db"
+                        />
+                        <el-alert
+                            v-if="state.successRecord"
+                            class="success-record-alert"
+                            :title="t('crud.crud.The selected table has already generated records You are advised to start with historical records')"
+                            :show-icon="true"
+                            :closable="false"
+                            type="warning"
                         />
                     </template>
                 </el-form>
                 <template #footer>
                     <div :style="{ width: 'calc(100% * 0.9)' }">
                         <el-button @click="state.dialog.visible = false">{{ $t('Cancel') }}</el-button>
-                        <el-button @click="onSubmit(formRef)" v-blur type="primary">{{ t('Confirm') }}</el-button>
+                        <el-button :loading="state.loading" @click="onSubmit()" v-blur type="primary">{{ t('Confirm') }}</el-button>
+                        <el-button v-if="state.successRecord" @click="onLogStart" v-blur type="success">
+                            {{ t('crud.crud.Start with the historical record') }}
+                        </el-button>
                     </div>
                 </template>
             </el-dialog>
@@ -98,7 +132,7 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import { getDatabaseList } from '/@/api/backend/crud'
+import { getDatabaseList, checkCrudLog } from '/@/api/backend/crud'
 import FormItem from '/@/components/formItem/index.vue'
 import { changeStep, state as crudState } from '/@/views/backend/crud/index'
 import { ElNotification, FormInstance, FormItemRule } from 'element-plus'
@@ -116,6 +150,8 @@ const state = reactive({
         dbList: [],
     },
     showLog: false,
+    loading: false,
+    successRecord: 0,
 })
 
 const onShowDialog = (type: string) => {
@@ -126,6 +162,8 @@ const onShowDialog = (type: string) => {
             sqlInputRef.value.focus()
         }, 200)
     } else if (type == 'db') {
+        state.successRecord = 0
+        crudState.startData.db = ''
         getDatabaseList().then((res) => {
             state.dialog.dbList = res.data.dbs
         })
@@ -136,8 +174,8 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
     db: [buildValidatorData({ name: 'required', message: t('crud.crud.Please select a data table') })],
 })
 
-const onSubmit = (formEl: FormInstance | undefined = undefined) => {
-    if (!formEl) return
+const onSubmit = () => {
+    if (!formRef.value) return
     if (state.dialog.type == 'sql' && !crudState.startData.sql) {
         ElNotification({
             type: 'error',
@@ -145,17 +183,51 @@ const onSubmit = (formEl: FormInstance | undefined = undefined) => {
         })
         return
     }
-    formEl.validate((valid) => {
+    formRef.value.validate((valid) => {
         if (valid) {
             changeStep(state.dialog.type)
         }
     })
+}
+
+const onDbStartChange = () => {
+    if (crudState.startData.db) {
+        // 检查是否有CRUD记录
+        state.loading = true
+        checkCrudLog(crudState.startData.db)
+            .then((res) => {
+                state.successRecord = res.data.id
+            })
+            .finally(() => {
+                state.loading = false
+            })
+    }
+}
+
+const onLogStart = () => {
+    if (state.successRecord) {
+        crudState.startData.logId = state.successRecord.toString()
+        changeStep('log')
+    }
+}
+
+const isDev = () => {
+    return import.meta.env.DEV
 }
 </script>
 
 <style scoped lang="scss">
 :deep(.select-db-dialog) .el-dialog__body {
     height: unset;
+    .select-db-form {
+        width: 88%;
+    }
+    .success-record-alert {
+        width: calc(100% - 140px);
+        margin-left: 140px;
+        margin-bottom: 30px;
+        margin-top: -30px;
+    }
 }
 .crud-title {
     display: flex;
@@ -203,6 +275,9 @@ const onSubmit = (formEl: FormInstance | undefined = undefined) => {
     b {
         font-size: 15px;
         padding-left: 10px;
+    }
+    .no-dev {
+        margin-top: 10px;
     }
 }
 @at-root .dark {

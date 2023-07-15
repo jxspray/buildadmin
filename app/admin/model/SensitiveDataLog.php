@@ -3,25 +3,24 @@
 namespace app\admin\model;
 
 use think\Model;
+use think\model\relation\BelongsTo;
 
 /**
  * SensitiveDataLog 模型
- * @controllerUrl 'securitySensitiveDataLog'
  */
 class SensitiveDataLog extends Model
 {
     protected $name = 'security_sensitive_data_log';
 
-    protected $autoWriteTimestamp = 'int';
-    protected $createTime         = 'createtime';
+    protected $autoWriteTimestamp = true;
     protected $updateTime         = false;
 
-    public function sensitive()
+    public function sensitive(): BelongsTo
     {
         return $this->belongsTo(SensitiveData::class, 'sensitive_id');
     }
 
-    public function admin()
+    public function admin(): BelongsTo
     {
         return $this->belongsTo(Admin::class, 'admin_id');
     }

@@ -5,7 +5,7 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'add', 'edit', 'delete', 'unfold', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('auth.menu.Rule title') })"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('auth.rule.Rule title') })"
         />
 
         <!-- 表格 -->
@@ -20,7 +20,6 @@
 <script setup lang="ts">
 import { onMounted, ref, provide } from 'vue'
 import baTableClass from '/@/utils/baTable'
-import { userRule } from '/@/api/controllerUrls'
 import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
@@ -28,19 +27,23 @@ import { defaultOptButtons } from '/@/components/table'
 import { baTableApi } from '/@/api/common'
 import { useI18n } from 'vue-i18n'
 
+defineOptions({
+    name: 'user/rule',
+})
+
 const { t } = useI18n()
 const tableRef = ref()
 const baTable = new baTableClass(
-    new baTableApi(userRule),
+    new baTableApi('/admin/user.Rule/'),
     {
-        expandAll: true,
+        expandAll: false,
         column: [
             { type: 'selection', align: 'center', operator: false },
-            { label: t('auth.menu.title'), prop: 'title', align: 'left', width: '200' },
-            { label: t('auth.menu.Icon'), prop: 'icon', align: 'center', width: '60', render: 'icon', default: 'el-icon-Minus' },
-            { label: t('auth.menu.name'), prop: 'name', align: 'center', 'show-overflow-tooltip': true },
+            { label: t('auth.rule.title'), prop: 'title', align: 'left', width: '200' },
+            { label: t('auth.rule.Icon'), prop: 'icon', align: 'center', width: '60', render: 'icon', default: 'fa fa-circle-o' },
+            { label: t('auth.rule.name'), prop: 'name', align: 'center', showOverflowTooltip: true },
             {
-                label: t('auth.menu.type'),
+                label: t('auth.rule.type'),
                 prop: 'type',
                 align: 'center',
                 render: 'tag',
@@ -54,10 +57,10 @@ const baTable = new baTableClass(
                     nav_user_menu: t('user.rule.Top bar user dropdown'),
                 },
             },
-            { label: t('state'), prop: 'status', align: 'center', width: '80', render: 'switch' },
-            { label: t('updatetime'), prop: 'updatetime', align: 'center', width: '160', render: 'datetime' },
-            { label: t('createtime'), prop: 'createtime', align: 'center', width: '160', render: 'datetime' },
-            { label: t('operate'), align: 'center', width: '130', render: 'buttons', buttons: defaultOptButtons() },
+            { label: t('State'), prop: 'status', align: 'center', width: '80', render: 'switch' },
+            { label: t('Update time'), prop: 'update_time', align: 'center', width: '160', render: 'datetime' },
+            { label: t('Create time'), prop: 'create_time', align: 'center', width: '160', render: 'datetime' },
+            { label: t('Operate'), align: 'center', width: '130', render: 'buttons', buttons: defaultOptButtons() },
         ],
         dblClickNotEditColumn: [undefined, 'status'],
     },
@@ -69,13 +72,13 @@ const baTable = new baTableClass(
             no_login_valid: '0',
             keepalive: 0,
             status: '1',
-            icon: 'el-icon-Minus',
+            icon: 'fa fa-circle-o',
         },
     },
     {
         // 获得编辑数据后
         requestEdit: () => {
-            if (baTable.form.items && !baTable.form.items.icon) baTable.form.items.icon = 'el-icon-Minus'
+            if (baTable.form.items && !baTable.form.items.icon) baTable.form.items.icon = 'fa fa-circle-o'
         },
         onSubmit: () => {
             if (baTable.form.items!.type == 'route') {
@@ -95,13 +98,6 @@ onMounted(() => {
     baTable.getIndex()?.then(() => {
         baTable.dragSort()
     })
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'user/rule',
 })
 </script>
 

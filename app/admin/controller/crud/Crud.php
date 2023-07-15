@@ -2,63 +2,78 @@
 
 namespace app\admin\controller\crud;
 
-use think\Exception;
+use Throwable;
+use ba\Exception;
+use ba\Filesystem;
 use think\facade\Db;
+use ba\TableManager;
 use app\admin\model\CrudLog;
 use app\common\library\Menu;
+use app\admin\model\AdminLog;
 use app\common\controller\Backend;
 use app\admin\library\crud\Helper;
-use think\db\exception\PDOException;
 
 class Crud extends Backend
 {
     /**
      * 模型文件数据
+     * @var array
      */
-    protected $modelData = [];
+    protected array $modelData = [];
 
     /**
      * 控制器文件数据
+     * @var array
      */
-    protected $controllerData = [];
+    protected array $controllerData = [];
 
     /**
      * index.vue文件数据
+     * @var array
      */
-    protected $indexVueData = [];
+    protected array $indexVueData = [];
 
     /**
      * form.vue文件数据
+     * @var array
      */
-    protected $formVueData = [];
+    protected array $formVueData = [];
 
     /**
      * 语言翻译前缀
+     * @var string
      */
-    protected $webTranslate = '';
+    protected string $webTranslate = '';
 
     /**
      * 语言包数据
+     * @var array
      */
-    protected $langTsData = [];
+    protected array $langTsData = [];
 
     /**
      * 当designType为以下值时:
      * 1. 出入库字符串到数组转换
      * 2. 默认值转数组
+     * @var array
      */
-    protected $dtStringToArray = ['checkbox', 'selects', 'remoteSelects', 'city', 'images', 'files'];
+    protected array $dtStringToArray = ['checkbox', 'selects', 'remoteSelects', 'city', 'images', 'files'];
 
-    protected $noNeedPermission = ['logStart', 'getFileData', 'parseFieldData', 'generateCheck', 'databaseList'];
+    protected array $noNeedPermission = ['logStart', 'getFileData', 'parseFieldData', 'generateCheck', 'databaseList'];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->request->filter(['trim']);
     }
 
+    /**
+     * 开始生成
+     * @throws Throwable
+     */
     public function generate()
     {
+        $type   = $this->request->post('type', '');
         $table  = $this->request->post('table', []);
         $fields = $this->request->post('fields', []);
 
@@ -74,14 +89,16 @@ class Crud extends Backend
                 'status' => 'start',
             ]);
 
-            // 表存在则删除
-            Helper::delTable($table['name']);
+            if ($type == 'create' || $table['rebuild'] == 'Yes') {
+                // 数据表存在则删除
+                Helper::delTable($table['name']);
+            }
 
-            // 创建表
-            [$tablePk] = Helper::createTable($table['name'], $table['comment'] ?? '', $fields);
+            // 处理表设计
+            [$tablePk] = Helper::handleTableDesign($table, $fields);
 
             // 表名称
-            $tableName = Helper::getTableName($table['name'], false);
+            $tableName = TableManager::tableName($table['name'], false);
 
             // 表注释
             $tableComment = mb_substr($table['comment'], -1) == '表' ? mb_substr($table['comment'], 0, -1) . '管理' : $table['comment'];
@@ -117,6 +134,7 @@ class Crud extends Backend
             $this->modelData['relationMethodList'] = [];
 
             // 控制器数据
+            $this->controllerData['use']            = [];
             $this->controllerData['attr']           = [];
             $this->controllerData['methods']        = [];
             $this->controllerData['filterRule']     = '';
@@ -218,7 +236,7 @@ class Crud extends Backend
 
             // 表格的操作列
             $this->indexVueData['tableColumn'][] = [
-                'label'    => "t('operate')",
+                'label'    => "t('Operate')",
                 'align'    => 'center',
                 'width'    => $this->indexVueData['enableDragSort'] ? 140 : 100,
                 'render'   => 'buttons',
@@ -260,9 +278,15 @@ class Crud extends Backend
                 'id'     => $crudLogId,
                 'status' => 'success',
             ]);
-        } catch (PDOException|Exception $e) {
+        } catch (Exception $e) {
             Helper::recordCrudStatus([
-                'id'     => $crudLogId,
+                'id'     => $crudLogId ?? 0,
+                'status' => 'error',
+            ]);
+            $this->error($e->getMessage());
+        } catch (Throwable $e) {
+            Helper::recordCrudStatus([
+                'id'     => $crudLogId ?? 0,
                 'status' => 'error',
             ]);
             if (env('app_debug', false)) throw $e;
@@ -272,19 +296,38 @@ class Crud extends Backend
         $this->success();
     }
 
-    public function logStart()
+    /**
+     * 从log开始
+     * @throws Throwable
+     */
+    public function logStart(): void
     {
         $id   = $this->request->post('id');
         $info = CrudLog::find($id)->toArray();
         if (!$info) {
             $this->error(__('Record not found'));
         }
+
+        // 数据表是否有数据
+        $adapter = TableManager::adapter();
+        if ($adapter->hasTable($info['table']['name'])) {
+            $info['table']['empty'] = Db::name($info['table']['name'])->limit(1)->select()->isEmpty();
+        } else {
+            $info['table']['empty'] = true;
+        }
+
+        AdminLog::setTitle(__('Log start'));
+
         $this->success('', [
             'table'  => $info['table'],
-            'fields' => $info['fields']
+            'fields' => $info['fields'],
         ]);
     }
 
+    /**
+     * 删除CRUD记录和生成的文件
+     * @throws Throwable
+     */
     public function delete()
     {
         $id   = $this->request->post('id');
@@ -304,11 +347,11 @@ class Crud extends Backend
         ];
         try {
             foreach ($files as &$file) {
-                $file = path_transform(root_path() . $file);
+                $file = Filesystem::fsFit(root_path() . $file);
                 if (file_exists($file)) {
                     unlink($file);
                 }
-                del_empty_dir(dirname($file));
+                Filesystem::delEmptyDir(dirname($file));
             }
 
             // 删除菜单
@@ -318,12 +361,16 @@ class Crud extends Backend
                 'id'     => $id,
                 'status' => 'delete',
             ]);
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->error($e->getMessage());
         }
         $this->success(__('Deleted successfully'));
     }
 
+    /**
+     * 获取文件路径数据
+     * @throws Throwable
+     */
     public function getFileData()
     {
         $table       = $this->request->get('table');
@@ -338,23 +385,23 @@ class Crud extends Backend
             $validateFile   = Helper::parseNameData('admin', $table, 'validate');
             $controllerFile = Helper::parseNameData('admin', $table, 'controller');
             $webViewsDir    = Helper::parseWebDirNameData($table, 'views');
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->error($e->getMessage());
         }
 
         // 模型和控制器文件和文件列表
-        $adminModelFiles      = get_dir_files(root_path() . 'app' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR);
-        $commonModelFiles     = get_dir_files(root_path() . 'app' . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR);
+        $adminModelFiles      = Filesystem::getDirFiles(root_path() . 'app' . DIRECTORY_SEPARATOR . 'admin' . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR);
+        $commonModelFiles     = Filesystem::getDirFiles(root_path() . 'app' . DIRECTORY_SEPARATOR . 'common' . DIRECTORY_SEPARATOR . 'model' . DIRECTORY_SEPARATOR);
         $adminControllerFiles = get_controller_list();
 
         $modelFileList   = [];
         $controllerFiles = [];
         foreach ($adminModelFiles as $item) {
-            $item                 = path_transform('app/admin/model/' . $item);
+            $item                 = Filesystem::fsFit('app/admin/model/' . $item);
             $modelFileList[$item] = $item;
         }
         foreach ($commonModelFiles as $item) {
-            $item                 = path_transform('app/common/model/' . $item);
+            $item                 = Filesystem::fsFit('app/common/model/' . $item);
             $modelFileList[$item] = $item;
         }
 
@@ -372,7 +419,7 @@ class Crud extends Backend
             if (in_array($item, $outExcludeController)) {
                 continue;
             }
-            $item                   = path_transform('app/admin/controller/' . $item);
+            $item                   = Filesystem::fsFit('app/admin/controller/' . $item);
             $controllerFiles[$item] = $item;
         }
 
@@ -386,28 +433,60 @@ class Crud extends Backend
         ]);
     }
 
+    /**
+     * 检查是否已有CRUD记录
+     * @throws Throwable
+     */
+    public function checkCrudLog()
+    {
+        $table   = $this->request->get('table');
+        $crudLog = Db::name('crud_log')
+            ->where('table_name', $table)
+            ->order('create_time desc')
+            ->find();
+        $this->success('', [
+            'id' => ($crudLog && $crudLog['status'] == 'success') ? $crudLog['id'] : 0,
+        ]);
+    }
+
+    /**
+     * 解析字段数据
+     * @throws Throwable
+     */
     public function parseFieldData()
     {
+        AdminLog::setTitle(__('Parse field data'));
         $type  = $this->request->post('type');
-        $sql   = $this->request->post('sql');
         $table = $this->request->post('table');
+        $table = TableManager::tableName($table);
         if ($type == 'db') {
             $sql       = 'SELECT * FROM `information_schema`.`tables` '
                 . 'WHERE TABLE_SCHEMA = ? AND table_name = ?';
-            $tableInfo = Db::query($sql, [config('database.connections.mysql.database'), Helper::getTableName($table)]);
+            $tableInfo = Db::query($sql, [config('database.connections.mysql.database'), $table]);
             if (!$tableInfo) {
                 $this->error(__('Record not found'));
             }
+
+            // 数据表是否有数据
+            $adapter = TableManager::adapter(false);
+            if ($adapter->hasTable($table)) {
+                $empty = Db::table($table)->limit(1)->select()->isEmpty();
+            } else {
+                $empty = true;
+            }
+
             $this->success('', [
                 'columns' => Helper::parseTableColumns($table),
                 'comment' => $tableInfo[0]['TABLE_COMMENT'] ?? '',
+                'empty'   => $empty,
             ]);
-        } elseif ($type == 'sql') {
-            // TODO
         }
-
     }
 
+    /**
+     * 生成前检查
+     * @throws Throwable
+     */
     public function generateCheck()
     {
         $table          = $this->request->post('table');
@@ -417,16 +496,18 @@ class Crud extends Backend
             $this->error(__('Parameter error'));
         }
 
+        AdminLog::setTitle(__('Generate check'));
+
         try {
             if (!$controllerFile) {
                 $controllerFile = Helper::parseNameData('admin', $table, 'controller')['rootFileName'];
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->error($e->getMessage());
         }
 
         $tableList       = get_table_list();
-        $tableExist      = array_key_exists(Helper::getTableName($table), $tableList);
+        $tableExist      = array_key_exists(TableManager::tableName($table), $tableList);
         $controllerExist = file_exists(root_path() . $controllerFile);
 
         if ($controllerExist || $tableExist) {
@@ -472,7 +553,7 @@ class Crud extends Backend
     /**
      * 关联表数据解析
      * @param $field
-     * @throws Exception
+     * @throws Throwable
      */
     private function parseJoinData($field)
     {
@@ -482,8 +563,8 @@ class Crud extends Backend
         if ($field['form']['relation-fields'] && $field['form']['remote-table']) {
             $columns        = Helper::parseTableColumns($field['form']['remote-table'], true);
             $relationFields = explode(',', $field['form']['relation-fields']);
-            $tableName      = Helper::getTableName($field['form']['remote-table'], false);
-            $relationMethod = parse_name($tableName, 1, false);
+            $tableName      = TableManager::tableName($field['form']['remote-table'], false);
+            $relationName   = parse_name(rtrim(rtrim($field['name'], '_ids'), '_id'), 1, false);
 
             // 建立关联模型代码文件
             if (!$field['form']['remote-model'] || !file_exists(root_path() . $field['form']['remote-model'])) {
@@ -520,26 +601,26 @@ class Crud extends Backend
 
             if ($field['designType'] == 'remoteSelect') {
                 // 关联预载入方法
-                $this->controllerData['attr']['withJoinTable'][$tableName] = $relationMethod;
+                $this->controllerData['attr']['withJoinTable'][$relationName] = $relationName;
 
                 // 模型方法代码
-                $relationData                                      = [
-                    'relationMethod'     => $relationMethod,
+                $relationData                                         = [
+                    'relationMethod'     => $relationName,
                     'relationMode'       => 'belongsTo',
                     'relationPrimaryKey' => $field['form']['remote-pk'] ?? 'id',
                     'relationForeignKey' => $field['name'],
                     'relationClassName'  => str_replace(['.php', '/'], ['', '\\'], '\\' . $field['form']['remote-model']) . "::class",
                 ];
-                $this->modelData['relationMethodList'][$tableName] = Helper::assembleStub('mixins/model/belongsTo', $relationData);
+                $this->modelData['relationMethodList'][$relationName] = Helper::assembleStub('mixins/model/belongsTo', $relationData);
 
                 // 查询时显示的字段
                 if ($relationFields) {
                     $this->controllerData['relationVisibleFieldList'][$relationData['relationMethod']] = $relationFields;
                 }
             } elseif ($field['designType'] == 'remoteSelects') {
-                $this->modelData['append'][]  = parse_name($tableName, 1, false);
+                $this->modelData['append'][]  = $relationName;
                 $this->modelData['methods'][] = Helper::assembleStub('mixins/model/getters/remoteSelectLabels', [
-                    'field'          => parse_name($tableName, 1),
+                    'field'          => parse_name($relationName, 1),
                     'className'      => str_replace(['.php', '/'], ['', '\\'], '\\' . $field['form']['remote-model']),
                     'primaryKey'     => $field['form']['remote-pk'] ?? 'id',
                     'foreignKey'     => $field['name'],
@@ -548,12 +629,11 @@ class Crud extends Backend
             }
 
             foreach ($relationFields as $relationField) {
-                $relationFieldPrefix     = $relationMethod . '.';
-                $relationFieldLangPrefix = strtolower($tableName) . '__';
-                if (array_key_exists($relationField, $columns)) {
-                    Helper::getDictData($dictEn, $columns[$relationField], 'en', $relationFieldLangPrefix);
-                    Helper::getDictData($dictZhCn, $columns[$relationField], 'zh-cn', $relationFieldLangPrefix);
-                }
+                if (!array_key_exists($relationField, $columns)) continue;
+                $relationFieldPrefix     = $relationName . '.';
+                $relationFieldLangPrefix = strtolower($relationName) . '__';
+                Helper::getDictData($dictEn, $columns[$relationField], 'en', $relationFieldLangPrefix);
+                Helper::getDictData($dictZhCn, $columns[$relationField], 'zh-cn', $relationFieldLangPrefix);
 
                 // 不允许双击编辑的字段
                 if ($columns[$relationField]['designType'] == 'switch') {
@@ -564,10 +644,30 @@ class Crud extends Backend
                 $columnDict = $this->getColumnDict($columns[$relationField], $relationFieldLangPrefix);
 
                 // 表格列
-                $columns[$relationField]['table']['render']   = 'tags';
-                $columns[$relationField]['table']['operator'] = 'LIKE';
-                $columns[$relationField]['designType']        = $field['designType'];
-                $this->indexVueData['tableColumn'][]          = $this->getTableColumn($columns[$relationField], $columnDict, $relationFieldPrefix, $relationFieldLangPrefix);
+                $columns[$relationField]['designType']      = $field['designType'];
+                $columns[$relationField]['table']['render'] = 'tags';
+                if ($field['designType'] == 'remoteSelects') {
+                    $columns[$relationField]['table']['operator'] = 'false';
+                    $this->indexVueData['tableColumn'][]          = $this->getTableColumn($columns[$relationField], $columnDict, $relationFieldPrefix, $relationFieldLangPrefix);
+
+                    // 额外生成一个公共搜索，渲染为远程下拉的列
+                    unset($columns[$relationField]['table']['render']);
+                    $columns[$relationField]['table']['label']           = "t('" . $this->webTranslate . $relationFieldLangPrefix . $columns[$relationField]['name'] . "')";
+                    $columns[$relationField]['name']                     = $field['name'];
+                    $columns[$relationField]['table']['show']            = 'false';
+                    $columns[$relationField]['table']['operator']        = 'FIND_IN_SET';
+                    $columns[$relationField]['table']['comSearchRender'] = 'remoteSelect';
+                    $columns[$relationField]['table']['remote']          = [
+                        'pk'        => TableManager::tableName($field['form']['remote-table']) . '.' . ($field['form']['remote-pk'] ?? 'id'),
+                        'field'     => $field['form']['remote-field'] ?? 'name',
+                        'remoteUrl' => $this->getRemoteSelectUrl($field),
+                        'multiple'  => 'true',
+                    ];
+                    $this->indexVueData['tableColumn'][]                 = $this->getTableColumn($columns[$relationField], $columnDict, '', $relationFieldLangPrefix);
+                } else {
+                    $columns[$relationField]['table']['operator'] = 'LIKE';
+                    $this->indexVueData['tableColumn'][]          = $this->getTableColumn($columns[$relationField], $columnDict, $relationFieldPrefix, $relationFieldLangPrefix);
+                }
             }
         }
         $this->langTsData['en']    = array_merge($this->langTsData['en'], $dictEn);
@@ -673,7 +773,7 @@ class Crud extends Backend
             $formField['@keyup.enter.stop']   = '';
             $formField['@keyup.ctrl.enter']   = 'baTable.onSubmit(formRef)';
         } elseif ($field['designType'] == 'remoteSelect' || $field['designType'] == 'remoteSelects') {
-            $formField[':input-attr']['pk']         = Helper::getTableName($field['form']['remote-table'], false) . '.' . ($field['form']['remote-pk'] ?? 'id');
+            $formField[':input-attr']['pk']         = TableManager::tableName($field['form']['remote-table']) . '.' . ($field['form']['remote-pk'] ?? 'id');
             $formField[':input-attr']['field']      = $field['form']['remote-field'] ?? 'name';
             $formField[':input-attr']['remote-url'] = $this->getRemoteSelectUrl($field);
         } elseif ($field['designType'] == 'number') {

@@ -5,7 +5,7 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('auth.adminLog.title') })"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('auth.adminLog.title') })"
         />
         <!-- 表格 -->
         <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
@@ -19,7 +19,6 @@
 import { concat, cloneDeep } from 'lodash-es'
 import { provide } from 'vue'
 import baTableClass from '/@/utils/baTable'
-import { authAdminLog } from '/@/api/controllerUrls'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
 import { defaultOptButtons } from '/@/components/table'
@@ -28,13 +27,17 @@ import { useI18n } from 'vue-i18n'
 import Info from './info.vue'
 import { buildJsonToElTreeData } from '/@/utils/common'
 
+defineOptions({
+    name: 'auth/adminLog',
+})
+
 const { t } = useI18n()
 
 let optButtons: OptButton[] = [
     {
         render: 'tipButton',
         name: 'info',
-        title: 'info',
+        title: 'Info',
         text: '',
         type: 'primary',
         icon: 'fa fa-search-plus',
@@ -49,11 +52,11 @@ let optButtons: OptButton[] = [
 optButtons = concat(optButtons, defaultOptButtons(['delete']))
 
 const baTable = new baTableClass(
-    new baTableApi(authAdminLog),
+    new baTableApi('/admin/auth.AdminLog/'),
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
-            { label: t('id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
+            { label: t('Id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
             {
                 label: t('auth.adminLog.admin_id'),
                 prop: 'admin_id',
@@ -78,7 +81,7 @@ const baTable = new baTableClass(
                 align: 'center',
                 operator: 'LIKE',
                 operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
+                showOverflowTooltip: true,
             },
             {
                 label: t('auth.adminLog.url'),
@@ -86,7 +89,7 @@ const baTable = new baTableClass(
                 align: 'center',
                 operator: 'LIKE',
                 operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
+                showOverflowTooltip: true,
                 render: 'url',
             },
             { label: t('auth.adminLog.ip'), prop: 'ip', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), render: 'tag' },
@@ -96,11 +99,11 @@ const baTable = new baTableClass(
                 align: 'center',
                 operator: 'LIKE',
                 operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
+                showOverflowTooltip: true,
             },
             {
-                label: t('auth.adminLog.createtime'),
-                prop: 'createtime',
+                label: t('Create time'),
+                prop: 'create_time',
                 align: 'center',
                 render: 'datetime',
                 sortable: 'custom',
@@ -108,7 +111,7 @@ const baTable = new baTableClass(
                 width: 160,
             },
             {
-                label: t('operate'),
+                label: t('Operate'),
                 align: 'center',
                 width: '100',
                 render: 'buttons',
@@ -139,15 +142,8 @@ const infoButtonClick = (row: TableRow) => {
     let rowClone = cloneDeep(row)
     rowClone.data = rowClone.data ? [{ label: '点击展开', children: buildJsonToElTreeData(JSON.parse(rowClone.data)) }] : []
     baTable.form.extend!['info'] = rowClone
-    baTable.form.operate = 'info'
+    baTable.form.operate = 'Info'
 }
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'auth/adminLog',
-})
 </script>
 
 <style scoped lang="scss"></style>

@@ -6,7 +6,7 @@
         <TableHeader
             :buttons="['refresh', 'add', 'comSearch', 'quickSearch', 'columnDisplay']"
             :quick-search-placeholder="
-                t('quick Search Placeholder', { fields: t('user.moneyLog.User name') + '/' + t('user.moneyLog.User nickname') })
+                t('Quick search placeholder', { fields: t('user.moneyLog.User name') + '/' + t('user.moneyLog.User nickname') })
             "
         >
             <el-button v-if="!isEmpty(state.userInfo)" v-blur class="table-header-operate">
@@ -29,7 +29,7 @@
 import { isEmpty, parseInt } from 'lodash-es'
 import { ref, provide, reactive, watch } from 'vue'
 import baTableClass from '/@/utils/baTable'
-import { userMoneyLog } from '/@/api/controllerUrls'
+import { url } from '/@/api/backend/user/moneyLog'
 import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
@@ -37,6 +37,10 @@ import { baTableApi } from '/@/api/common'
 import { useRoute } from 'vue-router'
 import { add } from '/@/api/backend/user/moneyLog'
 import { useI18n } from 'vue-i18n'
+
+defineOptions({
+    name: 'user/moneyLog',
+})
 
 const { t } = useI18n()
 const tableRef = ref()
@@ -49,11 +53,11 @@ const state: {
 })
 
 const baTable = new baTableClass(
-    new baTableApi(userMoneyLog),
+    new baTableApi(url),
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
-            { label: t('id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
+            { label: t('Id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
             { label: t('user.moneyLog.User ID'), prop: 'user_id', align: 'center', operator: '=', width: 70 },
             { label: t('user.moneyLog.User name'), prop: 'user.username', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query') },
             {
@@ -72,9 +76,9 @@ const baTable = new baTableClass(
                 align: 'center',
                 operator: 'LIKE',
                 operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
+                showOverflowTooltip: true,
             },
-            { label: t('createtime'), prop: 'createtime', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
+            { label: t('Create time'), prop: 'create_time', align: 'center', render: 'datetime', sortable: 'custom', operator: 'RANGE', width: 160 },
         ],
         dblClickNotEditColumn: ['all'],
     },
@@ -116,13 +120,6 @@ watch(
         getUserInfo(newVal)
     }
 )
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'user/moneyLog',
-})
 </script>
 
 <style scoped lang="scss"></style>

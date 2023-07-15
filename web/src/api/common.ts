@@ -62,7 +62,7 @@ export function fileUpload(fd: FormData, params: anyObj = {}, forceLocal = false
     }
 
     if (!forceLocal && uploadExpandState() == 'enable') {
-        return uploadExpand(fd, params)
+        return uploadExpand(fd, params, config)
     }
 
     return createAxios({
@@ -72,7 +72,7 @@ export function fileUpload(fd: FormData, params: anyObj = {}, forceLocal = false
         params: params,
         timeout: 0,
         ...config,
-    }) as ApiPromise
+    })
 }
 
 /**
@@ -129,7 +129,7 @@ export function sendSms(mobile: string, templateCode: string, extend: anyObj = {
         {
             showSuccessMessage: true,
         }
-    ) as ApiPromise
+    )
 }
 
 /**
@@ -149,10 +149,10 @@ export function sendEms(email: string, event: string, extend: anyObj = {}) {
         {
             showSuccessMessage: true,
         }
-    ) as ApiPromise
+    )
 }
 
-/*
+/**
  * 缓存清理接口
  */
 export function postClearCache(type: string) {
@@ -183,7 +183,7 @@ export function buildTerminalUrl(commandKey: string, uuid: string, extend: strin
 /**
  * 请求修改终端配置
  */
-export function postChangeTerminalConfig(data: { manager?: string; port?: string }): ApiPromise {
+export function postChangeTerminalConfig(data: { manager?: string; port?: string }) {
     return createAxios(
         {
             url: changeTerminalConfigUrl,
@@ -193,7 +193,7 @@ export function postChangeTerminalConfig(data: { manager?: string; port?: string
         {
             loading: true,
         }
-    ) as ApiPromise
+    )
 }
 
 /**
@@ -205,7 +205,7 @@ export function getSelectData(remoteUrl: string, q: string, params: {}) {
         method: 'get',
         params: Object.assign(params, {
             select: true,
-            quick_search: q,
+            quickSearch: q,
         }),
     })
 }
@@ -267,16 +267,16 @@ export function getTableFieldList(table: string, clean = true) {
     })
 }
 
-export function refreshToken(): ApiPromise {
+export function refreshToken() {
     const adminInfo = useAdminInfo()
     const userInfo = useUserInfo()
     return createAxios({
         url: refreshTokenUrl,
         method: 'POST',
         data: {
-            refresh_token: isAdminApp() ? adminInfo.getToken('refresh') : userInfo.getToken('refresh'),
+            refreshToken: isAdminApp() ? adminInfo.getToken('refresh') : userInfo.getToken('refresh'),
         },
-    }) as ApiPromise
+    })
 }
 
 /**
@@ -297,12 +297,12 @@ export class baTableApi {
         ])
     }
 
-    index(filter: anyObj = {}): ApiPromise<TableDefaultData> {
-        return createAxios({
+    index(filter: anyObj = {}) {
+        return createAxios<TableDefaultData>({
             url: this.actionUrl.get('index'),
             method: 'get',
             params: filter,
-        }) as ApiPromise
+        })
     }
 
     edit(params: anyObj) {

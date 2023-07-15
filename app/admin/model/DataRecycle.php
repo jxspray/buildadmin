@@ -6,13 +6,10 @@ use think\Model;
 
 /**
  * DataRecycle 模型
- * @controllerUrl 'securityDataRecycle'
  */
 class DataRecycle extends Model
 {
     protected $name = 'security_data_recycle';
 
-    protected $autoWriteTimestamp = 'int';
-    protected $createTime         = 'createtime';
-    protected $updateTime         = 'updatetime';
+    protected $autoWriteTimestamp = true;
 }

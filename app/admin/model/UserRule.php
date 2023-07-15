@@ -6,14 +6,10 @@ use think\model;
 
 /**
  * UserRule 模型
- * @controllerUrl 'userRule'
  */
 class UserRule extends model
 {
-    protected $autoWriteTimestamp = 'int';
-
-    protected $createTime = 'createtime';
-    protected $updateTime = 'updatetime';
+    protected $autoWriteTimestamp = true;
 
     protected static function onAfterInsert($model)
     {

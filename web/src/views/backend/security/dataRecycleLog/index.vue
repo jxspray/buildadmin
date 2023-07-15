@@ -5,7 +5,7 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('security.dataRecycleLog.Rule name') })"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('security.dataRecycleLog.Rule name') })"
         >
             <el-popconfirm
                 @confirm="onRestoreAction"
@@ -45,8 +45,7 @@
 <script setup lang="ts">
 import { provide, onMounted } from 'vue'
 import baTableClass from '/@/utils/baTable'
-import { securityDataRecycleLog } from '/@/api/controllerUrls'
-import { info, restore } from '/@/api/backend/security/dataRecycleLog'
+import { info, restore, url } from '/@/api/backend/security/dataRecycleLog'
 import InfoDialog from './info.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
@@ -55,12 +54,16 @@ import { baTableApi } from '/@/api/common'
 import { buildJsonToElTreeData } from '/@/utils/common'
 import { useI18n } from 'vue-i18n'
 
+defineOptions({
+    name: 'security/dataRecycleLog',
+})
+
 const { t } = useI18n()
 let optButtons: OptButton[] = [
     {
         render: 'tipButton',
         name: 'info',
-        title: 'info',
+        title: 'Info',
         text: '',
         type: 'primary',
         icon: 'fa fa-search-plus',
@@ -92,11 +95,11 @@ let optButtons: OptButton[] = [
 ]
 optButtons = optButtons.concat(defaultOptButtons(['delete']))
 const baTable = new baTableClass(
-    new baTableApi(securityDataRecycleLog),
+    new baTableApi(url),
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
-            { label: t('id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
+            { label: t('Id'), prop: 'id', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query'), width: 70 },
             {
                 label: t('security.dataRecycleLog.Operation administrator'),
                 prop: 'admin.nickname',
@@ -131,7 +134,7 @@ const baTable = new baTableClass(
                 align: 'center',
                 operator: 'LIKE',
                 operatorPlaceholder: t('security.dataRecycleLog.Arbitrary fragment fuzzy query'),
-                'show-overflow-tooltip': true,
+                showOverflowTooltip: true,
             },
             { label: 'IP', prop: 'ip', align: 'center', operator: 'LIKE', operatorPlaceholder: t('Fuzzy query') },
             {
@@ -141,11 +144,11 @@ const baTable = new baTableClass(
                 align: 'center',
                 operator: 'LIKE',
                 operatorPlaceholder: t('Fuzzy query'),
-                'show-overflow-tooltip': true,
+                showOverflowTooltip: true,
             },
             {
                 label: t('security.dataRecycleLog.Delete time'),
-                prop: 'createtime',
+                prop: 'create_time',
                 align: 'center',
                 render: 'datetime',
                 sortable: 'custom',
@@ -153,7 +156,7 @@ const baTable = new baTableClass(
                 width: 160,
             },
             {
-                label: t('operate'),
+                label: t('Operate'),
                 align: 'center',
                 width: 120,
                 render: 'buttons',
@@ -173,7 +176,7 @@ const baTable = new baTableClass(
 )
 
 const onRestore = (ids: string[]) => {
-    restore(ids).then((res) => {
+    restore(ids).then(() => {
         baTable.onTableHeaderAction('refresh', {})
     })
 }
@@ -184,7 +187,7 @@ const onRestoreAction = () => {
 
 const infoButtonClick = (id: string) => {
     baTable.form.extend!['info'] = {}
-    baTable.form.operate = 'info'
+    baTable.form.operate = 'Info'
     baTable.form.loading = true
     info(id).then((res) => {
         res.data.row.data = res.data.row.data
@@ -200,13 +203,6 @@ provide('baTable', baTable)
 onMounted(() => {
     baTable.mount()
     baTable.getIndex()
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'security/dataRecycleLog',
 })
 </script>
 

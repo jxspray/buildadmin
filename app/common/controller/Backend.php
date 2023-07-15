@@ -2,81 +2,97 @@
 
 namespace app\common\controller;
 
+use Throwable;
+use think\Model;
+use think\facade\Db;
+use think\facade\Event;
+use think\facade\Cookie;
 use app\admin\library\Auth;
 use think\db\exception\PDOException;
 use think\exception\HttpResponseException;
-use think\facade\Cookie;
-use think\facade\Db;
-use think\facade\Event;
 
 class Backend extends Api
 {
     /**
-     * 无需登录的方法
-     * 访问本控制器的此方法，无需管理员登录
+     * 无需登录的方法，访问本控制器的此方法，无需管理员登录
+     * @var array
      */
-    protected $noNeedLogin = [];
+    protected array $noNeedLogin = [];
 
     /**
      * 无需鉴权的方法
+     * @var array
      */
-    protected $noNeedPermission = [];
+    protected array $noNeedPermission = [];
 
     /**
      * 新增/编辑时，对前端发送的字段进行排除（忽略不入库）
+     * @var array|string
      */
-    protected $preExcludeFields = [];
+    protected array|string $preExcludeFields = [];
 
     /**
      * 权限类实例
      * @var Auth
      */
-    protected $auth = null;
+    protected Auth $auth;
 
-    protected $model = null;
+    /**
+     * 模型类实例
+     * @var object
+     * @phpstan-var Model
+     */
+    protected object $model;
 
     /**
      * 权重字段
+     * @var string
      */
-    protected $weighField = 'weigh';
+    protected string $weighField = 'weigh';
 
     /**
      * 默认排序
+     * @var string|array
      */
-    protected $defaultSortField = 'id,desc';
+    protected string|array $defaultSortField = 'id,desc';
 
     /**
      * 表格拖拽排序时,两个权重相等则自动重新整理
      * config/buildadmin.php文件中的auto_sort_eq_weight为默认值
      * null=取默认值,false=关,true=开
+     * @var null|bool
      */
-    protected $autoSortEqWeight = null;
+    protected null|bool $autoSortEqWeight = null;
 
     /**
      * 快速搜索字段
+     * @var string|array
      */
-    protected $quickSearchField = 'id';
+    protected string|array $quickSearchField = 'id';
 
     /**
      * 是否开启模型验证
+     * @var bool
      */
-    protected $modelValidate = true;
+    protected bool $modelValidate = true;
 
     /**
      * 是否开启模型场景验证
+     * @var bool
      */
-    protected $modelSceneValidate = false;
+    protected bool $modelSceneValidate = false;
 
     /**
-     * 关联查询方法名
-     * 方法应定义在模型中
+     * 关联查询方法名，方法应定义在模型中
+     * @var array
      */
-    protected $withJoinTable = [];
+    protected array $withJoinTable = [];
 
     /**
      * 关联查询JOIN方式
+     * @var string
      */
-    protected $withJoinType = 'LEFT';
+    protected string $withJoinType = 'LEFT';
 
     /**
      * 开启数据限制
@@ -87,23 +103,27 @@ class Backend extends Api
      * parent=上级分组中的管理员可查
      * 指定分组中的管理员可查，比如 $dataLimit = 2;
      * 启用请确保数据表内存在 admin_id 字段，可以查询/编辑数据的管理员为admin_id对应的管理员+数据限制所表示的管理员们
+     * @var bool|string|int
      */
-    protected $dataLimit = false;
+    protected bool|string|int $dataLimit = false;
 
     /**
      * 数据限制字段
+     * @var string
      */
-    protected $dataLimitField = 'admin_id';
+    protected string $dataLimitField = 'admin_id';
 
     /**
      * 数据限制开启时自动填充字段值为当前管理员id
+     * @var bool
      */
-    protected $dataLimitFieldAutoFill = true;
+    protected bool $dataLimitFieldAutoFill = true;
 
     /**
      * 查看请求返回的主表字段控制
+     * @var string|array
      */
-    protected $indexField = ['*'];
+    protected string|array $indexField = ['*'];
 
     /**
      * 引入traits
@@ -111,7 +131,11 @@ class Backend extends Api
      */
     use \app\admin\library\traits\Backend;
 
-    public function initialize()
+    /**
+     * 初始化
+     * @throws Throwable
+     */
+    public function initialize(): void
     {
         parent::initialize();
 
@@ -140,7 +164,7 @@ class Backend extends Api
         } elseif ($token) {
             try {
                 $this->auth->init($token);
-            } catch (HttpResponseException $e) {
+            } catch (HttpResponseException) {
             }
         }
 
@@ -148,31 +172,35 @@ class Backend extends Api
         Event::trigger('backendInit', $this->auth);
     }
 
+    /**
+     * 构建查询参数
+     * @throws Throwable
+     */
     public function queryBuilder(): array
     {
         if (empty($this->model)) {
             return [];
         }
         $pk          = $this->model->getPk();
-        $quickSearch = $this->request->get("quick_search/s", '');
+        $quickSearch = $this->request->get("quickSearch/s", '');
         $limit       = $this->request->get("limit/d", 10);
         $order       = $this->request->get("order/s", '');
         $search      = $this->request->get("search/a", []);
         $initKey     = $this->request->get("initKey/s", $pk);
-        $initValue   = $this->request->get("initValue/a", '');
+        $initValue   = $this->request->get("initValue", '');
 
         $where              = [];
         $modelTable         = strtolower($this->model->getTable());
         $alias[$modelTable] = parse_name(basename(str_replace('\\', '/', get_class($this->model))));
-        $tableAlias         = $alias[$modelTable] . '.';
+        $mainTableAlias     = $alias[$modelTable] . '.';
 
         // 快速搜索
         if ($quickSearch) {
             $quickSearchArr = is_array($this->quickSearchField) ? $this->quickSearchField : explode(',', $this->quickSearchField);
             foreach ($quickSearchArr as $k => $v) {
-                $quickSearchArr[$k] = stripos($v, ".") === false ? $tableAlias . $v : $v;
+                $quickSearchArr[$k] = str_contains($v, '.') ? $v : $mainTableAlias . $v;
             }
-            $where[] = [implode("|", $quickSearchArr), "LIKE", "%{$quickSearch}%"];
+            $where[] = [implode("|", $quickSearchArr), "LIKE", '%' . str_replace('%', '\%', $quickSearch) . '%'];
         }
         if ($initValue) {
             $where[] = [$initKey, 'in', $initValue];
@@ -182,7 +210,7 @@ class Backend extends Api
         // 排序
         if ($order) {
             $order = explode(',', $order);
-            if (isset($order[0]) && isset($order[1]) && ($order[1] == 'asc' || $order[1] == 'desc')) {
+            if (!empty($order[0]) && !empty($order[1]) && ($order[1] == 'asc' || $order[1] == 'desc')) {
                 $order = [$order[0] => $order[1]];
             }
         } else {
@@ -190,7 +218,7 @@ class Backend extends Api
                 $order = $this->defaultSortField;
             } else {
                 $order = explode(',', $this->defaultSortField);
-                if (isset($order[0]) && isset($order[1])) {
+                if (!empty($order[0]) && !empty($order[1])) {
                     $order = [$order[0] => $order[1]];
                 } else {
                     $order = [$pk => 'desc'];
@@ -204,13 +232,7 @@ class Backend extends Api
                 continue;
             }
 
-            if (stripos($field['field'], '.') !== false) {
-                $fieldArr            = explode('.', $field['field']);
-                $alias[$fieldArr[0]] = $fieldArr[0];
-                $fieldName           = $field['field'];
-            } else {
-                $fieldName = $tableAlias . $field['field'];
-            }
+            $fieldName = str_contains($field['field'], '.') ? $field['field'] : $mainTableAlias . $field['field'];
 
             // 日期时间
             if (isset($field['render']) && $field['render'] == 'datetime') {
@@ -229,9 +251,6 @@ class Backend extends Api
 
             // 范围查询
             if ($field['operator'] == 'RANGE' || $field['operator'] == 'NOT RANGE') {
-                if (stripos($field['val'], ',') === false) {
-                    continue;
-                }
                 $arr = explode(',', $field['val']);
                 // 重新确定操作符
                 if (!isset($arr[0]) || $arr[0] === '') {
@@ -254,7 +273,7 @@ class Backend extends Api
                     break;
                 case 'LIKE':
                 case 'NOT LIKE':
-                    $where[] = [$fieldName, $field['operator'], "%{$field['val']}%"];
+                    $where[] = [$fieldName, $field['operator'], '%' . str_replace('%', '\%', $field['val']) . '%'];
                     break;
                 case '>':
                 case '>=':
@@ -285,12 +304,16 @@ class Backend extends Api
         // 数据权限
         $dataLimitAdminIds = $this->getDataLimitAdminIds();
         if ($dataLimitAdminIds) {
-            $where[] = [$tableAlias . $this->dataLimitField, 'in', $dataLimitAdminIds];
+            $where[] = [$mainTableAlias . $this->dataLimitField, 'in', $dataLimitAdminIds];
         }
 
         return [$where, $alias, $limit, $order];
     }
 
+    /**
+     * 数据权限控制-获取有权限访问的管理员Ids
+     * @throws Throwable
+     */
     protected function getDataLimitAdminIds(): array
     {
         if (!$this->dataLimit || $this->auth->isSuperAdmin()) {

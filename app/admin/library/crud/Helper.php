@@ -2,31 +2,45 @@
 
 namespace app\admin\library\crud;
 
+use Throwable;
+use ba\Filesystem;
 use think\Exception;
+use ba\TableManager;
 use think\facade\Db;
 use app\common\library\Menu;
-use app\admin\model\MenuRule;
+use app\admin\model\AdminRule;
 use app\admin\model\CrudLog;
+use ba\Exception as BaException;
+use Phinx\Db\Adapter\MysqlAdapter;
+use Phinx\Db\Adapter\AdapterInterface;
 
 class Helper
 {
     /**
      * 内部保留词
+     * @var array
      */
-    protected static $reservedKeywords = [
-        'abstract', 'and', 'array', 'as', 'break', 'callable', 'case', 'catch', 'class', 'clone', 'const', 'continue', 'declare', 'default', 'die', 'do', 'echo', 'else', 'elseif', 'empty', 'enddeclare', 'endfor', 'endforeach', 'endif', 'endswitch', 'endwhile', 'eval', 'exit', 'extends', 'final', 'for', 'foreach', 'function', 'global', 'goto', 'if', 'implements', 'include', 'include_once', 'instanceof', 'insteadof', 'interface', 'isset', 'list', 'namespace', 'new', 'or', 'print', 'private', 'protected', 'public', 'require', 'require_once', 'return', 'static', 'switch', 'throw', 'trait', 'try', 'unset', 'use', 'var', 'while', 'xor', 'yield'
+    protected static array $reservedKeywords = [
+        'abstract', 'and', 'array', 'as', 'break', 'callable', 'case', 'catch', 'class', 'clone',
+        'const', 'continue', 'declare', 'default', 'die', 'do', 'echo', 'else', 'elseif', 'empty',
+        'enddeclare', 'endfor', 'endforeach', 'endif', 'endswitch', 'endwhile', 'eval', 'exit', 'extends',
+        'final', 'for', 'foreach', 'function', 'global', 'goto', 'if', 'implements', 'include', 'include_once',
+        'instanceof', 'insteadof', 'interface', 'isset', 'list', 'namespace', 'new', 'or', 'print', 'private',
+        'protected', 'public', 'require', 'require_once', 'return', 'static', 'switch', 'throw', 'trait', 'try',
+        'unset', 'use', 'var', 'while', 'xor', 'yield', 'match', 'readonly', 'fn',
     ];
 
     /**
      * 预设控制器和模型文件位置
+     * @var array
      */
-    protected static $parseNamePresets = [
+    protected static array $parseNamePresets = [
         'controller' => [
             'user'        => ['user', 'user'],
             'admin'       => ['auth', 'admin'],
             'admin_group' => ['auth', 'group'],
             'attachment'  => ['routine', 'attachment'],
-            'menu_rule'   => ['auth', 'menu'],
+            'admin_rule'  => ['auth', 'rule'],
         ],
         'model'      => [],
         'validate'   => [],
@@ -34,9 +48,9 @@ class Helper
 
     /**
      * 子级菜单数组(权限节点)
-     * @var string
+     * @var array
      */
-    protected static $menuChildren = [
+    protected static array $menuChildren = [
         ['type' => 'button', 'title' => '查看', 'name' => '/index', 'status' => '1'],
         ['type' => 'button', 'title' => '添加', 'name' => '/add', 'status' => '1'],
         ['type' => 'button', 'title' => '编辑', 'name' => '/edit', 'status' => '1'],
@@ -46,8 +60,9 @@ class Helper
 
     /**
      * 输入框类型的识别规则
+     * @var array
      */
-    protected static $inputTypeRule = [
+    protected static array $inputTypeRule = [
         // 开关组件
         [
             'type'   => ['tinyint', 'int', 'enum'],
@@ -187,15 +202,16 @@ class Helper
 
     /**
      * 预设WEB端文件位置
+     * @var array
      */
-    protected static $parseWebDirPresets = [
+    protected static array $parseWebDirPresets = [
         'lang'  => [],
         'views' => [
             'user'        => ['user', 'user'],
             'admin'       => ['auth', 'admin'],
             'admin_group' => ['auth', 'group'],
             'attachment'  => ['routine', 'attachment'],
-            'menu_rule'   => ['auth', 'menu'],
+            'admin_rule'  => ['auth', 'rule'],
         ],
     ];
 
@@ -203,15 +219,35 @@ class Helper
      * 添加时间字段
      * @var string
      */
-    protected static $createTimeField = 'create_time';
+    protected static string $createTimeField = 'create_time';
 
     /**
      * 更新时间字段
      * @var string
      */
-    protected static $updateTimeField = 'update_time';
+    protected static string $updateTimeField = 'update_time';
 
-    public static function getDictData(&$dict, $field, $lang, $translationPrefix = ''): array
+    /**
+     * 属性的类型对照表
+     * @var array
+     */
+    protected static array $attrType = [
+        'controller' => [
+            'preExcludeFields' => 'array|string',
+            'quickSearchField' => 'string|array',
+            'withJoinTable'    => 'array',
+            'defaultSortField' => 'string|array',
+        ],
+    ];
+
+    /**
+     * 获取字段字典数据
+     * @param array  $dict              存储字典数据的变量
+     * @param array  $field             字段数据
+     * @param string $lang              语言
+     * @param string $translationPrefix 翻译前缀
+     */
+    public static function getDictData(array &$dict, array $field, string $lang, string $translationPrefix = ''): array
     {
         if (!$field['comment']) return [];
         $comment = str_replace(['，', '：'], [',', ':'], $field['comment']);
@@ -231,13 +267,19 @@ class Helper
         return $dict;
     }
 
-    public static function recordCrudStatus(array $data)
+    /**
+     * 记录CRUD状态
+     * @param array $data CRUD记录数据
+     * @return int 记录ID
+     */
+    public static function recordCrudStatus(array $data): int
     {
         if (isset($data['id'])) {
-            return CrudLog::where('id', $data['id'])
+            CrudLog::where('id', $data['id'])
                 ->update([
                     'status' => $data['status'],
                 ]);
+            return $data['id'];
         }
         $log = CrudLog::create([
             'table_name' => $data['table']['name'],
@@ -248,59 +290,278 @@ class Helper
         return $log->id;
     }
 
-    public static function createTable($name, $comment, $fields): array
+    /**
+     * 获取 Phinx 的字段类型数据
+     * @param string $type  字段类型
+     * @param array  $field 字段数据
+     * @return array
+     */
+    public static function getPhinxFieldType(string $type, array $field): array
     {
-        $fieldType = [
-            'variableLength'  => ['blob', 'date', 'enum', 'geometry', 'geometrycollection', 'json', 'linestring', 'longblob', 'longtext', 'mediumblob', 'mediumtext', 'multilinestring', 'multipoint', 'multipolygon', 'point', 'polygon', 'set', 'text', 'tinyblob', 'tinytext', 'year'],
-            'fixedLength'     => ['int', 'bigint', 'binary', 'bit', 'char', 'datetime', 'mediumint', 'smallint', 'time', 'timestamp', 'tinyint', 'varbinary', 'varchar'],
-            'decimal'         => ['decimal', 'double', 'float'],
-            'supportUnsigned' => ['int', 'tinyint', 'smallint', 'mediumint', 'integer', 'bigint', 'real', 'double', 'float', 'decimal', 'numeric'],
-        ];
-        $name      = self::getTableName($name);
-        $sql       = "CREATE TABLE IF NOT EXISTS `$name` (" . PHP_EOL;
-        $pk        = '';
-        foreach ($fields as $field) {
-            $fieldConciseType = self::analyseFieldType($field);
-            // 组装dateType
-            if (!isset($field['dataType']) || !$field['dataType']) {
-                if (!$field['type']) {
-                    continue;
-                }
-                if (in_array($field['type'], $fieldType['fixedLength'])) {
-                    $field['dataType'] = "{$field['type']}({$field['length']})";
-                } elseif (in_array($field['type'], $fieldType['decimal'])) {
-                    $field['dataType'] = "{$field['type']}({$field['length']},{$field['precision']})";
-                } elseif (in_array($field['type'], $fieldType['variableLength'])) {
-                    $field['dataType'] = $field['type'];
-                } else {
-                    $field['dataType'] = $field['precision'] ? "{$field['type']}({$field['length']},{$field['precision']})" : "{$field['type']}({$field['length']})";
-                }
-            }
-            $unsigned      = ($field['unsigned'] && in_array($fieldConciseType, $fieldType['supportUnsigned'])) ? ' UNSIGNED' : '';
-            $null          = $field['null'] ? ' NULL' : ' NOT NULL';
-            $autoIncrement = $field['autoIncrement'] ? ' AUTO_INCREMENT' : '';
-            $default       = '';
-            if (strtolower((string)$field['default']) == 'null') {
-                $default = ' DEFAULT NULL';
-            } elseif ($field['default'] == '0') {
-                $default = " DEFAULT '0'";
-            } elseif ($field['default'] == 'empty string') {
-                $default = " DEFAULT ''";
-            } elseif ($field['default']) {
-                $default = " DEFAULT '{$field['default']}'";
-            }
-            $fieldComment = $field['comment'] ? " COMMENT '{$field['comment']}'" : '';
-            $sql          .= "`{$field['name']}` {$field['dataType']}$unsigned$null$autoIncrement$default$fieldComment ," . PHP_EOL;
-            if ($field['primaryKey']) {
-                $pk = $field['name'];
+        if ($type == 'tinyint') {
+            if ((isset($field['dataType']) && $field['dataType'] == 'tinyint(1)') || $field['default'] == '1') {
+                $type = 'boolean';
             }
         }
-        $sql .= "PRIMARY KEY (`$pk`)" . PHP_EOL . ") ";
-        $sql .= "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='$comment'";
-        Db::execute($sql);
+        $phinxFieldTypeMap = [
+            // 数字
+            'tinyint'    => ['type' => AdapterInterface::PHINX_TYPE_INTEGER, 'limit' => MysqlAdapter::INT_TINY],
+            'smallint'   => ['type' => AdapterInterface::PHINX_TYPE_INTEGER, 'limit' => MysqlAdapter::INT_SMALL],
+            'mediumint'  => ['type' => AdapterInterface::PHINX_TYPE_INTEGER, 'limit' => MysqlAdapter::INT_MEDIUM],
+            'int'        => ['type' => AdapterInterface::PHINX_TYPE_INTEGER, 'limit' => null],
+            'bigint'     => ['type' => AdapterInterface::PHINX_TYPE_BIG_INTEGER, 'limit' => null],
+            'boolean'    => ['type' => AdapterInterface::PHINX_TYPE_BOOLEAN, 'limit' => null],
+            // 文本
+            'varchar'    => ['type' => AdapterInterface::PHINX_TYPE_STRING, 'limit' => null],
+            'tinytext'   => ['type' => AdapterInterface::PHINX_TYPE_TEXT, 'limit' => MysqlAdapter::TEXT_TINY],
+            'mediumtext' => ['type' => AdapterInterface::PHINX_TYPE_TEXT, 'limit' => MysqlAdapter::TEXT_MEDIUM],
+            'longtext'   => ['type' => AdapterInterface::PHINX_TYPE_TEXT, 'limit' => MysqlAdapter::TEXT_LONG],
+            'tinyblob'   => ['type' => AdapterInterface::PHINX_TYPE_BLOB, 'limit' => MysqlAdapter::BLOB_TINY],
+            'mediumblob' => ['type' => AdapterInterface::PHINX_TYPE_BLOB, 'limit' => MysqlAdapter::BLOB_MEDIUM],
+            'longblob'   => ['type' => AdapterInterface::PHINX_TYPE_BLOB, 'limit' => MysqlAdapter::BLOB_LONG],
+        ];
+        return array_key_exists($type, $phinxFieldTypeMap) ? $phinxFieldTypeMap[$type] : ['type' => $type, 'limit' => null];
+    }
+
+    /**
+     * 分析字段limit和精度
+     * @param string $type  字段类型
+     * @param array  $field 字段数据
+     * @return array ['limit' => 10, 'precision' => null, 'scale' => null]
+     */
+    public static function analyseFieldLimit(string $type, array $field): array
+    {
+        $fieldType = [
+            'decimal' => ['decimal', 'double', 'float'],
+            'values'  => ['enum', 'set'],
+        ];
+
+        $dataTypeLimit = self::dataTypeLimit($field['dataType'] ?? '');
+        if (in_array($type, $fieldType['decimal'])) {
+            if ($dataTypeLimit) {
+                return ['precision' => $dataTypeLimit[0], 'scale' => $dataTypeLimit[1] ?? 0];
+            }
+            $scale = isset($field['precision']) ? intval($field['precision']) : 0;
+            return ['precision' => $field['length'] ?: 10, 'scale' => $scale];
+        } elseif (in_array($type, $fieldType['values'])) {
+            foreach ($dataTypeLimit as &$item) {
+                $item = str_replace(['"', "'"], '', $item);
+            }
+            return ['values' => $dataTypeLimit];
+        } else {
+            if ($dataTypeLimit && $dataTypeLimit[0]) {
+                return ['limit' => $dataTypeLimit[0]];
+            } elseif (isset($field['length'])) {
+                return ['limit' => $field['length']];
+            }
+        }
+        return [];
+    }
+
+    public static function dataTypeLimit(string $dataType): array
+    {
+        preg_match("/\((.*?)\)/", $dataType, $matches);
+        if (isset($matches[1]) && $matches[1]) {
+            return explode(',', trim($matches[1], ','));
+        }
+        return [];
+    }
+
+    public static function analyseFieldDefault(array $field): mixed
+    {
+        if (strtolower((string)$field['default']) == 'null') {
+            return null;
+        }
+        return match ($field['default']) {
+            '0' => 0,
+            'empty string' => '',
+            default => $field['default'],
+        };
+    }
+
+    public static function searchArray($fields, callable $myFunction): array|bool
+    {
+        foreach ($fields as $key => $field) {
+            if (call_user_func($myFunction, $field, $key)) {
+                return $field;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 获取 Phinx 格式的字段数据
+     * @param array $field
+     * @return array
+     */
+    public static function getPhinxFieldData(array $field): array
+    {
+        $conciseType   = self::analyseFieldType($field);
+        $phinxTypeData = self::getPhinxFieldType($conciseType, $field);
+
+        $phinxColumnOptions = self::analyseFieldLimit($conciseType, $field);
+        if (!is_null($phinxTypeData['limit'])) {
+            $phinxColumnOptions['limit'] = $phinxTypeData['limit'];
+        }
+        if ($field['default'] != 'none') {
+            $phinxColumnOptions['default'] = self::analyseFieldDefault($field);
+        }
+        $phinxColumnOptions['null']     = (bool)$field['null'];
+        $phinxColumnOptions['comment']  = $field['comment'];
+        $phinxColumnOptions['signed']   = !$field['unsigned'];
+        $phinxColumnOptions['identity'] = $field['autoIncrement'];
+        return [
+            'type'    => $phinxTypeData['type'],
+            'options' => $phinxColumnOptions,
+        ];
+    }
+
+    /**
+     * 表字段排序
+     * @param string $tableName    表名
+     * @param array  $fields       字段数据
+     * @param array  $designChange 前端字段改变数据
+     * @return void
+     */
+    public static function updateFieldOrder(string $tableName, array $fields, array $designChange): void
+    {
+        if ($designChange) {
+            $table = TableManager::instance($tableName, [], false);
+            foreach ($designChange as $item) {
+                if (!$item['sync']) continue;
+
+                if (!empty($item['after'])) {
+
+                    $fieldName = in_array($item['type'], ['add-field', 'change-field-name']) ? $item['newName'] : $item['oldName'];
+
+                    $field    = self::searchArray($fields, function ($field) use ($fieldName) {
+                        return $field['name'] == $fieldName;
+                    });
+                    $dataType = self::analyseFieldDataType($field);
+                    $sql      = "ALTER TABLE `$tableName` MODIFY COLUMN `$fieldName` $dataType";
+                    if ($item['after'] == 'FIRST FIELD') {
+                        // 设为第一个字段
+                        $sql .= ' FIRST';
+                    } else {
+                        $sql .= " AFTER `{$item['after']}`";
+                    }
+                    Db::execute($sql);
+
+                    // 使用 Phinx 再更新一遍字段，不然字段注释等数据丢失
+                    // think-migration 使用了自行维护的 Phinx，并不支持直接将字段设置为第一个，所以调整排序直接使用 SQL
+                    $phinxFieldData = self::getPhinxFieldData($field);
+                    $table->changeColumn($fieldName, $phinxFieldData['type'], $phinxFieldData['options']);
+                }
+            }
+            $table->update();
+        }
+    }
+
+    /**
+     * 表设计处理
+     * @param array $table  表数据
+     * @param array $fields 字段数据
+     * @return array
+     * @throws Throwable
+     */
+    public static function handleTableDesign(array $table, array $fields): array
+    {
+        $name         = TableManager::tableName($table['name']);
+        $comment      = $table['comment'] ?? '';
+        $designChange = $table['designChange'] ?? [];
+        $adapter      = TableManager::adapter(false);
+
+        $pk = self::searchArray($fields, function ($item) {
+            return $item['primaryKey'];
+        });
+        $pk = $pk ? $pk['name'] : '';
+
+        if ($adapter->hasTable($name)) {
+            // 更新表
+            TableManager::changeComment($name, $comment);
+            if ($designChange) {
+                $table = TableManager::instance($name, [], false);
+
+                // 改名和删除操作优先
+                foreach ($designChange as $item) {
+
+                    if (!$item['sync']) continue;
+
+                    if (in_array($item['type'], ['change-field-name', 'del-field']) && !$table->hasColumn($item['oldName'])) {
+                        // 字段不存在
+                        throw new BaException(__($item['type'] . ' fail not exist', [$item['oldName']]));
+                    }
+
+                    if ($item['type'] == 'change-field-name') {
+                        $table->renameColumn($item['oldName'], $item['newName']);
+
+                        // 改名后使用 Phinx 再更新一遍字段，不然字段注释等数据丢失
+                        $phinxFieldData = self::getPhinxFieldData(self::searchArray($fields, function ($field) use ($item) {
+                            return $field['name'] == $item['newName'];
+                        }));
+                        $table->changeColumn($item['newName'], $phinxFieldData['type'], $phinxFieldData['options']);
+                    } elseif ($item['type'] == 'del-field') {
+                        $table->removeColumn($item['oldName']);
+                    }
+                }
+
+                // 修改字段属性和添加字段操作
+                foreach ($designChange as $item) {
+
+                    if (!$item['sync']) continue;
+
+                    if ($item['type'] == 'change-field-attr') {
+
+                        if (!$table->hasColumn($item['oldName'])) {
+                            // 字段不存在
+                            throw new BaException(__($item['type'] . ' fail not exist', [$item['oldName']]));
+                        }
+
+                        $phinxFieldData = self::getPhinxFieldData(self::searchArray($fields, function ($field) use ($item) {
+                            return $field['name'] == $item['oldName'];
+                        }));
+                        $table->changeColumn($item['oldName'], $phinxFieldData['type'], $phinxFieldData['options']);
+                    } elseif ($item['type'] == 'add-field') {
+
+                        if ($table->hasColumn($item['newName'])) {
+                            // 字段已经存在
+                            throw new BaException(__($item['type'] . ' fail exist', [$item['newName']]));
+                        }
+
+                        $phinxFieldData = self::getPhinxFieldData(self::searchArray($fields, function ($field) use ($item) {
+                            return $field['name'] == $item['newName'];
+                        }));
+                        $table->addColumn($item['newName'], $phinxFieldData['type'], $phinxFieldData['options']);
+                    }
+                }
+                $table->update();
+
+                // 表更新结构完成再处理字段排序
+                self::updateFieldOrder($name, $fields, $designChange);
+            }
+        } else {
+            // 创建表
+            $table = TableManager::instance($name, [
+                'id'          => false,
+                'comment'     => $comment,
+                'row_format'  => 'DYNAMIC',
+                'primary_key' => $pk,
+                'collation'   => 'utf8mb4_unicode_ci',
+            ], false);
+            foreach ($fields as $field) {
+                $phinxFieldData = self::getPhinxFieldData($field);
+                $table->addColumn($field['name'], $phinxFieldData['type'], $phinxFieldData['options']);
+            }
+            $table->create();
+        }
+
         return [$pk];
     }
 
+    /**
+     * 解析文件数据
+     * @throws Throwable
+     */
     public static function parseNameData($app, $table, $type, $value = ''): array
     {
         $pathArr = [];
@@ -345,8 +606,8 @@ class Helper
             'originalLastName' => $originalLastName,
             'path'             => $pathArr,
             'namespace'        => $namespace,
-            'parseFile'        => path_transform($parseFile),
-            'rootFileName'     => path_transform($rootFileName),
+            'parseFile'        => Filesystem::fsFit($parseFile),
+            'rootFileName'     => Filesystem::fsFit($rootFileName),
         ];
     }
 
@@ -396,16 +657,9 @@ class Helper
             }
         }
         foreach ($webDir as &$item) {
-            if (is_string($item)) $item = path_transform($item);
+            if (is_string($item)) $item = Filesystem::fsFit($item);
         }
         return $webDir;
-    }
-
-    public static function getTableName(string $table, $fullName = true): string
-    {
-        $tablePrefix = config('database.connections.mysql.prefix');
-        $pattern     = '/^' . $tablePrefix . '/i';
-        return ($fullName ? $tablePrefix : '') . (preg_replace($pattern, '', $table));
     }
 
     /**
@@ -425,7 +679,7 @@ class Helper
      */
     public static function getStubFilePath(string $name): string
     {
-        return app_path() . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . path_transform($name) . '.stub';
+        return app_path() . DIRECTORY_SEPARATOR . 'library' . DIRECTORY_SEPARATOR . 'crud' . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . Filesystem::fsFit($name) . '.stub';
     }
 
     /**
@@ -453,10 +707,10 @@ class Helper
 
     /**
      * 获取转义编码后的值
-     * @param string|array $value
+     * @param array|string $value
      * @return string
      */
-    public static function escape($value): string
+    public static function escape(array|string $value): string
     {
         if (is_array($value)) {
             $value = json_encode($value, JSON_UNESCAPED_UNICODE);
@@ -472,9 +726,9 @@ class Helper
     /**
      * 删除数据表
      */
-    public static function delTable(string $table)
+    public static function delTable(string $table): void
     {
-        $sql = 'DROP TABLE IF EXISTS `' . self::getTableName($table) . '`';
+        $sql = 'DROP TABLE IF EXISTS `' . TableManager::tableName($table) . '`';
         Db::execute($sql);
     }
 
@@ -489,13 +743,19 @@ class Helper
             . 'ORDER BY ORDINAL_POSITION';
 
         $columns     = [];
-        $tableColumn = Db::query($sql, [config('database.connections.mysql.database'), self::getTableName($table)]);
+        $tableColumn = Db::query($sql, [config('database.connections.mysql.database'), TableManager::tableName($table)]);
         foreach ($tableColumn as $item) {
             $isNullAble = $item['IS_NULLABLE'] == 'YES';
-            $column     = [
+            if (str_contains($item['COLUMN_TYPE'], '(')) {
+                $dataType = substr_replace($item['COLUMN_TYPE'], '', stripos($item['COLUMN_TYPE'], ')') + 1);
+            } else {
+                $dataType = str_replace(' unsigned', '', $item['COLUMN_TYPE']);
+            }
+
+            $column = [
                 'name'          => $item['COLUMN_NAME'],
                 'type'          => $item['DATA_TYPE'],
-                'dataType'      => stripos($item['COLUMN_TYPE'], '(') !== false ? substr_replace($item['COLUMN_TYPE'], '', stripos($item['COLUMN_TYPE'], ')') + 1) : $item['COLUMN_TYPE'],
+                'dataType'      => $dataType,
                 'default'       => ($isNullAble && is_null($item['COLUMN_DEFAULT'])) ? 'null' : $item['COLUMN_DEFAULT'],
                 'null'          => $isNullAble,
                 'primaryKey'    => $item['COLUMN_KEY'] == 'PRI',
@@ -519,12 +779,17 @@ class Helper
     /**
      * 解析到的表字段的额外处理
      */
-    public static function handleTableColumn(&$column)
+    public static function handleTableColumn(&$column): void
     {
         // 预留
     }
 
-    public static function analyseFieldType($field): string
+    /**
+     * 分析字段数据类型
+     * @param array $field 字段数据
+     * @return string 字段类型
+     */
+    public static function analyseFieldType(array $field): string
     {
         $dataType = (isset($field['dataType']) && $field['dataType']) ? $field['dataType'] : $field['type'];
         if (stripos($dataType, '(') !== false) {
@@ -535,9 +800,32 @@ class Helper
     }
 
     /**
+     * 分析字段的完整数据类型定义
+     * @param array $field 字段数据
+     * @return string
+     */
+    public static function analyseFieldDataType(array $field): string
+    {
+        if (!empty($field['dataType'])) return $field['dataType'];
+
+        $conciseType = self::analyseFieldType($field);
+        $limit       = self::analyseFieldLimit($conciseType, $field);
+
+        if (isset($limit['precision'])) {
+            $dataType = "$conciseType({$limit['precision']}, {$limit['scale']})";
+        } elseif (isset($limit['values'])) {
+            $values   = implode(',', $limit['values']);
+            $dataType = "$conciseType($values)";
+        } else {
+            $dataType = "$conciseType({$limit['limit']})";
+        }
+        return $dataType;
+    }
+
+    /**
      * 分析字段
      */
-    public static function analyseField(&$field)
+    public static function analyseField(&$field): void
     {
         $field['type']               = self::analyseFieldType($field);
         $field['originalDesignType'] = $field['designType'];
@@ -595,11 +883,11 @@ class Helper
     /**
      * 判断是否符合指定后缀
      *
-     * @param string $field     字段名称
-     * @param mixed  $suffixArr 后缀
+     * @param string       $field     字段名称
+     * @param string|array $suffixArr 后缀
      * @return bool
      */
-    protected static function isMatchSuffix(string $field, $suffixArr): bool
+    protected static function isMatchSuffix(string $field, string|array $suffixArr): bool
     {
         $suffixArr = is_array($suffixArr) ? $suffixArr : explode(',', $suffixArr);
         foreach ($suffixArr as $v) {
@@ -610,13 +898,17 @@ class Helper
         return false;
     }
 
-    public static function createMenu($webViewsDir, $tableComment)
+    /**
+     * 创建菜单
+     * @throws Throwable
+     */
+    public static function createMenu($webViewsDir, $tableComment): void
     {
         $menuName = self::getMenuName($webViewsDir);
-        if (!MenuRule::where('name', $menuName)->value('id')) {
+        if (!AdminRule::where('name', $menuName)->value('id')) {
             $pid = 0;
             foreach ($webViewsDir['path'] as $item) {
-                $pMenu = MenuRule::where('name', $item)->value('id');
+                $pMenu = AdminRule::where('name', $item)->value('id');
                 if ($pMenu) {
                     $pid = $pMenu;
                     continue;
@@ -628,7 +920,7 @@ class Helper
                     'name'  => $item,
                     'path'  => $item,
                 ];
-                $menu = MenuRule::create($menu);
+                $menu = AdminRule::create($menu);
                 $pid  = $menu->id;
             }
 
@@ -651,7 +943,7 @@ class Helper
         }
     }
 
-    public static function writeWebLangFile($langData, $webLangDir)
+    public static function writeWebLangFile($langData, $webLangDir): void
     {
         foreach ($langData as $lang => $langDatum) {
             $langTsContent = '';
@@ -665,9 +957,9 @@ class Helper
         }
     }
 
-    public static function writeFile($path, $content)
+    public static function writeFile($path, $content): bool|int
     {
-        $path = path_transform($path);
+        $path = Filesystem::fsFit($path);
         if (!is_dir(dirname($path))) {
             mkdir(dirname($path), 0755, true);
         }
@@ -697,7 +989,7 @@ class Helper
         return "\n" . self::tab() . "// 字段类型转换" . "\n" . self::tab() . "protected \$type = [\n" . rtrim($str, "\n") . "\n" . self::tab() . "];\n";
     }
 
-    public static function writeModelFile(string $tablePk, array $fieldsMap, array $modelData, array $modelFile)
+    public static function writeModelFile(string $tablePk, array $fieldsMap, array $modelData, array $modelFile): void
     {
         $modelData['pk']                 = $tablePk == 'id' ? '' : "\n" . self::tab() . "// 表主键\n" . self::tab() . 'protected $pk = ' . "'$tablePk';\n" . self::tab();
         $modelData['autoWriteTimestamp'] = array_key_exists(self::$createTimeField, $fieldsMap) || array_key_exists(self::$updateTimeField, $fieldsMap) ? 'true' : 'false';
@@ -725,27 +1017,32 @@ class Helper
         self::writeFile($modelFile['parseFile'], $modelFileContent);
     }
 
-    public static function writeControllerFile(array $controllerData, array $controllerFile)
+    public static function writeControllerFile(array $controllerData, array $controllerFile): void
     {
         if (isset($controllerData['relationVisibleFieldList']) && $controllerData['relationVisibleFieldList']) {
             $relationVisibleFields = '$res->visible([';
             foreach ($controllerData['relationVisibleFieldList'] as $cKey => $controllerDatum) {
-                $relationVisibleFields .= "'$cKey' => ['" . implode("','", $controllerDatum) . "'],";
+                $relationVisibleFields .= "'$cKey' => ['" . implode("','", $controllerDatum) . "'], ";
             }
-            $relationVisibleFields = rtrim($relationVisibleFields, ',');
+            $relationVisibleFields = rtrim($relationVisibleFields, ', ');
             $relationVisibleFields .= ']);';
             // 重写index
             $controllerData['methods']['index'] = self::assembleStub('mixins/controller/index', [
                 'relationVisibleFields' => $relationVisibleFields
             ]);
+            $controllerData['use']['Throwable'] = "\nuse Throwable;";
             unset($controllerData['relationVisibleFieldList']);
         }
         $controllerAttr = '';
         foreach ($controllerData['attr'] as $key => $item) {
+            $attrType = '';
+            if (array_key_exists($key, self::$attrType['controller'])) {
+                $attrType = self::$attrType['controller'][$key];
+            }
             if (is_array($item)) {
-                $controllerAttr .= "\n" . self::tab() . "protected \$$key = ['" . implode("', '", $item) . "'];\n";
+                $controllerAttr .= "\n" . self::tab() . "protected $attrType \$$key = ['" . implode("', '", $item) . "'];\n";
             } elseif ($item) {
-                $controllerAttr .= "\n" . self::tab() . "protected \$$key = '$item';\n";
+                $controllerAttr .= "\n" . self::tab() . "protected $attrType \$$key = '$item';\n";
             }
         }
         $controllerData['attr']       = $controllerAttr;
@@ -758,7 +1055,7 @@ class Helper
         self::writeFile($controllerFile['parseFile'], $contentFileContent);
     }
 
-    public static function writeFormFile($formVueData, $webViewsDir, $fields, $webTranslate)
+    public static function writeFormFile($formVueData, $webViewsDir, $fields, $webTranslate): void
     {
         $fieldHtml                = "\n";
         $formVueData['bigDialog'] = $formVueData['bigDialog'] ? "\n" . self::tab(2) . 'width="50%"' : '';
@@ -806,7 +1103,7 @@ class Helper
         return $rulesHtml ? "\n" . $rulesHtml : '';
     }
 
-    public static function writeIndexFile($indexVueData, $webViewsDir, $controllerFile)
+    public static function writeIndexFile($indexVueData, $webViewsDir, $controllerFile): void
     {
         $indexVueData['optButtons']            = self::buildSimpleArray($indexVueData['optButtons']);
         $indexVueData['defaultItems']          = self::getJsonFromArray($indexVueData['defaultItems']);
@@ -838,15 +1135,15 @@ class Helper
         $key = self::formatObjectKey($key);
         if (is_array($item)) {
             $itemJson = ' ' . $key . ': {';
-            foreach ($item as $ik => $iitem) {
-                $itemJson .= self::buildTableColumnKey($ik, $iitem);
+            foreach ($item as $ik => $iItem) {
+                $itemJson .= self::buildTableColumnKey($ik, $iItem);
             }
             $itemJson = rtrim($itemJson, ',');
             $itemJson .= ' }';
         } else {
-            if ($item === 'false') {
-                $itemJson = ' ' . $key . ': false,';
-            } elseif (in_array($key, ['label', 'width', 'buttons'], true) || strpos($item, "t('") === 0 || strpos($item, "t(\"") === 0) {
+            if ($item === 'false' || $item === 'true') {
+                $itemJson = ' ' . $key . ': ' . $item . ',';
+            } elseif (in_array($key, ['label', 'width', 'buttons'], true) || str_starts_with($item, "t('") || str_starts_with($item, "t(\"")) {
                 $itemJson = ' ' . $key . ': ' . $item . ',';
             } else {
                 $itemJson = ' ' . $key . ': \'' . $item . '\',';
@@ -927,9 +1224,9 @@ class Helper
                     $jsonStr .= $keyStr . ($item === 'false' ? 'false' : 'true') . ',';
                 } elseif ($item === null) {
                     $jsonStr .= $keyStr . 'null,';
-                } elseif (strpos($item, "t('") === 0 || strpos($item, "t(\"") === 0 || $item == '[]' || in_array(gettype($item), ['integer', 'double'])) {
+                } elseif (str_starts_with($item, "t('") || str_starts_with($item, "t(\"") || $item == '[]' || in_array(gettype($item), ['integer', 'double'])) {
                     $jsonStr .= $keyStr . $item . ',';
-                } elseif (isset($item[0]) && $item[0] == '[' && substr($item, -1, 1) == ']') {
+                } elseif (isset($item[0]) && $item[0] == '[' && str_ends_with($item, ']')) {
                     $jsonStr .= $keyStr . $item . ',';
                 } else {
                     $quote   = self::getQuote($item);

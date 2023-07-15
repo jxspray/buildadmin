@@ -50,9 +50,9 @@ export interface AdminInfo {
     username: string
     nickname: string
     avatar: string
-    lastlogintime: string
+    last_login_time: string
     token: string
-    refreshToken: string
+    refresh_token: string
     super: boolean
 }
 
@@ -67,19 +67,19 @@ export interface UserInfo {
     money: number
     score: number
     avatar: string
-    lastlogintime: string
-    lastloginip: string
-    jointime: string
+    last_login_time: string
+    last_login_ip: string
+    join_time: string
     motto: string
     token: string
-    refreshToken: string
+    refresh_token: string
 }
 
 export interface TaskItem {
     // 任务唯一标识
     uuid: string
     // 创建时间
-    createtime: string
+    createTime: string
     // 状态
     status: number
     // 命令

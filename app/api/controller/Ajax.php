@@ -2,16 +2,16 @@
 
 namespace app\api\controller;
 
-use think\Exception;
-use think\exception\FileException;
+use Throwable;
+use think\Response;
 use app\common\library\Upload;
 use app\common\controller\Frontend;
 
 class Ajax extends Frontend
 {
-    protected $noNeedLogin = ['area', 'buildSuffixSvg'];
+    protected array $noNeedLogin = ['area', 'buildSuffixSvg'];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
     }
@@ -22,8 +22,8 @@ class Ajax extends Frontend
         try {
             $upload     = new Upload($file);
             $attachment = $upload->upload(null, 0, $this->auth->id);
-            unset($attachment['createtime'], $attachment['quote']);
-        } catch (Exception|FileException $e) {
+            unset($attachment['create_time'], $attachment['quote']);
+        } catch (Throwable $e) {
             $this->error($e->getMessage());
         }
 
@@ -32,12 +32,16 @@ class Ajax extends Frontend
         ]);
     }
 
+    /**
+     * 省份地区数据
+     * @throws Throwable
+     */
     public function area()
     {
         $this->success('', get_area());
     }
 
-    public function buildSuffixSvg()
+    public function buildSuffixSvg(): Response
     {
         $suffix     = $this->request->param('suffix', 'file');
         $background = $this->request->param('background');

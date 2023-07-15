@@ -3,44 +3,40 @@
 namespace app\api\controller;
 
 use ba\Date;
+use Throwable;
 use ba\Captcha;
 use ba\Random;
-use think\facade\Db;
 use app\common\model\User;
+use think\facade\Validate;
 use app\common\facade\Token;
 use app\common\model\UserScoreLog;
 use app\common\model\UserMoneyLog;
 use app\common\controller\Frontend;
-use think\db\exception\PDOException;
-use think\exception\ValidateException;
 use app\api\validate\Account as AccountValidate;
-use think\facade\Validate;
 
 class Account extends Frontend
 {
-    protected $noNeedLogin = ['retrievePassword'];
+    protected array $noNeedLogin = ['retrievePassword'];
 
-    protected $model = null;
-
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
     }
 
     public function overview()
     {
-        $sevenDays = Date::unixtime('day', -6);
+        $sevenDays = Date::unixTime('day', -6);
         $score     = $money = $days = [];
         for ($i = 0; $i < 7; $i++) {
             $days[$i]    = date("Y-m-d", $sevenDays + ($i * 86400));
             $tempToday0  = strtotime($days[$i]);
-            $temptoday24 = strtotime('+1 day', $tempToday0) - 1;
+            $tempToday24 = strtotime('+1 day', $tempToday0) - 1;
             $score[$i]   = UserScoreLog::where('user_id', $this->auth->id)
-                ->where('createtime', 'BETWEEN', $tempToday0 . ',' . $temptoday24)
+                ->where('create_time', 'BETWEEN', $tempToday0 . ',' . $tempToday24)
                 ->sum('score');
 
             $userMoneyTemp = UserMoneyLog::where('user_id', $this->auth->id)
-                ->where('createtime', 'BETWEEN', $tempToday0 . ',' . $temptoday24)
+                ->where('create_time', 'BETWEEN', $tempToday0 . ',' . $tempToday24)
                 ->sum('money');
             $money[$i]     = bcdiv($userMoneyTemp, 100, 2);
         }
@@ -52,20 +48,25 @@ class Account extends Frontend
         ]);
     }
 
+    /**
+     * 会员资料
+     * @throws Throwable
+     */
     public function profile()
     {
         if ($this->request->isPost()) {
             $data = $this->request->only(['id', 'avatar', 'username', 'nickname', 'gender', 'birthday', 'motto']);
             if (!isset($data['birthday'])) $data['birthday'] = null;
 
-            Db::startTrans();
+            $model = $this->auth->getUser();
+            $model->startTrans();
             try {
                 $validate = new AccountValidate();
                 $validate->scene('edit')->check($data);
-                $this->auth->getUser()->where('id', $this->auth->id)->update($data);
-                Db::commit();
-            } catch (ValidateException|PDOException $e) {
-                Db::rollback();
+                $model->where('id', $this->auth->id)->update($data);
+                $model->commit();
+            } catch (Throwable $e) {
+                $model->rollback();
                 $this->error($e->getMessage());
             }
 
@@ -82,6 +83,7 @@ class Account extends Frontend
      * 此处检查的验证码是通过 api/Ems或api/Sms发送的
      * 验证成功后，向前端返回一个 email-pass Token或着 mobile-pass Token
      * 在 changBind 方法中，通过 pass Token来确定用户已经通过了账户验证（用户未绑定邮箱/手机时通过账户密码验证）
+     * @throws Throwable
      */
     public function verification()
     {
@@ -101,6 +103,7 @@ class Account extends Frontend
     /**
      * 修改绑定信息（手机号、邮箱）
      * 通过 pass Token来确定用户已经通过了账户验证，也就是以上的 verification 方法，同时用户未绑定邮箱/手机时通过账户密码验证
+     * @throws Throwable
      */
     public function changeBind()
     {
@@ -158,14 +161,15 @@ class Account extends Frontend
                 $this->error(__('Old password error'));
             }
 
-            Db::startTrans();
+            $model = $this->auth->getUser();
+            $model->startTrans();
             try {
                 $validate = new AccountValidate();
                 $validate->scene('changePassword')->check(['password' => $params['newPassword']]);
-                $this->auth->getUser()->resetPassword($this->auth->id, $params['newPassword']);
-                Db::commit();
-            } catch (ValidateException|PDOException $e) {
-                Db::rollback();
+                $model->resetPassword($this->auth->id, $params['newPassword']);
+                $model->commit();
+            } catch (Throwable $e) {
+                $model->rollback();
                 $this->error($e->getMessage());
             }
 
@@ -174,12 +178,16 @@ class Account extends Frontend
         }
     }
 
+    /**
+     * 积分日志
+     * @throws Throwable
+     */
     public function integral()
     {
         $limit         = $this->request->request('limit');
         $integralModel = new UserScoreLog();
         $res           = $integralModel->where('user_id', $this->auth->id)
-            ->order('createtime desc')
+            ->order('create_time desc')
             ->paginate($limit);
 
         $this->success('', [
@@ -188,12 +196,16 @@ class Account extends Frontend
         ]);
     }
 
+    /**
+     * 余额日志
+     * @throws Throwable
+     */
     public function balance()
     {
         $limit      = $this->request->request('limit');
         $moneyModel = new UserMoneyLog();
         $res        = $moneyModel->where('user_id', $this->auth->id)
-            ->order('createtime desc')
+            ->order('create_time desc')
             ->paginate($limit);
 
         $this->success('', [
@@ -202,13 +214,17 @@ class Account extends Frontend
         ]);
     }
 
+    /**
+     * 找回密码
+     * @throws Throwable
+     */
     public function retrievePassword()
     {
         $params = $this->request->only(['type', 'account', 'captcha', 'password']);
         try {
             $validate = new AccountValidate();
             $validate->scene('retrievePassword')->check($params);
-        } catch (ValidateException $e) {
+        } catch (Throwable $e) {
             $this->error($e->getMessage());
         }
 

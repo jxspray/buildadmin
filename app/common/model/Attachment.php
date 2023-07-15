@@ -2,26 +2,26 @@
 
 namespace app\common\model;
 
+use Throwable;
 use think\Model;
+use ba\Filesystem;
 use app\admin\model\Admin;
+use think\model\relation\BelongsTo;
 
 /**
  * Attachment模型
- * @controllerUrl 'routineAttachment'
  */
 class Attachment extends Model
 {
-    protected $autoWriteTimestamp = 'int';
-
-    protected $createTime = 'createtime';
-    protected $updateTime = null;
+    protected $autoWriteTimestamp = true;
+    protected $updateTime         = false;
 
     protected $append = [
         'suffix',
         'full_url'
     ];
 
-    public function getSuffixAttr($value, $row)
+    public function getSuffixAttr($value, $row): string
     {
         if ($row['name']) {
             $suffix = strtolower(pathinfo($row['name'], PATHINFO_EXTENSION));
@@ -30,12 +30,16 @@ class Attachment extends Model
         return 'file';
     }
 
-    public function getFullUrlAttr($value, $row)
+    public function getFullUrlAttr($value, $row): string
     {
         return full_url($row['url']);
     }
 
-    protected static function onBeforeInsert($model)
+    /**
+     * 入库前
+     * @throws Throwable
+     */
+    protected static function onBeforeInsert($model): bool
     {
         $repeat = $model->where([
             ['sha1', '=', $model->sha1],
@@ -43,13 +47,13 @@ class Attachment extends Model
             ['storage', '=', $model->storage],
         ])->find();
         if ($repeat) {
-            $storageFile = path_transform(public_path() . ltrim($repeat['url'], '/'));
+            $storageFile = Filesystem::fsFit(public_path() . ltrim($repeat['url'], '/'));
             if ($model->storage == 'local' && !file_exists($storageFile)) {
                 $repeat->delete();
                 return true;
             } else {
                 $repeat->quote++;
-                $repeat->lastuploadtime = time();
+                $repeat->last_upload_time = time();
                 $repeat->save();
                 return false;
             }
@@ -59,19 +63,19 @@ class Attachment extends Model
 
     protected static function onAfterInsert($model)
     {
-        if (!$model->lastuploadtime) {
-            $model->quote          = 1;
-            $model->lastuploadtime = time();
+        if (!$model->last_upload_time) {
+            $model->quote            = 1;
+            $model->last_upload_time = time();
             $model->save();
         }
     }
 
-    public function admin()
+    public function admin(): BelongsTo
     {
         return $this->belongsTo(Admin::class);
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

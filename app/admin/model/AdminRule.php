@@ -5,15 +5,11 @@ namespace app\admin\model;
 use think\Model;
 
 /**
- * MenuRule 模型
- * @controllerUrl 'authMenu'
+ * AdminRule 模型
  */
-class MenuRule extends Model
+class AdminRule extends Model
 {
-    protected $autoWriteTimestamp = 'int';
-
-    protected $createTime = 'createtime';
-    protected $updateTime = 'updatetime';
+    protected $autoWriteTimestamp = true;
 
     public function setComponentAttr($value)
     {

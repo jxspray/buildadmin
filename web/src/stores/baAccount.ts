@@ -6,7 +6,7 @@ import { Local } from '/@/utils/storage'
 import router from '../router'
 
 export const useBaAccount = defineStore('baAccount', {
-    state: (): UserInfo => {
+    state: (): Partial<UserInfo> => {
         return {
             id: 0,
             username: '',
@@ -18,12 +18,9 @@ export const useBaAccount = defineStore('baAccount', {
             birthday: '',
             money: 0,
             score: 0,
-            lastlogintime: '',
-            lastloginip: '',
-            jointime: '',
             motto: '',
             token: '',
-            refreshToken: '',
+            refresh_token: '',
         }
     },
     actions: {
@@ -32,7 +29,7 @@ export const useBaAccount = defineStore('baAccount', {
         },
         removeToken() {
             this.token = ''
-            this.refreshToken = ''
+            this.refresh_token = ''
         },
         getGenderIcon() {
             let icon = { name: 'fa fa-transgender-alt', color: 'var(--el-text-color-secondary)' }
@@ -46,11 +43,12 @@ export const useBaAccount = defineStore('baAccount', {
             }
             return icon
         },
-        setToken(token: string, type: 'token' | 'refreshToken') {
-            this[type] = token
+        setToken(token: string, type: 'auth' | 'refresh') {
+            const field = type == 'auth' ? 'token' : 'refresh_token'
+            this[field] = token
         },
         getToken(type: 'auth' | 'refresh' = 'auth') {
-            return type === 'auth' ? this.token : this.refreshToken
+            return type === 'auth' ? this.token : this.refresh_token
         },
         logout() {
             postLogout().then((res) => {

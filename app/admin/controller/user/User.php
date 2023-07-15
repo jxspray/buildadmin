@@ -2,26 +2,27 @@
 
 namespace app\admin\controller\user;
 
-use Exception;
+use Throwable;
 use ba\Random;
-use think\facade\Db;
 use app\common\controller\Backend;
 use app\admin\model\User as UserModel;
-use think\db\exception\PDOException;
-use think\exception\ValidateException;
 
 class User extends Backend
 {
-    protected $model = null;
+    /**
+     * @var object
+     * @phpstan-var UserModel
+     */
+    protected object $model;
 
-    protected $withJoinTable = ['group'];
+    protected array $withJoinTable = ['group'];
 
     // 排除字段
-    protected $preExcludeFields = ['lastlogintime', 'loginfailure', 'password', 'salt'];
+    protected string|array $preExcludeFields = ['last_login_time', 'login_failure', 'password', 'salt'];
 
-    protected $quickSearchField = ['username', 'nickname', 'id'];
+    protected string|array $quickSearchField = ['username', 'nickname', 'id'];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->model = new UserModel();
@@ -29,8 +30,9 @@ class User extends Backend
 
     /**
      * 查看
+     * @throws Throwable
      */
-    public function index()
+    public function index(): void
     {
         $this->request->filter(['strip_tags', 'trim']);
         if ($this->request->param('select')) {
@@ -53,7 +55,11 @@ class User extends Backend
         ]);
     }
 
-    public function add()
+    /**
+     * 添加
+     * @throws Throwable
+     */
+    public function add(): void
     {
         if ($this->request->isPost()) {
             $data = $this->request->post();
@@ -66,7 +72,7 @@ class User extends Backend
 
             $data   = $this->excludeFields($data);
             $result = false;
-            Db::startTrans();
+            $this->model->startTrans();
             try {
                 $data['salt']     = $salt;
                 $data['password'] = $passwd;
@@ -80,9 +86,9 @@ class User extends Backend
                     }
                 }
                 $result = $this->model->save($data);
-                Db::commit();
-            } catch (ValidateException|Exception|PDOException $e) {
-                Db::rollback();
+                $this->model->commit();
+            } catch (Throwable $e) {
+                $this->model->rollback();
                 $this->error($e->getMessage());
             }
             if ($result !== false) {
@@ -95,7 +101,12 @@ class User extends Backend
         $this->error(__('Parameter error'));
     }
 
-    public function edit($id = null)
+    /**
+     * 编辑
+     * @param string|int|null $id
+     * @throws Throwable
+     */
+    public function edit(string|int $id = null): void
     {
         $row = $this->model->find($id);
         if (!$row) {
@@ -119,8 +130,9 @@ class User extends Backend
 
     /**
      * 重写select
+     * @throws Throwable
      */
-    public function select()
+    public function select(): void
     {
         $this->request->filter(['strip_tags', 'trim']);
 
