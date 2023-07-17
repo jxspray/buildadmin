@@ -211,16 +211,157 @@
                 </div>
             </el-col>
         </el-row>
+        <el-dialog
+            @close="onCancelRemoteSelect"
+            class="ba-operate-dialog"
+            :model-value="state.remoteSelectPre.show"
+            :title="t('crud.crud.Remote drop-down association information')"
+            :close-on-click-modal="false"
+            @keyup.enter="onSaveRemoteSelect"
+        >
+            <div class="ba-operate-form" :style="'width: calc(100% - 80px)'">
+                <el-form
+                    ref="formRef"
+                    :model="state.remoteSelectPre.form"
+                    :rules="remoteSelectPreFormRules"
+                    v-loading="state.remoteSelectPre.loading"
+                    label-position="right"
+                    label-width="160px"
+                    :destroy-on-close="true"
+                >
+                    <FormItem
+                        prop="table"
+                        type="select"
+                        :label="t('crud.crud.Associated Data Table')"
+                        v-model="state.remoteSelectPre.form.table"
+                        :key="JSON.stringify(state.remoteSelectPre.dbList)"
+                        :data="{
+                            content: state.remoteSelectPre.dbList,
+                        }"
+                        :input-attr="{ onChange: onJoinTableChange }"
+                    />
+                    <div v-loading="state.loading.remoteSelect">
+                        <FormItem
+                            prop="pk"
+                            type="select"
+                            :label="t('crud.crud.Drop down value field')"
+                            v-model="state.remoteSelectPre.form.pk"
+                            :placeholder="t('crud.crud.Please select the value field of the select component')"
+                            :key="'select-value' + JSON.stringify(state.remoteSelectPre.fieldList)"
+                            :data="{
+                                content: state.remoteSelectPre.fieldList,
+                            }"
+                        />
+                        <FormItem
+                            prop="label"
+                            type="select"
+                            :label="t('crud.crud.Drop down label field')"
+                            v-model="state.remoteSelectPre.form.label"
+                            :placeholder="t('crud.crud.Please select the label field of the select component')"
+                            :key="'select-label' + JSON.stringify(state.remoteSelectPre.fieldList)"
+                            :data="{
+                                content: state.remoteSelectPre.fieldList,
+                            }"
+                        />
+                        <FormItem
+                            prop="joinField"
+                            type="selects"
+                            :label="t('crud.crud.Fields displayed in the table')"
+                            v-model="state.remoteSelectPre.form.joinField"
+                            :placeholder="t('crud.crud.Please select the fields displayed in the table')"
+                            :key="'join-field' + JSON.stringify(state.remoteSelectPre.fieldList)"
+                            :data="{
+                                content: state.remoteSelectPre.fieldList,
+                            }"
+                        />
+                        <FormItem
+                            prop="controllerFile"
+                            type="select"
+                            :label="t('crud.crud.Controller position')"
+                            v-model="state.remoteSelectPre.form.controllerFile"
+                            :placeholder="t('crud.crud.Please select the controller of the data table')"
+                            :key="'controller-file' + JSON.stringify(state.remoteSelectPre.controllerFileList)"
+                            :data="{
+                                content: state.remoteSelectPre.controllerFileList,
+                            }"
+                            :attr="{
+                                'block-help': t(
+                                    'crud.crud.The remote pull-down will request the corresponding controller to obtain data, so it is recommended that you create the CRUD of the associated table'
+                                ),
+                            }"
+                        />
+                        <FormItem
+                            type="select"
+                            :label="t('crud.crud.Data Model Location')"
+                            v-model="state.remoteSelectPre.form.modelFile"
+                            :placeholder="t('crud.crud.Please select the data model location of the data table')"
+                            :key="'model-file' + JSON.stringify(state.remoteSelectPre.modelFileList)"
+                            :data="{
+                                content: state.remoteSelectPre.modelFileList,
+                            }"
+                            :attr="{
+                                'block-help': t(
+                                    'crud.crud.If it is left blank, the model of the associated table will be generated automatically If the table already has a model, it is recommended to select it to avoid repeated generation'
+                                ),
+                            }"
+                        />
+                    </div>
+                </el-form>
+            </div>
+            <template #footer>
+                <div :style="'width: calc(100% - 88px)'">
+                    <el-button @click="onCancelRemoteSelect">{{ $t('Cancel') }}</el-button>
+                    <el-button v-blur @click="onSaveRemoteSelect" type="primary">
+                        {{ $t('Save') }}
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
+        <el-dialog
+            @close="closeConfirmGenerate"
+            class="ba-operate-dialog confirm-generate-dialog"
+            :model-value="state.confirmGenerate.show"
+            :title="t('crud.crud.Confirm CRUD code generation')"
+        >
+            <div class="confirm-generate-dialog-body">
+                <el-alert
+                    v-if="state.confirmGenerate.controller"
+                    :title="t('crud.crud.The controller already exists Continuing to generate will automatically overwrite the existing code!')"
+                    center
+                    type="error"
+                />
+                <br />
+                <el-alert
+                    v-if="state.confirmGenerate.table"
+                    :title="
+                        t(
+                            'crud.crud.The data table already exists Continuing to generate will automatically delete the original table and create a new one!'
+                        )
+                    "
+                    center
+                    type="error"
+                />
+            </div>
+            <template #footer>
+                <div class="confirm-generate-dialog-footer">
+                    <el-button @click="closeConfirmGenerate">{{ $t('Cancel') }}</el-button>
+                    <el-button :loading="state.loading.generate" v-blur @click="startGenerate" type="primary">
+                        {{ t('crud.crud.Continue building') }}
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
 </template>
 <script setup lang="ts">
 import { ref, reactive, onMounted, nextTick } from 'vue'
-import { fieldItem, designTypes, getTableAttr } from '/@/views/backend/crud/index'
+import { fieldItem, designTypes, getTableAttr, tableFieldsKey } from '/@/views/backend/crud/index'
 import type { FieldItem } from '/@/views/backend/cms/module/fieldItem'
 import { ElNotification, FormItemRule, FormInstance, ElMessageBox } from 'element-plus'
 import { cloneDeep, range, isEmpty } from 'lodash-es'
 import Sortable, { SortableEvent } from 'sortablejs'
 import { useTemplateRefsList } from '@vueuse/core'
+import { buildValidatorData, regularVarName } from '/@/utils/validate'
 import { getDatabaseList, getFileData } from '/@/api/backend/crud'
 import { getArrayKey } from '/@/utils/common'
 import { getTableFieldList } from '/@/api/common'
@@ -229,12 +370,28 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const designWindowRef = ref()
+const formRef = ref<FormInstance>()
 const tabsRefs = useTemplateRefsList<HTMLElement>()
 const state: {
     loading: {
         init: boolean
         generate: boolean
         remoteSelect: boolean
+    }
+    table: {
+        name: string
+        comment: string
+        quickSearchField: string[]
+        defaultSortField: string
+        formFields: string[]
+        columnFields: string[]
+        defaultSortType: string
+        generateRelativePath: string
+        isCommonModel: number
+        modelFile: string
+        controllerFile: string
+        validateFile: string
+        webViewsDir: string
     }
     fields: FieldItem[]
     activateField: number
@@ -257,12 +414,32 @@ const state: {
             controllerFile: string
         }
     }
+    confirmGenerate: {
+        show: boolean
+        table: boolean
+        controller: boolean
+    }
     draggingField: boolean
 } = reactive({
     loading: {
         init: false,
         generate: false,
         remoteSelect: false,
+    },
+    table: {
+        name: '',
+        comment: '',
+        quickSearchField: [],
+        defaultSortField: '',
+        formFields: [],
+        columnFields: [],
+        defaultSortType: 'desc',
+        generateRelativePath: '',
+        isCommonModel: 0,
+        modelFile: '',
+        controllerFile: '',
+        validateFile: '',
+        webViewsDir: '',
     },
     fields: [],
     activateField: -1,
@@ -285,14 +462,36 @@ const state: {
             controllerFile: '',
         },
     },
+    confirmGenerate: {
+        show: false,
+        table: false,
+        controller: false,
+    },
     draggingField: false,
 })
 
+type TableKey = keyof typeof state.table
 const onActivateField = (idx: number) => {
     state.activateField = idx
 }
 
 const onFieldNameChange = (val: string) => {
+    for (const key in tableFieldsKey) {
+        for (const idx in state.table[tableFieldsKey[key] as TableKey] as string[]) {
+            if (!getArrayKey(state.fields, 'name', (state.table[tableFieldsKey[key] as TableKey] as string[])[idx])) {
+                ;(state.table[tableFieldsKey[key] as TableKey] as string[])[idx] = val
+            }
+        }
+    }
+    if (state.table.defaultSortField) {
+        if (!getArrayKey(state.fields, 'name', state.table.defaultSortField)) {
+            state.table.defaultSortField = val
+        }
+    }
+}
+
+const closeConfirmGenerate = () => {
+    state.confirmGenerate.show = false
 }
 
 const onEditField = (index: number, field: FieldItem) => {
@@ -467,6 +666,138 @@ const onFieldCommentChange = (comment: string) => {
     }
 }
 
+
+const onCancelRemoteSelect = () => {
+    state.remoteSelectPre.show = false
+    resetRemoteSelectForm()
+    if (state.remoteSelectPre.index !== -1 && state.remoteSelectPre.hideDelField) {
+        onDelField(state.remoteSelectPre.index)
+    }
+}
+
+const onDelField = (index: number) => {
+    if (!state.fields[index]) return
+    state.activateField = -1
+    if (state.fields[index].name == state.table.defaultSortField) {
+        state.table.defaultSortField = ''
+    }
+
+    for (const key in tableFieldsKey) {
+        const delIdx = (state.table[tableFieldsKey[key] as TableKey] as string[]).findIndex((item) => {
+            return item == state.fields[index].name
+        })
+        if (delIdx != -1) {
+            ;(state.table[tableFieldsKey[key] as TableKey] as string[]).splice(delIdx, 1)
+        }
+    }
+
+    state.fields.splice(index, 1)
+}
+
+const onJoinTableChange = (val: string) => {
+    if (!val) return
+    resetRemoteSelectForm()
+    state.remoteSelectPre.form.table = val
+    state.loading.remoteSelect = true
+    getTableFieldList(val)
+        .then((res) => {
+            state.remoteSelectPre.form.pk = res.data.pk
+
+            const preLabel = ['name', 'title', 'username', 'nickname']
+            for (const key in res.data.fieldList) {
+                if (preLabel.includes(key)) {
+                    state.remoteSelectPre.form.label = key
+                    state.remoteSelectPre.form.joinField.push(key)
+                    break
+                }
+            }
+
+            const fieldSelect: anyObj = {}
+            for (const key in res.data.fieldList) {
+                fieldSelect[key] = (key ? key + ' - ' : '') + res.data.fieldList[key]
+            }
+            state.remoteSelectPre.fieldList = fieldSelect
+        })
+        .finally(() => {
+            state.loading.remoteSelect = false
+        })
+
+    getFileData(val).then((res) => {
+        state.remoteSelectPre.modelFileList = res.data.modelFileList
+        state.remoteSelectPre.controllerFileList = res.data.controllerFileList
+
+        if (Object.keys(res.data.modelFileList).includes(res.data.modelFile)) {
+            state.remoteSelectPre.form.modelFile = res.data.modelFile
+        }
+        if (Object.keys(res.data.controllerFileList).includes(res.data.controllerFile)) {
+            state.remoteSelectPre.form.controllerFile = res.data.controllerFile
+        }
+    })
+}
+
+const startGenerate = () => {
+    state.loading.generate = true
+    const fields = cloneDeep(state.fields)
+    for (const key in fields) {
+        for (const tKey in fields[key].table) {
+            fields[key].table[tKey] = fields[key].table[tKey].value
+        }
+        for (const tKey in fields[key].form) {
+            fields[key].form[tKey] = fields[key].form[tKey].value
+        }
+    }
+    // generate({
+    //     table: state.table,
+    //     fields: fields,
+    // })
+    //     .then(() => {
+    //         router.go(0)
+    //     })
+    //     .finally(() => {
+    //         state.loading.generate = false
+    //         closeConfirmGenerate()
+    //     })
+}
+
+const onSaveRemoteSelect = () => {
+    const submitCallback = () => {
+        state.fields[state.remoteSelectPre.index].form['remote-table'].value = state.remoteSelectPre.form.table
+        state.fields[state.remoteSelectPre.index].form['remote-pk'].value = state.remoteSelectPre.form.pk
+        state.fields[state.remoteSelectPre.index].form['remote-field'].value = state.remoteSelectPre.form.label
+        state.fields[state.remoteSelectPre.index].form['remote-controller'].value = state.remoteSelectPre.form.controllerFile
+        state.fields[state.remoteSelectPre.index].form['remote-model'].value = state.remoteSelectPre.form.modelFile
+        state.fields[state.remoteSelectPre.index].form['relation-fields'].value = state.remoteSelectPre.form.joinField.join(',')
+        state.remoteSelectPre.index = -1
+        state.remoteSelectPre.show = false
+        resetRemoteSelectForm()
+    }
+
+    if (formRef.value) {
+        formRef.value.validate((valid) => {
+            if (valid) {
+                submitCallback()
+            }
+        })
+    }
+}
+
+const resetRemoteSelectForm = () => {
+    for (const key in state.remoteSelectPre.form) {
+        if (key == 'joinField') {
+            state.remoteSelectPre.form[key] = []
+        } else {
+            ;(state.remoteSelectPre.form[key as keyof typeof state.remoteSelectPre.form] as string) = ''
+        }
+    }
+}
+
+const remoteSelectPreFormRules: Partial<Record<string, FormItemRule[]>> = reactive({
+    table: [buildValidatorData({ name: 'required', title: t('crud.crud.remote-table') })],
+    pk: [buildValidatorData({ name: 'required', title: t('crud.crud.Drop down value field') })],
+    label: [buildValidatorData({ name: 'required', title: t('crud.crud.Drop down label field') })],
+    joinField: [buildValidatorData({ name: 'required', title: t('crud.crud.Fields displayed in the table') })],
+    controllerFile: [buildValidatorData({ name: 'required', title: t('crud.crud.Controller position') })],
+})
 </script>
 
 <style scoped lang="scss">
