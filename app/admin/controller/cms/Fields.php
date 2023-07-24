@@ -15,25 +15,25 @@ class Fields extends Backend
      * Field模型对象
      * @var \app\admin\model\cms\Field
      */
-    protected $model = null;
+    protected object $model;
 
-    protected $quickSearchField = ['id'];
+    protected string|array $quickSearchField = ['id'];
 
-    protected $defaultSortField = 'id,desc';
+    protected string|array $defaultSortField = 'id,desc';
 
-    protected $preExcludeFields = [''];
+    protected string|array $preExcludeFields = [''];
 
-    protected $withJoinTable = ['module'];
+    protected array $withJoinTable = ['module'];
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->model = new \app\admin\model\cms\Fields;
     }
 
-    public function index()
+    public function index(): void
     {
-        $moduleid       = $this->request->get("moduleid/d", 0);
+        $moduleId       = $this->request->get("module_id/d", 0);
         $this->request->filter(['strip_tags', 'trim']);
         if ($this->request->param('select')) {
             $this->select();
@@ -45,7 +45,7 @@ class Fields extends Backend
             ->withJoin($this->withJoinTable, $this->withJoinType)
             ->alias($alias)
             ->where($where)
-            ->where('moduleid', $moduleid)
+            ->where('module_id', $moduleId)
             ->order($order)
             ->paginate($limit);
 
@@ -56,10 +56,11 @@ class Fields extends Backend
         ]);
     }
 
-    public function getFields(){
+    public function getFields(): void
+    {
         $route = $this->request->get('route');
         if ($route && $module = \app\admin\model\cms\Module::where('path', $route)->find()) {
-            $res = $this->model->where('moduleid', $module['id'])->select();
+            $res = $this->model->where('module_id', $module['id'])->select();
             $this->success('', $res);
         }
         $this->error("参数错误");

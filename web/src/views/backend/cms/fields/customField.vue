@@ -1,5 +1,19 @@
 <template>
-    <FormItem :label="t('cms.field.type')" type="select" v-model="baTable.form.items!.type" prop="type" :data="{ content: form.customType }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.field.type') }) }" />
+    <el-form-item :label="t('cms.field.type')">
+        <el-select v-model="baTable.form.items!.type" placeholder="请选择">
+            <el-option-group
+                v-for="group in typeOptions"
+                :key="group.label"
+                :label="group.label">
+                <el-option
+                    v-for="item in group.options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+            </el-option-group>
+        </el-select>
+    </el-form-item>
     <template v-if="baTable.form.items!.type == 'text'">
         <FormItem
             :label="t('文本框类型')"
@@ -229,6 +243,7 @@ import { reactive, inject, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
+import { typeOptions } from './index'
 
 const baTable = inject('baTable') as baTableClass
 
@@ -242,11 +257,9 @@ const checkboxFormat = function (format: any[]){
 
 const form: {
     setup: any|any[],
-    customType: any|any[],
     customDefalut: any|any[]
 } = reactive({
     setup: baTable.form.items!.setup,
-    customType: { text: "文本框", radio: "单选按钮", checkbox: "复选框", select: "下拉选择", remoteSelect: "远程下拉选择框", datePicker: "日期选择器", city: "省市区选择器", editor: "富文本编辑器", upload: "上传", verify: "验证码", custom: "自定义多文本", tag: "标签" },
     customDefalut: {
         text: {
             type: 'string',

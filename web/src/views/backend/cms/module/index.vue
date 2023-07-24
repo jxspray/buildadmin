@@ -47,7 +47,7 @@ let optButtons: {
 }[] = [
     {
         render: 'tipButton',
-        name: 'design',
+        name: 'fields',
         title: '字段管理',
         text: '字段管理',
         type: 'primary',
@@ -55,10 +55,7 @@ let optButtons: {
         class: 'table-row-info',
         disabledTip: false,
         click: (row: TableRow) => {
-            baTable.form.operate = 'design';
-            baTable.form.loading = false;
-            baTable.requestEdit(row.id)
-            // router.push({ path: '/admin/cms/fields', query: { id: row[baTable.table.pk!] } })
+            router.push({ name: 'cms/fields', query: { module_id: row[baTable.table.pk!] } })
         },
     }
 ]

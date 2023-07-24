@@ -2,14 +2,19 @@
 
 namespace modules\vuerouter;
 
+use Throwable;
 use app\common\library\Menu;
-use app\admin\model\MenuRule;
+use app\admin\model\AdminRule;
 
 class Vuerouter
 {
-    public function install()
+    /**
+     * 安装
+     * @throws Throwable
+     */
+    public function install(): void
     {
-        $examplesMenu = MenuRule::where('name', 'examples')->value('id');
+        $examplesMenu = AdminRule::where('name', 'examples')->value('id');
         if (!$examplesMenu) {
             $menu = [
                 [
@@ -22,7 +27,7 @@ class Vuerouter
                 ]
             ];
             Menu::create($menu);
-            $examplesMenu = MenuRule::where('name', 'examples')->value('id');
+            $examplesMenu = AdminRule::where('name', 'examples')->value('id');
         }
 
         $menu = [
@@ -41,17 +46,29 @@ class Vuerouter
         Menu::create($menu);
     }
 
-    public function uninstall()
+    /**
+     * 卸载
+     * @throws Throwable
+     */
+    public function uninstall(): void
     {
         Menu::delete('examples/vueRouter', true);
     }
 
-    public function enable()
+    /**
+     * 启用
+     * @throws Throwable
+     */
+    public function enable(): void
     {
         Menu::enable('examples/vueRouter');
     }
 
-    public function disable()
+    /**
+     * 禁用
+     * @throws Throwable
+     */
+    public function disable(): void
     {
         Menu::disable('examples/vueRouter');
     }

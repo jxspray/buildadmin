@@ -66,6 +66,6 @@ class Fields extends Model
 
     public function module()
     {
-        return $this->belongsTo('module', 'moduleid');
+        return $this->belongsTo('module', 'module_id');
     }
 }

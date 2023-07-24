@@ -21,7 +21,6 @@ export default {
     "issystem 1": "是",
     "description": "字段说明",
     "maxlength": "字段最大长度",
-    "section": "长度区间",
     "default": "默认值",
     "comment": "字段标识",
     "remark": "备注",
