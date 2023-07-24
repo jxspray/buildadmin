@@ -27,14 +27,14 @@
                     :rules="rules"
                 >
 
-                <FormItem :label="t('cms.field.field')" type="string" v-model="baTable.form.items!.field" prop="field" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.field') }) }" />
-                <FormItem :label="t('cms.field.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.name') }) }" />
+                <FormItem :label="t('cms.fields.field')" type="string" v-model="baTable.form.items!.field" prop="field" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.field') }) }" />
+                <FormItem :label="t('cms.fields.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.name') }) }" />
                 <!-- 字段属性 -->
                 <CustomField />
 
-                <!-- <FormItem :label="t('cms.field.comment')" type="string" v-model="baTable.form.items!.comment" prop="comment" :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.comment') }) }" /> -->
-                <FormItem :label="t('cms.field.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.field.remark') }) }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" />
-                <FormItem :label="t('cms.field.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.field.status 0'), 1: t('cms.field.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.field.status') }) }" />
+                <!-- <FormItem :label="t('cms.fields.comment')" type="string" v-model="baTable.form.items!.comment" prop="comment" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.comment') }) }" /> -->
+                <FormItem :label="t('cms.fields.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.fields.remark') }) }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" />
+                <FormItem :label="t('cms.fields.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.fields.status 0'), 1: t('cms.fields.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.fields.status') }) }" />
                 </el-form>
             </div>
         </el-scrollbar>
@@ -65,7 +65,7 @@ const baTable = inject('baTable') as baTableClass
 const { t } = useI18n()
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
-    field: [buildValidatorData({ name: 'required', title: t('cms.field.field') }),
+    field: [buildValidatorData({ name: 'required', title: t('cms.fields.field') }),
         {
             validator: (rule: any, val: string, callback: Function) => {
                 if (!val) {
@@ -78,8 +78,8 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
             },
             trigger: 'blur',
         }],
-    name: [buildValidatorData({ name: 'required', title: t('cms.field.name') })],
-    type: [buildValidatorData({ name: 'required', title: t('cms.field.type') })]
+    name: [buildValidatorData({ name: 'required', title: t('cms.fields.name') })],
+    type: [buildValidatorData({ name: 'required', title: t('cms.fields.type') })]
 })
 
 </script>

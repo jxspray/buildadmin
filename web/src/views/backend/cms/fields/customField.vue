@@ -1,5 +1,5 @@
 <template>
-    <el-form-item :label="t('cms.field.type')">
+    <el-form-item :label="t('cms.fields.type')">
         <el-select v-model="baTable.form.items!.type" placeholder="请选择">
             <el-option-group
                 v-for="group in typeOptions"
@@ -44,11 +44,11 @@
         <!-- string：限制内容长度 -->
         <FormItem
             v-if="form.setup!.type != 'number'"
-            :label="t('cms.field.section')"
+            :label="t('cms.fields.section')"
             type="string"
             prop="section"
             v-model="form.setup!.section"
-            :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.section') }) }"
+            :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.section') }) }"
         />
         <!-- textarea：限制内容长度（额外：-1为不限制）、展示行数 -->
         <FormItem
@@ -158,18 +158,18 @@
             :data="{ childrenAttr: { border: false }, content: checkboxFormat(['image', 'file']) }"
         />
         <FormItem
-            :label="t('cms.field.allowFormat')"
+            :label="t('cms.fields.allowFormat')"
             type="checkbox"
             v-model="form.setup!.allowFormat"
             :input-attr="{ size: 'large' }"
             :data="{ childrenAttr: { border: false }, content: checkboxFormat(imageAllowFormat) }"
         />
         <FormItem
-            :label="t('cms.field.maxFileSize')"
+            :label="t('cms.fields.maxFileSize')"
             type="number"
             prop="maxFileSize"
             v-model.number="form.setup!.maxFileSize"
-            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.field.maxFileSize') }) }"
+            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.fields.maxFileSize') }) }"
         />
         <FormItem
             :label="t('最大上传数')"
@@ -230,11 +230,11 @@
         />
     </template>
     <FormItem
-        :label="t('cms.field.default')"
+        :label="t('cms.fields.default')"
         type="string"
         prop="default"
         v-model="form.setup!.default"
-        :input-attr="{ placeholder: t('Please input field', { field: t('cms.field.default') }) }"
+        :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.default') }) }"
     />
 </template>
 

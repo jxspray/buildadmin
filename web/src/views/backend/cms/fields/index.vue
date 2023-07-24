@@ -5,13 +5,12 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('cms.fields.quick Search Fields') })"
-            @action="baTable.onTableHeaderAction"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('cms.fields.quick Search Fields') })"
         />
 
         <!-- 表格 -->
         <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
-        <Table ref="tableRef" @action="baTable.onTableAction" />
+        <Table ref="tableRef" />
 
         <!-- 表单 -->
         <PopupForm />
@@ -19,25 +18,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, provide, onMounted } from 'vue'
+import { ref, provide } from 'vue'
 import baTableClass from '/@/utils/baTable'
-import { defaultOptButtons } from '/@/components/table'
-import { baTableApi } from '/@/api/common'
-import { useI18n } from 'vue-i18n'
 import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
+import { defaultOptButtons } from '/@/components/table'
+import { baTableApi } from '/@/api/common'
+import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 const route = useRoute()
 
+defineOptions({
+    name: 'cms/fields',
+})
+
 const { t } = useI18n()
 const tableRef = ref()
-const optButtons = defaultOptButtons(["weigh-sort","edit","delete"])
 const baTable = new baTableClass(
-    new baTableApi('/admin/cms.fields/'),
+    new baTableApi('/admin/user.User/'),
     {
-        filter: { moduleid: route.query.id },
-        pk: 'id',
         column: [
             { type: 'selection', align: 'center', operator: false },
             // { label: t('cms.fields.id'), prop: 'id', align: 'center', width: 70, sortable: 'custom', operator: 'RANGE' },
@@ -46,34 +46,19 @@ const baTable = new baTableClass(
             { label: t('cms.fields.name'), prop: 'name', align: 'center' },
             { label: t('cms.fields.type'), prop: 'type', align: 'center' },
             { label: t('cms.fields.status'), prop: 'status', align: 'center', render: 'tag', replaceValue: { 0: t('cms.fields.status 0'), 1: t('cms.fields.status 1') } },
-            { label: t('operate'), align: 'center', width: 100, render: 'buttons', buttons: optButtons, operator: false },
+            { label: t('Operate'), align: 'center', width: 100, render: 'buttons', buttons: defaultOptButtons(["weigh-sort","edit","delete"]), operator: false },
         ],
-        dblClickNotEditColumn: [undefined, ],
-        defaultOrder: { prop: 'id', order: 'desc' },
+        dblClickNotEditColumn: [undefined],
     },
     {
         defaultItems: {"moduleid":route.query.id,"status":"1"},
-        // defaultItems: {"moduleid":"0","required":"0","issole":"0","listorder":"0","status":"1","issystem":"0"},
     }
 )
 
+baTable.mount()
+baTable.getIndex()
+
 provide('baTable', baTable)
-
-onMounted(() => {
-    baTable.table.ref = tableRef.value
-    baTable.mount()
-    baTable.getIndex()?.then(() => {
-        baTable.initSort()
-        baTable.dragSort()
-    })
-})
-</script>
-
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-    name: 'cms/field',
-})
 </script>
 
 <style scoped lang="scss"></style>
