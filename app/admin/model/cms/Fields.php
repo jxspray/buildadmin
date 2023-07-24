@@ -45,12 +45,13 @@ class Fields extends Model
         $model->getSqlFieldInstance()->tableExists() && $model->getSqlFieldInstance()->deleteField($model['field']);
     }
 
-    public function getSqlFieldInstance(){
+    public function getSqlFieldInstance(): SqlField|bool|null
+    {
         static $instance = null;
         if ($instance === null) {
             $data = $this->getOriginData();
             $module = cms("module");
-            $moduleInfo = $module[$data['moduleid']] ?? [];
+            $moduleInfo = $module[$data['module_id']] ?? [];
             if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
             $instance = SqlField::getInstance($moduleInfo['name']);
         }
@@ -64,7 +65,7 @@ class Fields extends Model
         return $data;
     }
 
-    public function module()
+    public function module(): \think\model\relation\BelongsTo
     {
         return $this->belongsTo('module', 'module_id');
     }

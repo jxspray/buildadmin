@@ -81,7 +81,7 @@ class Module extends Model
     }
 
 
-    protected function createField(int $moduleid, SqlField $sqlField, $type): array
+    protected function createField(int $module_id, SqlField $sqlField, $type): array
     {
         $data = [];
         $fdatas = [];
@@ -101,7 +101,7 @@ class Module extends Model
 
         foreach ($data as $datum) {
             $sqls[] = $datum[0];
-            $datum[1]['moduleid'] = $moduleid;
+            $datum[1]['module_id'] = $module_id;
             $fdatas[] = $datum[1];
         }
 

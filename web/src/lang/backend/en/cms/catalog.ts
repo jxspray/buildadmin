@@ -20,7 +20,7 @@ export default {
     "links_value": "links_value",
     "weigh": "weigh",
     "module": "module",
-    "moduleid": "moduleid",
+    "module_id": "module_id",
     "blank": "blank",
     "blank 0": "blank 0",
     "blank 1": "blank 1",

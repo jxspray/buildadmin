@@ -35,7 +35,7 @@ class SqlField
      */
     private static $instance = false;
 
-    public static function getInstance($name = '', $pattern = null)
+    public static function getInstance($name = '', $pattern = null): SqlField|bool
     {
         static $oldName = '';
         if (self::$instance === false || $oldName != $name) {
@@ -53,7 +53,7 @@ class SqlField
     /**
      * @return string
      */
-    public function getPattern()
+    public function getPattern(): ?string
     {
         return $this->pattern;
     }
@@ -100,7 +100,7 @@ class SqlField
 
         foreach ($data as $datum) {
             $sqlList[] = $datum[0];
-            $datum[1]['moduleid'] = $moduleRow['id'];
+            $datum[1]['module_id'] = $moduleRow['id'];
             $fieldList[] = $datum[1];
         }
 
@@ -118,22 +118,21 @@ class SqlField
      * @param $field
      * @return bool|object
      */
-    public function fieldExists($field)
+    public function fieldExists($field): object|bool
     {
         if (empty($field)) return false;
         return Db::query("DESC `{$this->table}` `$field`");
     }
 
     /**
-     * @param $field
-     * @return bool|object
+     * @return bool|null
      */
-    public function tableExists()
+    public function tableExists(): bool|array
     {
         return Db::query("SHOW TABLES LIKE '{$this->table}'");
     }
 
-    public function deleteTable()
+    public function deleteTable(): bool
     {
         Db::execute("DROP TABLE {$this->table}");
         return true;
@@ -162,7 +161,7 @@ class SqlField
      * @param array $checkChange
      * @return bool|array
      */
-    public function getTypeResult(array $data, array $originData = [], array $checkChange = [])
+    public function getTypeResult(array $data, array $originData = [], array $checkChange = []): bool|array
     {
         if ($checkChange) {
             $bool = false;
@@ -187,7 +186,7 @@ class SqlField
     {
         $data['field'] = $field;
         $data['listorder'] = $data['listorder'] ?? 0;
-        $data['moduleid'] = $data['moduleid'] ?? 0;
+        $data['module_id'] = $data['module_id'] ?? 0;
         $data['issystem'] = $data['issystem'] ?? 1;
         $data['required'] = $data['required'] ?? 0;
         $data['setup'] = json_encode($data['setup'] ?? [], JSON_UNESCAPED_UNICODE);

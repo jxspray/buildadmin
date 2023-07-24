@@ -25,7 +25,7 @@ class SqlField
     {
         $data['field'] = $field;
         $data['listorder'] = $data['listorder'] ?? 0;
-        $data['moduleid'] = $data['moduleid'] ?? 0;
+        $data['module_id'] = $data['module_id'] ?? 0;
         $data['issystem'] = $data['issystem'] ?? 1;
         $data['required'] = $data['required'] ?? 0;
         $data['setup'] = json_encode($data['setup'] ?? [], JSON_UNESCAPED_UNICODE);

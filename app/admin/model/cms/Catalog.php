@@ -60,10 +60,10 @@ class Catalog extends Model
     }
 
 //    public function fields(){
-//        return $this->hasMany("fields", 'moduleid', 'moduleid');
+//        return $this->hasMany("fields", 'module_id', 'module_id');
 //    }
 
     public function module(){
-        return $this->belongsTo("module", 'moduleid')->joinType("left");
+        return $this->belongsTo("module", 'module_id')->joinType("left");
     }
 }

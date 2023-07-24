@@ -33,7 +33,7 @@ class CmsLogic
     /**
      * @var self
      */
-    private static CmsLogic $instance;
+    protected static ?self $instance = null;
 
     public function __construct()
     {
@@ -49,13 +49,13 @@ class CmsLogic
         self::getInstance();
     }
 
-    public static function getInstance(): self
+    public static function getInstance()
     {
-        if (!self::$instance) self::$instance = new self();
+        if (is_null(self::$instance)) self::$instance = new self();
         return self::$instance;
     }
 
-    public function forceUpdate($type = null): void
+    public function forceUpdate(string $type = null): void
     {
         foreach ($this->typeItem->handleType($type) as $item) {
             if ($param = $this->typeItem->getParam($item)) {
@@ -83,7 +83,7 @@ class CmsLogic
         }
     }
 
-    public static function update($instance, $data, $value, $isDelete)
+    public static function update(\app\admin\model\cms\CmsModelInterface $instance, array $data, mixed $value, bool $isDelete)
     {
         if (is_numeric($value) && $isDelete && isset($data[$value])) {
             unset($data[$value]);
@@ -93,7 +93,7 @@ class CmsLogic
         return $data;
     }
 
-    public static function updateCatalog($value = [], $isDelete = false)
+    public static function updateCatalog(mixed $value = [], bool $isDelete = false)
     {
         static $instance = false;
         if ($instance === false) $instance = new Catalog();
@@ -117,7 +117,7 @@ class CmsLogic
 
     public static function __callStatic($name, $arguments)
     {
-        if ($name == 'forceUpdate') return self::getInstance()->forceUpdate($arguments[0]);
-        abort(500, "方法{$name}不存在");
+        if ($name == 'forceUpdate') self::getInstance()->forceUpdate($arguments[0]);
+         else abort(500, "方法{$name}不存在");
     }
 }

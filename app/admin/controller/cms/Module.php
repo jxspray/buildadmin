@@ -118,9 +118,9 @@ class Module extends Backend
 
     public function createTemplateField(): void
     {
-        $moduleid = $this->request->post('moduleid');
+        $module_id = $this->request->post('module_id');
         $module = CmsLogic::getInstance()->module;
-        $moduleInfo = $module[$moduleid] ?? [];
+        $moduleInfo = $module[$module_id] ?? [];
         if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
         $instance = SqlField::getInstance($moduleInfo['name'], "CREATE");
         !$instance->tableExists() && $instance->createTable($moduleInfo);

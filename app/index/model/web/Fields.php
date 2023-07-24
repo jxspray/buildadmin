@@ -9,7 +9,7 @@ class Fields extends \think\Model implements \app\admin\model\cms\CmsModelInterf
 
     public function getColumnAll($param = null): array
     {
-        $param['moduleid'] = $param['moduleid']??1;
-        return $this->where('moduleid', $param['moduleid'])->column("*", 'field');
+        $param['module_id'] = $param['module_id']??1;
+        return $this->where('module_id', $param['module_id'])->column("*", 'field');
     }
 }

@@ -1,6 +1,6 @@
 export default {
     "id": "id",
-    "moduleid": "moduleid",
+    "module_id": "module_id",
     "field": "field",
     "name": "name",
     "required": "required",

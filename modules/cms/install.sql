@@ -28,7 +28,7 @@ CREATE TABLE `__PREFIX__cms_catalog`
     `links_value`     text         NOT NULL COMMENT '连接页面(json对象，存在不同的类型)',
     `weigh`           int(5)       NOT NULL COMMENT '权重',
     `module`          varchar(50)  NOT NULL COMMENT '模型',
-    `moduleid`        int(11) DEFAULT NULL COMMENT '模型ID 0为单页',
+    `module_id`        int(11) DEFAULT NULL COMMENT '模型ID 0为单页',
     `blank`           enum ('0','1') DEFAULT '0' COMMENT '新窗口打开:0=否,1=是',
     `show`            enum ('0','1','2','3') DEFAULT '1' COMMENT '显示位置:0=不显示,1=都显示,2=头部显示,3=底部显示',
     `status`          enum ('0','1') DEFAULT '1' COMMENT '状态:0=关闭,1=正常',

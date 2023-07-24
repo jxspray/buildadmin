@@ -90,6 +90,7 @@ trait Backend
                 $this->model->commit();
             } catch (Throwable $e) {
                 $this->model->rollback();
+                \think\facade\Log::error("Msg: {$e->getMessage()}; File: {$e->getFile()}; Line: {$e->getLine()}");
                 $this->error($e->getMessage());
             }
             if ($result !== false) {

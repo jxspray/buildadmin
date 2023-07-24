@@ -3,10 +3,8 @@
         <el-alert class="ba-table-alert" v-if="baTable.table.remark" :title="baTable.table.remark" type="info" show-icon />
 
         <!-- 表格顶部菜单 -->
-        <TableHeader
-            :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('Quick search placeholder', { fields: t('cms.fields.quick Search Fields') })"
-        />
+        <TableHeader :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
+            :quick-search-placeholder="t('Quick search placeholder', { fields: t('cms.fields.quick Search Fields') })" />
 
         <!-- 表格 -->
         <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
@@ -36,7 +34,7 @@ defineOptions({
 const { t } = useI18n()
 const tableRef = ref()
 const baTable = new baTableClass(
-    new baTableApi('/admin/user.User/'),
+    new baTableApi('/admin/cms.fields/'),
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
@@ -46,12 +44,12 @@ const baTable = new baTableClass(
             { label: t('cms.fields.name'), prop: 'name', align: 'center' },
             { label: t('cms.fields.type'), prop: 'type', align: 'center' },
             { label: t('cms.fields.status'), prop: 'status', align: 'center', render: 'tag', replaceValue: { 0: t('cms.fields.status 0'), 1: t('cms.fields.status 1') } },
-            { label: t('Operate'), align: 'center', width: 100, render: 'buttons', buttons: defaultOptButtons(["weigh-sort","edit","delete"]), operator: false },
+            { label: t('Operate'), align: 'center', width: 100, render: 'buttons', buttons: defaultOptButtons(["weigh-sort", "edit", "delete"]), operator: false },
         ],
         dblClickNotEditColumn: [undefined],
     },
     {
-        defaultItems: {"moduleid":route.query.id,"status":"1"},
+        defaultItems: { "module_id": route.query.module_id, "status": "1" },
     }
 )
 

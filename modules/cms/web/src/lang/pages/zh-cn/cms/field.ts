@@ -1,6 +1,6 @@
 export default {
     "id": "ID",
-    "moduleid": "模型ID",
+    "module_id": "模型ID",
     "field": "字段名",
     "name": "别名",
     "required": "必填",

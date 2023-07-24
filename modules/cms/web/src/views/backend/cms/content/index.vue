@@ -53,7 +53,7 @@ const baTable = new baTableClass(
             { label: t('routine.cms.catalog.links_type'), prop: 'links_type', align: 'center', render: 'tag', replaceValue: { 0: t('routine.cms.catalog.links_type 0'), 1: t('routine.cms.catalog.links_type 1') } },
             { label: t('routine.cms.catalog.weigh'), prop: 'weigh', align: 'center', sortable: 'custom', operator: false },
             { label: t('routine.cms.catalog.module'), prop: 'module', align: 'center' },
-            { label: t('routine.cms.catalog.moduleid'), prop: 'moduleid', align: 'center', operator: 'RANGE' },
+            { label: t('routine.cms.catalog.module_id'), prop: 'module_id', align: 'center', operator: 'RANGE' },
             { label: t('routine.cms.catalog.blank'), prop: 'blank', align: 'center', operator: 'RANGE' },
             { label: t('routine.cms.catalog.show'), prop: 'show', align: 'center', operator: 'RANGE' },
             { label: t('routine.cms.catalog.status'), prop: 'status', align: 'center', render: 'tag', replaceValue: { 0: t('routine.cms.catalog.status 0'), 1: t('routine.cms.catalog.status 1') } },

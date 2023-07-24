@@ -95,7 +95,7 @@ class Module extends Model
         /* 删除表 */
         $sqlFieldInstance->tableExists() && $sqlFieldInstance->deleteTable();
         /* 清空字段 */
-        (new Fields)->where('moduleid', $model['id'])->delete();
+        (new Fields)->where('module_id', $model['id'])->delete();
         /* 删除菜单 */
         return Menu::delete($model['path'], true);
     }

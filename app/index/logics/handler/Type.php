@@ -6,10 +6,10 @@ use app\index\logics\CmsLogic;
 
 class Type
 {
-    private $ALLOW_TYPE = [];
-    private $TYPE = [];
+    private array $ALLOW_TYPE = [];
+    private array $TYPE = [];
 
-    private $param = [];
+    private array $param = [];
 
     public function __construct($allow_type, $type = null)
     {
@@ -58,7 +58,7 @@ class Type
             if ($type == 'field' && !in_array($name, $this->TYPE)) {
                 $module = cms('module');
                 if (!isset($module[$id])) return false;
-                $this->setParam($name, 'type', $type)->setParam($name, 'moduleid', $id);
+                $this->setParam($name, 'type', $type)->setParam($name, 'module_id', $id);
                 $this->TYPE[] = $name;
             }
         }
@@ -68,7 +68,7 @@ class Type
         return false;
     }
 
-    private function setParam($name, $query, $value)
+    private function setParam($name, $query, $value): static
     {
         $this->param[$name][$query] = $value;
         return $this;

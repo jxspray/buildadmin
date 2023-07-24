@@ -31,12 +31,12 @@
                     <el-tab-pane :label="t('cms.catalog.base')">
                         <FormItem
                             type="remoteSelect"
-                            :label="t('cms.catalog.moduleid')"
-                            v-model="baTable.form.items!.moduleid"
+                            :label="t('cms.catalog.module_id')"
+                            v-model="baTable.form.items!.module_id"
                             :input-attr="{
                                 field: 'title',
                                 'remote-url': '/admin/cms.module/index',
-                                placeholder: t('Please select field', { field: t('cms.catalog.moduleid') })
+                                placeholder: t('Please select field', { field: t('cms.catalog.module_id') })
                             }"
                         />
                         <FormItem

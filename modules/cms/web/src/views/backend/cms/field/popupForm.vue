@@ -26,7 +26,7 @@
                     :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules"
                 >
-                <FormItem :label="t('routine.cms.field.moduleid')" type="number" prop="moduleid" v-model.number="baTable.form.items!.moduleid" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('routine.cms.field.moduleid') }) }" />
+                <FormItem :label="t('routine.cms.field.module_id')" type="number" prop="module_id" v-model.number="baTable.form.items!.module_id" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('routine.cms.field.module_id') }) }" />
                 <FormItem :label="t('routine.cms.field.field')" type="string" v-model="baTable.form.items!.field" prop="field" :input-attr="{ placeholder: t('Please input field', { field: t('routine.cms.field.field') }) }" />
                 <FormItem :label="t('routine.cms.field.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('routine.cms.field.name') }) }" />
                 <FormItem :label="t('routine.cms.field.required')" type="radio" v-model="baTable.form.items!.required" prop="required" :data="{ content: { 0: t('routine.cms.field.required 0'), 1: t('routine.cms.field.required 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('routine.cms.field.required') }) }" />
@@ -67,7 +67,7 @@ const baTable = inject('baTable') as baTableClass
 const { t } = useI18n()
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
-    moduleid: [buildValidatorData('required', t('routine.cms.field.moduleid'))],
+    module_id: [buildValidatorData('required', t('routine.cms.field.module_id'))],
     field: [buildValidatorData('required', t('routine.cms.field.field'))],
     name: [buildValidatorData('required', t('routine.cms.field.name'))],
     errormsg: [buildValidatorData('required', t('routine.cms.field.errormsg'))],

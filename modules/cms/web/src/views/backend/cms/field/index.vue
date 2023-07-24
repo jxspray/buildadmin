@@ -38,7 +38,7 @@ const baTable = new baTableClass(
         column: [
             { type: 'selection', align: 'center', operator: false },
             { label: t('routine.cms.field.id'), prop: 'id', align: 'center', width: 70, sortable: 'custom', operator: 'RANGE' },
-            { label: t('routine.cms.field.moduleid'), prop: 'moduleid', align: 'center', operator: 'RANGE' },
+            { label: t('routine.cms.field.module_id'), prop: 'module_id', align: 'center', operator: 'RANGE' },
             { label: t('routine.cms.field.field'), prop: 'field', align: 'center' },
             { label: t('routine.cms.field.name'), prop: 'name', align: 'center' },
             { label: t('routine.cms.field.required'), prop: 'required', align: 'center', render: 'tag', replaceValue: { 0: t('routine.cms.field.required 0'), 1: t('routine.cms.field.required 1') } },
@@ -55,7 +55,7 @@ const baTable = new baTableClass(
         defaultOrder: { prop: 'id', order: 'desc' },
     },
     {
-        defaultItems: {"moduleid":"0","required":"0","issole":"0","listorder":"0","status":"1","issystem":"0"},
+        defaultItems: {"module_id":"0","required":"0","issole":"0","listorder":"0","status":"1","issystem":"0"},
     }
 )
 

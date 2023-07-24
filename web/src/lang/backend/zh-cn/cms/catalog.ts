@@ -20,7 +20,7 @@ export default {
     "links_value": "连接页面(json对象,存在不同的类型)",
     "weigh": "权重",
     "module": "模型",
-    "moduleid": "模型",
+    "module_id": "模型",
     "blank": "新窗口打开",
     "blank 0": "否",
     "blank 1": "是",

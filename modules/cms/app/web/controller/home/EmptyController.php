@@ -29,7 +29,7 @@ class EmptyController extends Action
                 $catid = $catid ?: CmsLogic::$ruleList[$catdir];
             }
             if ($catid) {
-                if ($catalogs[$catid]['moduleid'] > 0) {
+                if ($catalogs[$catid]['module_id'] > 0) {
                     $module = $catalogs[$catid]['module'];
                     $action = 'catalog';
                 } else {
