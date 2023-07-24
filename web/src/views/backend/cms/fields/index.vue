@@ -5,7 +5,7 @@
         <!-- 表格顶部菜单 -->
         <TableHeader
             :buttons="['refresh', 'add', 'edit', 'delete', 'comSearch', 'quickSearch', 'columnDisplay']"
-            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('cms.field.quick Search Fields') })"
+            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('cms.fields.quick Search Fields') })"
             @action="baTable.onTableHeaderAction"
         />
 
@@ -40,12 +40,12 @@ const baTable = new baTableClass(
         pk: 'id',
         column: [
             { type: 'selection', align: 'center', operator: false },
-            // { label: t('cms.field.id'), prop: 'id', align: 'center', width: 70, sortable: 'custom', operator: 'RANGE' },
+            // { label: t('cms.fields.id'), prop: 'id', align: 'center', width: 70, sortable: 'custom', operator: 'RANGE' },
             { label: t('cms.module.title'), prop: 'module.title', align: 'center', operator: 'RANGE' },
-            { label: t('cms.field.field'), prop: 'field', align: 'center' },
-            { label: t('cms.field.name'), prop: 'name', align: 'center' },
-            { label: t('cms.field.type'), prop: 'type', align: 'center' },
-            { label: t('cms.field.status'), prop: 'status', align: 'center', render: 'tag', replaceValue: { 0: t('cms.field.status 0'), 1: t('cms.field.status 1') } },
+            { label: t('cms.fields.field'), prop: 'field', align: 'center' },
+            { label: t('cms.fields.name'), prop: 'name', align: 'center' },
+            { label: t('cms.fields.type'), prop: 'type', align: 'center' },
+            { label: t('cms.fields.status'), prop: 'status', align: 'center', render: 'tag', replaceValue: { 0: t('cms.fields.status 0'), 1: t('cms.fields.status 1') } },
             { label: t('operate'), align: 'center', width: 100, render: 'buttons', buttons: optButtons, operator: false },
         ],
         dblClickNotEditColumn: [undefined, ],
