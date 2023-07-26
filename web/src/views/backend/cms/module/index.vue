@@ -70,11 +70,14 @@ const baTable = new baTableClass(
             { label: t('cms.module.status'), prop: 'status', align: 'center', render: 'tag', replaceValue: { 1: t('cms.module.status 1'), 0: t('cms.module.status 0') } },
             { label: t('operate'), align: 'center', width: 140, render: 'buttons', buttons: optButtons, operator: false },
         ],
-        dblClickNotEditColumn: [undefined, ],
+        dblClickNotEditColumn: [undefined],
         defaultOrder: { prop: 'weigh', order: 'desc' },
     },
     {
-        defaultItems: {},
+        defaultItems: {
+            "type": "1",
+            "status": "1"
+        },
     }
 )
 

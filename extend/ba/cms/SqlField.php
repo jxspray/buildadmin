@@ -33,12 +33,12 @@ class SqlField
     /**
      * @var self
      */
-    private static $instance = false;
+    private static SqlField $instance;
 
     public static function getInstance($name = '', $pattern = null): SqlField|bool
     {
         static $oldName = '';
-        if (self::$instance === false || $oldName != $name) {
+        if ($oldName != $name) {
             $name = strtolower($name);
             $prefix = env('database.prefix', 'ba_');
             $tableName = "cms_$name";

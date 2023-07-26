@@ -38,7 +38,6 @@ const baTable = new baTableClass(
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
-            // { label: t('cms.fields.id'), prop: 'id', align: 'center', width: 70, sortable: 'custom', operator: 'RANGE' },
             { label: t('cms.module.title'), prop: 'module.title', align: 'center', operator: 'RANGE' },
             { label: t('cms.fields.field'), prop: 'field', align: 'center' },
             { label: t('cms.fields.name'), prop: 'name', align: 'center' },

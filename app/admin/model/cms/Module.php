@@ -4,6 +4,7 @@ namespace app\admin\model\cms;
 
 use app\common\library\Menu;
 use app\index\logics\CmsLogic;
+use ba\cms\CmsSql;
 use ba\cms\SqlField;
 use ba\Terminal;
 use think\db\exception\DataNotFoundException;
@@ -34,7 +35,7 @@ class Module extends Model
     public static function onBeforeInsert(self $model): bool
     {
         /* 检查数据表是否存在 */
-        if (SqlField::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
+        if (CmsSql::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
 
         $name = strtolower($model['name']);
         $model['path'] = "cms/content/$name";
