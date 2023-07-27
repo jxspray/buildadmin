@@ -17,7 +17,8 @@ use think\facade\Cache;
  * @Description
  * @Author jxspray@163.com
  * @Time 2022/9/1
- * @property $field_1
+ *
+ * @property $fields
  * @property $module
  * @property $catalog
  * @property $rule
@@ -26,7 +27,7 @@ class CmsLogic
 {
     const PREFIX = "cms_";
     const basePath = "app\\index\\controller\\web";
-    const ALLOW_TYPE = ['module', 'catalog', 'rule', 'field'];
+    const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
 
     private Type $typeItem;
 
@@ -49,7 +50,7 @@ class CmsLogic
         self::getInstance();
     }
 
-    public static function getInstance()
+    public static function getInstance(): ?CmsLogic
     {
         if (is_null(self::$instance)) self::$instance = new self();
         return self::$instance;
@@ -83,7 +84,7 @@ class CmsLogic
         }
     }
 
-    public static function update(\app\admin\model\cms\CmsModelInterface $instance, array $data, mixed $value, bool $isDelete)
+    public static function update(\app\admin\model\cms\CmsModelInterface $instance, array $data, mixed $value, bool $isDelete): array
     {
         if (is_numeric($value) && $isDelete && isset($data[$value])) {
             unset($data[$value]);
@@ -93,7 +94,7 @@ class CmsLogic
         return $data;
     }
 
-    public static function updateCatalog(mixed $value = [], bool $isDelete = false)
+    public static function updateCatalog(mixed $value = [], bool $isDelete = false): array
     {
         static $instance = false;
         if ($instance === false) $instance = new Catalog();
@@ -112,12 +113,13 @@ class CmsLogic
 
     public function __call($name, $arguments)
     {
-        // TODO: Implement __call() method.
+        if ($name == 'forceUpdate') self::getInstance()->forceUpdate($arguments[0]);
+        else abort(500, "方法{$name}不存在");
     }
 
     public static function __callStatic($name, $arguments)
     {
         if ($name == 'forceUpdate') self::getInstance()->forceUpdate($arguments[0]);
-         else abort(500, "方法{$name}不存在");
+        else abort(500, "方法{$name}不存在");
     }
 }

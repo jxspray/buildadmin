@@ -1,32 +1,6 @@
 <template>
     <!-- 对话框表单 -->
     <el-dialog
-        v-if="baTable.form.operate == 'design'"
-        class="ba-design-dialog"
-        :close-on-click-modal="false"
-        :model-value="baTable.form.operate ? true : false"
-        width="95%"
-        top="5vh"
-        @close="baTable.toggleForm">
-        <template #header>
-            <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-design-dialog'">
-                {{ baTable.form.operate ? t("cms.module.design") : '' }}
-            </div>
-        </template>
-        <el-scrollbar v-loading="baTable.form.loading" class="ba-table-form-scrollbar">
-            <Design />
-        </el-scrollbar>
-        <template #footer>
-            <div :style="'width: calc(100% - ' + baTable.form.labelWidth! / 1.8 + 'px)'">
-                <el-button @click="baTable.toggleForm('')">{{ t('Cancel') }}</el-button>
-                <el-button v-blur :loading="baTable.form.submitLoading" @click="baTable.onSubmit(formRef)" type="primary">
-                    {{ baTable.form.operateIds && baTable.form.operateIds.length > 1 ? t('Save and edit next item') : t('Save') }}
-                </el-button>
-            </div>
-        </template>
-    </el-dialog>
-    <el-dialog
-        v-else
         class="ba-operate-dialog"
         :close-on-click-modal="false"
         :model-value="baTable.form.operate ? true : false"
@@ -63,9 +37,11 @@
                 <FormItem :label="t('cms.module.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 1: t('cms.module.status 1'), 0: t('cms.module.status 0') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.module.status') }) }" />
 
 
-                <FormItem v-if="baTable.form.operate == 'add'"
+                <FormItem 
+                    v-if="baTable.form.operate == 'Add'"
                     :label="t('cms.module.template')"
-                    type="radio" v-model="baTable.form.items!.template"
+                    type="radio" 
+                    v-model="baTable.form.items!.template"
                     prop="template"
                     :data="{ content: { 'empty': t('cms.module.empty template'), 'article': t('cms.module.article template') } }"
                     :input-attr="{ placeholder: t('Please select field', { field: t('cms.module.template') }) }"
@@ -101,7 +77,7 @@ baTable.after = {
     onSubmit: function (res: any){
         if (res.res.code == 1 && res.res.data?.id > 0) {
             // 执行模板字段创建
-            // baTable.api.postData('createTemplateField', { module_id: res.res.data.id })
+            baTable.api.postData('createTemplateField', { module_id: res.res.data.id })
         }
     }
 }

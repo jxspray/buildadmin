@@ -2,23 +2,11 @@
 
 namespace app\admin\model\cms;
 
-use app\common\library\Menu;
-use app\index\logics\CmsLogic;
-use ba\cms\CmsSql;
-use ba\cms\SqlField;
-use ba\Terminal;
-use think\db\exception\DataNotFoundException;
-use think\db\exception\DbException;
-use think\db\exception\ModelNotFoundException;
-use think\facade\Config;
-use think\facade\Db;
-use think\Model;
-
 /**
  * Module
  * @controllerUrl 'cmsModule'
  */
-class Module extends Model
+class Module extends \think\Model
 {
     // 表名
     protected $name = 'cms_module';
@@ -32,31 +20,35 @@ class Module extends Model
     protected $type = [
     ];
 
+    /**
+     * @param self $model
+     * @return bool
+     * @throws \Exception
+     */
     public static function onBeforeInsert(self $model): bool
     {
         /* 检查数据表是否存在 */
-        if (CmsSql::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
+        if (\ba\cms\CmsSql::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
 
-        $name = strtolower($model['name']);
+        $model['name'] = $name = strtolower($model['name']);
         $model['path'] = "cms/content/$name";
         if (empty($name)) return false;
         return true;
     }
 
     /**
-     * @throws ModelNotFoundException
-     * @throws DataNotFoundException
-     * @throws DbException
+     * @param Model $model
+     * @return void
+     * @throws \Throwable
      */
-    public static function onAfterInsert(Model $model): void
+    public static function onAfterInsert(self $model): void
     {
         if ($model->weigh == 0) {
             $pk = $model->getPk();
             $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
         }
+        $name = $model['name'];
 
-        $name = strtolower($model['name']);
-        $model['path'] = "cms/content/$name";
         /* 添加菜单 */
         $menu = [
             'type' => 'menu',
@@ -75,30 +67,29 @@ class Module extends Model
                 ['type' => 'button', 'title' => '快速排序', 'name' => "cms/content/$name/sortable"],
             ]
         ];
-        Menu::create([$menu], 'cms');
+        \app\common\library\Menu::create([$menu], 'cms');
     }
 
     public static function onAfterWrite(self $model): void
     {
-        CmsLogic::getInstance()->forceUpdate('module');
+        \app\index\logics\CmsLogic::getInstance()->forceUpdate('module');
     }
 
     /**
-     * @throws ModelNotFoundException
-     * @throws DataNotFoundException
-     * @throws DbException
+     * @param Module $model
+     * @return bool
      * @throws \Throwable
      */
     public static function onBeforeDelete(self $model): bool
     {
         // 执行模型卸载程序
-        $sqlFieldInstance = SqlField::getInstance($model['name']);
+        $cmsSqlInstance = \ba\cms\CmsSql::getInstance($model['name']);
         /* 删除表 */
-        $sqlFieldInstance->tableExists() && $sqlFieldInstance->deleteTable();
+        $cmsSqlInstance->tableExists() && $cmsSqlInstance->deleteTable();
         /* 清空字段 */
-        (new Fields)->where('module_id', $model['id'])->delete();
+        Fields::where('module_id', $model['id'])->delete();
         /* 删除菜单 */
-        return Menu::delete($model['path'], true);
+        return \app\common\library\Menu::delete($model['path'], true);
     }
 
     public function setGenerateAttr($value, $data): string

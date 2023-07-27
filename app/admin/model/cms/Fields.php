@@ -2,7 +2,6 @@
 
 namespace app\admin\model\cms;
 
-use ba\cms\SqlField;
 use think\Model;
 
 /**
@@ -12,7 +11,7 @@ use think\Model;
 class Fields extends Model
 {
     // 表名
-    protected $name = 'cms_field';
+    protected $name = 'cms_fields';
 
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = true;
@@ -22,30 +21,41 @@ class Fields extends Model
 
     protected $json = ['setup'];
 
+    /**
+     * @param Fields $model
+     * @return void
+     * @throws \Exception
+     */
     public static function onAfterInsert(self $model): void
     {
         if ($model->weigh == 0) {
             $pk = $model->getPk();
             $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
         }
-        if ($model->getSqlFieldInstance()->tableExists() && ($res = $model->getSqlFieldInstance()->getTypeResult($model->getData())) && !empty($res[0]??'')) {
-            $model->getSqlFieldInstance()->execute($res[0]);
-        }
+        $model->getSqlFieldInstance()->saveField($model->getData());
     }
 
+    /**
+     * @param Fields $model
+     * @return void
+     * @throws \Exception
+     */
     public static function onAfterUpdate(self $model): void
     {
-        if ($model->getSqlFieldInstance()->tableExists() && ($res = $model->getSqlFieldInstance()->getTypeResult($model->getData(), $model->getOriginData(), ['field', 'setup', 'comment'])) && !empty($res[0]??'')) {
-            $model->getSqlFieldInstance()->execute($res[0]);
-        }
+        $model->getSqlFieldInstance()->saveField($model->getData(), $model->getOriginData());
     }
 
+    /**
+     * @param Fields $model
+     * @return void
+     * @throws \Exception
+     */
     public static function onAfterDelete(self $model): void
     {
-        $model->getSqlFieldInstance()->tableExists() && $model->getSqlFieldInstance()->deleteField($model['field']);
+        $model->getSqlFieldInstance()->deleteField($model['field']);
     }
 
-    public function getSqlFieldInstance(): SqlField|bool|null
+    public function getSqlFieldInstance(): \ba\cms\CmsSql
     {
         static $instance = null;
         if ($instance === null) {
@@ -53,7 +63,7 @@ class Fields extends Model
             $module = cms("module");
             $moduleInfo = $module[$data['module_id']] ?? [];
             if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
-            $instance = SqlField::getInstance($moduleInfo['name']);
+            $instance = \ba\cms\CmsSql::getInstance($moduleInfo['name'], "ADD");
         }
         return $instance;
     }
@@ -61,7 +71,7 @@ class Fields extends Model
     public function getOriginData()
     {
         static $data = null;
-        if ($data === null) $data = json_decode(json_encode($this->getOrigin()), true);
+        if ($data === null) $data = $this->getOrigin();
         return $data;
     }
 

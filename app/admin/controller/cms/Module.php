@@ -2,17 +2,11 @@
 
 namespace app\admin\controller\cms;
 
-use app\common\controller\Backend;
-use app\index\logics\CmsLogic;
-use ba\cms\SqlField;
-use think\db\exception\PDOException;
-use think\exception\ValidateException;
-
 /**
  * 模型管理
  *
  */
-class Module extends Backend
+class Module extends \app\common\controller\Backend
 {
     protected string|array $quickSearchField = ['id'];
 
@@ -51,8 +45,9 @@ class Module extends Backend
                 }
                 $result = $this->model->save($data);
                 $this->model->commit();
-            } catch (ValidateException|PDOException|\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->model->rollback();
+                \think\facade\Log::error("Msg: {$e->getMessage()}; File: {$e->getFile()}; Line: {$e->getLine()}");
                 $this->error($e->getMessage());
             }
             if ($result !== false) {
@@ -65,64 +60,18 @@ class Module extends Backend
         $this->error(__('Parameter error'));
     }
 
-    public function edit(): void
-    {
-        $id  = $this->request->param($this->model->getPk());
-        $row = $this->model->find($id);
-        if (!$row) {
-            $this->error(__('Record not found'));
-        }
-
-        $dataLimitAdminIds = $this->getDataLimitAdminIds();
-        if ($dataLimitAdminIds && !in_array($row[$this->dataLimitField], $dataLimitAdminIds)) {
-            $this->error(__('You have no permission'));
-        }
-
-        if ($this->request->isPost()) {
-            $data = $this->request->post();
-            if (!$data) {
-                $this->error(__('Parameter %s can not be empty', ['']));
-            }
-
-            $data   = $this->excludeFields($data);
-            $result = false;
-            $this->model->startTrans();
-            try {
-                // 模型验证
-                if ($this->modelValidate) {
-                    $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
-                    if (class_exists($validate)) {
-                        $validate = new $validate;
-                        if ($this->modelSceneValidate) $validate->scene('edit');
-                        $validate->check($data);
-                    }
-                }
-                $result = $row->save($data);
-                $this->model->commit();
-            } catch (ValidateException|PDOException|\Exception $e) {
-                $this->model->rollback();
-                $this->error($e->getMessage());
-            }
-            if ($result !== false) {
-                $this->success(__('Update successful'), $row->getData());
-            } else {
-                $this->error(__('No rows updated'));
-            }
-
-        }
-
-        $this->success('', [
-            'row' => $row
-        ]);
-    }
-
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function createTemplateField(): void
     {
         $module_id = $this->request->post('module_id');
-        $module = CmsLogic::getInstance()->module;
+
+        $module = cms("module");
         $moduleInfo = $module[$module_id] ?? [];
         if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
-        $instance = SqlField::getInstance($moduleInfo['name'], "CREATE");
+        $instance = \ba\cms\CmsSql::getInstance($moduleInfo['name'], "CREATE");
         !$instance->tableExists() && $instance->createTable($moduleInfo);
 
         $this->success("模板字段创建成功");
