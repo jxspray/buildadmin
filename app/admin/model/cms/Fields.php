@@ -3,6 +3,7 @@
 namespace app\admin\model\cms;
 
 use think\Model;
+use think\model\concern\SoftDelete;
 
 /**
  * Field

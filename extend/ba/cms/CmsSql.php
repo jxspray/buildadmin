@@ -59,8 +59,7 @@ class CmsSql
         $checkChange = ['field', 'setup', 'comment'];
         $res = $originData ? $this->getTypeResult($data, $originData, $checkChange) : $this->getTypeResult($data);
         if (!$res) return false;
-        var_dump($res[0]);die;
-        $this->run('execute', $res[0]);
+        $this->run('execute', "ALTER TABLE `{$this->table}` {$res[0]}");
         return true;
     }
 

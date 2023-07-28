@@ -48,8 +48,7 @@ const baTable = new baTableClass(
         dblClickNotEditColumn: [undefined],
     },
     {
-        defaultItems: { "module_id": route.query.module_id, "status": "1",
-            "comment": "test" },
+        defaultItems: { "module_id": route.query.module_id, "status": "1", "comment": "test" },
     }
 )
 
