@@ -10,21 +10,16 @@ use app\common\controller\Backend;
  */
 class Content extends Backend
 {
-    /**
-     * Cms模型对象
-     * @var \app\admin\model\cms\(.*)
-     */
-    protected $model = null;
-    protected $cont = self::class;
+    protected string $con = self::class;
 
-    protected $quickSearchField = ['id'];
+    protected string|array $quickSearchField = ['id'];
 
-    protected $defaultSortField = 'weigh,desc';
+    protected string|array $defaultSortField = 'weigh,desc';
 
-    protected $preExcludeFields = [''];
+    protected string|array $preExcludeFields = [];
 
 
-    public function initialize()
+    public function initialize(): void
     {
         $route = $this->request->get('route');
         if ($route && $module = \app\admin\model\cms\Module::where('path', $route)->find()) {
@@ -32,8 +27,8 @@ class Content extends Backend
             /* 检查控制器是否存在 */
             $controllerClass = "\app\admin\controller\cms\contents\\$name";
             if (class_exists($controllerClass)) {
-                $this->cont = new $controllerClass;
-                $this->cont::initialize();
+                $this->con = new $controllerClass;
+                $this->con::initialize();
             }
             /* 检查模型是否存在 */
             $modelClass = "\app\admin\model\cms\contents\\$name";

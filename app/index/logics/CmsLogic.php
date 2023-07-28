@@ -18,7 +18,7 @@ use think\facade\Cache;
  * @Author jxspray@163.com
  * @Time 2022/9/1
  *
- * @property $fields
+ * @property $field_1
  * @property $module
  * @property $catalog
  * @property $rule

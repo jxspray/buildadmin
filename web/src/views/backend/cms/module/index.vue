@@ -77,7 +77,6 @@ const baTable = new baTableClass(
         defaultItems: {
             "type": "1",
             "status": "1",
-            "weigh": "0",
             "template": "article"
         },
     }

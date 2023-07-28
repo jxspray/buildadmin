@@ -56,6 +56,12 @@ class Fields extends Backend
         ]);
     }
 
+    /**
+     * @return void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function getFields(): void
     {
         $route = $this->request->get('route');

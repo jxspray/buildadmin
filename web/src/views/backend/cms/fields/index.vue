@@ -38,7 +38,7 @@ const baTable = new baTableClass(
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
-            { label: t('cms.module.title'), prop: 'module.title', align: 'center', operator: 'RANGE' },
+            { label: t('cms.module.title'), prop: 'module.title', align: 'center' },
             { label: t('cms.fields.field'), prop: 'field', align: 'center' },
             { label: t('cms.fields.name'), prop: 'name', align: 'center' },
             { label: t('cms.fields.type'), prop: 'type', align: 'center' },
@@ -46,6 +46,7 @@ const baTable = new baTableClass(
             { label: t('Operate'), align: 'center', width: 100, render: 'buttons', buttons: defaultOptButtons(["weigh-sort", "edit", "delete"]), operator: false },
         ],
         dblClickNotEditColumn: [undefined],
+        filter: { module_id: route.query.module_id },
     },
     {
         defaultItems: { "module_id": route.query.module_id, "status": "1", "comment": "test" },

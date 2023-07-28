@@ -1,12 +1,12 @@
 <template>
-    <el-form-item :label="t('cms.fields.type')">
+<!-- 字段属性 -->
+    <el-form-item :label="t('cms.fields.type')" prop="type">
         <el-select v-model="baTable.form.items!.type" placeholder="请选择">
-            <el-option-group v-for="group in stateCustom.optionGroup" :key="group.label" :label="group.label">
+            <el-option-group v-for="group in stateCustom.optionGroup" :key="group.label" :label="t('cms.fields.' + group.label)">
                 <el-option v-for="item in group.options" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-option-group>
         </el-select>
     </el-form-item>
-
     <FormItem 
         :label="t('文本框类型')" type="radio" v-model="form.setup!.type" :input-attr="{ size: 'large' }"
         :data="{ childrenAttr: { border: false }, content: checkboxFormat(['string', 'textarea', 'number', 'password']) }"
@@ -35,7 +35,7 @@
             <el-input style="width:120px" placeholder="选项键" :disabled="true"></el-input>
             <el-input style="width:120px;margin-left: 5px;" placeholder="选项值" :disabled="true"></el-input>
         </el-form-item>
-        <el-form-item style="text-align: center;" v-for="(item, index) in form.setup!.options">
+        <el-form-item style="text-align: center;" v-for="(item, index) in form.setup!.options" :key="index">
             <el-input
                 style="width:120px" placeholder="请输入选项键" v-model="item.key" autocomplete="off"
                 :disabled="form.setup!.type != 'keyValue'"></el-input>
@@ -48,7 +48,6 @@
             <el-button type="success" @click="addOption({ key: '', value: '', type: 'select' })">添加</el-button>
         </div>
     </template>
-
     <!-- 设置步长 -->
     <FormItem 
         v-if="state!.setting.includes('selectNum')" :label="t('最大选择数')" type="number" prop="maxSelect"
@@ -69,26 +68,31 @@
             :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('最多选择数') }) }" />
     </template>
     <FormItem 
-        v-if="state!.setting.includes('selectNum')" :label="t('选择类型')" type="radio" v-model="form.setup!.type"
+        v-if="state!.setting.includes('datePicker')" :label="t('选择类型')" type="radio" v-model="form.setup!.type"
         :input-attr="{ size: 'large' }"
         :data="{ childrenAttr: { border: false }, content: checkboxFormat(['datetime', 'year', 'date', 'time']) }" />
     <template v-if="baTable.form.items!.type == 'city'">
     </template>
-    <template v-if="baTable.form.items!.type == 'upload'">
-        <FormItem 
-            :label="t('上传类型')" type="radio" v-model="form.setup!.type" :input-attr="{ size: 'large' }"
-            :data="{ childrenAttr: { border: false }, content: checkboxFormat(['image', 'file']) }" />
-        <FormItem 
-            :label="t('cms.fields.allowFormat')" type="checkbox" v-model="form.setup!.allowFormat"
-            :input-attr="{ size: 'large' }"
-            :data="{ childrenAttr: { border: false }, content: checkboxFormat(imageAllowFormat) }" />
-        <FormItem 
-            :label="t('cms.fields.maxFileSize')" type="number" prop="maxFileSize"
-            v-model.number="form.setup!.maxFileSize"
-            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.fields.maxFileSize') }) }" />
-        <FormItem 
-            :label="t('最大上传数')" type="number" prop="maxUpload" v-model.number="form.setup!.maxUpload"
-            :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('最大上传数') }) }" />
+    <FormItem 
+        v-if="state!.setting.includes('image')"
+        :label="t('cms.fields.allowFormat')" type="checkbox" v-model="form.setup!.allowFormat"
+        :input-attr="{ size: 'large' }"
+        :data="{ childrenAttr: { border: false }, content: checkboxFormat(uploadAllowFormat.image) }" />
+    <FormItem 
+        v-if="state!.setting.includes('file')"
+        :label="t('cms.fields.allowFormat')" type="checkbox" v-model="form.setup!.allowFormat"
+        :input-attr="{ size: 'large' }"
+        :data="{ childrenAttr: { border: false }, content: checkboxFormat(uploadAllowFormat.file) }" />
+    <FormItem 
+        v-if="state!.setting.includes('upload') || state!.setting.includes('uploads')"
+        :label="t('cms.fields.maxFileSize')" type="number" prop="maxFileSize"
+        v-model.number="form.setup!.maxFileSize"
+        :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.fields.maxFileSize') }) }" />
+    <FormItem 
+        v-if="state!.setting.includes('uploads')"
+        :label="t('最大上传数')" type="number" prop="maxUpload" v-model.number="form.setup!.maxUpload"
+        :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('最大上传数') }) }" />
+    <template v-if="state!.setting.includes('image')">
         <FormItem 
             v-if="form.setup!.type == 'image'" :label="t('图片最大宽度')" type="number" prop="maxWidth"
             v-model.number="form.setup!.maxWidth"
@@ -98,7 +102,7 @@
             v-model.number="form.setup!.maxHight"
             :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('图片最大高度') }) }" />
     </template>
-    <template v-if="baTable.form.items!.type == 'editor'">
+    <template v-if="state!.setting.includes('editor')">
         <FormItem :label="t('自动抓取缩略图')" type="switch" v-model="form.setup!.autoThumb" :input-attr="{ size: 'large' }" />
         <FormItem :label="t('自动抓取关键词')" type="switch" v-model="form.setup!.autoKeyword" :input-attr="{ size: 'large' }" />
         <FormItem 
@@ -111,9 +115,6 @@
             :label="t('截取内容前字数')" type="number" prop="beforeNum" v-model.number="form.setup!.beforeNum"
             :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('截取内容前字数N个作为简介') }) }" />
     </template>
-    <FormItem 
-        :label="t('cms.fields.default')" type="string" prop="default" v-model="form.setup!.default"
-        :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.default') }) }" />
 </template>
 
 <script setup lang="ts">
@@ -125,14 +126,17 @@ import { state as stateCustom, typeOptions } from './index'
 
 const baTable = inject('baTable') as baTableClass
 
-const imageAllowFormat = ['jpg', 'png', 'gif']
-const fileAllowFormat = ['txt', 'pdf', 'crt']
-
 // 键值对同位
 const checkboxFormat = function (format: any[]) {
     return format.reduce((obj, item) => ({ ...obj, [item]: item }), {})
 }
-
+const uploadAllowFormat: {
+    image: string[],
+    file: string[]
+} = {
+    image: ['jpg', 'png', 'gif'],
+    file: ['txt', 'pdf', 'crt']
+}
 const state: {
     setting: string[]
 } = reactive({
@@ -147,7 +151,6 @@ const form: {
     customDefalut: {
         text: {
             type: 'string',
-            section: '',
             numSection: '',
             step: 1,
             linenum: 1,
@@ -167,7 +170,19 @@ const form: {
             options: [],
             maxSelect: 1
         },
+        selects: {
+            type: 'key',
+            options: [],
+            maxSelect: 1
+        },
         remoteSelect: {
+            type: 'key',
+            keyField: 'id',
+            valueField: 'title',
+            remoteName: '',
+            maxSelect: 1
+        },
+        remoteSelects: {
             type: 'key',
             keyField: 'id',
             valueField: 'title',
@@ -177,9 +192,28 @@ const form: {
         datePicker: {
             type: 'datetime'
         },
-        upload: {
-            type: 'image',
-            allowFormat: [],
+        city: {
+        },
+        image: {
+            allowFormat: uploadAllowFormat.image,
+            maxFileSize: 1024, // KB
+            maxUpload: 1,
+            default: ''
+        },
+        images: {
+            allowFormat: uploadAllowFormat.image,
+            maxFileSize: 1024,
+            maxUpload: 1,
+            default: ''
+        },
+        file: {
+            allowFormat: uploadAllowFormat.file,
+            maxFileSize: 1024,
+            maxUpload: 1,
+            default: ''
+        },
+        files: {
+            allowFormat: uploadAllowFormat.file,
             maxFileSize: 1024,
             maxUpload: 1,
             default: ''
@@ -190,7 +224,11 @@ const form: {
             minShow: 3,
             autoDescription: 0,
             beforeNum: 200
-        }
+        },
+        custom: {
+        },
+        tag: {
+        },
     }
 })
 
@@ -210,6 +248,7 @@ let val: any[]
 const setSetup = (type: string) => {
     let setup: any = {}
     if (type in form.customDefalut) {
+        state.setting = typeOptions[type]!.setting || []
         val = form.customDefalut[type]
         if (!form.setup) setup = val
         else {
@@ -224,7 +263,6 @@ const setSetup = (type: string) => {
 setSetup(baTable.form.items!.type)
 
 watch(() => baTable.form.items!.type, (newVal) => {
-    state.setting = typeOptions[baTable.form.items!.type]!.setting || []
     setSetup(newVal)
 })
 

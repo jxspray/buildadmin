@@ -115,6 +115,11 @@ class CmsSql
         return true;
     }
 
+    /**
+     * @param array $moduleRow
+     * @return array
+     * @throws Exception
+     */
     protected function createField(array $moduleRow): array
     {
         $data = [];
@@ -122,21 +127,22 @@ class CmsSql
         $sqlList = [];
         switch ($moduleRow['template']) {
             case 'article':
-                $data[] = $this->assembleField('catid', $this->select(['remark' => '栏目']), '栏目');
-                $data[] = $this->assembleField('title', $this->text(['remark' => '标题']), '标题');
-                $data[] = $this->assembleField('keywords', $this->text(['remark' => '关键词']), '关键词');
-                $data[] = $this->assembleField('description', $this->text(['remark' => '描述']), '描述');
-                $data[] = $this->assembleField('status', $this->radio(['default' => 0, 'listorder' => 99, 'remark' => '状态']), '状态');
+                $data['catid'] = $this->select(['field' => 'catid', 'remark' => '栏目', 'comment' => '栏目']);
+                $data['title'] = $this->text(['field' => 'title', 'remark' => '标题', 'comment' => '标题']);
+                $data['keywords'] = $this->text(['field' => 'keywords', 'remark' => '关键词', 'comment' => '关键词']);
+                $data['description'] = $this->text(['field' => 'description', 'remark' => '描述', 'comment' => '描述']);
+                $data['status'] = $this->radio(['field' => 'status', 'default' => 0, 'listorder' => 99, 'remark' => '状态', 'comment' => '状态']);
                 break;
             case 'empty':
-                $data[] = $this->assembleField('status', $this->radio(['default' => 0, 'listorder' => 99, 'remark' => '状态']), '状态');
+                $data['status'] = $this->radio(['default' => 0, 'listorder' => 99, 'remark' => '状态', 'comment' => '状态']);
                 break;
         }
         $sqlList[] = "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID'";
-        foreach ($data as $datum) {
+        foreach ($data as $field => $datum) {
             $datum[1]['module_id'] = $moduleRow['id'];
             $fieldList[] = $datum[1];
-            $sqlList[] = $datum[0];
+
+            $sqlList[] = "{$this->getHead($field)} {$datum[0]} {$this->assembleField($datum[1]['comment']??'', $datum[1]['default']??'')}";
         }
         $sqlList[] = "`weigh` int(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序'";
         $sqlList[] = "`lang` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '语言ID'";
@@ -150,7 +156,6 @@ class CmsSql
         if ($default === NULL) $default = "DEFAULT NULL";
         else $default = "NOT NULL DEFAULT '$default'";
         if (!empty($comment)) $comment = "COMMENT '$comment'";
-
         return "{$default} {$comment}";
     }
 
@@ -160,41 +165,51 @@ class CmsSql
      */
     public function deleteTable(): bool
     {
-        return $this->run('execute',"DROP TABLE {$this->table}", true);
+        return $this->tableExists() && $this->run('execute',"DROP TABLE {$this->table}", true);
     }
 
     /* ######################################################### 组件 ######################################################## */
     /**
-     * @param array $res
+     * @param array $data
      * @return array
      */
-    public function text(array $res): array
+    public function text(array $data): array
     {
-        extract($res);
+        extract($data);
         $setup = $setup ?? [];
-        return [match ($setup['type']) {
+        return [match ($setup['type']??'string') {
             "string", "textarea", "password" => $this->_varchar($setup),
             "number" => $this->_int($setup)
-        }, $setup, __FUNCTION__];
+        }, $data, __FUNCTION__];
     }
 
     /**
-     * @param array $res
+     * @param array $data
      * @return array
      */
-    public function select(array $res): array
+    public function select(array $data): array
     {
-        extract($res);
+        extract($data);
         $setup = $setup ?? [];
-        return [$this->_varchar($setup), $setup, __FUNCTION__];
+        return [$this->_varchar($setup), $data, __FUNCTION__];
     }
 
-    public function radio(array $res): array
+    public function radio(array $data): array
     {
-        extract($res);
+        extract($data);
         $setup = $setup ?? [];
         $setup['options'] = $setup['options'] ?? ['0' => '否', '1' => '是'];
-        return [$this->_enum($setup), $setup, __FUNCTION__];
+        return [$this->_enum($setup), $data, __FUNCTION__];
+    }
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function image(array $data): array
+    {
+        extract($data);
+        $setup = $setup ?? [];
+        return [$this->_varchar($setup), $data, __FUNCTION__];
     }
 
     /* ####################################################### 常用字段类型 ###################################################### */

@@ -2,57 +2,59 @@
 
 namespace app\index\logics\handler;
 
-use app\index\logics\CmsLogic;
-use think\facade\Cache;
-
 class CmsCache
 {
     const CACHE_GET = 'get';
     const CACHE_SET = 'set';
     const CACHE_HAS = 'has';
 
-    private static $instances = [];
+    private static array $instances = [];
 
-    private $name;
+    private string $name;
     /**
-     * @var CmsLogic $logic
+     * @var \app\index\logics\CmsLogic $logic
      */
-    private static $logic;
+    private static \app\index\logics\CmsLogic $logic;
+
     public function __construct($name)
     {
         $this->name = $name;
     }
 
-    public static function getInstance($name){
+    public static function getInstance($name): self
+    {
         if (!isset(self::$instances[$name])) self::$instances[$name] = new self($name);
         return self::$instances[$name];
     }
 
-    public static function setLogic(\app\index\logics\CmsLogic $logic)
+    public static function setLogic(\app\index\logics\CmsLogic $logic): void
     {
         self::$logic = $logic;
     }
 
-    public function cache($type = self::CACHE_GET){
+    public function cache($type = self::CACHE_GET)
+    {
+        $data = null;
         if (is_array($type)) {
             $data = $type;
             $type = self::CACHE_SET;
         }
-        $name = CmsLogic::PREFIX . $this->name;
+        $name = \app\index\logics\CmsLogic::PREFIX . $this->name;
         switch ($type) {
             case self::CACHE_HAS:
-                return Cache::has($name);
+                return \think\facade\Cache::has($name);
             case self::CACHE_SET:
-                Cache::set($name, $data);
+                \think\facade\Cache::set($name, $data);
                 return true;
             case self::CACHE_GET:
             default:
-                return Cache::get($name);
+                return \think\facade\Cache::get($name);
         }
     }
 
     public function checkCache(): self
     {
+        var_dump($this->name);die;
         if (!$this->cache(self::CACHE_HAS)) self::$logic->forceUpdate($this->name);
         return $this;
     }

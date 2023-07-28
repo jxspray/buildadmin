@@ -23,6 +23,9 @@ export default {
     "maxlength": "字段最大长度",
     "default": "默认值",
     "comment": "字段标识",
+    "common": "公共字段",
+    "base": "基础字段",
+    "senior": "高级字段",
     "remark": "备注",
     "quick Search Fields": "ID",
 }

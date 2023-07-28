@@ -29,8 +29,11 @@
                 >
                     <FormItem :label="t('cms.fields.field')" type="string" v-model="baTable.form.items!.field" prop="field" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.field') }) }" />
                     <FormItem :label="t('cms.fields.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.name') }) }" />
-                    <!-- 字段属性 -->
+                    
                     <CustomField />
+                    <FormItem 
+                        :label="t('cms.fields.default')" type="string" prop="default" v-model="baTable.form.items!.default"
+                        :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.default') }) }" />
 
                     <!-- <FormItem :label="t('cms.fields.comment')" type="string" v-model="baTable.form.items!.comment" prop="comment" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.comment') }) }" /> -->
                     <FormItem :label="t('cms.fields.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.fields.remark') }) }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" />

@@ -5,6 +5,8 @@ namespace app\admin\model\cms;
 /**
  * Module
  * @controllerUrl 'cmsModule'
+ *
+ *
  */
 class Module extends \think\Model
 {
@@ -83,9 +85,7 @@ class Module extends \think\Model
     public static function onBeforeDelete(self $model): bool
     {
         // 执行模型卸载程序
-        $cmsSqlInstance = \ba\cms\CmsSql::getInstance($model['name']);
-        /* 删除表 */
-        $cmsSqlInstance->tableExists() && $cmsSqlInstance->deleteTable();
+        \ba\cms\CmsSql::getInstance($model['name'])->deleteTable();
         /* 清空字段 */
         Fields::where('module_id', $model['id'])->delete();
         /* 删除菜单 */

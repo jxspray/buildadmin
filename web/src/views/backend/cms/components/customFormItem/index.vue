@@ -3,7 +3,6 @@ import { createVNode, defineComponent, resolveComponent, PropType, computed } fr
 import { modelValueTypes, InputAttr, InputData } from '/@/components/baInput'
 import { FormItemAttr } from '/@/components/formItem'
 import BaInput from '/@/components/baInput/index.vue'
-import { ca } from 'element-plus/es/locale'
 
 export const inputTypes = [
     'text',

@@ -66,11 +66,12 @@
                     </el-tab-pane>
                     <el-tab-pane :label="t('cms.catalog.extend')" v-if="state.fields.length > 0">
                         <CustomFormItem
-                            v-for="item in state.fields"
+                            v-for="(item, index) in state.fields"
                             :type="item.type"
                             :label="t(item.name)"
                             v-model="baTable.form.items![item.field]"
                             :option="item"
+                            :key="index"
                         />
                     </el-tab-pane>
                 </el-tabs>

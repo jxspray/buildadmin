@@ -16,25 +16,19 @@ use think\facade\Db;
 class Catalog extends Backend
 {
     /**
-     * Catalog模型对象
-     * @var \app\admin\model\cms\Catalog
-     */
-    protected $model = null;
-
-    /**
      * @var Tree
      */
-    protected $tree = null;
+    protected Tree $tree;
 
-    protected $preExcludeFields = ['createtime', 'updatetime', 'fields'];
+    protected string|array $preExcludeFields = ['createtime', 'updatetime', 'fields'];
 
-    protected $quickSearchField = 'title';
+    protected string|array $quickSearchField = 'title';
 
-    protected $keyword = false;
+    protected string|null $keyword = null;
 
-    protected $modelValidate = false;
+    protected bool $modelValidate = false;
 
-    public function initialize()
+    public function initialize(): void
     {
         parent::initialize();
         $this->model = new \app\admin\model\cms\Catalog;
@@ -43,7 +37,7 @@ class Catalog extends Backend
         $this->keyword = $this->request->request("quick_search");
     }
 
-    public function index()
+    public function index(): void
     {
         if ($this->request->param('select')) {
             $this->select();
@@ -61,40 +55,7 @@ class Catalog extends Backend
         return $this->tree->assembleChild($rules);
     }
 
-    /**
-     * 重写select方法
-     */
-    public function select()
-    {
-        $isTree = $this->request->param('isTree');
-        $data   = $this->getCatalogs();
-
-        if ($isTree && !$this->keyword) {
-            $data = $this->tree->assembleTree($this->tree->getTreeArray($data, 'title'));
-        }
-        $this->success('', [
-            'options' => $data
-        ]);
-    }
-
-    protected function getCatalogList($where = []): array
-    {
-        if ($this->keyword) {
-            $keyword = explode(' ', $this->keyword);
-            foreach ($keyword as $item) {
-                $where[] = [$this->quickSearchField, 'like', '%' . $item . '%'];
-            }
-        }
-
-        // 读取用户组所有权限规则
-        return $this->model
-            ->with('module')
-            ->where($where)
-            ->order('weigh desc,id asc')
-            ->select()->toArray();
-    }
-
-    public function edit()
+    public function edit(): void
     {
         $id  = $this->request->param($this->model->getPk());
         $row = $this->model->find($id);
@@ -142,7 +103,40 @@ class Catalog extends Backend
 
         $this->success('', [
             'row' => $row,
-            'fields' => CmsLogic::field_1()
+            'fields' => cms('field_1')
         ]);
+    }
+
+    /**
+     * 重写select方法
+     */
+    public function select(): void
+    {
+        $isTree = $this->request->param('isTree');
+        $data   = $this->getCatalogs();
+
+        if ($isTree && !$this->keyword) {
+            $data = $this->tree->assembleTree($this->tree->getTreeArray($data, 'title'));
+        }
+        $this->success('', [
+            'options' => $data
+        ]);
+    }
+
+    protected function getCatalogList($where = []): array
+    {
+        if ($this->keyword) {
+            $keyword = explode(' ', $this->keyword);
+            foreach ($keyword as $item) {
+                $where[] = [$this->quickSearchField, 'like', '%' . $item . '%'];
+            }
+        }
+
+        // 读取用户组所有权限规则
+        return $this->model
+            ->with('module')
+            ->where($where)
+            ->order('weigh desc,id asc')
+            ->select()->toArray();
     }
 }
