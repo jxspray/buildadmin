@@ -45,7 +45,7 @@ if (!function_exists("cms")) {
     {
         switch ($type) {
             case 'cache':
-                $typeItem = \app\index\logics\CmsLogic::getInstance()->getTypeItem();
+                $typeItem = \app\index\logics\CmsLogic::getInstance()->getTypeItem($name);
                 $cmsCache = \app\index\logics\handler\CmsCache::getInstance($name);
                 if ($typeItem->setModule($name) && in_array($name, $typeItem->getType())) return $cmsCache->checkCache()->cache();
                 return false;

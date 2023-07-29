@@ -5,7 +5,6 @@ namespace app\index\logics;
 use app\index\logics\handler\CmsCache;
 use app\index\logics\handler\Type;
 use app\index\model\web\Catalog;
-use think\facade\Cache;
 
 /**
  * Created by JOVO.
@@ -29,7 +28,7 @@ class CmsLogic
     const basePath = "app\\index\\controller\\web";
     const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
 
-    private Type $typeItem;
+    private \app\index\logics\handler\Field $typeItem;
 
     /**
      * @var self
@@ -106,9 +105,19 @@ class CmsLogic
         return $data;
     }
 
-    public function getTypeItem(): Type
+    public function getType(string $name): Type
     {
+        if (!isset($this->typeItem[$name])) $this->typeItem[$name] = new Type();
         return $this->typeItem;
+    }
+
+    public function getTypeItem(string $name): \app\index\logics\handler\Field
+    {
+        if (!isset($this->typeItem[$name])) {
+            $this->typeItem[$name] = new \app\index\logics\handler\Field::getInstance();
+        }
+
+        return $this->typeItem[$name];
     }
 
     public function __call($name, $arguments)
