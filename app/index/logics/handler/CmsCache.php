@@ -54,7 +54,6 @@ class CmsCache
 
     public function checkCache(): self
     {
-        var_dump($this->name);die;
         if (!$this->cache(self::CACHE_HAS)) self::$logic->forceUpdate($this->name);
         return $this;
     }

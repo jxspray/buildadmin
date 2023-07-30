@@ -28,7 +28,7 @@ class CmsLogic
     const basePath = "app\\index\\controller\\web";
     const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
 
-    private \app\index\logics\handler\Field $typeItem;
+    private \app\index\logics\handler\Type $typeItem;
 
     /**
      * @var self
@@ -37,11 +37,11 @@ class CmsLogic
 
     public function __construct()
     {
-        $this->typeItem = new Type(self::ALLOW_TYPE);
-        CmsCache::setLogic($this);
-        foreach ($this->typeItem as $value) {
-            CmsCache::getInstance($value)->checkCache();
-        }
+        $this->typeItem = new Type();
+//        CmsCache::setLogic($this);
+//        foreach ($this->typeItem as $value) {
+//            CmsCache::getInstance($value)->checkCache();
+//        }
     }
 
     public static function init(): void
@@ -107,14 +107,16 @@ class CmsLogic
 
     public function getType(string $name): Type
     {
-        if (!isset($this->typeItem[$name])) $this->typeItem[$name] = new Type();
-        return $this->typeItem;
+        if (!isset($this->typeItem[$name])) {
+            $this->typeItem[$name] = \app\index\logics\handler\Type::getInstance($name);
+        }
+        return $this->typeItem[$name];
     }
 
     public function getTypeItem(string $name): \app\index\logics\handler\Field
     {
         if (!isset($this->typeItem[$name])) {
-            $this->typeItem[$name] = new \app\index\logics\handler\Field::getInstance();
+//            $this->typeItem[$name] = new \app\index\logics\handler\Field::getInstance();
         }
 
         return $this->typeItem[$name];

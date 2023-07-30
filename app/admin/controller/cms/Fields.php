@@ -7,21 +7,15 @@ use app\index\logics\CmsLogic;
 
 /**
  * 模型字段管理
- *
+ * @property \app\admin\model\cms\Fields $model Fields模型对象
  */
 class Fields extends Backend
 {
-    /**
-     * Field模型对象
-     * @var \app\admin\model\cms\Field
-     */
-    protected object $model;
-
     protected string|array $quickSearchField = ['id'];
 
     protected string|array $defaultSortField = 'id,desc';
 
-    protected string|array $preExcludeFields = [''];
+    protected string|array $preExcludeFields = [];
 
     protected array $withJoinTable = ['module'];
 

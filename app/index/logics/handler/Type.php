@@ -11,16 +11,16 @@ class Type
 
     private array $param = [];
 
-    public function __construct(array $allow_type, $type = null)
+    public function __construct(string $type = null)
     {
-        $this->ALLOW_TYPE = $allow_type;
+//        $this->ALLOW_TYPE = $allow_type;
         $this->TYPE = $this->handleType($type);
     }
 
     public function handleType($type): array
     {
         $t = [];
-        if (!$type || $type === true) $type = $this->ALLOW_TYPE;
+        if (!$type || $type === true) $type = self::ALLOW_TYPE;
         else {
             switch ($type) {
                 case is_string($type):
@@ -35,7 +35,7 @@ class Type
 
         foreach ($type as $item) {
             $item = trim($item);
-            if (in_array($item, $this->ALLOW_TYPE)) $t[] = $item;
+            if (in_array($item, self::ALLOW_TYPE)) $t[] = $item;
         }
         return $t;
     }
@@ -68,9 +68,27 @@ class Type
         return false;
     }
 
-    public function check(): bool
+    public static function getInstance($name): self|null
     {
-        return in_array($name, $this->getType());
+        $instance = new self();
+        if ($instance->check($name)) return $instance;
+        else return null;
+    }
+
+    public function check($name): bool
+    {
+        if (preg_match('/field_\d/', $name)) {
+            list($type, $id) = explode("_", $name);
+            $module = cms('module');
+            if (!isset($module[$id])) return false;
+            $moduleName = $module[$id]['name'];
+
+            $name = 'fields';
+
+        }
+        if (in_array($name, self::ALLOW_TYPE)) return true;
+//        $this->name = $moduleName;
+        return false;
     }
 
     private function setParam($name, $query, $value): static

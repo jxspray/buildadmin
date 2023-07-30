@@ -3,7 +3,6 @@
 namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
-use app\index\logics\CmsLogic;
 use ba\Tree;
 use think\db\exception\PDOException;
 use think\exception\ValidateException;
@@ -11,7 +10,7 @@ use think\facade\Db;
 
 /**
  * 栏目管理
- *
+ * @property \app\admin\model\cms\Catalog $model Catalog模型对象
  */
 class Catalog extends Backend
 {
