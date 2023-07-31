@@ -9,7 +9,7 @@ class Field
 
     private array $param = [];
 
-    private string $name;
+    private int $id;
 
     public function __construct()
     {
@@ -34,7 +34,7 @@ class Field
     {
     }
 
-    public function check($name): bool
+    public function check($id): bool
     {
         if (preg_match('/field_\d/', $name)) {
             list($type, $id) = explode("_", $name);

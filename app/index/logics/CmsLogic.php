@@ -3,8 +3,6 @@
 namespace app\index\logics;
 
 use app\index\logics\handler\CmsCache;
-use app\index\logics\handler\Type;
-use app\index\model\web\Catalog;
 
 /**
  * Created by JOVO.
@@ -28,7 +26,10 @@ class CmsLogic
     const basePath = "app\\index\\controller\\web";
     const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
 
-    private \app\index\logics\handler\Type $typeItem;
+    /**
+     * @var \app\index\logics\handler\Type[] $typeItem
+     */
+    private array $typeItem = [];
 
     /**
      * @var self
@@ -37,11 +38,10 @@ class CmsLogic
 
     public function __construct()
     {
-        $this->typeItem = new Type();
-//        CmsCache::setLogic($this);
-//        foreach ($this->typeItem as $value) {
-//            CmsCache::getInstance($value)->checkCache();
-//        }
+        CmsCache::setLogic($this);
+        foreach ($this->typeItem as $name => $value) {
+            CmsCache::getInstance($name)->checkCache();
+        }
     }
 
     public static function init(): void
@@ -49,7 +49,7 @@ class CmsLogic
         self::getInstance();
     }
 
-    public static function getInstance(): ?CmsLogic
+    public static function getInstance(): self
     {
         if (is_null(self::$instance)) self::$instance = new self();
         return self::$instance;
@@ -57,8 +57,8 @@ class CmsLogic
 
     public function forceUpdate(string $type = null): void
     {
-        foreach ($this->typeItem->handleType($type) as $item) {
-            if ($param = $this->typeItem->getParam($item)) {
+        foreach ($this->typeItem[$type]->handleType($type) as $item) {
+            if ($param = $this->typeItem[$type]->getParam($item)) {
                 $item = $param['type'];
             }
             $name = ucfirst($item);
@@ -96,7 +96,7 @@ class CmsLogic
     public static function updateCatalog(mixed $value = [], bool $isDelete = false): array
     {
         static $instance = false;
-        if ($instance === false) $instance = new Catalog();
+        if ($instance === false) $instance = new \app\index\model\web\Catalog();
         if ($value === true) {
             $data = $instance->getColumnAll();
         } else {
@@ -105,20 +105,15 @@ class CmsLogic
         return $data;
     }
 
-    public function getType(string $name): Type
+    /**
+     * @param string $name
+     * @return \app\index\logics\handler\Type|null
+     */
+    public function getType(string $name): \app\index\logics\handler\Type|null
     {
         if (!isset($this->typeItem[$name])) {
             $this->typeItem[$name] = \app\index\logics\handler\Type::getInstance($name);
         }
-        return $this->typeItem[$name];
-    }
-
-    public function getTypeItem(string $name): \app\index\logics\handler\Field
-    {
-        if (!isset($this->typeItem[$name])) {
-//            $this->typeItem[$name] = new \app\index\logics\handler\Field::getInstance();
-        }
-
         return $this->typeItem[$name];
     }
 

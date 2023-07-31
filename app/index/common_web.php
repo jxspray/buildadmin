@@ -41,7 +41,12 @@ function check_mobile(): bool
 
 
 if (!function_exists("cms")) {
-    function cms($name, $type = 'cache')
+    /**
+     * @param string $name
+     * @param string $type
+     * @return array
+     */
+    function cms(string $name, string $type = 'cache'): array|bool
     {
         switch ($type) {
             case 'cache':
@@ -49,5 +54,6 @@ if (!function_exists("cms")) {
                     return \app\index\logics\handler\CmsCache::getInstance($name)->checkCache()->cache();
                 return false;
         }
+        return false;
     }
 }
