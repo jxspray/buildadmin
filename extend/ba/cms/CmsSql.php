@@ -59,7 +59,7 @@ class CmsSql
         $checkChange = ['field', 'setup', 'comment'];
         $res = $originData ? $this->getTypeResult($data, $originData, $checkChange) : $this->getTypeResult($data);
         if (!$res) return false;
-        $this->run('execute', "ALTER TABLE `{$this->table}` {$res[0]}");
+        $this->run('execute', "{$this->getTableHead('ALTER')} {$res[0]}");
         return true;
     }
 
@@ -72,7 +72,7 @@ class CmsSql
     {
         /* 检查字段是否存在 */
         if ($this->tableExists() && $this->fieldExists($field)) {
-            $this->run("execute", $this->getHead($field, 'DROP'));
+            $this->run("execute", "{$this->getTableHead('ALTER')} {$this->getHead($field, 'DROP')}");
             return true;
         }
         return false;
@@ -111,7 +111,7 @@ class CmsSql
 //            $fieldsModel->save($item);
 //        }
         $fieldsModel->saveAll($fieldList);
-        $this->run("query", "CREATE TABLE `$this->table` ($sql) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'", true);
+        $this->run("query", "{$this->getTableHead('CREATE')} ($sql) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'", true);
         return true;
     }
 
@@ -166,7 +166,7 @@ class CmsSql
      */
     public function deleteTable(): bool
     {
-        return $this->tableExists() && $this->run('execute',"DROP TABLE {$this->table}", true);
+        return $this->tableExists() && $this->run('execute',$this->getTableHead('DROP'), true);
     }
 
     /* ######################################################### 组件 ######################################################## */
@@ -213,6 +213,13 @@ class CmsSql
         return [$this->_varchar($setup), $data, __FUNCTION__];
     }
 
+    public function editor(array $data): array
+    {
+        extract($data);
+        $setup = $setup ?? [];
+        return [$this->_text($setup), $data, __FUNCTION__];
+    }
+
     /* ####################################################### 常用字段类型 ###################################################### */
     /* ======================================================== 数字类型 ===================================================== */
     // int 整型
@@ -257,6 +264,11 @@ class CmsSql
     }
     // longtext 长文本
     // text 文本
+    private function _text($args = []): string
+    {
+        extract($args);
+        return "";
+    }
     // mediumtext 中等文本
     // char 字符串
     /* ======================================================= 特殊数据类型 ===================================================== */
@@ -370,5 +382,15 @@ class CmsSql
             }
         }
         return "$do COLUMN `$field`";
+    }
+
+    private function getTableHead(string $type): string
+    {
+        return match ($type) {
+            'CREATE' => "DROP TABLE IF EXISTS `{$this->table}`; CREATE TABLE `$this->table` ",
+            'ALTER' => "ALTER TABLE `$this->table`",
+            'DROP' => "DROP TABLE IF EXISTS `{$this->table}`",
+            default => throw new Exception("类型错误！"),
+        };
     }
 }
