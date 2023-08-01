@@ -32,7 +32,6 @@ CREATE TABLE `__PREFIX__cms_catalog`
     `deletetime`      bigint(20)             DEFAULT NULL COMMENT '删除时间',
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 2
   DEFAULT CHARSET = utf8mb4 COMMENT ='栏目管理';
 
 -- ----------------------------
@@ -70,7 +69,6 @@ CREATE TABLE `__PREFIX__cms_fields`
     `comment`    varchar(255) COLLATE utf8mb4_unicode_ci          DEFAULT NULL COMMENT '字段备注',
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 6
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_unicode_ci COMMENT ='字段管理';
 
