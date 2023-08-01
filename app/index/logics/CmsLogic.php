@@ -24,7 +24,8 @@ class CmsLogic
 {
     const PREFIX = "cms_";
     const basePath = "app\\index\\controller\\web";
-    const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
+    const ALLOW_TYPE = ['module', 'catalog'];
+//    const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
 
     /**
      * @var \app\index\logics\handler\Type[] $typeItem
@@ -39,7 +40,8 @@ class CmsLogic
     public function __construct()
     {
         CmsCache::setLogic($this);
-        foreach ($this->typeItem as $name => $value) {
+        foreach (self::ALLOW_TYPE as $name) {
+            $this->getType($name);
             CmsCache::getInstance($name)->checkCache();
         }
     }
@@ -55,32 +57,35 @@ class CmsLogic
         return self::$instance;
     }
 
-    public function forceUpdate(string $type = null): void
+    public function forceUpdateAll(): void
     {
-        foreach ($this->typeItem[$type]->handleType($type) as $item) {
-            if ($param = $this->typeItem[$type]->getParam($item)) {
-                $item = $param['type'];
-            }
-            $name = ucfirst($item);
-            $method = "update{$name}";
-            if (method_exists(self::class, $method)) $data = self::$method(true);
-            else if ($name == 'Module') {
-                $namespace = "\\app\\index\\model\\web\\$name";
-                if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
-                $instance = new $namespace();
-                $data = $instance->getColumnAll();
-            } else if ($name == 'Field') {
-                $namespace = "\\app\\index\\model\\web\\Fields";
-                $instance = new $namespace();
-                $data = $instance->getColumnAll($param);
-            } else {
-                $namespace = "\\app\\index\\model\\web\\contents\\$name";
-                if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
-                $instance = new $namespace();
-                $data = $instance->getColumnAll();
-            }
-            CmsCache::getInstance($item)->cache($data);
+        foreach ($this->typeItem as $type) {
+            $this->forceUpdate($type);
         }
+    }
+
+    public function forceUpdate(\app\index\logics\handler\Type|string $type = null): void
+    {
+//        $name = ucfirst($item);
+        if (is_string($type)) $type = $this->getType($type);
+        $name = ucfirst($type->getName());
+        $method = "update{$name}";
+        if (method_exists(self::class, $method)) $data = self::$method(true);
+        else if ($name == 'Module') {
+            $namespace = "\\app\\index\\model\\web\\$name";
+            if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
+            $instance = new $namespace();
+            $data = $instance->getColumnAll();
+        } else if ($name == 'Fields') {
+            $instance = new \app\index\model\web\Fields();
+            $data = $instance->getColumnAll($type->getParam());
+        } else {
+            $namespace = "\\app\\index\\model\\web\\contents\\$name";
+            if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
+            $instance = new $namespace();
+            $data = $instance->getColumnAll();
+        }
+        CmsCache::getInstance($type->getKey())->cache($data);
     }
 
     public static function update(\app\admin\model\cms\CmsModelInterface $instance, array $data, mixed $value, bool $isDelete): array

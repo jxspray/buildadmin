@@ -11,23 +11,25 @@ use app\BaseController;
 
 class Action extends \app\BaseController
 {
-    private static $verityModule = ['index', 'urlRule'];
-    private static $verityAction = ['index', 'catalog', 'info'];
-    protected $app, $module, $action;
+    private static array $verityModule = ['index', 'urlRule'];
+    private static array $verityAction = ['index', 'catalog', 'info'];
+    protected mixed $action;
+    protected mixed $module;
+    protected \think\App $app;
 
-    protected $layout = "default";
+    protected string $layout = "default";
 
     /**
      * @var \think\View
      */
-    protected $view;
+    protected \think\View $view;
 
     public function __construct(\think\App $app)
     {
         parent::__construct($app);
         $this->view = new \think\View($app);
 
-        $this->app = input("app", 'home');
+//        $this->app = input("app", 'home');
         $this->module = input("module", 'index');
         $this->action = input("action", 'index');
         /* 检查action是否合规 */
@@ -45,7 +47,7 @@ class Action extends \app\BaseController
      * 中转流
      * @return mixed
      */
-    public function index()
+    public function index(): mixed
     {
         $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->app}\\" . ucfirst($this->module);
         $action = $this->action;

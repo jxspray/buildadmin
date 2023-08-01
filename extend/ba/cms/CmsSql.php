@@ -140,6 +140,7 @@ class CmsSql
         $sqlList[] = "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID'";
         foreach ($data as $field => $datum) {
             $datum[1]['module_id'] = $moduleRow['id'];
+            $datum[1]['type'] = $datum[1]['type'] ?? $datum[2];
             $fieldList[] = $datum[1];
 
             $sqlList[] = "{$this->getHead($field)} {$datum[0]} {$this->assembleField($datum[1]['comment']??'', $datum[1]['default']??'')}";

@@ -3,6 +3,7 @@
 namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
+use app\index\logics\handler\CmsCache;
 use ba\Tree;
 use think\db\exception\PDOException;
 use think\exception\ValidateException;
@@ -99,10 +100,10 @@ class Catalog extends Backend
             }
 
         }
-
+//        \think\facade\Cache::clear();
         $this->success('', [
             'row' => $row,
-            'fields' => cms('field_1')
+            'fields' => array_values(cms('field_1')),
         ]);
     }
 

@@ -2,17 +2,18 @@
 
 namespace app\index\logics\handler;
 
-use app\index\logics\CmsLogic;
-
 class Type
 {
     const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
     private array $TYPE = [];
 
     private array $param = [];
+    private string $name = '';
+    private string $key = '';
 
     public function __construct(string $type = null)
     {
+        $type = ['module', 'catalog', 'rule'];
 //        $this->ALLOW_TYPE = $allow_type;
         $this->TYPE = $this->handleType($type);
     }
@@ -77,15 +78,18 @@ class Type
 
     public function check($name): bool
     {
+        $this->key = $name;
         if (preg_match('/field_\d/', $name)) {
             list($type, $id) = explode("_", $name);
             $module = cms('module');
+//            var_dump($module);
             if (!isset($module[$id])) return false;
-            $moduleName = $module[$id]['name'];
-
+//            $moduleName = $module[$id]['name'];
+//            $this->name = $name;
+            $this->param = $module[$id];
             $name = 'fields';
-
         }
+        $this->name = $name;
         if (in_array($name, self::ALLOW_TYPE)) return true;
 //        $this->name = $moduleName;
         return false;
@@ -97,8 +101,18 @@ class Type
         return $this;
     }
 
-    public function getParam($name)
+    public function getParam(): bool|array
     {
-        return $this->param[$name] ?? false;
+        return $this->param ?? false;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function getKey()
+    {
+        return $this->key;
     }
 }

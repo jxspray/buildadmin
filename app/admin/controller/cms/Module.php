@@ -4,7 +4,7 @@ namespace app\admin\controller\cms;
 
 /**
  * 模型管理
- *
+ * @property \app\admin\model\cms\Module $model Module模型对象
  */
 class Module extends \app\common\controller\Backend
 {

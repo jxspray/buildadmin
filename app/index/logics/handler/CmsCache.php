@@ -7,7 +7,11 @@ class CmsCache
     const CACHE_GET = 'get';
     const CACHE_SET = 'set';
     const CACHE_HAS = 'has';
+    const CACHE_CLEAR = 'clear';
 
+    /**
+     * @var CmsCache[] $instances
+     */
     private static array $instances = [];
 
     private string $name;
@@ -21,9 +25,9 @@ class CmsCache
         $this->name = $name;
     }
 
-    public static function getInstance($name): self
+    public static function getInstance($name): CmsCache
     {
-        if (!isset(self::$instances[$name])) self::$instances[$name] = new self($name);
+        if (!isset(self::$instances[$name])) self::$instances[$name] = new CmsCache($name);
         return self::$instances[$name];
     }
 
