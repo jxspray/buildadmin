@@ -58,7 +58,7 @@ class Catalog extends Backend
     public function edit(): void
     {
         $id  = $this->request->param($this->model->getPk());
-        $row = $this->model->find($id);
+        $row = $this->model->with(["catalogExtend"])->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
         }
@@ -113,7 +113,8 @@ class Catalog extends Backend
     public function select(): void
     {
         $isTree = $this->request->param('isTree');
-        $data   = $this->getCatalogs();
+        $current_id = $this->request->param('current_id');
+        $data   = $this->getCatalogs([['id', '<>', $current_id]]);
 
         if ($isTree && !$this->keyword) {
             $data = $this->tree->assembleTree($this->tree->getTreeArray($data, 'title'));

@@ -37,13 +37,13 @@ class Fields extends Model
     }
 
     /**
-     * @param Fields $model
-     * @return void
+     * @param self $model
+     * @return bool
      * @throws \Exception
      */
-    public static function onAfterUpdate(self $model): void
+    public static function onBeforeUpdate(self $model): bool
     {
-        $model->getSqlFieldInstance()->saveField($model->getData(), $model->getOriginData());
+        return $model->getSqlFieldInstance()->saveField($model->getData(), $model->getOrigin());
     }
 
     /**
@@ -61,6 +61,7 @@ class Fields extends Model
         static $instance = null;
         if ($instance === null) {
             $data = $this->getOriginData();
+//            \think\facade\Cache::delete('module');
             $module = cms("module");
             $moduleInfo = $module[$data['module_id']] ?? [];
             if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");

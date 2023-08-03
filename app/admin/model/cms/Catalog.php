@@ -3,7 +3,6 @@
 namespace app\admin\model\cms;
 
 use app\index\logics\CmsLogic;
-use app\index\logics\handler\CmsCache;
 use think\Model;
 use think\model\concern\SoftDelete;
 
@@ -37,7 +36,16 @@ class Catalog extends Model
 
     public static function onAfterWrite(Model $model): void
     {
-//        CmsLogic::getInstance()->forceUpdate('catalog');
+        $model->catalogExtend()->save($model->catalogExtend);
+        CmsLogic::getInstance()->forceUpdate('catalog');
+        CmsLogic::getInstance()->forceUpdate('field_1');
+    }
+
+    public static function onAfterDelete($model): void
+    {
+        CmsLogic::getInstance()->forceUpdate('catalog');
+        CmsLogic::getInstance()->forceUpdate('field_1');
+        \app\admin\model\cms\contents\Extend::where("id", $model->id)->delete();
     }
 
     public function getGroupIdAttr($value, $row)
@@ -56,7 +64,7 @@ class Catalog extends Model
     }
 
     public function catalogExtend(){
-        return $this->belongsTo("app\\admin\\model\\cms\\contents\\Page", 'id')->joinType("left");
+        return $this->belongsTo("app\\admin\\model\\cms\\contents\\Extend", 'id')->joinType("left");
     }
 
 //    public function fields(){

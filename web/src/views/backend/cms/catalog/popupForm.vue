@@ -45,7 +45,7 @@
                             v-model="baTable.form.items!.pid"
                             :placeholder="t('Click Select')"
                             :input-attr="{
-                                params: { isTree: true },
+                                params: { isTree: true, current_id: baTable.form.items!.id },
                                 field: 'title',
                                 'remote-url': '/admin/cms.catalog/index',
                             }"
@@ -69,7 +69,7 @@
                             v-for="(item, index) in state.fields"
                             :type="item.type"
                             :label="t(item.name)"
-                            v-model="baTable.form.items![item.field]"
+                            v-model="state.catalogExtend![item.field]"
                             :option="item"
                             :key="index"
                         />
@@ -103,7 +103,7 @@ const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
 
 const state: {
-    catalogExtend: any,
+    catalogExtend: object,
     fields: any[]
 } = reactive({
     catalogExtend: {},

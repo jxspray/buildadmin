@@ -52,6 +52,7 @@ class CmsCache
                 return true;
             case self::CACHE_GET:
             default:
+//                \think\facade\Cache::delete($name);
                 return \think\facade\Cache::get($name);
         }
     }

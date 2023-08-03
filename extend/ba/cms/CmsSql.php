@@ -12,6 +12,11 @@ class CmsSql
 
     private array $fields = [];
 
+    const CREATE_MODE = 'CREATE';
+    const ALTER_MODE = 'ALTER';
+    const DROP_MODE = 'DROP';
+    const BUILD_MODE = 'BUILD';
+
     public function __construct($table, $pattern = 'CREATE')
     {
         $this->pattern = $pattern;
@@ -28,6 +33,10 @@ class CmsSql
      */
     public function getTypeResult(array $data, array $originData = [], array $checkChange = []): bool|array
     {
+        $data = array_merge([
+            'setup' => [],
+            'remark' => NULL,
+        ], $data);
         if ($checkChange) {
             $bool = false;
             foreach ($checkChange as $field) {
@@ -39,10 +48,9 @@ class CmsSql
             if ($bool === false) return false;
         }
         if (method_exists($this, $data['type'])) {
-            list($sql, $setup) = $this->{$data['type']}($data);
-            $sql = "{$this->getHead($data['field'], $originData['field']??'')} $sql {$this->assembleField($data['comment']??'', $data['default']??'')}";
+            list($sql, $setup, $type) = $this->{$data['type']}($data);
             $data['setup'] = $setup;
-            return [$sql, $data];
+            return ["{$this->getHead($data['field'], $originData['field']??'')} {$sql}", $data, $type];
         }
         return false;
     }
@@ -55,11 +63,16 @@ class CmsSql
      */
     public function saveField(array $data, array|false $originData = false): bool
     {
-        if (!$this->tableExists()) return false;
+//        if (!$this->tableExists()) return false;
         $checkChange = ['field', 'setup', 'comment'];
         $res = $originData ? $this->getTypeResult($data, $originData, $checkChange) : $this->getTypeResult($data);
         if (!$res) return false;
-        $this->run('execute', "{$this->getTableHead('ALTER')} {$res[0]}");
+        $this->run('execute', $this->generateQuery("ALTER", array_merge([
+            'sql' => $res[0],
+            'fieldType' => $res[2],
+            'default' => NULL,
+            'comment' => '',
+        ], $data)));
         return true;
     }
 
@@ -95,7 +108,7 @@ class CmsSql
      */
     public function tableExists(): bool|array
     {
-        return $this->run('execute',"SHOW TABLES LIKE '{$this->table}'", true);
+        return $this->run('execute', "SHOW TABLES LIKE '{$this->table}'", true);
     }
 
     /**
@@ -166,7 +179,7 @@ class CmsSql
      */
     public function deleteTable(): bool
     {
-        return $this->tableExists() && $this->run('execute',$this->getTableHead('DROP'), true);
+        return $this->tableExists() && $this->run('execute', $this->getTableHead('DROP'), true);
     }
 
     /* ######################################################### 组件 ######################################################## */
@@ -178,7 +191,7 @@ class CmsSql
     {
         extract($data);
         $setup = $setup ?? [];
-        return [match ($setup['type']??'string') {
+        return [match ($setup['type'] ?? 'string') {
             "string", "textarea", "password" => $this->_varchar($setup),
             "number" => $this->_int($setup)
         }, $data, __FUNCTION__];
@@ -195,29 +208,42 @@ class CmsSql
         return [$this->_varchar($setup), $data, __FUNCTION__];
     }
 
-    public function radio(array $data): array
+    public function radio(array $setup): array
     {
-        extract($data);
+        $setup = array_merge([], $setup);
+        extract($setup);
         $setup = $setup ?? [];
         $setup['options'] = $setup['options'] ?? ['0' => '否', '1' => '是'];
         return [$this->_enum($setup), $data, __FUNCTION__];
     }
+
     /**
      * @param array $data
      * @return array
      */
-    public function image(array $data): array
+    public function image(array $setup): array
     {
-        extract($data);
-        $setup = $setup ?? [];
-        return [$this->_varchar($setup), $data, __FUNCTION__];
+        $setup = array_merge([
+            'allowFormat' => 'jpg,png,gif', // 允许上传格式
+            'maxFileSize' => 1024, // 最大上传大小 单位KB
+            'maxWidth' => 200, // 最大宽度
+            'maxHeight' => 200, // 最大高度
+        ], $setup);
+        $res = $this->_varchar($setup);
+        return [$res[0], $setup, $res[1]];
     }
 
-    public function editor(array $data): array
+    public function editor(array $setup): array
     {
-        extract($data);
-        $setup = $setup ?? [];
-        return [$this->_text($setup), $data, __FUNCTION__];
+        $setup = array_merge([
+            'autoThumb' => 0, // 自动抓取缩略图
+            'autoKeyword' => 0, // 自动抓取关键词
+            'minAppear' => 5, // 关键词至少出现次数
+            'autoDescription' => 0, // 自动抓取描述
+            'cutContentNum' => 200, // 截取内容前字数
+        ], $setup);
+        $res = $this->_text($setup);
+        return [$res[0], $setup, $res[1]];
     }
 
     /* ####################################################### 常用字段类型 ###################################################### */
@@ -244,12 +270,13 @@ class CmsSql
     // year 年份
     /* ======================================================== 字符串类型 ===================================================== */
     // varchar 可变字符串
-    private function _varchar($args = []): string
+    private function _varchar($args = []): array
     {
         extract($args);
-        $maxlength = $this->getLength('varchar', $args['maxlength'] ?? 0);
-        return "VARCHAR( $maxlength )";
+        $maxlength = $this->getLength('varchar', $maxlength ?? 0);
+        return ["VARCHAR( $maxlength )", __FUNCTION__];
     }
+
     // enum 枚举
     private function _enum($args = []): string
     {
@@ -264,10 +291,10 @@ class CmsSql
     }
     // longtext 长文本
     // text 文本
-    private function _text($args = []): string
+    private function _text($args = []): array
     {
         extract($args);
-        return "";
+        return ["TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci", __FUNCTION__];
     }
     // mediumtext 中等文本
     // char 字符串
@@ -323,10 +350,14 @@ class CmsSql
     {
         try {
             if (!in_array($exec, ['query', 'execute'])) throw new Exception("执行方法错误！");
+
+            \think\facade\Log::sql("SQL: {$sql}; EXEC: {$exec}");
             return \think\facade\Db::$exec($sql);
         } catch (Exception $e) {
-            \think\facade\Log::error("Msg: {$e->getMessage()}; File: {$e->getFile()}; Line: {$e->getLine()}");
-            if ($tryCatch) return false;
+            if ($tryCatch) {
+                \think\facade\Log::error("Msg: {$e->getMessage()}; File: {$e->getFile()}; Line: {$e->getLine()}");
+                return false;
+            }
             else throw $e;
         }
     }
@@ -379,9 +410,10 @@ class CmsSql
                 if ($do == "CHANGE") $field = "`$originField` `$field`";
             } else {
                 $do = $this->fieldExists($field) ? "CHANGE COLUMN" : "ADD";
+                $field = "`$field`";
             }
         }
-        return "$do COLUMN `$field`";
+        return "$do COLUMN $field";
     }
 
     private function getTableHead(string $type): string
@@ -392,5 +424,51 @@ class CmsSql
             'DROP' => "DROP TABLE IF EXISTS `{$this->table}`",
             default => throw new Exception("类型错误！"),
         };
+    }
+
+    private function generateQuery(string $mode, array|string $args = null): string
+    {
+        switch ($mode) {
+            case self::CREATE_MODE:
+                $args = array_merge([
+                    'sql' => null,
+                    'comment' => '模型表',
+                ], $args);
+                extract($args);
+                if (empty($sql)) throw new Exception("SQL语句不能为空！");
+
+                $comment = $comment ? "COMMENT='{$comment}'" : '';
+                return <<<SQL
+DROP TABLE IF EXISTS `{$this->table}`; 
+CREATE TABLE `{$this->table}` {$args['sql']} ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci $comment;
+SQL;
+            case self::ALTER_MODE:
+                $args = array_merge([
+                    'sql' => NULL,
+                    'fieldType' => NULL,
+                    'name' => '',
+                    'default' => NULL,
+                    'comment' => '',
+                ], $args);
+                extract($args);
+                if (empty($sql)) throw new Exception("SQL语句不能为空！");
+                if (empty($fieldType)) throw new Exception("字段类型不能为空！");
+                if (empty($comment)) $comment = $name;
+                // 无需默认值类型
+                $noDefault = ['_text', '_mediumtext', '_longtext', '_blob', '_mediumblob', '_longblob', '_json', '_set'];
+                if (in_array($fieldType, $noDefault)) $default = '';
+                else {
+                    if ($default === NULL) $default = "DEFAULT NULL";
+                    else $default = "NOT NULL DEFAULT '$default'";
+                }
+                if (!empty($comment)) $comment = "COMMENT '$comment'";
+                return "ALTER TABLE `$this->table` {$sql} {$default} {$comment}";
+            case self::DROP_MODE:
+                return "DROP TABLE IF EXISTS `{$this->table}`";
+            case self::BUILD_MODE:
+                break;
+            default:
+                throw new Exception("类型错误！");
+        }
     }
 }

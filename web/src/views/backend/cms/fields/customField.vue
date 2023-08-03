@@ -94,11 +94,11 @@
         :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('最大上传数') }) }" />
     <template v-if="state!.setting.includes('image')">
         <FormItem 
-            v-if="form.setup!.type == 'image'" :label="t('图片最大宽度')" type="number" prop="maxWidth"
+            :label="t('图片最大宽度')" type="number" prop="maxWidth"
             v-model.number="form.setup!.maxWidth"
             :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('图片最大宽度') }) }" />
         <FormItem 
-            v-if="form.setup!.type == 'image'" :label="t('图片最大高度')" type="number" prop="maxHight"
+            :label="t('图片最大高度')" type="number" prop="maxHight"
             v-model.number="form.setup!.maxHight"
             :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('图片最大高度') }) }" />
     </template>
@@ -106,13 +106,13 @@
         <FormItem :label="t('自动抓取缩略图')" type="switch" v-model="form.setup!.autoThumb" :input-attr="{ size: 'large' }" />
         <FormItem :label="t('自动抓取关键词')" type="switch" v-model="form.setup!.autoKeyword" :input-attr="{ size: 'large' }" />
         <FormItem 
-            :label="t('关键词至少出现次数')" type="number" prop="minShow" v-model.number="form.setup!.minShow"
+            :label="t('关键词至少出现次数')" type="number" prop="minAppear" v-model.number="form.setup!.minAppear"
             :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('关键词最少出现次数') }) }" />
         <FormItem 
             :label="t('自动抓取简介')" type="switch" v-model="form.setup!.autoDescription"
             :input-attr="{ size: 'large' }" />
         <FormItem 
-            :label="t('截取内容前字数')" type="number" prop="beforeNum" v-model.number="form.setup!.beforeNum"
+            :label="t('截取内容前字数')" type="number" prop="cutContentNum" v-model.number="form.setup!.cutContentNum"
             :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('截取内容前字数N个作为简介') }) }" />
     </template>
 </template>
