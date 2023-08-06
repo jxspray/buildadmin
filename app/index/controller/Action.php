@@ -15,7 +15,7 @@ class Action extends \app\BaseController
     private static array $verityAction = ['index', 'catalog', 'info'];
     protected mixed $action;
     protected mixed $module;
-    protected \think\App $app;
+    protected string $pattern;
 
     protected string $layout = "default";
 
@@ -29,7 +29,7 @@ class Action extends \app\BaseController
         parent::__construct($app);
         $this->view = new \think\View($app);
 
-//        $this->app = input("app", 'home');
+        $this->pattern = input("pattern", 'home');
         $this->module = input("module", 'index');
         $this->action = input("action", 'index');
         /* 检查action是否合规 */
@@ -47,9 +47,9 @@ class Action extends \app\BaseController
      * 中转流
      * @return mixed
      */
-    public function index(): mixed
+    public function index(): string
     {
-        $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->app}\\" . ucfirst($this->module);
+        $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->pattern}\\" . ucfirst($this->module);
         $action = $this->action;
         /* 如果控制不存在 */
         if (!class_exists($namespace)) {
@@ -79,7 +79,7 @@ class Action extends \app\BaseController
 
     public function fetch($value, $layout = true)
     {
-        $template = app()->getAppPath() . "/view/web/{$this->app}/$value.html";
+        $template = app()->getAppPath() . "/view/web/{$this->pattern}/$value.html";
         try {
             $this->setLayout($layout);
             return $this->view->fetch($template);
@@ -88,10 +88,11 @@ class Action extends \app\BaseController
         }
     }
 
-    private function setLayout($layout){
+    private function setLayout($layout): void
+    {
         if (!$layout) return;
         if ($layout === true) $layout = $this->layout;
-        $this->view->layout("web/{$this->app}/layout/$layout");
+//        $this->view->layout("web/{$this->pattern}/layout/$layout");
     }
 
     public function __call($name, $arguments)

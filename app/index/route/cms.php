@@ -4,15 +4,15 @@ use think\facade\Route;
 
 // ------------------------注意------------------------
 // 1.访问地址不得在中间书写纯数字，数字只能写在末尾
-
+die;
 
 $indexAppend = [
-    'app' => 'home',
+    'pattern' => 'home',
     'module' => 'index',
     'action' => 'index'
 ];
 $append = [
-    'app' => 'home',
+    'pattern' => 'home',
 ];
 /* 是否必要.html */
 

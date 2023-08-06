@@ -6,7 +6,8 @@ use app\index\controller\web\Base;
 
 class Index extends Base
 {
-    public function index(){
+    public function index(): string
+    {
         return $this->fetch(__FUNCTION__);
     }
 }

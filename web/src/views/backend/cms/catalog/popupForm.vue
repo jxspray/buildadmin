@@ -52,6 +52,7 @@
                         />
                         <FormItem :label="t('cms.catalog.title')" type="string" v-model="baTable.form.items!.title" prop="title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.title') }) }" />
                         <FormItem :label="t('cms.catalog.description')" type="textarea" v-model="baTable.form.items!.description" prop="description" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.catalog.description') }) }" />
+                        <FormItem :label="t('cms.catalog.catdir')" type="string" v-model="baTable.form.items!.catdir" prop="catdir" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.catdir') }) }" />
                         <FormItem :label="t('cms.catalog.weigh')" type="number" prop="weigh" v-model.number="baTable.form.items!.weigh" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.weigh') }) }" />
                         <FormItem :label="t('cms.catalog.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.catalog.status 0'), 1: t('cms.catalog.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.status') }) }" />
                         <!-- <FormItem :label="t('cms.catalog.template_list')" type="select" v-model="baTable.form.items!.template_list" prop="template_list" :data="{ content: { } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.template_list') }) }" />
@@ -103,7 +104,7 @@ const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass
 
 const state: {
-    catalogExtend: object,
+    catalogExtend: any[],
     fields: any[]
 } = reactive({
     catalogExtend: {},

@@ -5,8 +5,8 @@ namespace app\index\controller\web;
 
 class Base extends \app\index\controller\Action
 {
-    protected $terminal;
-    protected $categorys;
+    protected string $terminal;
+    protected array $categorys;
 
     public function __construct(\think\App $app)
     {
@@ -16,10 +16,11 @@ class Base extends \app\index\controller\Action
         $this->categorys = cms('catalog');
         // 设置语言数据
         $this->settingLangData();
-        $this->assign($this->Config);
+//        $this->assign($this->Config);
     }
 
-    public function catalog($catid = '', $module = ''){
+    public function catalog($catid = '', $module = ''): void
+    {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
         if ($catid) {
@@ -28,7 +29,7 @@ class Base extends \app\index\controller\Action
         } else abort(404);
     }
 
-    public function single($catid = '', $module = '')
+    public function single($catid = '', $module = ''): ?string
     {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
@@ -46,10 +47,10 @@ class Base extends \app\index\controller\Action
      * 设置数据终端  Home/Wap
      * @return void
      */
-    private function settingTerminal()
+    private function settingTerminal(): void
     {
         $terminal = $this->checkTerminal(); // 检测终端
-        $this->app = in_array($terminal, ['wap', 'xcx']) ? 'wap' : 'home';
+        $this->pattern = in_array($terminal, ['wap', 'xcx']) ? 'wap' : 'home';
         $this->terminal = $terminal;
     }
 
@@ -66,26 +67,26 @@ class Base extends \app\index\controller\Action
      */
     public function settingLangData()
     {
-        $this->Config = F('Config_' . LANG_NAME); // 获取站点配置
-        $this->categorys = F('Category_' . LANG_NAME); // 获取栏目
-        cookie('think_language', LANG_NAME); // 设置语言
-        define('TABLE_CATEGORY', 'category' . (LANG_NAME != 'cn' ? '_' . LANG_NAME : ''));
-
-        // 通用参数独立设置
-        foreach ($this->categorys as $category) {
-            $sysparam = trim($category['sysparam']);
-            if ($sysparam) {
-                $cateAll[$sysparam . 'Id'] = $category['id'];
-                $cateAll[$sysparam . 'Url'] = $category['url'];
-                $cateAll[$sysparam . 'Name'] = $category['catname'];
-                $cateAll[$sysparam . 'SubName'] = $category['titlesub'];
-                $cateAll[$sysparam . 'Thumb'] = $category['thumb'];
-                $cateAll[$sysparam . 'Banner'] = $this->getTerminalValue($category, 'banner');
-                $cateAll[$sysparam . 'Remark'] = $category['remark'];
-                $cateAll[$sysparam . 'Module'] = $category['module'];
-            }
-        }
-        $this->assign($cateAll);
+//        $this->Config = F('Config_' . LANG_NAME); // 获取站点配置
+//        $this->categorys = F('Category_' . LANG_NAME); // 获取栏目
+//        cookie('think_language', LANG_NAME); // 设置语言
+//        define('TABLE_CATEGORY', 'category' . (LANG_NAME != 'cn' ? '_' . LANG_NAME : ''));
+//
+//        // 通用参数独立设置
+//        foreach ($this->categorys as $category) {
+//            $sysparam = trim($category['sysparam']);
+//            if ($sysparam) {
+//                $cateAll[$sysparam . 'Id'] = $category['id'];
+//                $cateAll[$sysparam . 'Url'] = $category['url'];
+//                $cateAll[$sysparam . 'Name'] = $category['catname'];
+//                $cateAll[$sysparam . 'SubName'] = $category['titlesub'];
+//                $cateAll[$sysparam . 'Thumb'] = $category['thumb'];
+//                $cateAll[$sysparam . 'Banner'] = $this->getTerminalValue($category, 'banner');
+//                $cateAll[$sysparam . 'Remark'] = $category['remark'];
+//                $cateAll[$sysparam . 'Module'] = $category['module'];
+//            }
+//        }
+//        $this->assign($cateAll);
     }
 
     // 前端模板设置  Home/Defalut或者Home/En或者Wap/En
