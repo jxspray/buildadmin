@@ -13,7 +13,7 @@ class Type
 
     public function __construct(string $type = null)
     {
-        $type = ['module', 'catalog', 'rule'];
+        $type = ['module', 'catalog'];
 //        $this->ALLOW_TYPE = $allow_type;
         $this->TYPE = $this->handleType($type);
     }

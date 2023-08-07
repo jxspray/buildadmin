@@ -53,7 +53,7 @@ class Action extends \app\BaseController
         $action = $this->action;
         /* 如果控制不存在 */
         if (!class_exists($namespace)) {
-            $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->app}\\EmptyController";
+            $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->pattern}\\EmptyController";
             $action = "_empty";
             if (!method_exists($namespace, $action)) abort(404);
         }
