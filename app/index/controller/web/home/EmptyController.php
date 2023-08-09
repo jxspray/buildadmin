@@ -2,14 +2,13 @@
 
 namespace app\index\controller\web\home;
 
-use app\index\logics\CmsLogic;
 use app\index\controller\Action;
 use app\index\controller\web\Base;
 use think\App;
 
 class EmptyController extends Action
 {
-    protected $base;
+    protected Base $base;
     public function __construct(App $app)
     {
         parent::__construct($app);
@@ -26,7 +25,7 @@ class EmptyController extends Action
         if ($this->module == "urlRule") {
             $catdir = $this->request->param('catdir');
             if ($catdir) {
-                $catid = $catid ?: cms('rule')[$catdir];
+                $catid = $catid ?: cms('cat')[$catdir];
             }
             if ($catid) {
                 if ($catalogs[$catid]['module_id'] > 0) {

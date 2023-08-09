@@ -104,6 +104,11 @@ class CmsLogic
         if ($instance === false) $instance = new \app\index\model\web\Catalog();
         if ($value === true) {
             $data = $instance->getColumnAll();
+            $cat = [];
+            foreach ($data as $datum) {
+                $cat[$datum['url']] = $datum['id'];
+            }
+            CmsCache::getInstance('cat')->cache($cat);
         } else {
             $data = self::update($instance, cms('catalog'), $value, $isDelete);
         }
