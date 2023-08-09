@@ -16,7 +16,8 @@ class EmptyController extends Action
         $this->base = new Base($app);
     }
 
-    public function _empty() {
+    public function _empty(): string
+    {
         $catalogs = cms('catalog');
         /* 路由判断 */
         $id = $this->request->param('id', '', 'intval');
@@ -24,15 +25,15 @@ class EmptyController extends Action
 
         if ($this->module == "urlRule") {
             $catdir = $this->request->param('catdir');
-            if ($catdir) {
+            if ($catdir) {;
                 $catid = $catid ?: cms('cat')[$catdir];
             }
             if ($catid) {
-                if ($catalogs[$catid]['module_id'] > 0) {
+                if ($catalogs[$catid]['module_id'] > 1) {
                     $module = $catalogs[$catid]['module'];
                     $action = 'catalog';
                 } else {
-                    $module = 'page';
+                    $module = 'single';
                     $action = 'single';
                 }
                 $id = $catid;

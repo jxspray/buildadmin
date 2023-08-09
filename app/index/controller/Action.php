@@ -57,7 +57,6 @@ class Action extends \app\BaseController
             $action = "_empty";
             if (!method_exists($namespace, $action)) abort(404);
         }
-
         return app($namespace)->$action();
     }
 

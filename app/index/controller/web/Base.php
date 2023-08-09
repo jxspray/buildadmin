@@ -33,14 +33,14 @@ class Base extends \app\index\controller\Action
     {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
-        if ($catid) {
-            $cat = $this->categorys[$catid];
-            $cat['catid'] = $catid;
-            $cat['catname'] = $cat['title'];
-            unset($cat['id'], $cat['title']);
-            $this->assign($cat);
-        } else abort(404);
-        return $this->fetch($cat['template_info']);
+        if (!$catid) abort(404);
+        $cat = $this->categorys[$catid];
+        $cat['catid'] = $catid;
+        $cat['catname'] = $cat['title'];
+        unset($cat['id'], $cat['title']);
+        $this->assign($cat);
+        dump($cat['template_info']);
+        return $this->fetch("{$module}/{$cat['template_info']}");
     }
 
     /**
