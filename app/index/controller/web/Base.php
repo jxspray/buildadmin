@@ -39,7 +39,6 @@ class Base extends \app\index\controller\Action
         $cat['catname'] = $cat['title'];
         unset($cat['id'], $cat['title']);
         $this->assign($cat);
-        dump($cat['template_info']);
         return $this->fetch("{$module}/{$cat['template_info']}");
     }
 
