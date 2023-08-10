@@ -64,7 +64,6 @@ class Crud extends Backend
     public function initialize(): void
     {
         parent::initialize();
-        $this->request->filter(['trim']);
     }
 
     /**
@@ -75,7 +74,7 @@ class Crud extends Backend
     {
         $type   = $this->request->post('type', '');
         $table  = $this->request->post('table', []);
-        $fields = $this->request->post('fields', []);
+        $fields = $this->request->post('fields', [], 'clean_xss,htmlspecialchars_decode');
 
         if (!$table || !$fields || !isset($table['name']) || !$table['name']) {
             $this->error(__('Parameter error'));
@@ -564,7 +563,12 @@ class Crud extends Backend
             $columns        = Helper::parseTableColumns($field['form']['remote-table'], true);
             $relationFields = explode(',', $field['form']['relation-fields']);
             $tableName      = TableManager::tableName($field['form']['remote-table'], false);
-            $relationName   = parse_name(rtrim(rtrim($field['name'], '_ids'), '_id'), 1, false);
+            $rnPattern      = '/(.*)(_ids|_id)$/';
+            if (preg_match($rnPattern, $field['name'])) {
+                $relationName = parse_name(preg_replace($rnPattern, '$1', $field['name']), 1, false);
+            } else {
+                $relationName = parse_name($field['name'] . '_table', 1, false);
+            }
 
             // 建立关联模型代码文件
             if (!$field['form']['remote-model'] || !file_exists(root_path() . $field['form']['remote-model'])) {
@@ -738,7 +742,7 @@ class Crud extends Backend
     {
         if ($field['designType'] == 'editor') {
             $this->formVueData['bigDialog']     = 'true'; // form 使用较宽的 Dialog
-            $this->controllerData['filterRule'] = "\n" . Helper::tab(2) . '$this->request->filter(\'trim,htmlspecialchars\');';// 修改变量过滤规则
+            $this->controllerData['filterRule'] = "\n" . Helper::tab(2) . '$this->request->filter(\'clean_xss\');';// 修改变量过滤规则
         }
 
         // 默认排序字段
@@ -808,7 +812,7 @@ class Crud extends Backend
         }
         if ($field['designType'] == 'array') {
             $this->indexVueData['defaultItems'][$field['name']] = "[]";
-        } elseif (in_array($field['designType'], $this->dtStringToArray) && stripos($field['default'], ',') !== false) {
+        } elseif (in_array($field['designType'], $this->dtStringToArray) && $field['default'] !== null && stripos($field['default'], ',') !== false) {
             $this->indexVueData['defaultItems'][$field['name']] = Helper::buildSimpleArray(explode(',', $field['default']));
         } elseif (in_array($field['designType'], ['weigh', 'number', 'float'])) {
             $this->indexVueData['defaultItems'][$field['name']] = (float)$field['default'];

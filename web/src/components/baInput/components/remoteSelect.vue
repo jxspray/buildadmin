@@ -28,6 +28,7 @@
                     :key="state.selectKey"
                     @clear="onClear"
                     @visible-change="onVisibleChange"
+                    v-bind="$attrs"
                 >
                     <el-option
                         class="remote-select-option"
@@ -67,9 +68,10 @@ import { isEmpty } from 'lodash-es'
 import { getArrayKey } from '/@/utils/common'
 
 const selectRef = ref<InstanceType<typeof ElSelect> | undefined>()
+type ElSelectProps = Partial<InstanceType<typeof ElSelect>['$props']>
 type valType = string | number | string[] | number[]
 
-interface Props {
+interface Props extends /* @vue-ignore */ ElSelectProps {
     pk?: string
     field?: string
     params?: anyObj

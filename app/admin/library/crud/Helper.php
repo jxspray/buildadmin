@@ -373,7 +373,6 @@ class Helper
             return null;
         }
         return match ($field['default']) {
-            '0' => 0,
             'empty string' => '',
             default => $field['default'],
         };
@@ -403,9 +402,16 @@ class Helper
         if (!is_null($phinxTypeData['limit'])) {
             $phinxColumnOptions['limit'] = $phinxTypeData['limit'];
         }
-        if ($field['default'] != 'none') {
+
+        // 无默认值字段
+        $noDefaultValueFields = [
+            'text', 'blob', 'geometry', 'geometrycollection', 'json', 'linestring', 'longblob', 'longtext', 'mediumblob',
+            'mediumtext', 'multilinestring', 'multipoint', 'multipolygon', 'point', 'polygon', 'tinyblob',
+        ];
+        if ($field['default'] != 'none' && !in_array($conciseType, $noDefaultValueFields)) {
             $phinxColumnOptions['default'] = self::analyseFieldDefault($field);
         }
+
         $phinxColumnOptions['null']     = (bool)$field['null'];
         $phinxColumnOptions['comment']  = $field['comment'];
         $phinxColumnOptions['signed']   = !$field['unsigned'];
@@ -1154,7 +1160,7 @@ class Helper
 
     public static function formatObjectKey(string $keyName): string
     {
-        if (preg_match("/^[a-zA-Z0-9_]+$/", $keyName)) {
+        if (preg_match("/^[a-zA-Z_][a-zA-Z0-9_]+$/", $keyName)) {
             return $keyName;
         } else {
             $quote = self::getQuote($keyName);

@@ -8,6 +8,7 @@ use think\facade\Db;
 use think\facade\Lang;
 use think\facade\Event;
 use think\facade\Config;
+use voku\helper\AntiXSS;
 use app\admin\model\Config as configModel;
 use think\exception\HttpResponseException;
 use Symfony\Component\HttpFoundation\IpUtils;
@@ -27,6 +28,43 @@ if (!function_exists('__')) {
             return $name;
         }
         return Lang::get($name, $vars, $lang);
+    }
+}
+
+if (!function_exists('filter')) {
+
+    /**
+     * 输入过滤
+     * 富文本反XSS请使用 clean_xss，也就不需要及不能再 filter 了
+     * @param string $string 要过滤的字符串
+     * @return string
+     */
+    function filter(string $string): string
+    {
+        // 去除字符串两端空格（对防代码注入有一定作用）
+        $string = trim($string);
+
+        // 过滤html和php标签
+        $string = strip_tags($string);
+
+        // 特殊字符转实体
+        return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');
+    }
+}
+
+if (!function_exists('clean_xss')) {
+
+    /**
+     * 清理XSS
+     * 通常只用于富文本，比 filter 慢
+     * @param string $string
+     * @param bool   $htmlspecialchars
+     * @return string
+     */
+    function clean_xss(string $string, bool $htmlspecialchars = true): string
+    {
+        $string = (new AntiXSS())->xss_clean($string);
+        return $htmlspecialchars ? htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8') : $string;
     }
 }
 

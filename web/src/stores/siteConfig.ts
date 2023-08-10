@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { SiteConfig, Menus } from '/@/stores/interface'
+import { RouteRecordRaw } from 'vue-router'
+import { SiteConfig } from '/@/stores/interface'
 
 export const useSiteConfig = defineStore('siteConfig', {
     state: (): SiteConfig => {
@@ -16,14 +17,22 @@ export const useSiteConfig = defineStore('siteConfig', {
                 savename: '',
             },
             headNav: [],
+            initialize: false,
+            userInitialize: false,
         }
     },
     actions: {
         dataFill(state: SiteConfig) {
             this.$state = state
         },
-        setHeadNav(headNav: Menus[]) {
+        setHeadNav(headNav: RouteRecordRaw[]) {
             this.headNav = headNav
+        },
+        setInitialize(initialize: boolean) {
+            this.initialize = initialize
+        },
+        setUserInitialize(userInitialize: boolean) {
+            this.userInitialize = userInitialize
         },
     },
 })

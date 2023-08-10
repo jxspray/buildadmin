@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
 import { useConfig } from '/@/stores/config'
 import { useNavTabs } from '/@/stores/navTabs'
 import { useTerminal } from '/@/stores/terminal'
@@ -22,6 +23,7 @@ import { adminBaseRoute } from '/@/router/static'
 import { useEventListener } from '@vueuse/core'
 import { BEFORE_RESIZE_LAYOUT } from '/@/stores/constant/cacheKey'
 import { isEmpty } from 'lodash-es'
+import { setNavTabsWidth } from '/@/utils/layout'
 
 defineOptions({
     components: { Default, Classic, Streamline, Double },
@@ -34,12 +36,16 @@ const route = useRoute()
 const siteConfig = useSiteConfig()
 const adminInfo = useAdminInfo()
 
+const state = reactive({
+    autoMenuCollapseLock: false,
+})
+
 onMounted(() => {
     if (!adminInfo.token) return router.push({ name: 'adminLogin' })
 
     init()
-    onSetNavTabsMinWidth()
-    useEventListener(window, 'resize', onSetNavTabsMinWidth)
+    setNavTabsWidth()
+    useEventListener(window, 'resize', setNavTabsWidth)
 })
 onBeforeMount(() => {
     onAdaptiveLayout()
@@ -86,27 +92,23 @@ const onAdaptiveLayout = () => {
 
     const clientWidth = document.body.clientWidth
     if (clientWidth < 1024) {
-        config.setLayout('menuCollapse', true)
+        /**
+         * 锁定窗口改变自动调整 menuCollapse
+         * 避免已是小窗且打开了菜单栏时，意外的自动关闭菜单栏
+         */
+        if (!state.autoMenuCollapseLock) {
+            state.autoMenuCollapseLock = true
+            config.setLayout('menuCollapse', true)
+        }
         config.setLayout('shrink', true)
         config.setLayoutMode('Classic')
     } else {
+        state.autoMenuCollapseLock = false
         let beforeResizeLayoutTemp = beforeResizeLayout || defaultBeforeResizeLayout
 
         config.setLayout('menuCollapse', beforeResizeLayoutTemp.menuCollapse)
         config.setLayout('shrink', false)
         config.setLayoutMode(beforeResizeLayoutTemp.layoutMode)
     }
-}
-
-// 在实例挂载后为navTabs设置一个min-width，防止宽度改变时闪现滚动条
-const onSetNavTabsMinWidth = () => {
-    const navTabs = document.querySelector('.nav-tabs') as HTMLElement
-    if (!navTabs) {
-        return
-    }
-    const navBar = document.querySelector('.nav-bar') as HTMLElement
-    const navMenus = document.querySelector('.nav-menus') as HTMLElement
-    const minWidth = navBar.offsetWidth - (navMenus.offsetWidth + 20)
-    navTabs.style.width = minWidth.toString() + 'px'
 }
 </script>
