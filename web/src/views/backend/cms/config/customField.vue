@@ -198,16 +198,12 @@ const form: {
             allowFormat: uploadAllowFormat.image,
             maxFileSize: 1024, // KB
             maxUpload: 1,
-            maxHight: 1920,
-            maxWidth: 1080,
             default: ''
         },
         images: {
             allowFormat: uploadAllowFormat.image,
             maxFileSize: 1024,
             maxUpload: 1,
-            maxHight: 1920,
-            maxWidth: 1080,
             default: ''
         },
         file: {

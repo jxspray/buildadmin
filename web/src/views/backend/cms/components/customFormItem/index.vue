@@ -129,6 +129,7 @@ export default defineComponent({
                 // inputAttr['max'] = option.setup.maxselect
             }
         }
+        inputAttr['multiple'] = false
 
         // el-form-item 的默认插槽,生成一个baInput
         const defaultSlot = () => {

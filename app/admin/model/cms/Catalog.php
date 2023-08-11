@@ -45,7 +45,7 @@ class Catalog extends Model
     {
         CmsLogic::getInstance()->forceUpdate('catalog');
         CmsLogic::getInstance()->forceUpdate('field_1');
-        \app\admin\model\cms\contents\Extend::where("id", $model->id)->delete();
+        \app\admin\model\cms\contents\CatalogExtend::where("id", $model->id)->delete();
     }
 
     public function getGroupIdAttr($value, $row)
@@ -64,7 +64,7 @@ class Catalog extends Model
     }
 
     public function catalogExtend(){
-        return $this->belongsTo("app\\admin\\model\\cms\\contents\\Extend", 'id')->joinType("left");
+        return $this->belongsTo("app\\admin\\model\\cms\\contents\\CatalogExtend", 'id')->joinType("left");
     }
 
 //    public function fields(){

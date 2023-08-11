@@ -69,9 +69,7 @@ class CmsSql
         if (!$res) return false;
         $this->run('execute', $this->generateQuery("ALTER", array_merge([
             'sql' => $res[0],
-            'fieldType' => $res[2],
-            'default' => NULL,
-            'comment' => '',
+            'fieldType' => $res[2]
         ], $data)));
         return true;
     }

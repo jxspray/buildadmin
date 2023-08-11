@@ -1,9 +1,9 @@
 <!--
- * @Author: jxspray_D 1532946322@qq.com
- * @Date: 2023-06-21 22:59:45
+ * @Author: jxspray 1532946322@qq.com
+ * @Date: 2023-08-11 15:39:56
  * @LastEditors: jxspray 1532946322@qq.com
- * @LastEditTime: 2023-08-11 17:31:54
- * @FilePath: \web\src\views\backend\cms\fields\index.vue
+ * @LastEditTime: 2023-08-11 16:51:12
+ * @FilePath: \web\src\views\backend\cms\config\index.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
@@ -43,11 +43,10 @@ defineOptions({
 const { t } = useI18n()
 const tableRef = ref()
 const baTable = new baTableClass(
-    new baTableApi('/admin/cms.fields/'),
+    new baTableApi('/admin/cms.config/'),
     {
         column: [
             { type: 'selection', align: 'center', operator: false },
-            { label: t('cms.module.title'), prop: 'module.title', align: 'center' },
             { label: t('cms.fields.field'), prop: 'field', align: 'center' },
             { label: t('cms.fields.name'), prop: 'name', align: 'center' },
             { label: t('cms.fields.type'), prop: 'type', align: 'center' },
@@ -55,10 +54,9 @@ const baTable = new baTableClass(
             { label: t('Operate'), align: 'center', width: 100, render: 'buttons', buttons: defaultOptButtons(["weigh-sort", "edit", "delete"]), operator: false },
         ],
         dblClickNotEditColumn: [undefined],
-        filter: { module_id: route.query.module_id },
     },
     {
-        defaultItems: { "module_id": route.query.module_id, "status": "1" },
+        defaultItems: { "status": "1" },
     }
 )
 
