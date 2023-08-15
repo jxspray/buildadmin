@@ -106,14 +106,14 @@ class CmsLogic
         if ($instance === false) $instance = new \app\index\model\web\Module();
         if ($value === true) {
             $data = $instance->getColumnAll();
-            $mod = [];
-            foreach ($data as $datum) {
-                $mod[$datum['name']] = $datum['id'];
-            }
-            CmsCache::getInstance('mod')->cache($mod);
         } else {
             $data = self::update($instance, cms('module'), $value, $isDelete);
         }
+        $mod = [];
+        foreach ($data as $datum) {
+            $mod[$datum['name']] = $datum['id'];
+        }
+        CmsCache::getInstance('mod')->cache($mod);
         return $data;
     }
     public static function updateCatalog(mixed $value = [], bool $isDelete = false): array
@@ -122,14 +122,14 @@ class CmsLogic
         if ($instance === false) $instance = new \app\index\model\web\Catalog();
         if ($value === true) {
             $data = $instance->getColumnAll();
-            $cat = [];
-            foreach ($data as $datum) {
-                $cat[$datum['url']] = $datum['id'];
-            }
-            CmsCache::getInstance('cat')->cache($cat);
         } else {
             $data = self::update($instance, cms('catalog'), $value, $isDelete);
         }
+        $cat = [];
+        foreach ($data as $datum) {
+            $cat[$datum['catdir']] = $datum['id'];
+        }
+        CmsCache::getInstance('cat')->cache($cat);
         return $data;
     }
     public static function updateTemplate(mixed $value = [], bool $isDelete = false): array
@@ -138,11 +138,16 @@ class CmsLogic
         // 获取所有模型模板
         foreach (cms("module") as $module) {
             $files = Filesystem::getDirFiles(root_path() . self::baseViewPath . "\\home\\" . $module['name'], ['html']);
-            if ($module['type'] == '0') $template[$module['id']]['show'] = $files;
+            $data = [];
+            foreach ($files as $file) {
+                $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+                $data[$file] = $file;
+            }
+            if ($module['type'] == '0') $template[$module['id']]['show'] = $data;
             else if ($module['type'] == '1') {
-                foreach ($files as $file) {
-                    if (preg_match('/^\/.*_show\.html$/', $file)) $template[$module['id']]['show'][$file] = $file;
-                    if (preg_match('/^\/.*_info\.html$/', $file)) $template[$module['id']]['info'][$file] = $file;
+                foreach ($data as $file) {
+                    if (preg_match('/^\/.*_show$/', $file)) $template[$module['id']]['show'][$file] = $file;
+                    if (preg_match('/^\/.*_info$/', $file)) $template[$module['id']]['info'][$file] = $file;
                 }
             }
         }

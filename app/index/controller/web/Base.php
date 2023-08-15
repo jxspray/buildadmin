@@ -23,10 +23,9 @@ class Base extends \app\index\controller\Action
     {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
-        if ($catid) {
-            $cat = $this->categorys[$catid];
+        if (!$catid) abort(404);
+        $cat = $this->categorys[$catid];
 
-        } else abort(404);
     }
 
     public function single($catid = '', $module = ''): ?string
@@ -39,7 +38,7 @@ class Base extends \app\index\controller\Action
         $cat['catname'] = $cat['title'];
         unset($cat['id'], $cat['title']);
         $this->assign($cat);
-        return $this->fetch("{$module}/{$cat['template_info']}");
+        return $this->fetch("{$module}/{$cat['template_show']}");
     }
 
     /**

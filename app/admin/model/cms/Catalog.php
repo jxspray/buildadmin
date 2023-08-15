@@ -13,6 +13,7 @@ use think\model\concern\SoftDelete;
 class Catalog extends Model
 {
     use SoftDelete;
+
     // 表名
     protected $name = 'cms_catalog';
 
@@ -30,8 +31,11 @@ class Catalog extends Model
     {
         // 获取上级
         if ($model->pid > 0 && ($catalog = cms("catalog")[$model->pid])) {
-            $model->url = $catalog['pdir'] . $model->catdir;
+            $model->pdir = $catalog['catdir'] . "/";
         }
+        $model->url = "/" . $model->pdir . $model->catdir . "/";
+        $model->module_id = $model->module_id ?? 1;
+        $model->module = cms("module")[$model->module_id]['name'];
         return true;
     }
 
@@ -72,7 +76,8 @@ class Catalog extends Model
         return !$value ? '' : $value;
     }
 
-    public function catalogExtend(){
+    public function catalogExtend()
+    {
         return $this->belongsTo("app\\admin\\model\\cms\\contents\\CatalogExtend", 'id')->joinType("left");
     }
 
@@ -80,7 +85,8 @@ class Catalog extends Model
 //        return $this->hasMany("fields", 'module_id', 'module_id');
 //    }
 
-    public function module(){
+    public function module()
+    {
         return $this->belongsTo("module", 'module_id')->joinType("left");
     }
 }
