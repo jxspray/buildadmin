@@ -38,7 +38,6 @@ const baTable = new baTableClass(
             { type: 'selection', align: 'center', operator: false },
             { label: t('cms.catalog.title'), prop: 'title', align: 'left' },
             { label: t('cms.module.title'), prop: 'module.title', align: 'left' },
-            // { label: t('cms.catalog.id'), prop: 'id', align: 'center', width: 100, sortable: 'custom', operator: 'RANGE' },
             { label: t('cms.catalog.seo_url'), prop: 'seo_url', align: 'center' },
             { label: t('operate'), align: 'center', width: 140, render: 'buttons', buttons: optButtons, operator: false },
         ],

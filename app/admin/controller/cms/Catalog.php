@@ -3,7 +3,6 @@
 namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
-use app\index\logics\handler\CmsCache;
 use ba\Tree;
 use think\db\exception\PDOException;
 use think\exception\ValidateException;
@@ -114,7 +113,9 @@ class Catalog extends Backend
     {
         $isTree = $this->request->param('isTree');
         $current_id = $this->request->param('current_id');
-        $data   = $this->getCatalogs([['id', '<>', $current_id]]);
+        $where = [];
+        if ($current_id > 0) $where[] = ['id', '<>', $current_id];
+        $data   = $this->getCatalogs($where);
 
         if ($isTree && !$this->keyword) {
             $data = $this->tree->assembleTree($this->tree->getTreeArray($data, 'title'));
@@ -139,5 +140,10 @@ class Catalog extends Backend
             ->where($where)
             ->order('weigh desc,id asc')
             ->select()->toArray();
+    }
+
+    public function getTemplate(): void
+    {
+        $this->success('', cms("template"));
     }
 }

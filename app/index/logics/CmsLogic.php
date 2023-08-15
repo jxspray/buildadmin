@@ -3,6 +3,7 @@
 namespace app\index\logics;
 
 use app\index\logics\handler\CmsCache;
+use ba\Filesystem;
 
 /**
  * Created by JOVO.
@@ -24,6 +25,7 @@ class CmsLogic
 {
     const PREFIX = "cms_";
     const basePath = "app\\index\\controller\\web";
+    const baseViewPath = "app\\index\\view\\web";
     const ALLOW_TYPE = ['module', 'catalog'];
 //    const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
 
@@ -98,6 +100,22 @@ class CmsLogic
         return $data;
     }
 
+    public static function updateModule(mixed $value = [], bool $isDelete = false): array
+    {
+        static $instance = false;
+        if ($instance === false) $instance = new \app\index\model\web\Module();
+        if ($value === true) {
+            $data = $instance->getColumnAll();
+            $mod = [];
+            foreach ($data as $datum) {
+                $mod[$datum['name']] = $datum['id'];
+            }
+            CmsCache::getInstance('mod')->cache($mod);
+        } else {
+            $data = self::update($instance, cms('module'), $value, $isDelete);
+        }
+        return $data;
+    }
     public static function updateCatalog(mixed $value = [], bool $isDelete = false): array
     {
         static $instance = false;
@@ -113,6 +131,22 @@ class CmsLogic
             $data = self::update($instance, cms('catalog'), $value, $isDelete);
         }
         return $data;
+    }
+    public static function updateTemplate(mixed $value = [], bool $isDelete = false): array
+    {
+        $template = [];
+        // 获取所有模型模板
+        foreach (cms("module") as $module) {
+            $files = Filesystem::getDirFiles(root_path() . self::baseViewPath . "\\home\\" . $module['name'], ['html']);
+            if ($module['type'] == '0') $template[$module['id']]['show'] = $files;
+            else if ($module['type'] == '1') {
+                foreach ($files as $file) {
+                    if (preg_match('/^\/.*_show\.html$/', $file)) $template[$module['id']]['show'][$file] = $file;
+                    if (preg_match('/^\/.*_info\.html$/', $file)) $template[$module['id']]['info'][$file] = $file;
+                }
+            }
+        }
+        return $template;
     }
 
     /**

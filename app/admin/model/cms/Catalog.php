@@ -19,14 +19,23 @@ class Catalog extends Model
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
 
-    protected $createTime = 'createtime';
-    protected $updateTime = 'updatetime';
-    protected $deleteTime = "deletetime";
+    protected $createTime = 'create_time';
+    protected $updateTime = 'update_time';
+    protected $deleteTime = "delete_time";
     protected $defaultSoftDelete = null;
 
     protected $json = [];
 
-    protected static function onAfterInsert($model)
+    public static function onBeforeWrite(self $model): bool
+    {
+        // 获取上级
+        if ($model->pid > 0 && ($catalog = cms("catalog")[$model->pid])) {
+            $model->url = $catalog['pdir'] . $model->catdir;
+        }
+        return true;
+    }
+
+    protected static function onAfterInsert(self $model): void
     {
         if ($model->weigh == 0) {
             $pk = $model->getPk();
@@ -34,14 +43,14 @@ class Catalog extends Model
         }
     }
 
-    public static function onAfterWrite(Model $model): void
+    public static function onAfterWrite(self $model): void
     {
         $model->catalogExtend()->save($model->catalogExtend);
         CmsLogic::getInstance()->forceUpdate('catalog');
         CmsLogic::getInstance()->forceUpdate('field_1');
     }
 
-    public static function onAfterDelete($model): void
+    public static function onAfterDelete(self $model): void
     {
         CmsLogic::getInstance()->forceUpdate('catalog');
         CmsLogic::getInstance()->forceUpdate('field_1');

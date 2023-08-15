@@ -16,8 +16,8 @@ class Module extends \think\Model
     // 自动写入时间戳字段
     protected $autoWriteTimestamp = 'int';
 
-    protected $createTime = 'createtime';
-    protected $updateTime = 'updatetime';
+    protected $createTime = 'create_time';
+    protected $updateTime = 'update_time';
 
     protected $type = [
     ];

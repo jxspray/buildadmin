@@ -25,7 +25,7 @@ class EmptyController extends Action
 
         if ($this->module == "urlRule") {
             $catdir = $this->request->param('catdir');
-            if ($catdir) {;
+            if ($catdir) {
                 $catid = $catid ?: cms('cat')[$catdir];
             }
             if ($catid) {

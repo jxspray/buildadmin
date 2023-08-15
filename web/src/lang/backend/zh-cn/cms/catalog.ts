@@ -1,3 +1,11 @@
+/*
+ * @Author: jxspray 1532946322@qq.com
+ * @Date: 2023-07-17 10:42:44
+ * @LastEditors: jxspray 1532946322@qq.com
+ * @LastEditTime: 2023-08-14 17:09:45
+ * @FilePath: \web\src\lang\backend\zh-cn\cms\catalog.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 export default {
     "base": "基本设置",
     "seo": "SEO设置",
@@ -8,8 +16,8 @@ export default {
     "title": "名称",
     "description": "描述",
     "default_catalog": "默认一级栏目",
-    "template_list": "列表页面",
-    "template_info": "详情页|单页",
+    "template_show": "列表页面|单页",
+    "template_info": "详情页",
     "seo_url": "目录链接",
     "seo_title": "标题",
     "seo_keywords": "关键字",

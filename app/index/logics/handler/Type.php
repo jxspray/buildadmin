@@ -4,7 +4,7 @@ namespace app\index\logics\handler;
 
 class Type
 {
-    const ALLOW_TYPE = ['module', 'catalog', 'cat', 'rule', 'fields'];
+    const ALLOW_TYPE = ['module', 'mod', 'catalog', 'cat', 'template', 'rule', 'fields'];
     private array $TYPE = [];
 
     private array $param = [];

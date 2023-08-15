@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\index\logics\CmsLogic;
 use Throwable;
 use ba\Terminal;
 use think\Response;
@@ -107,6 +108,7 @@ class Ajax extends Backend
         $type = $this->request->post('type');
         if ($type == 'tp' || $type == 'all') {
             Cache::clear();
+            CmsLogic::getInstance()->forceUpdateAll();
         } else {
             $this->error(__('Parameter error'));
         }

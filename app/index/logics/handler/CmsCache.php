@@ -25,9 +25,9 @@ class CmsCache
         $this->name = $name;
     }
 
-    public static function getInstance($name): CmsCache
+    public static function getInstance($name): self
     {
-        if (!isset(self::$instances[$name])) self::$instances[$name] = new CmsCache($name);
+        if (!isset(self::$instances[$name])) self::$instances[$name] = new self($name);
         return self::$instances[$name];
     }
 
