@@ -154,6 +154,12 @@ class CmsLogic
         return $template;
     }
 
+    public function updateParam()
+    {
+        // 获取param
+        $param = config("cms.param");
+    }
+
     /**
      * @param string $name
      * @return \app\index\logics\handler\Type|null

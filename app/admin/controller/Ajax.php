@@ -103,12 +103,13 @@ class Ajax extends Backend
         }
     }
 
-    public function clearCache()
+    public function clearCache(): void
     {
         $type = $this->request->post('type');
         if ($type == 'tp' || $type == 'all') {
             Cache::clear();
             CmsLogic::getInstance()->forceUpdateAll();
+            CmsLogic::getInstance()->updateParam();
         } else {
             $this->error(__('Parameter error'));
         }

@@ -33,6 +33,9 @@ class Catalog extends Model
         if ($model->pid > 0 && ($catalog = cms("catalog")[$model->pid])) {
             $model->pdir = $catalog['catdir'] . "/";
         }
+        $cat = $model->pdir . $model->catdir;
+        if (isset(cms("cat")[$cat]) && cms("cat")[$cat] != $model->id)
+            throw new \think\exception\ValidateException("栏目目录已存在");
         $model->url = "/" . $model->pdir . $model->catdir . "/";
         $model->module_id = $model->module_id ?? 1;
         $model->module = cms("module")[$model->module_id]['name'];
