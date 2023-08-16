@@ -77,12 +77,12 @@
         v-if="state!.setting.includes('image')"
         :label="t('cms.fields.allowFormat')" type="checkbox" v-model="form.setup!.allowFormat"
         :input-attr="{ size: 'large' }"
-        :data="{ childrenAttr: { border: false }, content: checkboxFormat(uploadAllowFormat.image) }" />
+        :data="{ childrenAttr: { border: false }, content: checkboxFormat(state.uploadAllowFormat.image) }" />
     <FormItem 
         v-if="state!.setting.includes('file')"
         :label="t('cms.fields.allowFormat')" type="checkbox" v-model="form.setup!.allowFormat"
         :input-attr="{ size: 'large' }"
-        :data="{ childrenAttr: { border: false }, content: checkboxFormat(uploadAllowFormat.file) }" />
+        :data="{ childrenAttr: { border: false }, content: checkboxFormat(state.uploadAllowFormat.file) }" />
     <FormItem 
         v-if="state!.setting.includes('upload') || state!.setting.includes('uploads')"
         :label="t('cms.fields.maxFileSize')" type="number" prop="maxFileSize"
@@ -118,11 +118,11 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, inject, watch } from 'vue'
+import { reactive, inject, watch, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
-import { state as stateCustom, typeOptions } from './index'
+import { state as stateCustom, initParam } from './index'
 
 const baTable = inject('baTable') as baTableClass
 
@@ -130,110 +130,20 @@ const baTable = inject('baTable') as baTableClass
 const checkboxFormat = function (format: any[]) {
     return format.reduce((obj, item) => ({ ...obj, [item]: item }), {})
 }
-const uploadAllowFormat: {
-    image: string[],
-    file: string[]
-} = {
-    image: ['jpg', 'png', 'gif'],
-    file: ['txt', 'pdf', 'crt']
-}
 const state: {
     setting: string[]
+    uploadAllowFormat: { image: string[], file: string[] }
 } = reactive({
-    setting: []
+    setting: [],
+    uploadAllowFormat: { image: [], file: [] }
 })
 
 const form: {
-    setup: any | any[],
-    customDefalut: any | any[]
+    setup: any,
+    customDefalut: any
 } = reactive({
     setup: baTable.form.items!.setup,
-    customDefalut: {
-        text: {
-            type: 'string',
-            numSection: '',
-            step: 1,
-            linenum: 1,
-            default: ''
-        },
-        radio: {
-            type: 'key',
-            options: []
-        },
-        checkbox: {
-            type: 'key',
-            options: [],
-            maxSelect: 3
-        },
-        select: {
-            type: 'key',
-            options: [],
-            maxSelect: 1
-        },
-        selects: {
-            type: 'key',
-            options: [],
-            maxSelect: 1
-        },
-        remoteSelect: {
-            type: 'key',
-            keyField: 'id',
-            valueField: 'title',
-            remoteName: '',
-            maxSelect: 1
-        },
-        remoteSelects: {
-            type: 'key',
-            keyField: 'id',
-            valueField: 'title',
-            remoteName: '',
-            maxSelect: 1
-        },
-        datePicker: {
-            type: 'datetime'
-        },
-        city: {
-        },
-        image: {
-            allowFormat: uploadAllowFormat.image,
-            maxFileSize: 1024, // KB
-            maxUpload: 1,
-            maxHight: 1920,
-            maxWidth: 1080,
-            default: ''
-        },
-        images: {
-            allowFormat: uploadAllowFormat.image,
-            maxFileSize: 1024,
-            maxUpload: 1,
-            maxHight: 1920,
-            maxWidth: 1080,
-            default: ''
-        },
-        file: {
-            allowFormat: uploadAllowFormat.file,
-            maxFileSize: 1024,
-            maxUpload: 1,
-            default: ''
-        },
-        files: {
-            allowFormat: uploadAllowFormat.file,
-            maxFileSize: 1024,
-            maxUpload: 1,
-            default: ''
-        },
-        editor: {
-            autoThumb: 0,
-            autoKeyword: 0,
-            minShow: 3,
-            autoDescription: 0,
-            beforeNum: 200
-        },
-        custom: {
-        },
-        tag: {
-        },
-    }
+    customDefalut: {}
 })
 
 const addOption = function (format: { key: string | number, value: string, type: string }) {
@@ -252,7 +162,7 @@ let val: any[]
 const setSetup = (type: string) => {
     let setup: any = {}
     if (type in form.customDefalut) {
-        state.setting = typeOptions[type]!.setting || []
+        state.setting = stateCustom.typeOptions[type]!.setting || []
         val = form.customDefalut[type]
         if (!form.setup) setup = val
         else {
@@ -264,7 +174,12 @@ const setSetup = (type: string) => {
     form.setup = setup
     baTable.form.items!.setup = setup
 }
-setSetup(baTable.form.items!.type)
+onMounted(() => {
+    initParam();
+    form.customDefalut = stateCustom.customDefalut
+    state.uploadAllowFormat = stateCustom.uploadAllowFormat
+    setSetup(baTable.form.items!.type)
+})
 
 watch(() => baTable.form.items!.type, (newVal) => {
     setSetup(newVal)

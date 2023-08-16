@@ -65,7 +65,7 @@ class Fields extends Model
             $module = cms("module");
             $moduleInfo = $module[$data['module_id']] ?? [];
             if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
-            $instance = \ba\cms\CmsSql::getInstance($moduleInfo['name'], "ADD");
+            $instance = \ba\cms\CmsSql::getInstance($data['module_id'] == 1 ? 'catalog_extend' : $moduleInfo['name'], "ADD");
         }
         return $instance;
     }
