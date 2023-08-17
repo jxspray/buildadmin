@@ -74,13 +74,3 @@ export const initParam = async () => {
         }
     }
 }
-
-// export const customFields: {
-// } = {
-// }
-// typeOptions.forEach((option: TypeOptions, key: number) => {
-//     state.typeOptions[key].options.push({
-//         label: item.title,
-//         value: item.designType
-//     })
-// });

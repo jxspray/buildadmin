@@ -5,18 +5,17 @@ $uploadAllowFormat = [
 ];
 return [
     'param' => [
-        'fields' => [
-            'module_id' => '',
+        'module' => [
             'name' => '',
-            'field' => '',
-            'remark' => '',
-            'required' => '0',
-            'setup' => [],
-            'tips' => '',
+            'title' => '',
+            'description' => '',
+            'type' => '1',
             'weigh' => '',
             'template' => '',
+            'path' => '',
+            'status' => '1',
         ],
-        'module' => [
+        'fields' => [
             'module_id' => '',
             'name' => '',
             'field' => '',
@@ -91,7 +90,11 @@ return [
                 'maxWidth' => 1080,
                 'default' => ''
             ]],
-            'file' => ["group" => "senior", "label" => "文件上传", "value" => "file", "setting" => ["upload", "file"]],
+            'file' => ["group" => "senior", "label" => "文件上传", "value" => "file", "setting" => ["upload", "file"], 'setup' => [
+                'allowFormat' => $uploadAllowFormat['file'],
+                'maxFileSize' => 1024,
+                'default' => ''
+            ]],
             'files' => ["group" => "senior", "label" => "文件上传-多文件", "value" => "files", "setting" => ["uploads", "file"], 'setup' => [
                 'allowFormat' => $uploadAllowFormat['file'],
                 'maxFileSize' => 1024,

@@ -21,6 +21,7 @@ class CmsSql
     {
         $this->pattern = $pattern;
         $this->table = $table;
+
     }
 
     /**
@@ -33,6 +34,12 @@ class CmsSql
      */
     public function getTypeResult(array $data, array $originData = [], array $checkChange = []): bool|array
     {
+        static $setupData = [];
+        if (empty($setupData)) {
+            foreach (config('cms.param.typeOptions') as $item) {
+                $setupData[$item['value']] = $item['setup'];
+            }
+        }
         $data = array_merge([
             'setup' => [],
             'remark' => NULL,
@@ -48,6 +55,7 @@ class CmsSql
             if ($bool === false) return false;
         }
         if (method_exists($this, $data['type'])) {
+            $data['setup'] = array_merge($setupData[$data['type']] ?? [], $data['setup'] ?? []);
             list($sql, $setup, $type) = $this->{$data['type']}($data);
             $data['setup'] = $setup;
             return ["{$this->getHead($data['field'], $originData['field']??'')} {$sql}", $data, $type];
@@ -133,28 +141,61 @@ class CmsSql
      */
     protected function createField(array $moduleRow): array
     {
-        $data = [];
         $fieldList = [];
         $sqlList = [];
         switch ($moduleRow['template']) {
             case 'article':
-                $data['catid'] = $this->select(['field' => 'catid', 'remark' => '栏目', 'comment' => '栏目']);
-                $data['title'] = $this->text(['field' => 'title', 'remark' => '标题', 'comment' => '标题']);
-                $data['keywords'] = $this->text(['field' => 'keywords', 'remark' => '关键词', 'comment' => '关键词']);
-                $data['description'] = $this->text(['field' => 'description', 'remark' => '描述', 'comment' => '描述']);
-                $data['status'] = $this->radio(['field' => 'status', 'default' => 0, 'listorder' => 99, 'remark' => '状态', 'comment' => '状态']);
+                $fieldList = [
+                    ['name' => '栏目', 'field' => 'catid', 'type' => 'remoteSelect', 'setup' => [
+                            'type' => 'key',
+                            'keyField' => 'id',
+                            'valueField' => 'name',
+                            'remoteName' => '',
+                        ]
+                    ],
+                    ['name' => '标题', 'field' => 'title', 'type' => 'text', 'setup' => [
+                            'type' => 'string',
+                            'default' => '',
+                        ]
+                    ],
+                    ['name' => '关键词', 'field' => 'keywords', 'type' => 'text', 'setup' => [
+                            'type' => 'string',
+                            'default' => '',
+                        ]
+                    ],
+                    ['name' => '描述', 'field' => 'description', 'type' => 'text', 'setup' => [
+                            'type' => 'textarea',
+                            'linenum' => 3,
+                            'default' => '',
+                        ]
+                    ],
+                    ['name' => '状态', 'field' => 'status', 'type' => 'radio', 'setup' => [
+                            'type' => 'key',
+                            'options' => ['关闭', '开启']
+                        ]
+                    ],
+                ];
                 break;
             case 'empty':
-                $data['status'] = $this->radio(['default' => 0, 'listorder' => 99, 'remark' => '状态', 'comment' => '状态']);
+                $fieldList = [
+                    ['name' => '状态', 'field' => 'status', 'type' => 'radio', 'setup' => [
+                            'type' => 'key',
+                            'options' => ['关闭', '开启']
+                        ]
+                    ],
+                ];
                 break;
         }
         $sqlList[] = "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID'";
-        foreach ($data as $field => $datum) {
-            $datum[1]['module_id'] = $moduleRow['id'];
-            $datum[1]['type'] = $datum[1]['type'] ?? $datum[2];
-            $fieldList[] = $datum[1];
-
-            $sqlList[] = "{$this->getHead($field)} {$datum[0]} {$this->assembleField($datum[1]['comment']??'', $datum[1]['default']??'')}";
+        $fieldData = config('cms.param.fields');
+        foreach ($fieldList as $datum) {
+            $datum = array_merge($fieldData, $datum);
+            $datum['module_id'] = $moduleRow['id'];
+            $res = $this->getTypeResult($datum);
+            if ($res) {
+                $sqlList[] = $res[0];
+                $fieldList[] = $res[1];
+            }
         }
         $sqlList[] = "`weigh` int(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序'";
         $sqlList[] = "`lang` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '语言ID'";
@@ -229,6 +270,17 @@ class CmsSql
         ], $setup);
         $res = $this->_varchar($setup);
         return [$res[0], $setup, $res[1]];
+    }
+
+    /**
+     * @param array $data
+     * @return array
+     */
+    public function remoteSelect(array $data): array
+    {
+        extract($data);
+        $setup = $setup ?? [];
+        return [$this->_int($setup), $data, __FUNCTION__];
     }
 
     public function editor(array $setup): array

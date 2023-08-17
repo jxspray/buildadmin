@@ -72,6 +72,7 @@ class Module extends \app\common\controller\Backend
         $moduleInfo = $module[$module_id] ?? [];
         if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
         $instance = \ba\cms\CmsSql::getInstance($moduleInfo['name'], "CREATE");
+        // 批量生成字段
         !$instance->tableExists() && $instance->createTable($moduleInfo);
 
         $this->success("模板字段创建成功");
