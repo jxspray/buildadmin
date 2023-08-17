@@ -129,8 +129,8 @@ class CmsSql
 //        foreach ($fieldList as $item) {
 //            $fieldsModel->save($item);
 //        }
-        $fieldsModel->saveAll($fieldList);
         $this->run("query", "{$this->getTableHead('CREATE')} ($sql) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'", true);
+//        $fieldsModel->saveAll($fieldList);
         return true;
     }
 
@@ -141,11 +141,11 @@ class CmsSql
      */
     protected function createField(array $moduleRow): array
     {
-        $fieldList = [];
+        $data = [];
         $sqlList = [];
         switch ($moduleRow['template']) {
             case 'article':
-                $fieldList = [
+                $data = [
                     ['name' => '栏目', 'field' => 'catid', 'type' => 'remoteSelect', 'setup' => [
                             'type' => 'key',
                             'keyField' => 'id',
@@ -177,7 +177,7 @@ class CmsSql
                 ];
                 break;
             case 'empty':
-                $fieldList = [
+                $data = [
                     ['name' => '状态', 'field' => 'status', 'type' => 'radio', 'setup' => [
                             'type' => 'key',
                             'options' => ['关闭', '开启']
@@ -186,19 +186,20 @@ class CmsSql
                 ];
                 break;
         }
-        $sqlList[] = "`id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID'";
+        $sqlList[] = "`id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID'";
         $fieldData = config('cms.param.fields');
-        foreach ($fieldList as $datum) {
+        $fieldList = [];
+        foreach ($data as $datum) {
             $datum = array_merge($fieldData, $datum);
             $datum['module_id'] = $moduleRow['id'];
             $res = $this->getTypeResult($datum);
             if ($res) {
-                $sqlList[] = $res[0];
+//                $sqlList[] = $res[0];
                 $fieldList[] = $res[1];
             }
         }
-        $sqlList[] = "`weigh` int(5) unsigned NOT NULL DEFAULT '0' COMMENT '排序'";
-        $sqlList[] = "`lang` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '语言ID'";
+        $sqlList[] = "`weigh` int(5) NULL DEFAULT 0 COMMENT '排序'";
+        $sqlList[] = "`lang` tinyint(1) NULL DEFAULT 0 COMMENT '语言ID'";
 
         $sqlList[] = "PRIMARY KEY (`id`)";
         return [implode(", ", $sqlList), $fieldList];
@@ -247,11 +248,9 @@ class CmsSql
         return [$this->_varchar($setup), $data, __FUNCTION__];
     }
 
-    public function radio(array $setup): array
+    public function radio(array $data): array
     {
-        $setup = array_merge([], $setup);
-        extract($setup);
-        $setup = $setup ?? [];
+        extract($data);
         $setup['options'] = $setup['options'] ?? ['0' => '否', '1' => '是'];
         return [$this->_enum($setup), $data, __FUNCTION__];
     }
@@ -260,16 +259,10 @@ class CmsSql
      * @param array $data
      * @return array
      */
-    public function image(array $setup): array
+    public function image(array $data): array
     {
-        $setup = array_merge([
-            'allowFormat' => 'jpg,png,gif', // 允许上传格式
-            'maxFileSize' => 1024, // 最大上传大小 单位KB
-            'maxWidth' => 200, // 最大宽度
-            'maxHeight' => 200, // 最大高度
-        ], $setup);
-        $res = $this->_varchar($setup);
-        return [$res[0], $setup, $res[1]];
+        extract($data);
+        return [$this->_varchar($setup), $data, $res[1]];
     }
 
     /**
@@ -283,17 +276,10 @@ class CmsSql
         return [$this->_int($setup), $data, __FUNCTION__];
     }
 
-    public function editor(array $setup): array
+    public function editor(array $data): array
     {
-        $setup = array_merge([
-            'autoThumb' => 0, // 自动抓取缩略图
-            'autoKeyword' => 0, // 自动抓取关键词
-            'minAppear' => 5, // 关键词至少出现次数
-            'autoDescription' => 0, // 自动抓取描述
-            'cutContentNum' => 200, // 截取内容前字数
-        ], $setup);
-        $res = $this->_text($setup);
-        return [$res[0], $setup, $res[1]];
+        extract($data);
+        return [$this->_text($setup), $data, $res[1]];
     }
 
     /* ####################################################### 常用字段类型 ###################################################### */
@@ -320,11 +306,11 @@ class CmsSql
     // year 年份
     /* ======================================================== 字符串类型 ===================================================== */
     // varchar 可变字符串
-    private function _varchar($args = []): array
+    private function _varchar($args = []): string
     {
         extract($args);
         $maxlength = $this->getLength('varchar', $maxlength ?? 0);
-        return ["VARCHAR( $maxlength )", __FUNCTION__];
+        return "VARCHAR( $maxlength )";
     }
 
     // enum 枚举
@@ -341,10 +327,10 @@ class CmsSql
     }
     // longtext 长文本
     // text 文本
-    private function _text($args = []): array
+    private function _text($args = []): string
     {
         extract($args);
-        return ["TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci", __FUNCTION__];
+        return "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci";
     }
     // mediumtext 中等文本
     // char 字符串
@@ -469,7 +455,8 @@ class CmsSql
     private function getTableHead(string $type): string
     {
         return match ($type) {
-            'CREATE' => "DROP TABLE IF EXISTS `{$this->table}`; CREATE TABLE `$this->table` ",
+//            'CREATE' => "DROP TABLE IF EXISTS `{$this->table}`; CREATE TABLE `$this->table` ",
+            'CREATE' => "CREATE TABLE `$this->table` ",
             'ALTER' => "ALTER TABLE `$this->table`",
             'DROP' => "DROP TABLE IF EXISTS `{$this->table}`",
             default => throw new Exception("类型错误！"),
