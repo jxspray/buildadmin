@@ -520,5 +520,6 @@ SQL;
             default:
                 throw new Exception("类型错误！");
         }
+        return '';
     }
 }
