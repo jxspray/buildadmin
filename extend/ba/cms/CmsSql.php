@@ -17,6 +17,16 @@ class CmsSql
     const DROP_MODE = 'DROP';
     const BUILD_MODE = 'BUILD';
 
+    /**
+     * 载入SQL类型处理实例
+     */
+    use traits\SqlType;
+
+    /**
+     * 载入字段类型处理实例
+     */
+    use traits\Type;
+
     public function __construct($table, $pattern = 'CREATE')
     {
         $this->pattern = $pattern;
@@ -29,21 +39,11 @@ class CmsSql
      * @param array $data
      * @param array $originData
      * @param array $checkChange
-     * @return bool|array
+     * @return bool|string
      * @throws Exception
      */
-    public function getTypeResult(array $data, array $originData = [], array $checkChange = []): bool|array
+    private function getTypeResult(array $data, array $originData = [], array $checkChange = []): bool|string
     {
-        static $setupData = [];
-        if (empty($setupData)) {
-            foreach (config('cms.param.typeOptions') as $item) {
-                $setupData[$item['value']] = $item['setup'];
-            }
-        }
-        $data = array_merge([
-            'setup' => [],
-            'remark' => NULL,
-        ], $data);
         if ($checkChange) {
             $bool = false;
             foreach ($checkChange as $field) {
@@ -55,10 +55,7 @@ class CmsSql
             if ($bool === false) return false;
         }
         if (method_exists($this, $data['type'])) {
-            $data['setup'] = array_merge($setupData[$data['type']] ?? [], $data['setup'] ?? []);
-            list($sql, $setup, $type) = $this->{$data['type']}($data);
-            $data['setup'] = $setup;
-            return ["{$this->getHead($data['field'], $originData['field']??'')} {$sql}", $data, $type];
+            return "{$this->getHead($data['field'], $originData['field']??'')} {$this->{$data['type']}($data)}";
         }
         return false;
     }
@@ -71,13 +68,13 @@ class CmsSql
      */
     public function saveField(array $data, array|false $originData = false): bool
     {
-//        if (!$this->tableExists()) return false;
+        $data = $this->generateRowData($data);
+        if (!$this->tableExists()) return false;
         $checkChange = ['field', 'setup', 'comment'];
         $res = $originData ? $this->getTypeResult($data, $originData, $checkChange) : $this->getTypeResult($data);
         if (!$res) return false;
         $this->run('execute', $this->generateQuery("ALTER", array_merge([
-            'sql' => $res[0],
-            'fieldType' => $res[2]
+            'sql' => $res
         ], $data)));
         return true;
     }
@@ -117,6 +114,29 @@ class CmsSql
         return $this->run('execute', "SHOW TABLES LIKE '{$this->table}'", true);
     }
 
+    private function getLength($type, $setup): int
+    {
+        // 设置数据库字段长度
+        if (!in_array($type, ['text', 'image', 'select', 'remoteSelect'])) return 0;
+        $attrType = match ($setup['type']) {
+            'key' => 'number',
+            'keyValue' => 'string',
+            default => $setup['type'],
+        };
+        $attrList = [
+            'number' => [1, 11, 11],
+            'string' => [1, 65535, 100],
+            'password' => [1, 65535, 20],
+            'textarea' => [1, 65535, 255],
+        ];
+        extract($setup);
+        $length = $length ?? 0;
+        $attr = $attrList[$attrType];
+        if ($length < $attr['0']) $length = $attr['2'];
+        else if ($length > $attr['1']) $length = $attr['1'];
+        return $length;
+    }
+
     /**
      * @param $moduleRow
      * @return true
@@ -124,25 +144,27 @@ class CmsSql
      */
     public function createTable($moduleRow): bool
     {
-        list($sql, $fieldList) = $this->createField($moduleRow);
-        $fieldsModel = new \app\admin\model\cms\Fields();
-//        foreach ($fieldList as $item) {
-//            $fieldsModel->save($item);
-//        }
-        $this->run("query", "{$this->getTableHead('CREATE')} ($sql) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'", true);
-//        $fieldsModel->saveAll($fieldList);
+        // 创建初始表
+        $this->run("query", "{$this->getTableHead('CREATE')} (
+            `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+            `weigh` int(5) NULL DEFAULT 0 COMMENT '排序',
+            `lang` tinyint(1) NULL DEFAULT 0 COMMENT '语言ID',
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'", true);
+        // 创建字段表
+//        self::$instance->pattern = 'ALTER';
+        $this->createField($moduleRow);
         return true;
     }
 
     /**
      * @param array $moduleRow
-     * @return array
+     * @return bool
      * @throws Exception
      */
-    protected function createField(array $moduleRow): array
+    protected function createField(array $moduleRow): bool
     {
         $data = [];
-        $sqlList = [];
         switch ($moduleRow['template']) {
             case 'article':
                 $data = [
@@ -186,31 +208,12 @@ class CmsSql
                 ];
                 break;
         }
-        $sqlList[] = "`id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID'";
-        $fieldData = config('cms.param.fields');
-        $fieldList = [];
-        foreach ($data as $datum) {
-            $datum = array_merge($fieldData, $datum);
+        foreach ($data as &$datum) {
             $datum['module_id'] = $moduleRow['id'];
-            $res = $this->getTypeResult($datum);
-            if ($res) {
-//                $sqlList[] = $res[0];
-                $fieldList[] = $res[1];
-            }
+            $datum = $this->generateRowData($datum);
         }
-        $sqlList[] = "`weigh` int(5) NULL DEFAULT 0 COMMENT '排序'";
-        $sqlList[] = "`lang` tinyint(1) NULL DEFAULT 0 COMMENT '语言ID'";
-
-        $sqlList[] = "PRIMARY KEY (`id`)";
-        return [implode(", ", $sqlList), $fieldList];
-    }
-
-    public function assembleField(string $comment = NULL, string $default = NULL): array|string
-    {
-        if ($default === NULL) $default = "DEFAULT NULL";
-        else $default = "NOT NULL DEFAULT '$default'";
-        if (!empty($comment)) $comment = "COMMENT '$comment'";
-        return "{$default} {$comment}";
+        (new \app\admin\model\cms\Fields)->saveAll($data);
+        return true;
     }
 
     /**
@@ -222,158 +225,7 @@ class CmsSql
         return $this->tableExists() && $this->run('execute', $this->getTableHead('DROP'), true);
     }
 
-    /* ######################################################### 组件 ######################################################## */
-    /**
-     * @param array $data
-     * @return array
-     */
-    public function text(array $data): array
-    {
-        extract($data);
-        $setup = $setup ?? [];
-        return [match ($setup['type'] ?? 'string') {
-            "string", "textarea", "password" => $this->_varchar($setup),
-            "number" => $this->_int($setup)
-        }, $data, __FUNCTION__];
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    public function select(array $data): array
-    {
-        extract($data);
-        $setup = $setup ?? [];
-        return [$this->_varchar($setup), $data, __FUNCTION__];
-    }
-
-    public function radio(array $data): array
-    {
-        extract($data);
-        $setup['options'] = $setup['options'] ?? ['0' => '否', '1' => '是'];
-        return [$this->_enum($setup), $data, __FUNCTION__];
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    public function image(array $data): array
-    {
-        extract($data);
-        return [$this->_varchar($setup), $data, $res[1]];
-    }
-
-    /**
-     * @param array $data
-     * @return array
-     */
-    public function remoteSelect(array $data): array
-    {
-        extract($data);
-        $setup = $setup ?? [];
-        return [$this->_int($setup), $data, __FUNCTION__];
-    }
-
-    public function editor(array $data): array
-    {
-        extract($data);
-        return [$this->_text($setup), $data, $res[1]];
-    }
-
-    /* ####################################################### 常用字段类型 ###################################################### */
-    /* ======================================================== 数字类型 ===================================================== */
-    // int 整型
-    public function _int($args = []): string
-    {
-        extract($args);
-        $maxlength = $this->getLength('int', $maxlength ?? 11);
-        return "INT( $maxlength )";
-    }
-    // float 浮点数
-    // double 双精度浮点数
-    // tinyint 小整型
-    // smallint 小整型
-    // bigint 长整型
-    // decimal 定点数
-    // mediumint 中等整型
-    /* ======================================================= 日期和时间类型 ==================================================== */
-    // datetime 日期时间
-    // timestamp 时间戳
-    // date 日期
-    // time 时间
-    // year 年份
-    /* ======================================================== 字符串类型 ===================================================== */
-    // varchar 可变字符串
-    private function _varchar($args = []): string
-    {
-        extract($args);
-        $maxlength = $this->getLength('varchar', $maxlength ?? 0);
-        return "VARCHAR( $maxlength )";
-    }
-
-    // enum 枚举
-    private function _enum($args = []): string
-    {
-        extract($args);
-        $options = array_keys($options);
-        $str = '';
-        foreach ($options as $option) {
-            if ($str) $str .= ", ";
-            $str .= "'$option'";
-        }
-        return "enum( $str )";
-    }
-    // longtext 长文本
-    // text 文本
-    private function _text($args = []): string
-    {
-        extract($args);
-        return "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci";
-    }
-    // mediumtext 中等文本
-    // char 字符串
-    /* ======================================================= 特殊数据类型 ===================================================== */
-    // blob 二进制大对象
-    // binary 二进制
-    // bit 位
-    // geometry 几何
-    // geometrycollection 几何集合
-    // integer 整型
-    // json JSON
-    // linestring 线
-    // longblob 长二进制
-    // mediumblob 中等二进制
-    // multilinestring 多线
-    // multipoint 多点
-    // multipolygon 多面
-    // numeric 定点数
-    // point 点
-    // polygon 面
-    // real 浮点数
-    // set 集合
-    // tinyblob 小二进制
-    // tibytext 小文本
-    // varbinary 可变二进制
-
     /* ####################################################### 辅助方法 ###################################################### */
-
-    private function getLength($type, $length): int
-    {
-        $length = (int)$length;
-        switch ($type) {
-            case 'varchar':
-                if ($length <= 0) $length = 255;
-                else if ($length > 65535) $length = 65535;
-                break;
-            case 'int':
-                if ($length <= 0) $length = 1;
-                else if ($length > 11) $length = 11;
-                break;
-        }
-        return $length;
-    }
 
     /**
      * @param string $exec
@@ -466,39 +318,20 @@ class CmsSql
     private function generateQuery(string $mode, array|string $args = null): string
     {
         switch ($mode) {
-            case self::CREATE_MODE:
-                $args = array_merge([
-                    'sql' => null,
-                    'comment' => '模型表',
-                ], $args);
-                extract($args);
-                if (empty($sql)) throw new Exception("SQL语句不能为空！");
-
-                $comment = $comment ? "COMMENT='{$comment}'" : '';
-                return <<<SQL
-DROP TABLE IF EXISTS `{$this->table}`; 
-CREATE TABLE `{$this->table}` {$args['sql']} ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci $comment;
-SQL;
             case self::ALTER_MODE:
                 $args = array_merge([
                     'sql' => NULL,
-                    'fieldType' => NULL,
                     'name' => '',
-                    'default' => NULL,
                     'comment' => '',
                 ], $args);
                 extract($args);
                 if (empty($sql)) throw new Exception("SQL语句不能为空！");
-                if (empty($fieldType)) throw new Exception("字段类型不能为空！");
-                if (empty($comment)) $comment = $name;
+
                 // 无需默认值类型
-                $noDefault = ['_text', '_mediumtext', '_longtext', '_blob', '_mediumblob', '_longblob', '_json', '_set'];
-                if (in_array($fieldType, $noDefault)) $default = '';
-                else {
-                    if ($default === NULL) $default = "DEFAULT NULL";
-                    else $default = "NOT NULL DEFAULT '$default'";
-                }
-                if (!empty($comment)) $comment = "COMMENT '$comment'";
+                if (in_array($args['type'], ['text'])) $default = '';
+                else $default = "NOT NULL";
+
+                if (!empty($name)) $comment = "COMMENT '$name'";
                 return "ALTER TABLE `$this->table` {$sql} {$default} {$comment}";
             case self::DROP_MODE:
                 return "DROP TABLE IF EXISTS `{$this->table}`";
@@ -508,5 +341,22 @@ SQL;
                 throw new Exception("类型错误！");
         }
         return '';
+    }
+
+    private function generateRowData($data): array
+    {
+        static $fieldData = [];
+        if (empty($fieldData)) $fieldData = config('cms.param.fields');
+        $data = array_merge($fieldData, $data);
+
+        static $setupData = [];
+        if (empty($setupData)) {
+            foreach (config('cms.param.typeOptions') as $item) {
+                $setupData[$item['value']] = $item['setup'];
+            }
+        }
+        $data['setup'] = array_merge($setupData[$data['type']] ?? [], $data['setup'] ?? []);
+        if ($length = $this->getLength($data['type'], $data['setup'])) $data['setup']['length'] = $length;
+        return $data;
     }
 }

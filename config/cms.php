@@ -32,11 +32,12 @@ return [
         'typeOptions' => [
             'text' => ["group" => "common", "label" => "文本框", "value" => "text", "setting" => ["textType"], 'setup' => [
                 'type' => 'string',
-                'numSection' => '',
+                'length' => '',
                 'step' => 1,
                 'linenum' => 1,
                 'default' => '',
-            ]],
+            ], 'selectType' => ['string', 'textarea', 'number', 'password']
+            ],
             'radio' => ["group" => "common", "label" => "单选按钮", "value" => "radio", "setting" => ["select"], 'setup' => [
                 'type' => 'key',
                 'options' => ['关闭', '开启']
@@ -50,12 +51,12 @@ return [
                 'type' => 'key',
                 'options' => [],
                 'maxSelect' => 1,
-            ]],
+            ], 'selectType' => ['key', 'keyValue']],
             'selects' => ["group" => "common", "label" => "下拉框(多选)", "value" => "selects", "setting" => ["select", "selectNum"], 'setup' => [
                 'type' => 'key',
                 'options' => [],
                 'maxSelect' => 1,
-            ]],
+            ], 'selectType' => ['key', 'keyValue']],
 
             'remoteSelect' => ["group" => "base", "label" => "远程下拉选择", "value" => "remoteSelect", "setting" => ["remoteSelect"], 'setup' => [
                 'type' => 'key',

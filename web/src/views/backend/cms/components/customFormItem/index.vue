@@ -87,11 +87,12 @@ export default defineComponent({
         const needTreeApi = [
             'catalog'
         ]
-        if (type == 'remoteSelect') {
-            inputAttr = { field: option.setup.valueField, 'remote-url': remoteUrls[option.setup.remoteName] }
+        if (props.type == 'remoteSelect') {
+            props.inputAttr.field = props.option.setup!.valueField
+            props.inputAttr.remoteUrl =  remoteUrls[option.setup.remoteName]
 
             if (needTreeApi.includes(option.setup.remoteName)) {
-                inputAttr['params'] = { isTree: true }
+                inputAttr.params = { isTree: true }
             }
         }
         if (type == 'text') {
