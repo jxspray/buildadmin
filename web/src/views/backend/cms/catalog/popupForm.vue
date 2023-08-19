@@ -2,7 +2,7 @@
  * @Author: jxspray 1532946322@qq.com
  * @Date: 2023-08-11 11:16:59
  * @LastEditors: jxspray 66114831+jxspray@users.noreply.github.com
- * @LastEditTime: 2023-08-15 23:46:27
+ * @LastEditTime: 2023-08-20 00:26:32
  * @FilePath: \web\src\views\backend\cms\catalog\popupForm.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -53,7 +53,7 @@
                                 v-model="baTable.form.items!.pid"
                                 :placeholder="t('Click Select')"
                                 :input-attr="{
-                                    params: { isTree: true, current_id: baTable.form.items!.id },
+                                    params: { isTree: true, current_id: state.current_id },
                                     field: 'title',
                                     'remote-url': '/admin/cms.catalog/index',
                                 }"
@@ -63,8 +63,27 @@
                             <FormItem :label="t('cms.catalog.catdir')" type="string" v-model="baTable.form.items!.catdir" prop="catdir" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.catdir') }) }" />
                             <FormItem :label="t('cms.catalog.weigh')" type="number" prop="weigh" v-model.number="baTable.form.items!.weigh" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.weigh') }) }" />
                             <FormItem :label="t('cms.catalog.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.catalog.status 0'), 1: t('cms.catalog.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.status') }) }" />
-                            <FormItem :label="t('cms.catalog.template_show')" type="select" v-model="baTable.form.items!.template_show" prop="template_show" :data="{ content: {'':'请选择主页模板', ...state.template[baTable.form.items!.module_id || 1]!['show']} }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.template_show') }) }" />
-                            <FormItem :label="t('cms.catalog.template_info')" type="select" v-model="baTable.form.items!.template_info" prop="template_info" :data="{ content: {'':'请选择详情模板', ...state.template[baTable.form.items!.module_id || 1]!['info']} }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.template_info') }) }" />
+                            
+                            <el-form-item :label="t('cms.catalog.template_show')" prop="template_show">
+                                <el-select v-model="baTable.form.items!.template_show" clearable :placeholder="t('Please select field', { field: t('cms.catalog.template_show') })" class="w100">
+                                    <el-option
+                                    v-for="item in state.temp.show"
+                                    :key="item"
+                                    :label="item"
+                                    :value="item"
+                                    />
+                                </el-select>
+                            </el-form-item>
+                            <el-form-item :label="t('cms.catalog.template_info')" prop="template_info">
+                                <el-select v-model="baTable.form.items!.template_info" clearable :placeholder="t('Please select field', { field: t('cms.catalog.template_info') })" class="w100">
+                                    <el-option
+                                    v-for="item in state.temp.info"
+                                    :key="item"
+                                    :label="item"
+                                    :value="item"
+                                    />
+                                </el-select>
+                            </el-form-item>
                         </el-tab-pane>
                         <el-tab-pane :label="t('cms.catalog.seo')">
                             <FormItem :label="t('cms.catalog.seo_title')" type="string" v-model="baTable.form.items!.seo_title" prop="seo_title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.seo_title') }) }" />
@@ -97,13 +116,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, inject } from 'vue'
+import { reactive, ref, inject, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 import CustomFormItem from '../components/CustomFormItem/index.vue'
+import { stat } from 'fs'
 
 
 const formRef = ref<InstanceType<typeof ElForm>>()
@@ -112,11 +132,15 @@ const baTable = inject('baTable') as baTableClass
 const state: {
     catalogExtend: any[],
     fields: any[],
-    template: any[]
+    template: any[],
+    temp: {show: any[], info: any[]},
+    current_id: number
 } = reactive({
     catalogExtend: [],
     fields: [],
-    template: []
+    template: [],
+    temp: { show: [], info: [] },
+    current_id: 0
 })
 
 // 获取template
@@ -127,6 +151,11 @@ baTable.api.postData('getTemplate', {}).then((res: any) => {
 baTable.before = {
     onSubmit: function (res: any) {
         baTable.form.items!.catalogExtend = state.catalogExtend
+        state.current_id = baTable.form.items!.id
+    },
+    toggleForm: function () {
+        state.catalogExtend = []
+        state.current_id = 0
     }
 }
 baTable.after = {
@@ -139,6 +168,14 @@ baTable.after = {
         // state.template = res.data.template
     }
 }
+watch(() => baTable.form.items!.module_id, (newVal) => {
+    if (newVal) {
+        state.temp.show = state.template[newVal || 1]!['show']
+        state.temp.info = state.template[newVal || 1]!['info']
+        // baTable.form.items!.template_show = ''
+        // baTable.form.items!.template_info = ''
+    }
+})
 
 const { t } = useI18n()
 

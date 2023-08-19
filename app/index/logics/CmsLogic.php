@@ -127,7 +127,7 @@ class CmsLogic
         }
         $cat = [];
         foreach ($data as $datum) {
-            $cat[$datum['catdir']] = $datum['id'];
+            $cat[$datum['pdir'] . $datum['catdir']] = $datum['id'];
         }
         CmsCache::getInstance('cat')->cache($cat);
         return $data;
@@ -146,8 +146,8 @@ class CmsLogic
             if ($module['type'] == '0') $template[$module['id']]['show'] = $data;
             else if ($module['type'] == '1') {
                 foreach ($data as $file) {
-                    if (preg_match('/^\/.*_show$/', $file)) $template[$module['id']]['show'][$file] = $file;
-                    if (preg_match('/^\/.*_info$/', $file)) $template[$module['id']]['info'][$file] = $file;
+                    if (preg_match('/^.*_show$/', $file)) $template[$module['id']]['show'][$file] = $file;
+                    if (preg_match('/^.*_info$/', $file)) $template[$module['id']]['info'][$file] = $file;
                 }
             }
         }

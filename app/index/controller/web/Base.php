@@ -19,13 +19,17 @@ class Base extends \app\index\controller\Action
 //        $this->assign($this->Config);
     }
 
-    public function catalog($catid = '', $module = ''): void
+    public function catalog($catid = '', $module = ''): ?string
     {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
         if (!$catid) abort(404);
         $cat = $this->categorys[$catid];
-
+        $cat['catid'] = $catid;
+        $cat['catname'] = $cat['title'];
+        unset($cat['id'], $cat['title']);
+        $this->assign($cat);
+        return $this->fetch("{$module}/{$cat['template_show']}");
     }
 
     public function single($catid = '', $module = ''): ?string

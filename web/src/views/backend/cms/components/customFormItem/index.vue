@@ -83,27 +83,28 @@ export default defineComponent({
     },
     emits: ['update:modelValue'],
     setup(props, { emit }) {
-        let { type, inputAttr, data, option } = props
+        let data: any, inputAttr: any
+        
         const needTreeApi = [
             'catalog'
         ]
         if (props.type == 'remoteSelect') {
-            props.inputAttr.field = props.option.setup!.valueField
-            props.inputAttr.remoteUrl =  remoteUrls[option.setup.remoteName]
+            inputAttr.field = props.option.setup!.valueField
+            inputAttr.remoteUrl =  remoteUrls[props.option.setup.remoteName]
 
-            if (needTreeApi.includes(option.setup.remoteName)) {
+            if (needTreeApi.includes(props.option.setup.remoteName)) {
                 inputAttr.params = { isTree: true }
             }
         }
-        if (type == 'text') {
-            type = option.setup.type;
-        }
+        const type = computed(() => {
+            return props.type == 'text' ? props.option.setup.type : props.type
+        })
         const onValueUpdate = (value: modelValueTypes) => {
             emit('update:modelValue', value)
         }
 
         const blockHelp = computed(() => {
-            return props.attr && props.attr['block-help'] ? props.attr['block-help'] : ''
+            return props.attr && props.attr.blockHelp ? props.attr.blockHelp : ''
         })
 
         const needHandlerOption = [
@@ -112,9 +113,9 @@ export default defineComponent({
             'radio',
             'checkbox'
         ]
-        if (needHandlerOption.includes(type)) {
+        if (needHandlerOption.includes(type.value)) {
             let content:any = {};
-            option.setup.options.forEach((item: any) => {
+            props.option.setup.options.forEach((item: any) => {
                 content[item.key] = item.value
             });
             data = { content: content }
@@ -124,8 +125,8 @@ export default defineComponent({
             'select',
             'remoteSelect'
         ]
-        if (needMultiple.includes(type)) {
-            if (option.setup.maxSelect > 1) {
+        if (needMultiple.includes(type.value)) {
+            if (props.option.setup.maxSelect > 1) {
                 inputAttr['multiple'] = true
                 // inputAttr['max'] = option.setup.maxselect
             }
@@ -135,7 +136,7 @@ export default defineComponent({
         // el-form-item 的默认插槽,生成一个baInput
         const defaultSlot = () => {
             let inputNode = createVNode(BaInput, {
-                type: type,
+                type: type.value,
                 attr: { placeholder: props.placeholder, ...inputAttr },
                 data: data,
                 modelValue: props.modelValue,
@@ -179,7 +180,7 @@ export default defineComponent({
         // 需要独立label的输入框
         const needLabelSlot = ['radio', 'checkbox', 'switch', 'array', 'image', 'images', 'file', 'files', 'editor']
 
-        if (noNeedLabelSlot.includes(type)) {
+        if (noNeedLabelSlot.includes(type.value)) {
             return () =>
                 createVNode(
                     resolveComponent('el-form-item'),
@@ -192,7 +193,7 @@ export default defineComponent({
                         default: defaultSlot,
                     }
                 )
-        } else if (needLabelSlot.includes(type)) {
+        } else if (needLabelSlot.includes(type.value)) {
             // 带独立label的输入框
             let title = props.data && props.data.title ? props.data.title : props.label
             const labelSlot = () => {
@@ -220,7 +221,7 @@ export default defineComponent({
                 createVNode(
                     resolveComponent('el-form-item'),
                     {
-                        class: 'ba-input-item-' + type,
+                        class: 'ba-input-item-' + type.value,
                         prop: props.prop,
                         ...props.attr,
                         label: props.label,
