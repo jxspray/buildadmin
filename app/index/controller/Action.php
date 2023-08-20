@@ -7,8 +7,6 @@
 
 namespace app\index\controller;
 
-use app\BaseController;
-
 class Action extends \app\BaseController
 {
     private static array $verityModule = ['index', 'urlRule'];
@@ -60,28 +58,17 @@ class Action extends \app\BaseController
         return app($namespace)->$action();
     }
 
-    public function assign($name, $value = null)
+    public function assign($name, $value = null): void
     {
         $this->view->assign($name, $value);
     }
 
-    public function display($value, $layout = true)
-    {
-        $template = $value;
-        try {
-            $this->setLayout($layout);
-            return $this->view->display($template);
-        } catch (\Exception $e) {
-            abort(404, "Template does not exist: $value");
-        }
-    }
-
-    public function fetch($value, $layout = true)
+    public function fetch(string $value, array $args = [], bool|string $layout = true)
     {
         $template = app()->getAppPath() . "/view/web/{$this->pattern}/$value.html";
         try {
             $this->setLayout($layout);
-            return $this->view->fetch($template);
+            return $this->view->fetch($template, $args);
         } catch (\Exception $e) {
             abort(404, $e->getMessage());
         }
@@ -91,7 +78,7 @@ class Action extends \app\BaseController
     {
         if (!$layout) return;
         if ($layout === true) $layout = $this->layout;
-//        $this->view->layout("web/{$this->pattern}/layout/$layout");
+        $this->view->engine()->layout("web/{$this->pattern}/layout/{$this->layout}");
     }
 
     public function __call($name, $arguments)

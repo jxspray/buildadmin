@@ -8,6 +8,7 @@ class Index extends Base
 {
     public function index(): string
     {
+        $this->settingSEOData();
         return $this->fetch(__FUNCTION__);
     }
 }

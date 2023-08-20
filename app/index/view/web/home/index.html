@@ -1,1177 +1,749 @@
-<php>$redian=1;</php>
-<!-- 专题与广告板块 -->
-<div class="specialbox">
-    <div class="container-xl p-xl-0">
-        <div class="special">
-            <a target="_blank" href="{$Categorys[47]['url']}" title="{$Categorys[47]['catname']}" class="img">
-                <div class="picbox">
-                    <div class="pic"
-                         style="background-image: url(__TEMP_LANG__/webimages/special.png?t=2)"></div>
-                </div>
-            </a>
-            <php> $vo = jovo_data('article',['catid'=>47],1,2)[0]; </php>
-            <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="titlebox">
-                <div class="atitle">{$vo.title}</div>
-                <div class="btitle">{$vo.description}</div>
-            </a>
-        </div>
+<!-- 数字 -->
+<script src="/cms/home/js/jishu/jquery.countto.min.js"></script>
+<script src="/cms/home/js/jishu/waypoints.min.js"></script>
+<script src="/cms/home/js/jishu/jishuqi.js"></script>
 
-        <div class="row inner-banner" style="padding: 0 15px;">
-            <div class="col swiper">
-                <div class="swiper-wrapper">
-                    <php> $banner = jovo_banners(['fid'=>9]);</php>
-                    {if $banner}
-                    <volist name="banner" id="ban">
-                        <php> $target = $ban['link'] ? 'target="_blank"':''; </php>
-                        <div class="swiper-slide">
-                            <a href="{$ban['link']?:'javascript:'}" {$target} title="{$ban['title']}" class="item">
-                                <div class="picbox">
-                                    <div class="pic" style="background-image: url({$ban.pic})"></div>
-                                </div>
-                            </a>
-                        </div>
-                    </volist>
-                    {/if}
+<!--top begin-->
+<include file="model:top"/>
+<!--top end-->
+
+
+<!-- 首页 -->
+<div class="page_index">
+    <!-- 顶部banner轮播 -->
+    <div class="banner">
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                <php> $banner = jovo_banners(['fid'=>1]);</php>
+                <volist name="banner" id="v1">
+                    <div class="swiper-slide">
+                        <a href="{$v1['link']?:'javascript:'}" class="picbox">
+                            <div class="pic" style="background-image: url({$v1.pic})"></div>
+                        </a>
+                    </div>
+                </volist>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="next">
+                <div class="picbox">
+                    <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/next.png)"></div>
                 </div>
             </div>
-        </div>
-        <div class="row inner-banner">
-            <php> $banner = jovo_banners(['fid'=>6]);</php>
-            {if $banner}
-            <volist name="banner" id="ban">
-                <php> $target = $ban['link'] ? 'target="_blank"':''; </php>
-                <a href="{$ban['link']?:'javascript:'}" {$target} title="{$ban['title']}" class="col item">
-                    <div class="picbox">
-                        <div class="pic" style="background-image: url({$ban.pic})"></div>
-                    </div>
-                </a>
-            </volist>
-            {/if}
+            <div class="prev">
+                <div class="picbox">
+                    <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/prev.png)"></div>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-<!-- 头条板块 -->
-<div class="top-news">
-    <div class="container-xl p-xl-0">
-        <php> $banners = jovo_banners(['fid'=>10]);</php>
-        <div class="top wow fadeIn">
-            <php> $vo = $banners[0];</php>
-            <div class="img">
-                <div class="picbox">
-                    <div class="pic" style="background-image: url(__TEMP_LANG__/webimages/top_news.png)"></div>
-                </div>
-            </div>
+    <!-- 热门课程板块 -->
+    <div class="kecheng">
+        <div class="contentbox">
             <div class="titlebox">
-                <a target="_blank" href="{$vo['link']}" title="{$vo['title']}" class="atitle">{$vo['title']}</a>
-                <div class="btitle">{$vo['description']}<a href="{$vo['link']}" title="查看详情">[查看详情]</a></div>
+                <div class="atitle">{$courseSubName}</div>
+                <div class="btitle">{$courseRemark}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <!-- 时政新闻 -->
-        <php> $catinfo = $Categorys[1]; </php>
-        <div class="titlebox">
-            <div class="atitle">
-                <span>{$catinfo.catname|mb_substr=0,2}</span>{$catinfo.catname|mb_substr=###,2}
-                <!-- <div class="shadow">city & county</div> -->
-            </div>
-            <div class="more">
-                <div class="line"></div>
-                <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-            </div>
-        </div>
-        <php> $data = jovo_data('article',['catid'=>$catinfo['id']],12,2); </php>
-        <div class="row news wow fadeIn">
-            <div class="col-6">
+            <div class="sw2">
                 <div class="swiper">
                     <div class="swiper-wrapper">
-                        <volist name="data" id="vo">
-                            {if $i <= 3}
+                        <php>
+                            $page = 3;
+                            $data = jovo_data('course', 6);
+                            $count = (int)ceil(count($data)/$page);
+                        </php>
+                        <for start="0" end="$count" name="ii">
                             <div class="swiper-slide">
-                                <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="item">
-                                    <div class="picbox">
-                                        <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                                    </div>
-                                    <div class="itemtitle">
-                                        <div class="atitle">{$vo['title']}</div>
-                                    </div>
-                                </a>
-                            </div>
-                            {else}
-                            <php> break; </php>
-                            {/if}
-                            <php> unset($data[$key]); </php>
-                        </volist>
-                    </div>
-                    <div class="pagination"></div>
-                </div>
-            </div>
-            <div class="col-6 itemlist">
-                <div class="item">
-                    <php> $vo = $data[$key]; unset($data[$key]); </php>
-                    <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="titlebox">
-                        <div class="atitle">{$vo.title}</div>
-                    </a>
-                    <div class="sublist">
-                        <volist name="data" id="vo">
-                            {if $i <= 3}
-                            <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">{$vo['title']}</a>
-                            {else}
-                            <php> break; </php>
-                            {/if}
-                            <php> unset($data[$key]); </php>
-                        </volist>
-                    </div>
-                </div>
-                <div class="line"></div>
-                <div class="item">
-                    <php> $vo = $data[$key]; unset($data[$key]); </php>
-                    <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="titlebox">
-                        <div class="atitle">{$vo.title}</div>
-                    </a>
-                    <div class="sublist">
-                        <volist name="data" id="vo">
-                            {if $i <= 3}
-                            <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">{$vo['title']}</a>
-                            {else}
-                            <php> break; </php>
-                            {/if}
-                            <php> unset($data[$key]); </php>
-                        </volist>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- 板块列表1 -->
-<div class="block-list1">
-    <div class="container-xl p-xl-0">
-        <div class="row">
-            <div class="col-9 block-list">
-                <div class="w-50 block wow fadeIn">
-                    <php> $catinfo = $Categorys[14]; </php>
-                    <div class="titlebox">
-                        <div class="atitle">
-                            <span>政协</span>动态
-                            <!-- <div class="shadow">Trends of CPPCC</div> -->
-                        </div>
-                        <div class="more">
-                            <div class="line"></div>
-                            <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                        </div>
-                    </div>
-                    <!-- 图文 -->
-                    <php> $data = jovo_data($catinfo['module'],['catid'=>$catinfo['id']],8,2); </php>
-                    <php> $vo = $data[0]; </php>
-                    {if !empty($vo['thumb'])}
-                    <php> $showType = 'img'; unset($data[0]); </php>
-                    <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="row tuwen">
-                        <div class="col img">
-                            <div class="picbox">
-                                <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                            </div>
-                        </div>
-                        <div class="col txt">
-                            <div class="t1">{$vo['title']}</div>
-                        </div>
-                    </a>
-                    {/if}
-                    <!-- 列表 -->
-                    <div class="list">
-                        <volist name="data" id="vo">
-                            <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">
-                                <div class="t1">{$vo['title']}</div>
-                            </a>
-                            <php> if($showType == 'img' && $i >= 3) break; </php>
-                        </volist>
-                    </div>
-                </div>
-                <div class="w-50 block wow fadeIn">
-                    <php> $catinfo = $Categorys[20]; </php>
-                    <div class="titlebox">
-                        <div class="atitle">
-                            <span>微</span>建议
-                            <!-- <div class="shadow">wei proposal</div> -->
-                        </div>
-                        <div class="more">
-                            <div class="line"></div>
-                            <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                        </div>
-                    </div>
-                    <!-- 单区域 -->
-                    <div class="col-12 item">
-                        <div class="main">
-                            <php> $data = jovo_data($catinfo['module'],['catid'=>$catinfo['id']],5,2); </php>
-                            <php> $vo = $data[0]; unset($data[0]); </php>
-                            <a href="{$vo['url']}" title="{$vo['title']}" class="subtitle">{$vo['title']}</a>
-                            <!-- 列表 -->
-                            <div class="list">
-                                <volist name="data" id="vo">
-                                    <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">
-                                        <div class="t1">{$vo['title']}</div>
-                                    </a>
-                                </volist>
-                            </div>
-                        </div>
-                        <div class="shadow"></div>
-                    </div>
-                </div>
-                <div class="w-50 block wow fadeIn">
-                    <php> $catinfo = $Categorys[21]; </php>
-                    <div class="titlebox">
-                        <div class="atitle">
-                            <span>委员</span>工作室
-                            <!-- <div class="shadow">Member Studio</div> -->
-                        </div>
-                        <div class="more">
-                            <div class="line"></div>
-                            <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                        </div>
-                    </div>
-                    <!-- 图文 -->
-                    <php> $data = jovo_data($catinfo['module'],['catid'=>$catinfo['id']],7,2);$showType = ''; </php>
-                    <php> $vo = $data[0]; </php>
-                    {if !empty($vo['thumb'])}
-                    <php> $showType = 'img'; unset($data[0]); </php>
-                    <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="row tuwen">
-                        <div class="col img">
-                            <div class="picbox">
-                                <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                            </div>
-                        </div>
-                        <div class="col txt">
-                            <div class="t1">{$vo['title']}</div>
-                        </div>
-                    </a>
-                    {/if}
-                    <!-- 列表 -->
-                    <div class="list">
-                        <volist name="data" id="vo">
-                            <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">
-                                <div class="t1">{$vo['title']}</div>
-                            </a>
-                            <php> if($showType == 'img' && $i >= 3) break; </php>
-                        </volist>
-                    </div>
-                </div>
-                <div class="w-50 block wow fadeIn">
-                    <php> $catinfo = $Categorys[16]; </php>
-                    <div class="titlebox">
-                        <div class="atitle">
-                            <span>读书</span>学习
-                            <!-- <div class="shadow">Reading & learning</div> -->
-                        </div>
-                        <div class="more">
-                            <div class="line"></div>
-                            <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                        </div>
-                    </div>
-                    <!-- 图文 -->
-                    <php> $data = jovo_data($catinfo['module'],['catid'=>$catinfo['id']],7,2);$showType = ''; </php>
-                    <php> $vo = $data[0]; </php>
-                    {if !empty($vo['thumb'])}
-                    <php> $showType = 'img'; unset($data[0]); </php>
-                    <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="row tuwen">
-                        <div class="col img">
-                            <div class="picbox">
-                                <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                            </div>
-                        </div>
-                        <div class="col txt">
-                            <div class="t1">{$vo['title']}</div>
-                        </div>
-                    </a>
-                    {/if}
-                    <!-- 列表 -->
-                    <div class="list">
-                        <volist name="data" id="vo">
-                            <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">
-                                <div class="t1">{$vo['title']}</div>
-                            </a>
-                            <php> if($showType == 'img' && $i >= 3) break; </php>
-                        </volist>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="col-3 menber-container">
-                <div class="menber-list">
-                    <div class="titlebox">
-                        <div class="atitle">省政协领导报道集</div>
-                        <a target="_blank" href="{$Categorys[2]['url']}" title="更多" class="more">更多 <span>></span></a>
-                    </div>
-                    <!-- <div class="hd">
-                        <a class="prev"></a>
-                        <a class="next"></a>
-                    </div> -->
-                    <div class="itemlist bd">
-                        <ul class="listbox">
-                            <div class="sys_scrollBox">
-                                <php> $cate = jovo_cate(15); </php>
-                                <volist name="cate" id="vo">
-                                    <li class="itembox">
-                                        <a target="_blank" href="{$vo.url}" title="{$vo.catname}" class="item">
-                                            <div class="img">
+                                <div class="itemlist">
+                                    <php> $x = $ii * $page; $y = $x + $page;</php>
+                                    <for start="$x" end="$y" name="iii">
+                                        <php> $vo = $data[$iii]; if(!$vo) break;</php>
+                                        <div class="item">
+                                            <a href="{$vo.url}" title="{$vo.title}" class="itemtop">
                                                 <div class="picbox">
-                                                    <div class="pic"
-                                                        style="background-image: url({$vo.thumb})"></div>
+                                                    <div class="pic" style="background-image: url({$vo.pc_thumb})"></div>
                                                 </div>
-                                            </div>
+                                            </a>
                                             <div class="itemtitle">
-                                                <div class="txt">
-                                                    <div class="t1">{$vo.catname}</div>
-                                                    <div class="t2">{$vo.titlesub}</div>
+                                                <a href="{$vo.url}" title="{$vo.title}" class="atitle">{$vo.title}</a>
+                                                <div class="btitle">{$vo.description}</div>
+                                                <div class="btns">
+                                                    <a href="<JW:block pos='kefu_link' />" target="_blank" class="itembtn1"
+                                                       title="预约试听">
+                                                        <div class="picbox">
+                                                            <div class="pic"
+                                                                 style="background-image: url(/Jzw/Tpl/Home/Default/webimages/zixun.png)"></div>
+                                                        </div>
+                                                        预约试听
+                                                    </a>
+                                                    <a href="{$vo.url}" class="itembtn2" title="课程详情">
+                                                        <div class="picbox">
+                                                            <div class="pic"
+                                                                 style="background-image: url(/Jzw/Tpl/Home/Default/webimages/kecheng_info.png)"></div>
+                                                        </div>
+                                                        课程详情
+                                                    </a>
                                                 </div>
-                                                <div class="link">相关新闻</div>
                                             </div>
-                                        </a>
-                                    </li>
-                                </volist>
+                                        </div>
+                                    </for>
+                                </div>
                             </div>
-                        </ul>
+                        </for>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- 市县政协 -->
-<div class="zhengxie wow fadeIn">
-    <div class="container-xl p-xl-0">
-        <php> $catinfo = $Categorys[3]; </php>
-        <div class="titlebox">
-            <div class="atitle">
-                <span>市县</span>政协
-                <!-- <div class="shadow">city & county</div> -->
-            </div>
-            <div class="more">
-                <div class="line"></div>
-                <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-            </div>
-        </div>
-        <div class="row itembox">
-            <div class="col-4 ileft">
-                <php> $data = jovo_data('article',['catid'=>$catinfo['id']],12,2); </php>
-                <div class="swiper">
-                    <div class="swiper-wrapper">
-                        <volist name="data" id="vo">
-                            {if !empty($vo['thumb']) && $i <= 3}
-                            <div class="swiper-slide">
-                                <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="item">
-                                    <div class="picbox">
-                                        <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                                    </div>
-                                    <div class="itemtitle">
-                                        <div class="atitle">{$vo['title']}</div>
-                                    </div>
-                                </a>
-                            </div>
-                            {else}
-                            <php> break; </php>
-                            {/if}
-                            <php> unset($data[$key]); </php>
-                        </volist>
-                    </div>
-                    <div class="pagination"></div>
-                </div>
-            </div>
-            <div class="col-8 iright">
-                <php> $vo = $data[$key]; unset($data[$key]); </php>
-                <div class="itemtitle">
-                    <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="atitle"><span>[{:getCatNamesByCatids($vo['catids'], 1, $catinfo['id'])}]</span>{$vo['title']}</a>
-                    <div class="btitle">
-                        <span class="t1">{$vo['description']}</span>
-                        <a target="_blank" href="{$vo['url']}" title="查看详情" class="t2">[查看详情]</a>
-                    </div>
-                </div>
-                <div class="row item-bottom">
-                    <!-- 列表 -->
-                    <div class="col-6 list">
-                        <volist name="data" id="vo">
-                            <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt"><span>[{:getCatNamesByCatids($vo['catids'], 1, $catinfo['id'])}]</span>{$vo['title']}</a>
-                            <php> unset($data[$key]); </php>
-                            <php> if ($i >= 4) break; </php>
-                        </volist>
-                    </div>
-                    <!-- 列表 -->
-                    <div class="col-6 list">
-                        <volist name="data" id="vo">
-                            <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt"><span>[{:getCatNamesByCatids($vo['catids'], 1, $catinfo['id'])}]</span>{$vo['title']}</a>
-                            <php> unset($data[$key]); </php>
-                            <php> if ($i >= 4) break; </php>
-                        </volist>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="city">
-            各市州政协：
-            <php> $cate = jovo_cate($catinfo['id']); </php>
-            <volist name="cate" id="vo">
-                <a target="_blank" href="{$vo.url}" title="{$vo.catname}">{$vo.catname}</a>
-            </volist>
-        </div>
-    </div>
-</div>
-<!-- 融媒影音 -->
-<div class="media wow fadeIn">
-    <div class="container-xl p-xl-0">
-        <php> $catinfo = $Categorys[12]; </php>
-        <div class="titlebox">
-            <div class="atitle">
-                <span>融媒</span>影音
-                <!-- <div class="shadow">media</div> -->
-            </div>
-            <div class="btitle">
-                <a href="javascript:" title="{$Categorys[44]['catname']}" data-tourl="{$Categorys[44]['url']}" class="cate">{$Categorys[44]['catname']}</a>
-                <a href="javascript:" title="{$Categorys[45]['catname']}" data-tourl="{$Categorys[45]['url']}" class="cate">{$Categorys[45]['catname']}</a>
-                <a href="javascript:" title="{$Categorys[46]['catname']}" data-tourl="{$Categorys[46]['url']}" class="cate">{$Categorys[46]['catname']}</a>
-                <a href="javascript:" title="{$Categorys[49]['catname']}" data-tourl="{$Categorys[49]['url']}" class="cate" style="display: none;">{$Categorys[49]['catname']}</a>
-            </div>
-            <div class="more">
-                <div class="line"></div>
-                <a href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-            </div>
-        </div>
-        <div class="ac">
-            <div class="swiper">
-                <div class="swiper-wrapper">
-                    <php> $data = jovo_data('article',['catid'=>46],10,2); </php>
-                    <volist name="data" id="vo">
-                        <div class="swiper-slide">
-                            <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="picbox">
-                                <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                            </a>
-                        </div>
-                    </volist>
+                    <div class="swiper-pagination"></div>
                 </div>
                 <div class="next">
-                    <div class="jiantou"></div>
+                    <div class="picbox">
+                        <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/next.png)"></div>
+                    </div>
                 </div>
                 <div class="prev">
-                    <div class="jiantou"></div>
+                    <div class="picbox">
+                        <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/prev.png)"></div>
+                    </div>
+                </div>
+            </div>
+            <a href="{$Categorys[9]['url']}" class="btn" title="更多精品课程">
+                更多精品课程
+                <span class="arrow">
+                        <div class="picbox">
+                            <div class="pic"
+                                 style="background-image: url(/Jzw/Tpl/Home/Default/webimages/arrow.png)"></div>
+                        </div>
+                    </span>
+            </a>
+        </div>
+    </div>
+    <!-- 四大优势板块 -->
+    <div class="advantage">
+        <div class="contentbox">
+            <php> $stitle = jovo_data_table(['name' => 'slide', 'where' => ['id'=>5]], 'find');</php>
+            <div class="titlebox">
+                <div class="atitle">{$stitle['subtitle']}</div>
+                <div class="btitle">{$stitle['description']}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="itemlist1">
+                <php> $banner = jovo_banners(['fid'=>5, 'listorder' => ['egt', 100]]);</php>
+                <volist name="banner" id="v1">
+                    <div class="item">
+                        <div class="picbox">
+                            <div class="pic" style="background-image: url({$v1.pic})"></div>
+                        </div>
+                        <div class="itemtitle">{$v1.title}</div>
+                    </div>
+                </volist>
+            </div>
+            <div class="itemlist2">
+                <php> $banner = jovo_banners(['fid'=>5, 'listorder' => ['lt', 100]]);</php>
+                <volist name="banner" id="v1">
+                    <div class="item">
+                        <div class="picbox">
+                            <div class="pic" style="background-image: url({$v1.pic})"></div>
+                        </div>
+                        <div class="shadow"></div>
+                        <div class="itemtitle">
+                            <div class="atitle">{$v1.title}</div>
+                            <div class="btitle">{$v1.description}</div>
+                        </div>
+                    </div>
+                </volist>
+            </div>
+            <a href="<JW:block pos='kefu_link' />" class="btn" title="了解更多">
+                了解更多
+                <span class="arrow">
+                        <div class="picbox">
+                            <div class="pic"
+                                 style="background-image: url(/Jzw/Tpl/Home/Default/webimages/arrow.png)"></div>
+                        </div>
+                    </span>
+            </a>
+        </div>
+    </div>
+    <!-- 创业帮扶&&合作伙伴板块 -->
+    <div class="cyhz">
+        <div class="contentbox">
+            <div class="titlebox">
+                <div class="atitle">{$supportSubName}</div>
+                <div class="btitle">{$supportRemark}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="hz_con">
+                <div class="topcon">
+                    <div class="itemlist">
+                        <php> $banner = jovo_banners(['fid'=>16]);</php>
+                        <volist name="banner" id="v1">
+                            <div class="item">
+                                <div class="picbox">
+                                    <div class="pic" style="background-image: url({$v1.pic})"></div>
+                                    <div class="mask">
+                                        <div class="masktitle">
+                                            <div class="atitle">{$v1.title}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </volist>
+                        <div class="qa">
+                            <div class="txt">
+                                <php> $stitle = jovo_data_table(['name' => 'slide', 'where' => ['id'=>16]], 'find');
+                                </php>
+                                <div class="t1">{$stitle['name']}</div>
+                                <div class="t2">{$stitle['subtitle']}</div>
+                            </div>
+                            <div class="q">
+                                <div class="picbox">
+                                    <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/Q.png)"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bottomcon">
+                    <div class="qa">
+                        <div class="txt">
+                            <div class="t1">{:jovo_block("linglearn", 'name')}</div>
+                            <div class="t2">{:jovo_block("linglearn")}</div>
+                        </div>
+                        <div class="q">
+                            <div class="picbox">
+                                <div class="pic"
+                                     style="background-image: url(/Jzw/Tpl/Home/Default/webimages/Q.png)"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="itemlist">
+                        <php> $banner = jovo_banners(['fid'=>3], 15);</php>
+                        <volist name="banner" id="v1">
+                            <div class="item">
+                                <div class="picbox">
+                                    <div class="pic" style="background-image: url({$v1.pic})"></div>
+                                </div>
+                            </div>
+                        </volist>
+                    </div>
+                </div>
+            </div>
+            <a href="<JW:block pos='kefu_link' />" target="_blank" title="更多帮扶政策" class="btn">
+                更多帮扶政策
+                <span class="arrow">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/arrow.png)"></div>
+                    </div>
+                </span>
+            </a>
+        </div>
+    </div>
+    <!-- 优秀教师板块 -->
+    <div class="best_teacher">
+        <div class="contentbox">
+            <div class="titlebox">
+                <div class="atitle">{$teachSubName}</div>
+                <div class="btitle">{$teachRemark}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="bt_con">
+                <php> $data = jovo_data($CModel->teachModule,'',10);</php>
+                <div class="itemlist1">
+                    <volist name="data" id="vo">
+                        <div class="item">
+                            <div class="litem">
+                                <div class="picbox">
+                                    <div class="pic" style="background-image: url({$vo.thumb})"></div>
+                                </div>
+                            </div>
+                            <div class="ritem">
+                                <div class="business_card">
+                                    <div class="up">
+                                        <div class="uparrow"></div>
+                                        <div class="nameplate">{$vo.title}</div>
+                                        <div class="downarrow"></div>
+                                    </div>
+                                    <div class="down">
+                                        <div class="english"><i>expert</i></div>
+                                        <div class="uparrow"></div>
+                                        <div class="nameplate">{$vo.level}</div>
+                                        <div class="downarrow"></div>
+                                    </div>
+                                </div>
+                                <div class="txt_con">
+                                    <div class="txt">{$vo.description}</div>
+                                </div>
+                                <a href="{$vo.url}" title="名师咨询" class="btn">
+                                    <div class="picbox">
+                                        <div class="pic"
+                                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/zixun.png)"></div>
+                                    </div>
+                                    名师咨询
+                                </a>
+                            </div>
+                        </div>
+                    </volist>
+                </div>
+                <div class="itemlist2">
+                    <div class="arrow_up">
+                        <div class="picbox">
+                            <div class="pic"
+                                 style="background-image: url(/Jzw/Tpl/Home/Default/webimages/arrow_up.png)"></div>
+                        </div>
+                    </div>
+                    <div class="arrow_down">
+                        <div class="picbox">
+                            <div class="pic"
+                                 style="background-image: url(/Jzw/Tpl/Home/Default/webimages/arrow_down.png)"></div>
+                        </div>
+                    </div>
+                    <div class="list_container">
+                        <div class="list">
+                            <volist name="data" id="vo">
+                                <div class="item {$i==1?'active':''}">
+                                    <div class="picbox">
+                                        <div class="pic" style="background-image: url({$vo.thumb})"></div>
+                                    </div>
+                                </div>
+                            </volist>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="activity">
-            <!-- <div class="activity_left">
-                <div class="swiper2">
+    </div>
+    <!-- 作品展示板块 -->
+    <div class="zhanshi">
+        <div class="contentbox">
+            <div class="titlebox">
+                <div class="atitle">{$caseSubName}</div>
+                <div class="btitle">{$caseRemark}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+            </div>
+            <php> $cate = jovo_cate($caseId);</php>
+            <div class="catebox">
+                <volist name="cate" id="vo">
+                    <div class="item {$i==1?'active':''}">{$vo.catname}</div>
+                </volist>
+            </div>
+            <volist name="cate" id="vo">
+                <div class="itemlist {$i==1?'active':''}">
+                    <php> $casedata = jovo_data($vo['module'], ['catid' => $vo['id']], 7, 2);</php>
+                    <php> $v1 = $casedata[0]; unset($casedata[0]);</php>
+                    <a href="javascript:" title="{$v1.title}" class="main_item">
+                        <div class="picbox">
+                            <div class="pic"
+                                 style="background-image: url({$v1.thumb})"></div>
+                        </div>
+                        <div class="mask">
+                            <div class="masktitle">{$v1.title}</div>
+                        </div>
+                    </a>
+                    <div class="sub_items">
+                        <volist name="casedata" id="v1">
+                            <a href="{$v1.url}" class="item" title="{$v1.title}">
+                                <div class="picbox">
+                                    <div class="pic" style="background-image: url({$v1.thumb})"></div>
+                                </div>
+                                <div class="mask">
+                                    <div class="masktitle">{$v1.title}</div>
+                                </div>
+                            </a>
+                        </volist>
+                    </div>
+                </div>
+            </volist>
+            <a href="{$caseUrl}" class="btn" title="更多学员作品">
+                更多学员作品
+                <span class="arrow">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/arrow.png)"></div>
+                    </div>
+                </span>
+            </a>
+        </div>
+    </div>
+    <!-- 学员反馈板块 -->
+    <div class="feedback">
+        <div class="contentbox">
+            <div class="titlebox">
+                <div class="atitle">{$feedbackSubName}</div>
+                <div class="btitle">{$feedbackRemark}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="sw3">
+                <div class="swiper">
                     <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <a href="javascript:;" class="picture">
-                                <div class="picbox">
-                                    <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/data/media_data1.png);"></div>
+                        <php>
+                            $page = 3;
+                            $data = jovo_data($CModel->feedbackModule, '', 9);
+                            $count = (int)ceil(count($data)/$page);
+                        </php>
+                        <for start="0" end="$count" name="ii">
+                            <div class="swiper-slide">
+                                <div class="itemlist">
+                                    <php> $x = $ii * $page; $y = $x + $page;</php>
+                                    <for start="$x" end="$y" name="iii">
+                                        <php> $vo = $data[$iii]; if(!$vo) break;</php>
+                                        <a href="javascript:" title="{$vo.title}" class="item">
+                                            <div class="itemtop">
+                                                <div class="picbox">
+                                                    <div class="pic" style="background-image: url({$vo.thumb_big})"></div>
+                                                </div>
+                                            </div>
+                                            <div class="itembottom">
+                                                <div class="itemtitle">
+                                                    <div class="atitle">{$vo.title}</div>
+                                                    <div class="btitle">{$vo.position}</div>
+                                                </div>
+                                                <div class="income">{$vo.income}</div>
+                                                <div class="item_con">{$vo.description}</div>
+                                                <div class="picbox">
+                                                    <div class="pic" style="background-image: url({$vo.thumb})"></div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </for>
                                 </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="javascript:;" class="picture">
-                                <div class="picbox">
-                                    <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/data/media_data1.png);"></div>
-                                </div>
-                            </a>
-                        </div>
-                        <div class="swiper-slide">
-                            <a href="javascript:;" class="picture">
-                                <div class="picbox">
-                                    <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/data/media_data1.png);"></div>
-                                </div>
-                            </a>
-                        </div>
+                            </div>
+                        </for>
                     </div>
-                </div>
-                <div class="button-prev">
-                    <div class="picbox">
-                        <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/index_rongmei_arrow.png);"></div>
-                    </div>
-                </div>
-                <div class="button-next">
-                    <div class="picbox">
-                        <div class="pic" style="background-image: url(/Jzw/Tpl/Home/Default/webimages/index_rongmei_arrow.png);"></div>
-                    </div>
-                </div>
-            </div> -->
-            <div class="activity_right add">
-                <div class="itemslist row">
-                    <php> $data = jovo_data('article',['catid'=>44],8,2); </php>
-                    <volist name="data" id="vo">
-                        <div class="item col-3" style="position: relative;">
-                            <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="itempic">
-                                <div class="picbox">
-                                    <div class="pic" style="background-image: url({$vo.thumb});"></div>
-                                </div>
-                                <div class="play" style="background-image: url(__TEMP_LANG__/webimages/play.png);"></div>
-                            </a>
-                            <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="tbox">
-                                <div class="t1">{$vo.title}</div>
-                                <div class="t2">{$vo.description}</div>
-                            </a>
-                        </div>
-                    </volist>
+                    <div class="swiper-pagination"></div>
                 </div>
             </div>
-            <style>
-                .item_hot{
-                    position: absolute;
-                    top: 0;
-                    left: 15px;
-                    width: 60px;
-                    height: 60px;
-                }
-            </style>
-            <div class="activity_right">
-                <div class="itemslist row">
-                    <php> $data = jovo_data('article',['catid'=>45],8,2); </php>
-                    <volist name="data" id="vo">
-                        <div class="item col-3" style="position: relative;">
-                            <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="itempic">
-                                <div class="picbox">
-                                    <div class="pic" style="background-image: url({$vo.thumb});"></div>
-                                </div>
-                                <div class="play" style="background-image: url(__TEMP_LANG__/webimages/play.png);"></div>
-                            </a>
-                            {if $i<=4}
-                            <img src="/Jzw//Tpl/Home/Default/webimages/hot.png" class="item_hot" alt="">
-                            {/if}
-                            <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="tbox">
-                                <div class="t1">{$vo.title}</div>
-                                <div class="t2">{$vo.description}</div>
-                            </a>
-                        </div>
-                    </volist>
+            <a href="{$feedbackUrl}" title="更多学员反馈" class="btn">
+                更多学员反馈
+                <span class="arrow">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/arrow.png)"></div>
+                    </div>
+                </span>
+            </a>
+        </div>
+        <div class="bg"></div>
+    </div>
+    <!-- 关于我们板块 -->
+    <div class="about">
+        <div class="contentbox">
+            <div class="titlebox">
+                <div class="atitle">{$aboutSubName}</div>
+                <div class="btitle">{$aboutRemark}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
                 </div>
             </div>
-            <div class="activity_right">
-                <div class="itemslist row">
-                    <php> $data = jovo_data('article',['catid'=>49],8,2); </php>
-                    <volist name="data" id="vo">
-                        <div class="item col-3" style="position: relative;">
-                            <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="itempic">
-                                <div class="picbox">
-                                    <div class="pic" style="background-image: url({$vo.thumb});"></div>
-                                </div>
-                                <div class="play" style="background-image: url(__TEMP_LANG__/webimages/play.png);"></div>
-                            </a>
-                            <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="tbox">
-                                <div class="t1">{$vo.title}</div>
-                                <div class="t2">{$vo.description}</div>
-                            </a>
-                        </div>
-                    </volist>
+            <div class="profile">
+                <div class="shuzi">
+                    <div class="item item1">
+                        <p class="p1">
+                            <span class="s1 counter" data-speed="2000" data-from="0" data-to="10"></span><span
+                                class="s2">w</span><span class="pls">+</span>
+                        </p>
+                        <p class="p2">培训学员</p>
+                    </div>
+                    <div class="item item2">
+                        <p class="p1">
+                            <span class="s1 counter" data-speed="2000" data-from="0" data-to="100"></span><span
+                                class="s2">+</span>
+                        </p>
+                        <p class="p2">合作单位</p>
+                    </div>
                 </div>
+                <div class="conbox">
+                    <JW:block pos='about'/>
+                    <a href="{$aboutUrl}" title="了解更多" class="more">
+                        了解更多
+                        <div class="arrow">
+                            <div class="picbox">
+                                <div class="pic"
+                                     style="background-image: url(/Jzw/Tpl/Home/Default/webimages/arrow.png)"></div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <php> $slides = jovo_data_table(['name' => 'slide', 'where' => ['id'=> ['in', '6,17,18' ] ]]);</php>
+            <div class="catebox">
+                <volist name="slides" id="vo">
+                    <div class="item {$i==1?'active':''}">{$vo.name}</div>
+                </volist>
+            </div>
+            <div class="sw4">
+                <volist name="slides" id="vo">
+                    <div class="swiper swiper{$key+1} {$i==1?'active':''}">
+                        <div class="swiper-wrapper">
+                            <php>$ban = jovo_banners(['fid'=>$vo['id']]);</php>
+                            <volist name="ban" id="v1">
+                                <div class="swiper-slide">
+                                    <div class="picbox">
+                                        <div class="pic" style="background-image: url({$v1.pic})"></div>
+                                    </div>
+                                </div>
+                            </volist>
+                        </div>
+                        <div class="next">
+                            <div class="picbox">
+                                <div class="pic"
+                                     style="background-image: url(/Jzw/Tpl/Home/Default/webimages/next_w.png)"></div>
+                            </div>
+                        </div>
+                        <div class="prev">
+                            <div class="picbox">
+                                <div class="pic"
+                                     style="background-image: url(/Jzw/Tpl/Home/Default/webimages/prev_w.png)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </volist>
             </div>
         </div>
-        <div class="list">
-            <div class="list-title">
-                <div class="picbox">
-                    <div class="pic"
-                         style="background-image: url(__TEMP_LANG__/webimages/media_title.png)"></div>
+    </div>
+    <!-- 选择优焙客板块 -->
+    <div class="choice">
+        <div class="contentbox">
+            <php> $ad = jovo_data_table(['name' => 'slide', 'where' => ['id'=>11]], 'find');</php>
+            <div class="titlebox">
+                <div class="atitle">{$ad['subtitle']}</div>
+                <div class="btitle">{$ad['description']}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
+                </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
+                    </div>
                 </div>
             </div>
             <div class="itemlist">
-                <php> $banner = jovo_banners(['fid'=>3]);</php>
-                <volist name="banner" id="ban">
-                    <php> $target = $ban['link'] ? 'target="_blank"':''; </php>
-                    <a href="{$ban['link']?:'javascript:;'}" title="{$ban['title']}" {$target} class="item">
-                        <div class="picbox">
-                            <div class="pic"
-                                 style="background-image: url({$ban.pic})"></div>
+                <php> $banner = jovo_banners(['fid'=>11]);</php>
+                <volist name="banner" id="v1">
+                    <a href="{$v1.link}" title="{$v1.title}" class="item">
+                        <div class="bg">
+                            <div class="picbox">
+                                <div class="pic" style="background-image: url({$v1.pic})"></div>
+                            </div>
+                        </div>
+                        <div class="mask">
+                            <div class="picbox">
+                                <div class="pic"
+                                     style="background-image: url({$v1.small})"></div>
+                            </div>
+                            <div class="masktitle">
+                                <div class="atitle">{$v1.title}</div>
+                                <div class="btitle">- {$v1.subtitle} -</div>
+                            </div>
                         </div>
                     </a>
                 </volist>
             </div>
         </div>
     </div>
-</div>
-<!-- 板块列表2 -->
-<div class="block-list2">
-    <div class="container-xl p-xl-0">
-        <div class="row block-list">
-            <div class="col-6 block wow fadeIn">
-                <php> $catinfo = $Categorys[6]; </php>
-                <div class="titlebox">
-                    <div class="atitle">
-                        <span>融媒</span>观察
-                        <!-- <div class="shadow">observation</div> -->
-                    </div>
-                    <div class="more">
-                        <div class="line"></div>
-                        <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
+    <!-- 常见问题板块 -->
+    <div class="question">
+        <div class="contentbox">
+            <php> $ad = jovo_data_table(['name' => 'slide', 'where' => ['id'=>10]], 'find');</php>
+            <div class="titlebox">
+                <div class="atitle">{$ad['subtitle']}</div>
+                <div class="btitle">{$ad['description']}</div>
+                <div class="bgleft">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
                     </div>
                 </div>
-                <!-- 图文 -->
-                <php> $data = jovo_data($catinfo['module'],['catid'=>$catinfo['id']],8,2);$showType = ''; </php>
-                <php> $vo = $data[0]; </php>
-                {if !empty($vo['thumb'])}
-                <php> $showType = 'img'; unset($data[0]); </php>
-                <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="row tuwen">
-                    <div class="col img">
-                        <div class="picbox">
-                            <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                        </div>
+                <div class="bgright">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/Jzw/Tpl/Home/Default/webimages/title_bg.png)"></div>
                     </div>
-                    <div class="col txt">
-                        <div class="t1">{$vo['title']}</div>
-                        <div class="t2">{$vo['description']}</div>
-                    </div>
-                </a>
-                {/if}
-                <!-- 列表 -->
-                <div class="list">
-                    <volist name="data" id="vo">
-                        <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">
-                            <div class="t1">{$vo['title']}</div>
-                            <div class="time">{$vo.createtime|toDate=###,'Y-m-d'}</div>
-                        </a>
-                        <php> if($showType == 'img' && $i >= 4) break; </php>
-
-                    </volist>
                 </div>
             </div>
-            <div class="col-6 block wow fadeIn">
-                <php> $catinfo = $Categorys[8];</php>
-                <div class="titlebox">
-                    <div class="atitle">
-                        <span>文史</span>博览
-                        <!-- <div class="shadow">theory</div> -->
-                    </div>
-                    <div class="more">
-                        <div class="line"></div>
-                        <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                    </div>
-                </div>
-                <!-- 图文 -->
-                <php> $data = jovo_data('Article',['catid'=>$catinfo['id']],8,2);$showType=''; </php>
-                <php> $vo = $data[0]; </php>
-                {if !empty($vo['thumb'])}
-                <php> $showType = 'img'; unset($data[0]); </php>
-                <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="row tuwen">
-                    <div class="col img">
-                        <div class="picbox">
-                            <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                        </div>
-                    </div>
-                    <div class="col txt">
-                        <div class="t1">{$vo['title']}</div>
-                        <div class="t2">{$vo['description']}</div>
-                    </div>
-                </a>
-                {/if}
-                <!-- 列表 -->
-                <div class="list">
-                    <volist name="data" id="vo">
-                        <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">
-                            <div class="t1">{$vo['title']}</div>
-                            <div class="time">{$vo.createtime|toDate=###,'Y-m-d'}</div>
-                        </a>
-                        <php> if($showType == 'img' && $i >= 4) break; </php>
-                    </volist>
-                </div>
-            </div>
-            <div class="col-6 block wow fadeIn">
-                <php> $catinfo = $Categorys[10]; </php>
-                <div class="titlebox">
-                    <div class="atitle">
-                        <span>统一</span>战线
-                        <!-- <div class="shadow">united front</div> -->
-                    </div>
-                    <div class="more">
-                        <div class="line"></div>
-                        <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                    </div>
-                </div>
-                <!-- 图文 -->
-                <php> $data = jovo_data('article',['catid'=>$catinfo['id']],7,2);$showType=''; </php>
-                <php> $vo = $data[0]; </php>
-                {if !empty($vo['thumb'])}
-                <php> $showType = 'img'; unset($data[0]); </php>
-                <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="row tuwen">
-                    <div class="col img">
-                        <div class="picbox">
-                            <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                        </div>
-                    </div>
-                    <div class="col txt">
-                        <div class="t1">{$vo['title']}</div>
-                        <div class="t2">{$vo['description']}</div>
-                    </div>
-                </a>
-                {/if}
-                <!-- 列表 -->
-                <div class="list">
-                    <volist name="data" id="vo">
-                        <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">
-                            <div class="t1">{$vo['title']}</div>
-                            <div class="time">{$vo.createtime|toDate=###,'Y-m-d'}</div>
-                        </a>
-                        <php> if($showType == 'img' && $i >= 3) break; </php>
-                    </volist>
-                </div>
-                <div class="heibox"></div>
-                <php> $catinfo = $Categorys[5]; </php>
-                <div class="titlebox">
-                    <div class="atitle">
-                        <span>综合</span>新闻
-                        <!-- <div class="shadow">Comprehensive News</div> -->
-                    </div>
-                    <div class="more">
-                        <div class="line"></div>
-                        <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                    </div>
-                </div>
-                <!-- 图文 -->
-                <php> $data = jovo_data('article',['catid'=>$catinfo['id']],3,2);</php>
-                <!-- 列表 -->
-                <div class="list">
-                    <volist name="data" id="vo">
-                        <a target="_blank" href="{$vo['url']}" title="{$vo['title']}" class="txt">
-                            <div class="t1">{$vo['title']}</div>
-                            <div class="time">{$vo.createtime|toDate=###,'Y-m-d'}</div>
-                        </a>
-                    </volist>
-                </div>
-            </div>
-            <div class="col-6 block wow fadeIn">
-                <php> $catinfo = $Categorys[9]; </php>
-                <div class="titlebox">
-                    <div class="atitle">
-                        <span>人物</span>在线
-                        <!-- <div class="shadow">People online</div> -->
-                    </div>
-                    <div class="more">
-                        <div class="line"></div>
-                        <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                    </div>
-                </div>
-                <div class="sw">
-                    <div class="swiper">
-                        <div class="swiper-wrapper">
-                            <php> $data = jovo_data('article',['catid'=>$catinfo['id']],4,2); </php>
-                            <volist name="data" id="vo">
-                                <div class="swiper-slide">
-                                    <a target="_blank" href="{$vo['url']}" title="{$vo['title']}">
-                                        <div class="picbox">
-                                            <div class="pic"
-                                                 style="background-image: url({$vo.thumb})"></div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </volist>
-                        </div>
-                    </div>
-                    <div class="optionlist">
-                        <volist name="data" id="vo">
-                            <div class="option">
-                                <div class="num">0{$i}</div>
-                                <div class="txt">
-                                    <div class="t1">{$vo.title}</div>
-                                    <div class="t2">{$vo.description}</div>
-                                </div>
+            <div class="itemlist">
+                <php> $banner = jovo_banners(['fid'=>10]);</php>
+                <volist name="banner" id="v1">
+                    <div class="itembox">
+                        <div class="item">
+                            <div class="itemtitle">
+                                <div class="atitle">{$v1.title}</div>
+                                <div class="btitle">{$v1.subtitle}</div>
                             </div>
-                        </volist>
-                        <div class="bg">
-                            <div class="picbox">
-                                <div class="pic"
-                                     style="background-image: url(__TEMP_LANG__/webimages/menber_index_bg.png)"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- 专题策划板块 -->
-<div class="zhuanti">
-    <div class="container-xl p-xl-0">
-        <div class="row">
-            <div class="col-12 block wow fadeIn">
-                <php> $catinfo = $Categorys[4]; </php>
-                <div class="titlebox">
-                    <div class="atitle">
-                        <span>专题</span>策划
-                        <!-- <div class="shadow">Thematic planning</div> -->
-                    </div>
-                    <div class="more">
-                        <div class="line"></div>
-                        <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                    </div>
-                </div>
-                <div class="sw">
-                    <div class="swiper">
-                        <div class="swiper-wrapper">
-                            <php> $data = jovo_data("zhuanti",[],8, 2); </php>
-                            <volist name="data" id="vo">
-                                <div class="swiper-slide">
-                                    <a target="_blank" href="/nr?cid={$vo.id}" title="{$vo.title}">
-                                        <div class="picbox">
-                                            <div class="pic" style="background-image: url({$vo.thumb})"></div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </volist>
-                        </div>
-                    </div>
-                    <div class="next">
-                        <div class="jiantou"></div>
-                    </div>
-                    <div class="prev">
-                        <div class="jiantou"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- 板块列表3 -->
-<div class="block-list3">
-    <div class="container-xl p-xl-0 d-flex justify-content-between" style="margin-bottom: 60px;">
-        <div class="row block-list" style="width: 70%;">
-            <div class="col-6 block wow fadeIn">
-                <php> $catinfo = $Categorys[7]; </php>
-                <div class="titlebox">
-                    <div class="atitle">
-                        <span>理论</span>研究
-                        <!-- <div class="shadow">Literary World</div> -->
-                    </div>
-                    <div class="more">
-                        <div class="line"></div>
-                        <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                    </div>
-                </div>
-                <!-- 列表 -->
-                <div class="list">
-                    <php> $data = jovo_data($catinfo['module'],['catid'=>$catinfo['id']],8,2); </php>
-                    <volist name="data" id="vo">
-                        <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="txt">
-                            <div class="t1">{$vo.title}</div>
-                            <div class="time">{$vo.createtime|toDate=###,'Y-m-d'}</div>
-                        </a>
-                    </volist>
-                </div>
-            </div>
-            <div class="col-6 block wow fadeIn">
-                <php> $catinfo = $Categorys[11]; </php>
-                <div class="titlebox">
-                    <div class="atitle">
-                        <span>芙蓉</span>文苑
-                        <!-- <div class="shadow">Cultural History</div> -->
-                    </div>
-                    <div class="more">
-                        <div class="line"></div>
-                        <a target="_blank" href="{$catinfo['url']}" title="查看更多" class="txt">查看更多 <span>></span></a>
-                    </div>
-                </div>
-                <!-- 列表 -->
-                <div class="list">
-                    <php> $data = jovo_data('article',['catid'=>$catinfo['id']],8,2); </php>
-                    <volist name="data" id="vo">
-                        <a target="_blank" href="{$vo.url}" title="{$vo.title}" class="txt">
-                            <div class="t1">{$vo.title}</div>
-                            <div class="time">{$vo.createtime|toDate=###,'Y-m-d'}</div>
-                        </a>
-                    </volist>
-                </div>
-            </div>
-        </div>
-        <div class="contact" style="width: 30%;">
-            <div class="container-xl p-xl-0">
-                <div class="row itemlist">
-                    <php> $banner = jovo_banners(['fid'=>7]);</php>
-                    <volist name="banner" id="ban">
-                        <php> $target = $ban['link'] ? 'target="_blank"':''; </php>
-                        <div class="col-12 itembox" style="margin-top: 20px">
-                            <a href="{$ban['link']?:'javascript:'}" {$target} title="{$ban.title}" class="item"
-                               style="background-image: url({$ban.pic})">
-                                <div class="itemtitle">
-                                    <div class="atitle">{$ban['title']}</div>
-                                    <div class="btitle">{$ban['subtitle']}</div>
-                                </div>
+                            <a href="<JW:block pos='kefu_link' />" target="_blank" title="在线解答" class="btn">
+                                在线解答
+                                <span class="arrow">
+                                    <div class="picbox">
+                                        <div class="pic" style="background-image: url(/Jzw/Tpl/Wap/Default/webimages/arrow_w.png)"></div>
+                                    </div>
+                                </span>
                             </a>
                         </div>
-                    </volist>
-                </div>
+                        <div class="shadow"></div>
+                    </div>
+                </volist>
             </div>
+        </div>
     </div>
 </div>
-<!-- 联系我们 -->
-<!-- <div class="contact">
-    <div class="container-xl p-xl-0">
-        <div class="row itemlist">
-            <php> $banner = jovo_banners(['fid'=>7]);</php>
-            <volist name="banner" id="ban">
-                <php> $target = $ban['link'] ? 'target="_blank"':''; </php>
-                <div class="col-4 itembox">
-                    <a href="{$ban['link']?:'javascript:'}" {$target} title="{$ban.title}" class="item"
-                       style="background-image: url({$ban.pic})">
-                        <div class="itemtitle">
-                            <div class="atitle">{$ban['title']}</div>
-                            <div class="btitle">{$ban['subtitle']}</div>
-                        </div>
-                    </a>
-                </div>
-            </volist>
-        </div>
-    </div> -->
-</div>
 
-<!-- 上线弹窗 -->
-<div class="dialog_bg" onclick="close_dialog()"></div>
-<div class="dialog_show" onclick="close_dialog()">
-    <!-- <img src="/Jzw/Tpl/Home/Default/webimages/close.png" alt="" onclick="close_dialog()" class="close">  -->
-    <div class="con"><img id="dialog_img" src="/Jzw/Tpl/Home/Default/webimages/shangxian.jpg" style="width:100%;height: 100%;" alt="" /></div>
-</div>
+<!-- 底部 -->
+<!--form begin-->
+<include file="model:form" />
+<!--form end-->
+
+<!--right begin-->
+<include file="model:right" />
+<!--right end-->
+<!--foot begin-->
+<include file="model:foot" />
+<!--foot end-->
+
 
 <!-- 页面 -->
 <script>
-    function open_dialog() {
-        $(".dialog_bg").show();
-        $(".dialog_show").addClass("dialog_active");
-    }
-    function close_dialog() {
-        $(".dialog_bg").hide();
-        $(".dialog_show").removeClass("dialog_active");
-    }
-
-    $(function() {
-        //上线弹窗
-        // setTimeout(function(){
-        //     open_dialog();
-        // },1000)
-
-        $(".media .btitle .cate").eq(1).click(function(){
-            $(".media .titlebox .more .txt").attr('href', $(this).data('tourl'))
-            $(".media .activity .activity_right").eq(1).addClass("add").siblings().removeClass("add").parent().siblings(".ac").removeClass("add");
-            $(".media .ac").css({"height": "0", "padding-top": "0"});
-        })
-        $(".media .btitle .cate").eq(0).click(function(){
-            $(".media .titlebox .more .txt").attr('href', $(this).data('tourl'))
-            $(".media .activity .activity_right").eq(0).addClass("add").siblings().removeClass("add").parent().siblings(".ac").removeClass("add");
-            $(".media .ac").css({"height": "0", "padding-top": "0"});
-        })
-        $(".media .btitle .cate").eq(2).click(function(){
-            $(".media .titlebox .more .txt").attr('href', $(this).data('tourl'))
-            $(".media .ac").addClass("add").siblings(".activity").children(".activity_right").removeClass("add");
-            $(".media .ac").css({"height": "554px", "padding-top": "12px"});
-        })
-        $(".media .btitle .cate").eq(3).click(function(){
-            $(".media .titlebox .more .txt").attr('href', $(this).data('tourl'))
-            $(".media .activity .activity_right").eq(2).addClass("add").siblings().removeClass("add").parent().siblings(".ac").removeClass("add");
-            $(".media .ac").css({"height": "0", "padding-top": "0"});
-        })
-        // 添加active
-        var addCla = function(cla, cur, fn, index) {
-            $name = $(cla);
-            $name.click(function(){
-                $this = $(this);
-                $this.siblings().removeClass(cur);
-                $this.addClass(cur);
-                fn && fn($this, cur);
-            });
-            if (!index) index = 0;
-            $name.eq(index).click();
-        }
-        // 融媒影音选择分类
-        addCla(".media .btitle .cate", "active");
-
-        // 人物在线选项联动
-        addCla(".block-list2 .sw .optionlist .option", "active");
-
-        // 主席成员报道栏目滚动
-        // var bodyWidth = document.body.clientWidth || document.documentElement.clientWidth;
-        // var $menberList = $(".page_index .menber-list .itemlist");
-        // var $listBox = $(".page_index .block-list1 .listbox");
-        // var $listItem = $listBox.children();
-        // var $clone = $($listItem[0]);
-        // var interval = null;
-        // jQuery(".menber-list").slide({mainCell:".bd ul",autoPlay:false,effect:"topMarquee",vis:4,interTime:30,trigger:"click"});
-        // var $menberList = $(".menber-list");
-        // var $hd = $(".menber-list .hd");
-        // $menberList.mouseenter(function() {
-        //     $hd.addClass("active");
-        // });
-        // $menberList.mouseleave(function() {
-        //     $hd.removeClass("active");
-        // });
-        // var rollSet = function() {
-        //     if(bodyWidth < 1200) {
-        //         interval = setInterval(function() {
-        //             $($listItem[0]).css("margin-left", -$listItem[0].offsetWidth + "px")
-        //             setTimeout(function() {
-        //                 $listBox.append('<div class="itembox">' + $clone.html() + '</div>');
-        //                 $($listItem[0]).remove();
-        //                 $listItem = $listBox.children();
-        //                 $clone = $($listItem[0]);
-        //             }, 1000)
-        //         }, 3000);
-        //     } else {
-        //         interval = setInterval(function() {
-        //             $($listItem[0]).css("margin-top", -$listItem[0].offsetHeight + "px")
-        //             setTimeout(function() {
-        //                 $listBox.append('<div class="itembox">' + $clone.html() + '</div>');
-        //                 $($listItem[0]).remove();
-        //                 $listItem = $listBox.children();
-        //                 $clone = $($listItem[0]);
-        //             }, 1000)
-        //         }, 3000);
-        //     }
-        // }
-        // rollSet();
-        // window.addEventListener("resize", function() {
-        //     bodyWidth = document.body.clientWidth || document.documentElement.clientWidth;
-        //     clearInterval(interval);
-        //     rollSet();
-        // });
-        // window.addEventListener("onunload", function() {
-        //     clearInterval(interval);
-        // });
-    });
-</script>
-<script>
     $(function () {
-        // 内页广告轮播图
-        var innerBanner = new Swiper(".specialbox .inner-banner .swiper", {
-            loop: true,
-            autoplay: {
-                delay: 6000,
-            },
+        // 顶部banner
+        fullWidth(".banner .swiper-slide .picbox", 1920, 600);
+        fullWidth(".banner .swiper", 1920, 600);
+        var mySwiper1 = new Swiper(".banner .swiper",{
+            loop:true,
+            autoplay: 5000,
+            autoplayDisableOnInteraction : false,
+            pagination: '.banner .swiper-pagination',
+            paginationClickable :true,
         });
-
-        // 头条板块轮播
-        var sw1 = new Swiper(".top-news .swiper", {
-            loop: true,
-            autoplay: {
-                delay: 4000,
-            },
-            pagination: {
-                el: '.top-news .swiper .pagination',
-                clickable: true
-            }
+        $('.banner .prev').click(function () {
+            mySwiper1.swipePrev();
         });
-
-        // 市县政协板块轮播
-        var sw2 = new Swiper(".zhengxie .swiper", {
-            loop: true,
-            autoplay: {
-                delay: 5000,
-            },
-            pagination: {
-                el: '.zhengxie .swiper .pagination',
-                clickable: true
-            }
+        $('.banner .next').click(function () {
+            mySwiper1.swipeNext();
         });
-
-        // 融媒影音轮播图
-        var sw3 = new Swiper(".media .ac .swiper", {
+        // 热门课程板块轮播图
+        var mySwiper2 = new Swiper(".kecheng .swiper", {
+            pagination: '.kecheng .swiper-pagination',
+            paginationClickable: true,
+        });
+        $('.kecheng .prev').click(function () {
+            mySwiper2.swipePrev();
+        });
+        $('.kecheng .next').click(function () {
+            mySwiper2.swipeNext();
+        });
+        // 学员反馈板块轮播图
+        var mySwiper3 = new Swiper(".feedback .swiper", {
+            pagination: '.feedback .swiper-pagination',
+            paginationClickable: true,
+        });
+        // 关于我们板块轮播图
+        var mySwiper41 = new Swiper(".about .swiper1", {
             loop: true,
-            autoplay: {
-                delay: 5000,
-            },
-            watchSlidesProgress: true,
-            slidesPerView: 5,
+            slidesPerView: 2,
             centeredSlides: true,
-            navigation: {
-                nextEl: '.media .next',
-                prevEl: '.media .prev',
-            },
-            on: {
-                progress: function (progress) {
-                    for (i = 0; i < this.slides.length; i++) {
-                        var slide = this.slides.eq(i);
-                        var slideProgress = this.slides[i].progress;
-                        modify = 1;
-                        if (Math.abs(slideProgress) > 1) {
-                            modify = (Math.abs(slideProgress) - 1) * 0.3 + 1;
-                        }
-                        translate = slideProgress * 90 + 'px';
-                        scale = 1 - Math.abs(slideProgress) / 5;
-                        opacity = 1 - Math.abs(slideProgress) / 3;
-                        zIndex = 99 - Math.abs(Math.round(slideProgress));
-                        slide.transform('translateX(' + translate + ') scale(' + scale + ')');
-                        slide.css('zIndex', zIndex);
-                        slide.css('opacity', 1);
-                        if (Math.round(Math.abs(slideProgress)) <= 2) {
-                            slide.find(".pic").css('opacity', 1);
-                        } else if (Math.round(Math.abs(slideProgress)) > 2) {
-                            slide.css('opacity', 0);
-                        }
-                        if (Math.round(slideProgress) > 0) {
-                            slide.children().transform('rotateY(10deg)');
-                        } else if (Math.round(slideProgress) < 0) {
-                            slide.children().transform('rotateY(-10deg)');
-                        } else {
-                            slide.children().transform('rotateY(0deg)');
-                        }
-                    }
-                },
-                slideChangeTransitionStart: function () {
-                    for (var i = 0; i < this.slides.length; i++) {
-                        var slide = this.slides.eq(i);
-                        slide.css('transition', 'all .3s');
-                    }
-                },
-                slideChangeTransitionEnd: function () {
-                    for (var i = 0; i < this.slides.length; i++) {
-                        var slide = this.slides.eq(i);
-                        slide.css('transition', '');
-                    }
-                },
-            }
         });
-        var sw4 = new Swiper('.media .activity .swiper2', {
-            navigation: {
-                nextEl: '.button-next',
-                prevEl: '.button-prev',
-            }
+        $('.about .swiper1 .prev').click(function () {
+            mySwiper41.swipePrev();
         });
-        // 人物在线轮播图
-        var $onlineBg = $(".block-list2 .sw .bg");
-        var $onlineItemlist = $(".block-list2 .sw .optionlist .option");
-        var sw4 = new Swiper(".block-list2 .sw .swiper", {
+        $('.about .swiper1 .next').click(function () {
+            mySwiper41.swipeNext();
+        });
+        var mySwiper42 = new Swiper(".about .swiper2", {
             loop: true,
-            direction: 'vertical',
-            autoplay: {
-                delay: 5000,
-            },
-            on: {
-                slideChange: function () {
-                    // 人物在线轮播图联动
-                    $onlineItemlist.eq(this.realIndex).siblings().removeClass("active");
-                    $onlineItemlist.eq(this.realIndex).addClass("active");
-                    $onlineBg.css('top', $onlineItemlist[this.realIndex].offsetTop);
-                },
-            },
+            slidesPerView: 2,
+            centeredSlides: true,
         });
-        $onlineItemlist.click(function () {
-            var $this = $(this);
-            sw4.slideToLoop($this.index(), 500, false);
+        $('.about .swiper2 .prev').click(function () {
+            mySwiper42.swipePrev();
         });
-
-        // 专题策划
-        var sw5 = new Swiper(".zhuanti .sw .swiper", {
+        $('.about .swiper2 .next').click(function () {
+            mySwiper42.swipeNext();
+        });
+        var mySwiper43 = new Swiper(".about .swiper3", {
             loop: true,
-            autoplay: {
-                delay: 5000,
-            },
-            slidesPerView: 4,
-            spaceBetween: 30,
-            navigation: {
-                nextEl: '.zhuanti .sw .next',
-                prevEl: '.zhuanti .sw .prev',
-            },
+            slidesPerView: 2,
+            centeredSlides: true,
         });
-
-        //右侧导航
-        $(window).scroll(function () {
-            if ($(window).scrollTop() > 400) {
-                $(".rightnavi").stop().animate({
-                    right: '20px',
-                }, 300, "linear");
-            } else {
-                $(".rightnavi").stop().animate({
-                    right: '-120px',
-                }, 500, "linear");
-            }
+        $('.about .swiper3 .prev').click(function () {
+            mySwiper43.swipePrev();
+        });
+        $('.about .swiper3 .next').click(function () {
+            mySwiper43.swipeNext();
         });
     });
 </script>

@@ -129,6 +129,8 @@ class CmsLogic
         foreach ($data as $datum) {
             $cat[$datum['pdir'] . $datum['catdir']] = $datum['id'];
         }
+        // 获取扩展模型字段数据
+        $fields = cms('fields');
         CmsCache::getInstance('cat')->cache($cat);
         return $data;
     }

@@ -29,6 +29,7 @@ class Base extends \app\index\controller\Action
         $cat['catname'] = $cat['title'];
         unset($cat['id'], $cat['title']);
         $this->assign($cat);
+        $this->settingSEOData();
         return $this->fetch("{$module}/{$cat['template_show']}");
     }
 
@@ -42,6 +43,7 @@ class Base extends \app\index\controller\Action
         $cat['catname'] = $cat['title'];
         unset($cat['id'], $cat['title']);
         $this->assign($cat);
+        $this->settingSEOData();
         return $this->fetch("{$module}/{$cat['template_show']}");
     }
 
@@ -64,6 +66,19 @@ class Base extends \app\index\controller\Action
 //        elseif (cookie('phone') == 1) $terminal = 'wap'; // 如果是手机端标识COOKIE存在，则为手机端访问
         return $terminal;
     }
+    public function settingSEOData(array|string $title = [], array|string $keywords = [], array|string $description = [], string $icoImage = ''): void
+    {
+        // 移除空值
+        $title = array_filter($title);
+        $keywords = array_filter($keywords);
+        $description = array_filter($description);
+
+        $this->assign('seoTitle', $title[0]??'SEO标题');
+        $this->assign('seoKeywords', $keywords[0]??'SEO关键词');
+        $this->assign('seoDescription', $description[0]??'SEO描述');
+        $this->assign('icoImage', $icoImage);
+    }
+
     /**
      * 设置语言
      */
