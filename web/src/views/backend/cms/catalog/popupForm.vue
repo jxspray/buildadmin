@@ -1,8 +1,8 @@
 <!--
  * @Author: jxspray 1532946322@qq.com
  * @Date: 2023-08-11 11:16:59
- * @LastEditors: jxspray 66114831+jxspray@users.noreply.github.com
- * @LastEditTime: 2023-08-20 00:26:32
+ * @LastEditors: jxspray 1532946322@qq.com
+ * @LastEditTime: 2023-08-21 14:19:05
  * @FilePath: \web\src\views\backend\cms\catalog\popupForm.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -123,7 +123,7 @@ import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 import CustomFormItem from '../components/CustomFormItem/index.vue'
-import { stat } from 'fs'
+import createAxios from '/@/utils/axios'
 
 
 const formRef = ref<InstanceType<typeof ElForm>>()
@@ -144,9 +144,24 @@ const state: {
 })
 
 // 获取template
-baTable.api.postData('getTemplate', {}).then((res: any) => {
-    state.template = res.data
-})
+const getTemplate =  () => {
+    createAxios(
+        {
+            url: '/admin/cms.catalog/getTemplate',
+            method: 'post',
+            data: {},
+        },
+        {
+            showSuccessMessage: false,
+        }
+    ).then((res: any) => {
+        state.template = res.data
+        const module_id = baTable.form.items!.module_id || 1
+        console.log(state.template, module_id, state.template[module_id])
+        state.temp.show = state.template[module_id]!.show
+        state.temp.info = state.template[module_id]!.info
+    })
+}
 
 baTable.before = {
     onSubmit: function (res: any) {
@@ -168,6 +183,7 @@ baTable.after = {
         // state.template = res.data.template
     }
 }
+getTemplate()
 watch(() => baTable.form.items!.module_id, (newVal) => {
     if (newVal) {
         state.temp.show = state.template[newVal || 1]!['show']

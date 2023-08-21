@@ -1,8 +1,8 @@
 <!--
  * @Author: jxspray 66114831+jxspray@users.noreply.github.com
  * @Date: 2023-07-29 22:37:43
- * @LastEditors: jxspray 66114831+jxspray@users.noreply.github.com
- * @LastEditTime: 2023-08-02 20:53:05
+ * @LastEditors: jxspray 1532946322@qq.com
+ * @LastEditTime: 2023-08-21 13:55:51
  * @FilePath: \web\src\views\backend\cms\module\popupForm.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -76,7 +76,6 @@ import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 
-import Design from './design.vue'
 
 const formRef = ref<InstanceType<typeof ElForm>>()
 const baTable = inject('baTable') as baTableClass

@@ -138,21 +138,21 @@ class CmsLogic
     {
         $template = [];
         // 获取所有模型模板
-        foreach (cms("module") as $module) {
-            $files = Filesystem::getDirFiles(root_path() . self::baseViewPath . "\\home\\" . $module['name'], ['html']);
-            $data = [];
-            foreach ($files as $file) {
-                $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
-                $data[$file] = $file;
-            }
-            if ($module['type'] == '0') $template[$module['id']]['show'] = $data;
-            else if ($module['type'] == '1') {
-                foreach ($data as $file) {
-                    if (preg_match('/^.*_show$/', $file)) $template[$module['id']]['show'][$file] = $file;
-                    if (preg_match('/^.*_info$/', $file)) $template[$module['id']]['info'][$file] = $file;
-                }
-            }
-        }
+//        foreach (cms("module") as $module) {
+//            $files = Filesystem::getDirFiles(root_path() . self::baseViewPath . "\\home\\" . $module['name'], ['html']);
+//            $data = [];
+//            foreach ($files as $file) {
+//                $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+//                $data[$file] = $file;
+//            }
+//            if ($module['type'] == '0') $template[$module['id']]['show'] = $data;
+//            else if ($module['type'] == '1') {
+//                foreach ($data as $file) {
+//                    if (preg_match('/^.*_show$/', $file)) $template[$module['id']]['show'][$file] = $file;
+//                    if (preg_match('/^.*_info$/', $file)) $template[$module['id']]['info'][$file] = $file;
+//                }
+//            }
+//        }
         return $template;
     }
 

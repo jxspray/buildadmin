@@ -83,12 +83,16 @@ export default defineComponent({
     },
     emits: ['update:modelValue'],
     setup(props, { emit }) {
-        let data: any, inputAttr: any
+        let data: any
+        let inputAttr: InputAttr = {
+            field: '',
+        }
         
         const needTreeApi = [
             'catalog'
         ]
         if (props.type == 'remoteSelect') {
+            console.log(props.option.setup!.valueField)
             inputAttr.field = props.option.setup!.valueField
             inputAttr.remoteUrl =  remoteUrls[props.option.setup.remoteName]
 
@@ -127,7 +131,7 @@ export default defineComponent({
         ]
         if (needMultiple.includes(type.value)) {
             if (props.option.setup.maxSelect > 1) {
-                inputAttr['multiple'] = true
+                inputAttr.multiple = true
                 // inputAttr['max'] = option.setup.maxselect
             }
         }
