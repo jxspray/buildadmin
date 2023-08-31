@@ -3,32 +3,31 @@
 namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
-use Throwable;
 
 /**
- * 系统配置
- * @property \app\admin\model\cms\Config $model
+ * CMS配置
  */
 class Config extends Backend
 {
-    protected array $noNeedLogin = ['index'];
+    /**
+     * Config模型对象
+     * @var object
+     * @phpstan-var \app\admin\model\cms\Config
+     */
+    protected object $model;
+
+    protected array|string $preExcludeFields = ['id', 'type'];
+
+    protected string|array $quickSearchField = ['id'];
 
     public function initialize(): void
     {
         parent::initialize();
-        $this->model = new \app\admin\model\cms\Config();
+        $this->model = new \app\admin\model\cms\Config;
     }
 
-    public function index(): void
-    {
-        $this->success('', [
-            'list'          => json_decode($this->model->where('name', 'catalog')->value('value'), true),
-            'remark'        => get_route_remark(),
-        ]);
-    }
 
-    public function param(): void
-    {
-        $this->success('', config("cms.param"));
-    }
+    /**
+     * 若需重写查看、编辑、删除等方法，请复制 @see \app\admin\library\traits\Backend 中对应的方法至此进行重写
+     */
 }

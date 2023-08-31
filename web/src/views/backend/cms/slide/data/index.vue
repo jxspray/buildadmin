@@ -1,3 +1,11 @@
+<!--
+ * @Author: jxspray 1532946322@qq.com
+ * @Date: 2023-08-28 09:58:54
+ * @LastEditors: jxspray 1532946322@qq.com
+ * @LastEditTime: 2023-08-31 16:05:34
+ * @FilePath: \web\src\views\backend\cms\slide\data\index.vue
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+-->
 <template>
     <div class="default-main ba-table-box">
         <el-alert class="ba-table-alert" v-if="baTable.table.remark" :title="baTable.table.remark" type="info" show-icon />
@@ -28,6 +36,8 @@ import { useI18n } from 'vue-i18n'
 import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
+import { useRoute } from 'vue-router'
+const route = useRoute()
 
 defineOptions({
     name: 'cms/slide/data',
@@ -47,9 +57,9 @@ const baTable = new baTableClass(
         column: [
             { type: 'selection', align: 'center', operator: false },
             { label: t('cms.slide.data.id'), prop: 'id', align: 'center', width: 70, operator: 'RANGE', sortable: 'custom' },
-            { label: t('cms.slide.data.slide_id'), prop: 'slide_id', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE' },
             { label: t('cms.slide.data.slide__name'), prop: 'slide.name', align: 'center', operatorPlaceholder: t('Fuzzy query'), render: 'tags', operator: 'LIKE' },
             { label: t('cms.slide.data.title'), prop: 'title', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE', sortable: false },
+            { label: t('cms.slide.data.image'), prop: 'image', align: 'center', render: 'image', sortable: false },
             { label: t('cms.slide.data.remark'), prop: 'remark', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE', sortable: false },
             { label: t('cms.slide.data.width'), prop: 'width', align: 'center', operator: 'RANGE', sortable: false },
             { label: t('cms.slide.data.height'), prop: 'height', align: 'center', operator: 'RANGE', sortable: false },
@@ -57,14 +67,12 @@ const baTable = new baTableClass(
             { label: t('cms.slide.data.group'), prop: 'group', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE', sortable: false },
             { label: t('cms.slide.data.create_time'), prop: 'create_time', align: 'center', render: 'datetime', operator: 'RANGE', sortable: 'custom', width: 160, timeFormat: 'yyyy-mm-dd hh:MM:ss' },
             { label: t('cms.slide.data.update_time'), prop: 'update_time', align: 'center', render: 'datetime', operator: 'RANGE', sortable: 'custom', width: 160, timeFormat: 'yyyy-mm-dd hh:MM:ss' },
-            { label: t('cms.slide.data.delete_time'), prop: 'delete_time', align: 'center', render: 'datetime', operator: 'RANGE', sortable: 'custom', width: 160, timeFormat: 'yyyy-mm-dd hh:MM:ss' },
-            { label: t('cms.slide.data.extends'), prop: 'extends', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE', sortable: false },
             { label: t('Operate'), align: 'center', width: 100, render: 'buttons', buttons: optButtons, operator: false },
         ],
         dblClickNotEditColumn: [undefined],
     },
     {
-        defaultItems: { slide_id: null, title: null, remark: null, width: 0, height: 0, status: '1', group: null, delete_time: null, extends: null },
+        defaultItems: { slide_id: route.query.slide_id, title: null, remark: null, width: 0, height: 0, status: '1', group: null, delete_time: null, extends: null },
     }
 )
 

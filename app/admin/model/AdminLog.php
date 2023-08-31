@@ -34,6 +34,15 @@ class AdminLog extends Model
     protected static array $urlIgnoreRegex = [
         '/^(.*)\/(select|index|logout)$/i',
     ];
+    protected $name = 'admin_log';
+
+    // 设置json类型字段
+    protected $json = ['data'];
+
+    // 设置JSON字段的类型
+    protected $jsonType = [
+        'data->username'	=>	'string'
+    ];
 
     /**
      * 设置标题

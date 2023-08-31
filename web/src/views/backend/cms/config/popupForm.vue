@@ -1,11 +1,13 @@
 <template>
     <!-- 对话框表单 -->
+    <!-- 建议使用 Prettier 格式化代码 -->
+    <!-- el-form 内可以混用 el-form-item、FormItem、ba-input 等输入组件 -->
     <el-dialog
         class="ba-operate-dialog"
         :close-on-click-modal="false"
-        :destroy-on-close="true"
         :model-value="['Add', 'Edit'].includes(baTable.form.operate!)"
         @close="baTable.toggleForm"
+        width="50%"
     >
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
@@ -19,31 +21,27 @@
                 :style="'width: calc(100% - ' + baTable.form.labelWidth! / 2 + 'px)'"
             >
                 <el-form
+                    v-if="!baTable.form.loading"
                     ref="formRef"
+                    @submit.prevent=""
                     @keyup.enter="baTable.onSubmit(formRef)"
                     :model="baTable.form.items"
                     label-position="right"
                     :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules"
-                    v-if="!baTable.form.loading"
                 >
-                    <FormItem :label="t('cms.fields.field')" type="string" v-model="baTable.form.items!.field" prop="field" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.field') }) }" />
-                    <FormItem :label="t('cms.fields.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.name') }) }" />
-                    
-                    <CustomField />
-                    <FormItem 
-                        :label="t('cms.fields.default')" type="string" prop="default" v-model="baTable.form.items!.default"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.default') }) }" />
-
-                    <!-- <FormItem :label="t('cms.fields.comment')" type="string" v-model="baTable.form.items!.comment" prop="comment" :input-attr="{ placeholder: t('Please input field', { field: t('cms.fields.comment') }) }" /> -->
-                    <FormItem :label="t('cms.fields.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.fields.remark') }) }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" />
-                    <FormItem :label="t('cms.fields.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.fields.status 0'), 1: t('cms.fields.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.fields.status') }) }" />
+                    <FormItem :label="t('cms.config.name')" type="string" v-model="baTable.form.items!.name" prop="name" :placeholder="t('Please input field', { field: t('cms.config.name') })" />
+                    <FormItem :label="t('cms.config.group')" type="string" v-model="baTable.form.items!.group" prop="group" :placeholder="t('Please input field', { field: t('cms.config.group') })" />
+                    <FormItem :label="t('cms.config.title')" type="string" v-model="baTable.form.items!.title" prop="title" :placeholder="t('Please input field', { field: t('cms.config.title') })" />
+                    <FormItem :label="t('cms.config.tip')" type="string" v-model="baTable.form.items!.tip" prop="tip" :placeholder="t('Please input field', { field: t('cms.config.tip') })" />
+                    <FormItem :label="t('cms.config.value')" type="textarea" v-model="baTable.form.items!.value" prop="value" :input-attr="{ rows: 3 }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" :placeholder="t('Please input field', { field: t('cms.config.value') })" />
+                    <FormItem :label="t('cms.config.update_date')" type="datetime" v-model="baTable.form.items!.update_date" prop="update_date" :placeholder="t('Please select field', { field: t('cms.config.update_date') })" />
                 </el-form>
             </div>
         </el-scrollbar>
         <template #footer>
             <div :style="'width: calc(100% - ' + baTable.form.labelWidth! / 1.8 + 'px)'">
-                <el-button @click="baTable.toggleForm('')">{{ t('Cancel') }}</el-button>
+                <el-button @click="baTable.toggleForm()">{{ t('Cancel') }}</el-button>
                 <el-button v-blur :loading="baTable.form.submitLoading" @click="baTable.onSubmit(formRef)" type="primary">
                     {{ baTable.form.operateIds && baTable.form.operateIds.length > 1 ? t('Save and edit next item') : t('Save') }}
                 </el-button>
@@ -53,12 +51,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, inject } from 'vue'
+import { reactive, ref, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
-import type { FormInstance, FormItemRule } from 'element-plus'
 import FormItem from '/@/components/formItem/index.vue'
-import CustomField from './customField.vue'
+import type { FormInstance, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 
 const formRef = ref<FormInstance>()
@@ -67,21 +64,7 @@ const baTable = inject('baTable') as baTableClass
 const { t } = useI18n()
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
-    field: [buildValidatorData({ name: 'required', title: t('cms.fields.field') }),
-        {
-            validator: (rule: any, val: string, callback: Function) => {
-                if (!val) {
-                    return callback()
-                }
-                if (!/(^_([a-zA-Z0-9]_?)*$)|(^[a-zA-Z](_?[a-zA-Z0-9])*_?$)/.test(val)) {
-                    return callback(new Error(t('字段名格式错误！')))
-                }
-                return callback()
-            },
-            trigger: 'blur',
-        }],
-    name: [buildValidatorData({ name: 'required', title: t('cms.fields.name') })],
-    type: [buildValidatorData({ name: 'required', title: t('cms.fields.type') })]
+    update_date: [buildValidatorData({ name: 'date', title: t('cms.config.update_date') })],
 })
 </script>
 
