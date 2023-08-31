@@ -1,19 +1,19 @@
 <!--
  * @Author: jxspray 1532946322@qq.com
  * @Date: 2023-08-11 15:39:56
- * @LastEditors: jxspray 1532946322@qq.com
- * @LastEditTime: 2023-08-31 18:23:15
+ * @LastEditors: jxspray 66114831+jxspray@users.noreply.github.com
+ * @LastEditTime: 2023-08-31 23:43:34
  * @FilePath: \web\src\views\backend\cms\config\index.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 <template>
     <div class="default-main ba-table-box">
         <div class="custom-tabs">
-            <el-tabs>
+            <el-tabs v-model="state.activeName" @tab-click="tabClick">
                 <el-tab-pane label="基础配置" name="basic">
                     <div class="custom-body">
                         <el-row :gutter="30">
-                            <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-for="(item, baseIndex) in state.configData.basic">
+                            <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-for="(item) in state.configData.basic">
                                 <div class="config-item" :style="{background:item.background}">
                                     <div class="tip-container">
                                         <div class="config-item-icon-container"
@@ -35,6 +35,7 @@
                                             </div>
                                             <div class="item-leaf-2"></div>
                                         </div>
+                                        <div class="config-item-btn display-flex-c" :style="item.button" @click="operation(item.id,item.title)">立即设置</div>
                                     </div>
                                 </div>
                             </el-col>
@@ -48,6 +49,7 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
+import type { TabsPaneContext } from 'element-plus'
 defineOptions({
     name: 'cms/config',
 })
@@ -63,42 +65,15 @@ const state: {
             leaf: string,
             background: string,
             url: string,
-            button: object
+            button: { background: string, color: string }
         }[] 
-    }
+    },
+    activeName: string
 } = reactive({
     configData: {
         basic: [
             {
-                id: 'share',
-                title: '基本配置',
-                tip: '配置默认站点基本信息',
-                message: '',
-                icon: 'cms-icon',
-                leaf: '#915CF9',
-                background: 'linear-gradient(180deg, #D5B8FA 0%, #8F62C9 100%)',
-                url: "",
-                button: {
-                    background: '#E7DEF6',
-                    color: '#6625CF'
-                },
-            },
-            {
-                id: 'share',
-                title: '基本配置',
-                tip: '配置默认站点基本信息',
-                message: '',
-                icon: 'cms-icon',
-                leaf: '#915CF9',
-                background: 'linear-gradient(180deg, #D5B8FA 0%, #8F62C9 100%)',
-                url: "",
-                button: {
-                    background: '#E7DEF6',
-                    color: '#6625CF'
-                },
-            },
-            {
-                id: 'share',
+                id: 'basic',
                 title: '基本配置',
                 tip: '配置默认站点基本信息',
                 message: '',
@@ -111,9 +86,18 @@ const state: {
                     color: '#6625CF'
                 },
             }
-        ]
+        ],
     },
+    activeName: 'basic'
 })
+
+const operation = ((id: string, title: string) => {
+
+})
+
+const tabClick = (tab: TabsPaneContext, event: Event) => {
+
+}
 </script>
 
 <style scoped lang="scss">
@@ -143,13 +127,86 @@ const state: {
             justify-content: space-between;
             .tip-container {
                 padding: 0 10px;
+                .config-item-icon-container {
+                    margin-top: 30px;
+                    position: relative;
+                    display: flex;
+                    height: 48px;
+                    .item-icon-1 {
+                        width: 48px;
+                        height: 48px;
+                        border-radius: 50%;
+                    }
+                    .item-icon-2 {
+                        width: 48px;
+                        height: 48px;
+                        background: #fff;
+                        border-radius: 50%;
+                        position: absolute;
+                        left: 36px;
+                        opacity: 0.5;
+                    }
+                }
+                .config-title {
+                    font-size: 22px;
+                    margin-top: 28px;
+                }
+                .config-tip {
+                    font-size: 14px;
+                    color: rgba(255, 255, 255, 0.8);
+                    margin-top: 14px;
+                }
+            }
+            .set-container {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                .config-item-leaf-container {
+                    display: flex;
+                    flex: 1;
+                    .item-leaf-1 {
+                        .leaf {
+                            width: 54px;
+                            height: 54px;
+                        }
+                        .leaf-11 {
+                            background: rgba(255, 255, 255, 0.2);
+                            border-radius: 0px 34px;
+                        }
+                        .leaf-12 {
+                            border-radius: 0px 35px;
+                            transform: matrix(-1, 0, 0, 1, 0, 0);
+                        }
+                        .leaf-13 {
+                            background: rgba(255, 255, 255, 0.66);
+                            border-radius: 0px 34px;
+                        }
+                    }
+                    .item-leaf-2 {
+                        width: 40px;
+                        height: 40px;
+                        background: rgba(255, 255, 255, 0.4);
+                        border-radius: 6px;
+                        transform: rotate(-45deg);
+                        margin-top: 86px;
+                        margin-left: 10px;
+                    }
+                }
+                
+                .config-item-btn {
+                    width: 98px;
+                    height: 40px;
+                    border-radius: 20px;
+                    font-size: 14px;
+                    cursor: pointer;
+                }
             }
         }
     }
 }
 </style>
-<!-- 重写Element样式 -->
 <style>
+/* 重写Element样式 */
 .default-main .custom-tabs .el-tabs__nav {
     margin-left: 30px;
 }
@@ -162,6 +219,20 @@ const state: {
     padding: 0;
     padding-right: 20px;
     text-align: center;
-    color: #666;
+    /* color: #666; */
+}
+
+/* 公共样式 */
+.display-flex-c {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ellipsis-item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
 }
 </style>
