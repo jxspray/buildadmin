@@ -1,11 +1,3 @@
-<!--
- * @Author: jxspray 1532946322@qq.com
- * @Date: 2023-08-11 15:39:56
- * @LastEditors: jxspray 66114831+jxspray@users.noreply.github.com
- * @LastEditTime: 2023-08-31 23:43:34
- * @FilePath: \web\src\views\backend\cms\config\index.vue
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 <template>
     <div class="default-main ba-table-box">
         <div class="custom-tabs">
@@ -44,12 +36,16 @@
                 </el-tab-pane>
             </el-tabs>
         </div>
+        
+        <!-- 表单 -->
+        <PopupForm :show="state.show" :type="state.type" />
     </div>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
+import PopupForm from './popupForm.vue'
 defineOptions({
     name: 'cms/config',
 })
@@ -68,7 +64,9 @@ const state: {
             button: { background: string, color: string }
         }[] 
     },
-    activeName: string
+    activeName: string,
+    type: string,
+    show: boolean
 } = reactive({
     configData: {
         basic: [
@@ -88,11 +86,13 @@ const state: {
             }
         ],
     },
-    activeName: 'basic'
+    activeName: 'basic',
+    type: '',
+    show: false
 })
 
 const operation = ((id: string, title: string) => {
-
+    state.type = id
 })
 
 const tabClick = (tab: TabsPaneContext, event: Event) => {
