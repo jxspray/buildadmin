@@ -78,7 +78,7 @@ class Action extends \app\BaseController
     {
         if (!$layout) return;
         if ($layout === true) $layout = $this->layout;
-        $this->view->engine()->layout("web/{$this->pattern}/layout/{$this->layout}");
+        $this->view->engine()->layout("web/{$this->pattern}/layout/{$layout}");
     }
 
     public function __call($name, $arguments)

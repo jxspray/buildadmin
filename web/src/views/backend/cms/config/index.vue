@@ -38,14 +38,36 @@
         </div>
         
         <!-- 表单 -->
-        <PopupForm :show="state.show" :type="state.type" />
+        <!-- <PopupForm :show="state.show" :type="state.type" /> -->
+        <el-dialog
+            class="ba-operate-dialog"
+            :close-on-click-modal="false"
+            :model-value="state.modelShow ? true : false"
+            @close="closeModel"
+            width="50%"
+        >
+            <template #header>
+                <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
+                    {{ state.modelTitle }}
+                </div>
+            </template>
+            <el-scrollbar v-loading="state.loading" class="ba-table-form-scrollbar">
+                <div
+                    class="ba-operate-form"
+                    :class="'ba-edit-form'"
+                    :style="'width: calc(100% - ' + 200 / 2 + 'px)'"
+                >
+                12313
+                </div>
+            </el-scrollbar>
+        </el-dialog>
     </div>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue'
 import type { TabsPaneContext } from 'element-plus'
-import PopupForm from './popupForm.vue'
+// import PopupForm from './popupForm.vue'
 defineOptions({
     name: 'cms/config',
 })
@@ -66,7 +88,9 @@ const state: {
     },
     activeName: string,
     type: string,
-    show: boolean
+    modelShow: boolean,
+    modelTitle: string,
+    loading: boolean
 } = reactive({
     configData: {
         basic: [
@@ -88,12 +112,35 @@ const state: {
     },
     activeName: 'basic',
     type: '',
-    show: false
+    modelShow: false,
+    modelTitle: '',
+    loading: false
 })
 
-const operation = ((id: string, title: string) => {
+const loadOperation = (id: string) => {
     state.type = id
+    // 请求接口数据
+    setTimeout(() => {
+        state.loading = false
+    }, 3000);
+}
+
+const operation = ((id: string, title: string) => {
+    openModel(title)
+    loadOperation(id)
 })
+
+const openModel = (title: string) => {
+    state.modelShow = true
+    state.modelTitle = title
+    state.loading = true
+}
+
+const closeModel = () => {
+    state.modelShow = false
+    state.modelTitle = ''
+    state.loading = false
+}
 
 const tabClick = (tab: TabsPaneContext, event: Event) => {
 
