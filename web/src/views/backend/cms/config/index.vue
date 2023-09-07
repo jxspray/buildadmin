@@ -57,7 +57,16 @@
                     :class="'ba-edit-form'"
                     :style="'width: calc(100% - ' + 200 / 2 + 'px)'"
                 >
-                12313
+                    <el-form
+                        v-if="!state.loading"
+                        ref="formRef"
+                        @keyup.enter="baTable.onSubmit(formRef)"
+                        :model="baTable.form.items"
+                        label-position="right"
+                        :label-width="200 + 'px'"
+                        :rules="rules"
+                    >
+                    </el-form>
                 </div>
             </el-scrollbar>
         </el-dialog>
@@ -65,8 +74,13 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
-import type { TabsPaneContext } from 'element-plus'
+import { reactive, ref, inject } from 'vue'
+import type baTableClass from '/@/utils/baTable'
+import type { ElForm, FormItemRule, TabsPaneContext } from 'element-plus'
+
+
+const formRef = ref<InstanceType<typeof ElForm>>()
+const baTable = inject('baTable') as baTableClass
 // import PopupForm from './popupForm.vue'
 defineOptions({
     name: 'cms/config',
@@ -145,6 +159,8 @@ const closeModel = () => {
 const tabClick = (tab: TabsPaneContext, event: Event) => {
 
 }
+const rules: Partial<Record<string, FormItemRule[]>> = reactive({
+})
 </script>
 
 <style scoped lang="scss">
