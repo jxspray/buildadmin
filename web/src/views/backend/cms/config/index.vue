@@ -61,11 +61,12 @@
                         v-if="!state.loading"
                         ref="formRef"
                         @keyup.enter="baTable.onSubmit(formRef)"
-                        :model="baTable.form.items"
+                        :model="baTable.form"
                         label-position="right"
                         :label-width="200 + 'px'"
                         :rules="rules"
                     >
+                        <FormItem :label="t('网站名称')" type="string" v-model="baTable.form.items!.basic.site_name" prop="site_name" :input-attr="{ placeholder: t('Please input field', { field: t('网站名称') }) }" />
                     </el-form>
                 </div>
             </el-scrollbar>
@@ -74,20 +75,33 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, inject } from 'vue'
-import type baTableClass from '/@/utils/baTable'
+import { reactive, ref, inject, provide } from 'vue'
+import baTableClass from '/@/utils/baTable'
+import { baTableApi } from '/@/api/common'
 import type { ElForm, FormItemRule, TabsPaneContext } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 
 const formRef = ref<InstanceType<typeof ElForm>>()
-const baTable = inject('baTable') as baTableClass
+// const baTable = inject('baTable') as baTableClass
+const baTable = new baTableClass(
+    new baTableApi('/admin/cms.config/'),
+    {
+        column: [],
+    },
+    {
+        defaultItems: { "basic": { site_name: '' }},
+    }
+)
 // import PopupForm from './popupForm.vue'
 defineOptions({
     name: 'cms/config',
 })
+provide('baTable', baTable)
 
 const state: {
-    configData: { 
+    configData: {
         basic: {
             id: string,
             title: string,
@@ -140,6 +154,9 @@ const loadOperation = (id: string) => {
 }
 
 const operation = ((id: string, title: string) => {
+    baTable.form.items = {
+        basic: {}
+    }
     openModel(title)
     loadOperation(id)
 })
