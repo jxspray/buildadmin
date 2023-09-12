@@ -55,7 +55,6 @@
                 <div
                     class="ba-operate-form"
                     :class="'ba-edit-form'"
-                    :style="'width: calc(100% - ' + 200 / 2 + 'px)'"
                 >
                     <el-form
                         v-if="!state.loading"
@@ -63,13 +62,22 @@
                         @keyup.enter="baTable.onSubmit(formRef)"
                         :model="baTable.form"
                         label-position="right"
-                        :label-width="200 + 'px'"
                         :rules="rules"
                     >
                         <FormItem :label="t('网站名称')" type="string" v-model="baTable.form.items!.basic.site_name" prop="site_name" :input-attr="{ placeholder: t('Please input field', { field: t('网站名称') }) }" />
+                        <FormItem :label="t('网站网址')" type="string" v-model="baTable.form.items!.basic.site_url" prop="site_url" :input-attr="{ placeholder: t('Please input field', { field: t('网站网址') }) }" />
+                        <FormItem :label="t('网站邮箱')" type="string" v-model="baTable.form.items!.basic.site_email" prop="site_email" :input-attr="{ placeholder: t('Please input field', { field: t('网站邮箱') }) }" />
                     </el-form>
                 </div>
             </el-scrollbar>
+            <template #footer>
+                <div>
+                    <el-button @click="baTable.toggleForm('')">{{ t('Cancel') }}</el-button>
+                    <el-button v-blur :loading="baTable.form.submitLoading" @click="onSubmit(formRef)" type="primary">
+                        {{ t('Save') }}
+                    </el-button>
+                </div>
+            </template>
         </el-dialog>
     </div>
 </template>
@@ -78,7 +86,8 @@
 import { reactive, ref, inject, provide } from 'vue'
 import baTableClass from '/@/utils/baTable'
 import { baTableApi } from '/@/api/common'
-import type { ElForm, FormItemRule, TabsPaneContext } from 'element-plus'
+import type { ElForm, FormInstance, FormItemRule, TabsPaneContext } from 'element-plus'
+import FormItem from '/@/components/formItem/index.vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
@@ -160,6 +169,42 @@ const operation = ((id: string, title: string) => {
     openModel(title)
     loadOperation(id)
 })
+
+
+
+    /**
+     * 提交表单
+     * @param formEl 表单组件ref
+     */
+const onSubmit = (formEl: FormInstance | undefined = undefined) => {
+    Object.keys(baTable.form.items!).forEach((item) => {
+        if (baTable.form.items![item] === null) delete baTable.form.items![item]
+    })
+
+    // 表单验证通过后执行的api请求操作
+    const submitCallback = () => {
+        baTable.form.submitLoading = true
+        baTable.api
+            .postData('save', baTable.form.items!)
+            .then((res) => {
+                baTable.toggleForm()
+            })
+            .finally(() => {
+                baTable.form.submitLoading = false
+            })
+    }
+
+    if (formEl) {
+        baTable.form.ref = formEl
+        formEl.validate((valid: boolean) => {
+            if (valid) {
+                submitCallback()
+            }
+        })
+    } else {
+        submitCallback()
+    }
+}
 
 const openModel = (title: string) => {
     state.modelShow = true
