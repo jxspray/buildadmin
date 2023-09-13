@@ -13,6 +13,9 @@ class Config extends Model
     protected $name = 'cms_config';
 
     // 自动写入时间戳字段
-    protected $autoWriteTimestamp = false;
+    protected $autoWriteTimestamp = true;
 
+    protected $type = [
+        'value' => 'json'
+    ];
 }

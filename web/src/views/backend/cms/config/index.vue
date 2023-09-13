@@ -51,22 +51,24 @@
                     {{ state.modelTitle }}
                 </div>
             </template>
-            <el-scrollbar v-loading="state.loading" class="ba-table-form-scrollbar">
+            <el-scrollbar v-loading="baTable.form.loading" class="ba-table-form-scrollbar">
                 <div
                     class="ba-operate-form"
                     :class="'ba-edit-form'"
                 >
                     <el-form
-                        v-if="!state.loading"
+                        v-if="!baTable.form.loading"
                         ref="formRef"
-                        @keyup.enter="baTable.onSubmit(formRef)"
+                        @keyup.enter="onSubmit(formRef)"
                         :model="baTable.form"
                         label-position="right"
                         :rules="rules"
                     >
-                        <FormItem :label="t('网站名称')" type="string" v-model="baTable.form.items!.basic.site_name" prop="site_name" :input-attr="{ placeholder: t('Please input field', { field: t('网站名称') }) }" />
-                        <FormItem :label="t('网站网址')" type="string" v-model="baTable.form.items!.basic.site_url" prop="site_url" :input-attr="{ placeholder: t('Please input field', { field: t('网站网址') }) }" />
-                        <FormItem :label="t('网站邮箱')" type="string" v-model="baTable.form.items!.basic.site_email" prop="site_email" :input-attr="{ placeholder: t('Please input field', { field: t('网站邮箱') }) }" />
+                        <template v-if="state.type == 'cms'">
+                            <FormItem :label="t('网站名称')" type="string" v-model="baTable.form.items!.site_name" prop="site_name" :input-attr="{ placeholder: t('Please input field', { field: t('网站名称') }) }" />
+                            <FormItem :label="t('网站网址')" type="string" v-model="baTable.form.items!.site_url" prop="site_url" :input-attr="{ placeholder: t('Please input field', { field: t('网站网址') }) }" />
+                            <FormItem :label="t('网站邮箱')" type="string" v-model="baTable.form.items!.site_email" prop="site_email" :input-attr="{ placeholder: t('Please input field', { field: t('网站邮箱') }) }" />
+                        </template>
                     </el-form>
                 </div>
             </el-scrollbar>
@@ -96,12 +98,7 @@ const formRef = ref<InstanceType<typeof ElForm>>()
 // const baTable = inject('baTable') as baTableClass
 const baTable = new baTableClass(
     new baTableApi('/admin/cms.config/'),
-    {
-        column: [],
-    },
-    {
-        defaultItems: { "basic": { site_name: '' }},
-    }
+    { pk: 'name', column: [] }
 )
 // import PopupForm from './popupForm.vue'
 defineOptions({
@@ -127,12 +124,11 @@ const state: {
     type: string,
     modelShow: boolean,
     modelTitle: string,
-    loading: boolean
 } = reactive({
     configData: {
         basic: [
             {
-                id: 'basic',
+                id: 'cms', 
                 title: '基本配置',
                 tip: '配置默认站点基本信息',
                 message: '',
@@ -156,16 +152,26 @@ const state: {
 
 const loadOperation = (id: string) => {
     state.type = id
-    // 请求接口数据
-    setTimeout(() => {
-        state.loading = false
-    }, 3000);
+    
+    baTable.form.loading = true
+    baTable.form.items = {}
+    return baTable.api
+        .edit({
+            [baTable.table.pk!]: id,
+        })
+        .then((res) => {
+            baTable.form.items = res.data.row.value
+            console.log(baTable.form.items)
+        })
+        .catch((err) => {
+            baTable.toggleForm()
+        })
+        .finally(() => {
+            baTable.form.loading = false
+        })
 }
 
 const operation = ((id: string, title: string) => {
-    baTable.form.items = {
-        basic: {}
-    }
     openModel(title)
     loadOperation(id)
 })
@@ -177,17 +183,21 @@ const operation = ((id: string, title: string) => {
      * @param formEl 表单组件ref
      */
 const onSubmit = (formEl: FormInstance | undefined = undefined) => {
+    let value: { [key: string]: string } = {}
     Object.keys(baTable.form.items!).forEach((item) => {
-        if (baTable.form.items![item] === null) delete baTable.form.items![item]
+        value[item] = baTable.form.items![item] === null ? '' : baTable.form.items![item]
     })
 
+    
     // 表单验证通过后执行的api请求操作
     const submitCallback = () => {
         baTable.form.submitLoading = true
+        console.log({ name: state.type, value: value })
         baTable.api
-            .postData('save', baTable.form.items!)
+            .postData('edit', { name: state.type, value: value })
             .then((res) => {
                 baTable.toggleForm()
+                state.modelShow = false
             })
             .finally(() => {
                 baTable.form.submitLoading = false
@@ -209,13 +219,11 @@ const onSubmit = (formEl: FormInstance | undefined = undefined) => {
 const openModel = (title: string) => {
     state.modelShow = true
     state.modelTitle = title
-    state.loading = true
 }
 
 const closeModel = () => {
     state.modelShow = false
     state.modelTitle = ''
-    state.loading = false
 }
 
 const tabClick = (tab: TabsPaneContext, event: Event) => {
