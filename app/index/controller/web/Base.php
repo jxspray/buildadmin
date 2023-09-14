@@ -3,6 +3,8 @@ declare (strict_types = 1);
 
 namespace app\index\controller\web;
 
+use app\index\model\web\Config;
+
 class Base extends \app\index\controller\Action
 {
     protected string $terminal;
@@ -17,6 +19,11 @@ class Base extends \app\index\controller\Action
         // 设置语言数据
         $this->settingLangData();
 //        $this->assign($this->Config);
+
+        foreach ((new \app\index\model\web\Config)->column('value', 'name') as $name => $item) {
+            $name = ucfirst($name);
+            $this->assign("init{$name}", json_decode($item));
+        }
     }
 
     public function catalog($catid = '', $module = ''): ?string

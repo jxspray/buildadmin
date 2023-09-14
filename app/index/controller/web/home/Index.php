@@ -9,7 +9,6 @@ class Index extends Base
 {
     public function index(): string
     {
-        AdminLog::where("data->username", 'admin')->find();die;
         $this->settingSEOData();
         return $this->fetch(__FUNCTION__);
     }
