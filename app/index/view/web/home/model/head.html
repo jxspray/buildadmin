@@ -6,9 +6,8 @@
 <link rel="stylesheet" href="/cms/home/css/nav.css">
 <link rel="stylesheet" href="/cms/home/css/animate.min.css">
 <link rel="stylesheet" href="/cms/home/js/swiper/swiper-bundle.min.css">
-
-<php> jovo_block('pc_shangqiao','content');</php>
-<php> jovo_block('head','content'); </php>
-
+{:getBlock('base')->pc_shangqiao}
+{:getBlock('base')->head}
+{:getSlides(1)->name}
 <!-- 设置视频显示图片 -->
 {/*<script>function returnThumb() { return "{$thumb&cc;"; &cc;</script>*/}

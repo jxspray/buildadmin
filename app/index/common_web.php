@@ -57,3 +57,33 @@ if (!function_exists("cms")) {
         return false;
     }
 }
+
+if (!function_exists('getSlides')) {
+    /**
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\db\exception\DbException
+     */
+    function getSlides(array|int $where = [], $limit = NULL): \app\index\model\web\Slide
+    {
+        $res = (new app\index\model\web\Slide)->getInfo($where);
+        if (!$res) abort(500, "幻灯片不存在");
+        if ($limit) $res->list()->limit($limit)->select();
+        $res->list;
+        return $res;
+    }
+}
+
+if (!function_exists('getBlock')) {
+    /**
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\db\exception\DbException
+     */
+    function getBlock(string $name)
+    {
+        $res = app\index\model\web\Config::load($name);
+        if (!$res) abort(500, "配置不存在");
+        return json_decode($res->value);
+    }
+}

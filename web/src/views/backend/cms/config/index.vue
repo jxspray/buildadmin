@@ -2,10 +2,10 @@
     <div class="default-main ba-table-box">
         <div class="custom-tabs">
             <el-tabs v-model="state.activeName" @tab-click="tabClick">
-                <el-tab-pane label="基础配置" name="basic">
+                <el-tab-pane v-for="(tab, name) in state.configData" :label="t(name)" :name="name">
                     <div class="custom-body">
                         <el-row :gutter="30">
-                            <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-for="(item) in state.configData.basic">
+                            <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-for="item in tab">
                                 <div class="config-item" :style="{background:item.background}">
                                     <div class="tip-container">
                                         <div class="config-item-icon-container"
@@ -69,6 +69,12 @@
                             <FormItem :label="t('网站网址')" type="string" v-model="baTable.form.items!.site_url" prop="site_url" :input-attr="{ placeholder: t('Please input field', { field: t('网站网址') }) }" />
                             <FormItem :label="t('网站邮箱')" type="string" v-model="baTable.form.items!.site_email" prop="site_email" :input-attr="{ placeholder: t('Please input field', { field: t('网站邮箱') }) }" />
                         </template>
+                        <template v-if="state.type == 'base'">
+                            <FormItem :label="t('网站head区域')" type="string" v-model="baTable.form.items!.head" prop="head" :input-attr="{ placeholder: t('Please input field', { field: t('网站head区域') }) }" />
+                            <FormItem :label="t('网站foot区域')" type="string" v-model="baTable.form.items!.foot" prop="foot" :input-attr="{ placeholder: t('Please input field', { field: t('网站foot区域') }) }" />
+                            <FormItem :label="t('电脑端商桥代码')" type="string" v-model="baTable.form.items!.pc_shangqiao" prop="pc_shangqiao" :input-attr="{ placeholder: t('Please input field', { field: t('电脑端商桥代码') }) }" />
+                            <FormItem :label="t('移动端商桥代码')" type="string" v-model="baTable.form.items!.wap_shangqiao" prop="wap_shangqiao" :input-attr="{ placeholder: t('Please input field', { field: t('移动端商桥代码') }) }" />
+                        </template>
                     </el-form>
                 </div>
             </el-scrollbar>
@@ -108,7 +114,7 @@ provide('baTable', baTable)
 
 const state: {
     configData: {
-        basic: {
+        [key: string]: {
             id: string,
             title: string,
             tip: string,
@@ -118,7 +124,7 @@ const state: {
             background: string,
             url: string,
             button: { background: string, color: string }
-        }[] 
+        }[]
     },
     activeName: string,
     type: string,
@@ -131,6 +137,22 @@ const state: {
                 id: 'cms', 
                 title: '基本配置',
                 tip: '配置默认站点基本信息',
+                message: '',
+                icon: 'cms-icon',
+                leaf: '#915CF9',
+                background: 'linear-gradient(180deg, #D5B8FA 0%, #8F62C9 100%)',
+                url: "",
+                button: {
+                    background: '#E7DEF6',
+                    color: '#6625CF'
+                },
+            }
+        ],
+        block: [
+            {
+                id: 'base', 
+                title: '基础碎片',
+                tip: '必要的文本内容',
                 message: '',
                 icon: 'cms-icon',
                 leaf: '#915CF9',
