@@ -1,0 +1,64 @@
+// less全局变量或者方法
+@mainOColor: #ff3318; //A颜色
+@mainOColor2: #4976FF; //A颜色-渐变
+@bColor: #FF6D00; //B颜色
+@cColor: #3705B5; //C颜色
+
+@rightBox: rightbox1; // 左侧导航模板
+
+.text-hide(@hang: 1) {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: @hang;
+}
+// 文字隐藏
+.sys-text-hide(@height, @hang: 1) {
+	width: 100%;
+	height: @height;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: @hang;
+}
+// 副轴居中弹性盒子
+.sys-flex(@justify: center,@direction: column) {
+	display: flex;
+	flex-direction: @direction;
+	justify-content: @justify;
+	align-items: center;
+}
+// 椭圆盒子
+.sys-radius-btn(@width: 50px, @height: 50px, @color: @mainOColor) {
+	.sys-flex(center, row);
+	width: @width;
+	height: @height;
+	border-radius: (@height/2);
+	background: @color;
+	color: #ffffff;
+}
+// 图片容器
+.sys-picbox(@width: 100%, @height:100%, @size: contain) {
+	.picbox {
+		width: @width;
+		height: @height;
+		overflow: hidden;
+		.pic {
+			width: 100%;
+			height: 100%;
+			background-repeat: no-repeat;
+			background-size: @size;
+			background-position: center;
+			transition: all 0.6s;
+		}
+	}
+}
+// 箭头(方向与渐变方向一致：0 => 上，90 => 右，180 => 下，270 => 左
+.sys-arrow(@direction, @size, @color, @ratio1: 1, @ratio2: 1) {
+	transform: rotate(@direction);
+	border-bottom: @size solid @color;
+	border-left: (@size*@ratio1) solid transparent;
+	border-right: (@size*@ratio2) solid transparent;
+}

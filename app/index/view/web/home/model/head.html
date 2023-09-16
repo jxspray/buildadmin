@@ -1,13 +1,32 @@
 <!-- CSS-COM -->
-<link rel="stylesheet" href="/cms/home/css/common.css?t=1">
-<link rel="stylesheet" href="/cms/home/css/banner.css">
-<link rel="stylesheet" href="/cms/home/css/right.css">
-<link rel="stylesheet" href="/cms/home/css/sys.css?t=1">
-<link rel="stylesheet" href="/cms/home/css/nav.css">
-<link rel="stylesheet" href="/cms/home/css/animate.min.css">
-<link rel="stylesheet" href="/cms/home/js/swiper/swiper-bundle.min.css">
+<link rel="stylesheet" href="/cms/home/css/common.css?{$Config->version}">
+<link rel="stylesheet" href="/cms/home/css/banner.css?{$Config->version}">
+<link rel="stylesheet" href="/cms/home/css/right.css?{$Config->version}">
+<link rel="stylesheet" href="/cms/home/css/sys.css?{$Config->version}">
+<link rel="stylesheet" href="/cms/home/css/nav.css?{$Config->version}">
+<link rel="stylesheet" href="/cms/home/css/animate.min.css?{$Config->version}">
+<link rel="stylesheet" href="/cms/home/js/swiper/swiper-bundle.min.css?{$Config->version}">
+<!-- CSS-PAGE -->
+<link rel="stylesheet" href="/cms/home/jovoweb/css/style.css?{$Config->version}">
+<link rel="stylesheet" href="/cms/home/css/media.css?{$Config->version}">
+<!-- JS-COM -->
+{/* 设置config配置 */}
+<script type="application/javascript">
+    var configParams = {
+        baseUrl: '/cms/home/js'
+    };
+</script>
+<script data-main="/cms/assets/js/config" src="/cms/assets/node_modules/requirejs/require.js"></script>
+{/*<script src="/cms/home/js/public.js"></script>*/}
+{/*<script src="/cms/home/js/wow.min.js"></script>*/}
+{/*<script src="/cms/home/js/idangerous.swiper2.7.6.min.js"></script>*/}
+{/*<!-- JS-PAGE -->*/}
+{/*<script src="/cms/home/jovoweb/js/pagein.js"></script>*/}
+{/*<script src="/cms/assets/js/layui.js" charset="utf-8"></script>*/}
+{/*<script src="/Public/Js/jovo_pub.js" charset="utf-8"></script>*/}
+{/*<script type="text/javascript" src="/Jzw/Tpl/Home/Default/Public/public.js?t=1"></script>*/}
 {:getBlock('base')->pc_shangqiao}
 {:getBlock('base')->head}
-{:getSlides(1)->name}
+{/*{:getSlides(1)->name&cc;*/}
 <!-- 设置视频显示图片 -->
 {/*<script>function returnThumb() { return "{$thumb&cc;"; &cc;</script>*/}

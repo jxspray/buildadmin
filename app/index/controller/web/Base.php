@@ -24,6 +24,7 @@ class Base extends \app\index\controller\Action
             $name = ucfirst($name);
             $this->assign("init{$name}", json_decode($item));
         }
+        $this->assign('Config', json_decode(json_encode(['version' => '0.0.1'])));
     }
 
     public function catalog($catid = '', $module = ''): ?string

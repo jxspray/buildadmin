@@ -1,0 +1,1953 @@
+@import "public.less";
+
+// 容器
+.contentbox {
+    width: 1280px;
+    margin: 0 auto;
+    position: relative;
+    height: auto;
+}
+
+.widthbox {
+    width: 92%;
+    margin: 0 auto;
+    position: relative;
+    height: auto;
+}
+
+.sys_scrollBox {
+    overflow-y: auto !important;
+
+    &::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: @mainOColor;
+        border-radius: 2px;
+    }
+
+    &::-webkit-scrollbar-resizer {
+        background: @mainOColor;
+    }
+
+    &::-webkit-scrollbar-track-piece {
+        background: #fff;
+        border-radius: 2px;
+    }
+}
+
+.sys_shipin {
+    .spdialog {
+        width: 100%;
+        height: 100%;
+        background: #000;
+        top: 0;
+        left: 0;
+        position: fixed;
+        display: block;
+        z-index: -1002;
+        -moz-opacity: 0;
+        opacity: 0;
+        filter: alpha(opacity=0);
+        -webkit-transition: all .3s ease;
+        -moz-transition: all .3s ease;
+        transition: all .3s ease;
+    }
+
+    .spdialog-close {
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        z-index: 3;
+
+        img {
+            width: 40px;
+            transition-duration: 0.5s;
+            cursor: pointer;
+
+            &:hover {
+                opacity: 1.0;
+                transform: rotate(180deg);
+                -ms-transform: rotate(180deg);
+                -moz-transform: rotate(180deg);
+                -webkit-transform: rotate(180deg);
+                -o-transform: rotate(180deg);
+            }
+        }
+    }
+
+    .opacityshow {
+        -moz-opacity: 1;
+        opacity: 1;
+        filter: alpha(opacity=100);
+        z-index: 1002;
+    }
+
+    .videoshow {
+        height: 100%;
+    }
+
+    #myVideo1 {
+        cursor: pointer;
+    }
+
+    .ovnone {
+        overflow: hidden;
+        height: 100%;
+    }
+}
+
+// 按钮=============================
+// 咨询按钮
+.sys_btn_zixun {
+    width: 160px;
+    height: 40px;
+    background: #F3F7FF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+
+    &:hover {
+        background-color: @mainOColor;
+        border: none;
+
+        .pic {
+            background-color: #fff;
+        }
+
+        .txt {
+            color: #fff;
+        }
+    }
+
+    .pic {
+        width: 16px;
+        height: 16px;
+        background-color: @mainOColor;
+        -webkit-mask-size: cover;
+        mask-size: cover;
+        margin-right: 10px;
+    }
+
+    .txt {
+        font-size: 14px;
+        font-family: Microsoft YaHei, serif;
+        font-weight: 400;
+        color: @mainOColor;
+    }
+
+    &.style2 {
+        width: 200px;
+        border: 1px solid #000;
+        background: none;
+
+        .pic {
+            background-color: #000;
+        }
+
+        .txt {
+            color: #000;
+        }
+
+        &:hover {
+            background-color: @mainOColor;
+            border: none;
+
+            .pic {
+                background-color: #fff;
+            }
+
+            .txt {
+                color: #fff;
+            }
+        }
+    }
+
+    &.style3 {
+        width: 200px;
+        border: none;
+        background: @mainOColor;
+
+        .pic {
+            background-color: #fff;
+        }
+
+        .txt {
+            color: #fff;
+        }
+
+        &:hover {
+
+            .pic {
+                transition: all 1s;
+                transform: rotateY(180deg);
+            }
+        }
+    }
+}
+
+// 咨询按钮2
+.sys_btn_zixun2 {
+    width: 220px;
+    height: 60px;
+    border-radius: 30px;
+    background: #FFE063;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+
+    &.style1 {
+        background: @mainOColor;
+
+        .pic {
+            background-color: #fff;
+        }
+
+        .txt {
+            color: #fff;
+        }
+    }
+
+    &.style2 {
+        background: @bColor;
+
+        .pic {
+            background-color: #fff;
+        }
+
+        .txt {
+            color: #fff;
+        }
+    }
+
+    &.style3 {
+        background: none;
+        border: 1px solid #fff;
+
+        .pic {
+            background-color: #fff;
+        }
+
+        .txt {
+            color: #fff;
+        }
+    }
+
+    &:hover {
+        .pic {
+            transform: rotateY(180deg);
+        }
+    }
+
+    .pic {
+        width: 24px;
+        height: 24px;
+        background-color: #6E4300;
+        -webkit-mask-size: cover;
+        mask-size: cover;
+        margin-right: 10px;
+        transition: all 1s;
+    }
+
+    .txt {
+        font-size: 20px;
+        font-family: Microsoft YaHei, serif;
+        font-weight: bold;
+        color: #6E4300;
+    }
+}
+
+// 按钮=============================END
+
+// 轮播=============================
+.sys_sw1 {
+    height: 320px;
+
+    .swiper {
+        width: 100%;
+        height: 100%;
+
+        .swiper-wrapper {
+            .swiper-slide {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                .item {
+                    position: relative;
+                    width: 285px;
+                    height: 224px;
+                    display: block;
+
+                    &:hover {
+                        .picbox {
+                            .pic {
+                                transform: scale(1.1);
+                            }
+                        }
+                    }
+
+                    .picbox {
+                        width: 285px;
+                        height: 224px;
+                        overflow: hidden;
+                        display: block;
+
+                        .pic {
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: cover;
+                            width: 100%;
+                            height: 100%;
+                            transition: all 0.6s;
+                        }
+                    }
+
+                    .txt {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 40px;
+                        background: rgba(0, 0, 0, 0.6);
+                        text-align: center;
+                        padding: 0 10px;
+                        box-sizing: border-box;
+                        color: #fff;
+                        font-size: 16px;
+                        line-height: 40px;
+                        .text-hide(1);
+                    }
+                }
+            }
+        }
+
+        .swiper-pagination-bullet-active {
+            width: 20px;
+            border-radius: 30px;
+            background-color: @mainOColor;
+            opacity: 1 !important;
+        }
+
+        .swiper-pagination-bullet {
+            background-color: @mainOColor;
+            opacity: .5;
+        }
+
+
+    }
+
+    .swiper-button-next {
+        background: url(/cms/home/images/click/sw2_next.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        right: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+
+        }
+    }
+
+    .swiper-button-prev {
+        background: url(/cms/home/images/click/sw2_prev.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        left: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.sys_sw2 {
+    height: 385px;
+
+    .swiper {
+        width: 100%;
+        height: 100%;
+
+        .swiper-wrapper {
+            .swiper-slide {
+                .item {
+                    display: flex;
+
+                    .picbox {
+                        margin-right: 10px;
+                        width: 210px;
+                        height: 330px;
+                        overflow: hidden;
+                        display: block;
+
+                        .pic {
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: contain;
+                            width: 100%;
+                            height: 100%;
+                            transition: all 0.6s;
+                        }
+                    }
+
+                    .txt {
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+
+                        .p1 {
+                            span {
+                                &:first-child {
+                                    font-size: 20px;
+                                    font-weight: bold;
+                                    color: #0C1922;
+                                }
+
+                                &:last-child {
+                                    font-size: 20px;
+                                    color: #0C1922;
+                                }
+                            }
+                        }
+
+                        .p2 {
+                            font-size: 16px;
+                            color: #0C1922;
+                        }
+
+                        .desc {
+                            margin-top: 40px;
+                            font-size: 16px;
+                            color: #666;
+                            .text-hide(4);
+                        }
+
+                        .chakan {
+                            margin-top: 30px;
+                            font-size: 16px;
+                            color: #253F8F;
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+        }
+
+        .swiper-pagination-bullet-active {
+            width: 20px;
+            border-radius: 30px;
+            background-color: @mainOColor;
+            opacity: 1 !important;
+        }
+
+        .swiper-pagination-bullet {
+            background-color: @mainOColor;
+            opacity: .5;
+        }
+
+
+    }
+
+    .swiper-button-next {
+        background: url(/cms/home/images/click/sw2_next.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        right: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+
+        }
+    }
+
+    .swiper-button-prev {
+        background: url(/cms/home/images/click/sw2_prev.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        left: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.sys_sw3 {
+    height: 520px;
+
+    .swiper {
+        width: 100%;
+        height: 100%;
+
+        .swiper-wrapper {
+            .swiper-slide {
+                .item {
+                    width: 96%;
+                    margin: 0 auto;
+                    padding: 50px 0;
+                    background-color: #fff;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    border-radius: 10px;
+
+                    .picbox {
+                        width: 200px;
+                        height: 200px;
+                        overflow: hidden;
+                        border-radius: 50%;
+                        display: block;
+
+                        .pic {
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: contain;
+                            width: 100%;
+                            height: 100%;
+                            transition: all 0.6s;
+                        }
+                    }
+
+                    .txt {
+                        .p1 {
+                            text-align: center;
+                            margin-top: 30px;
+
+                            span {
+                                &:first-child {
+                                    font-size: 20px;
+                                    font-weight: bold;
+                                    color: #0C1922;
+                                }
+
+                                &:last-child {
+                                    font-size: 20px;
+                                    color: #0C1922;
+                                }
+                            }
+                        }
+
+                        .p2 {
+                            font-size: 16px;
+                            color: #0C1922;
+                            text-align: center;
+                        }
+
+                        .desc {
+                            margin-top: 10px;
+                            font-size: 16px;
+                            color: #666;
+                            text-align: center;
+                            padding: 0 20px;
+                            .text-hide(4);
+                        }
+
+                        .chakan {
+                            width: 140px;
+                            height: 40px;
+                            border: 1px solid #000000;
+                            border-radius: 40px;
+                            text-align: center;
+                            line-height: 40px;
+                            font-size: 16px;
+                            color: #000;
+                            display: block;
+                            margin: 30px auto 0 auto;
+                            box-sizing: border-box;
+
+                            &:hover {
+                                background-color: @mainOColor;
+                                color: #fff;
+                                border: none;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .swiper-pagination-bullet-active {
+            width: 20px;
+            border-radius: 30px;
+            background-color: @mainOColor;
+            opacity: 1 !important;
+        }
+
+        .swiper-pagination-bullet {
+            background-color: @mainOColor;
+            opacity: .5;
+        }
+
+
+    }
+
+    .swiper-button-next {
+        background: url(/cms/home/images/click/sw2_next.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        right: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+
+        }
+    }
+
+    .swiper-button-prev {
+        background: url(/cms/home/images/click/sw2_prev.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        left: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.sys_sw4 {
+    height: 420px;
+
+    .swiper {
+        width: 100%;
+        height: 100%;
+
+        .swiper-wrapper {
+            .swiper-slide {
+                .item {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+
+                    .left {
+                        margin-right: 20px;
+
+                        .picbox {
+                            width: 630px;
+                            height: 420px;
+                            overflow: hidden;
+
+                            .pic {
+                                background-repeat: no-repeat;
+                                background-position: center;
+                                background-size: cover;
+                                width: 100%;
+                                height: 100%;
+                                transition: all 0.6s;
+                            }
+                        }
+                    }
+
+                    .right {
+                        display: flex;
+                        flex-wrap: wrap;
+                        flex: 1;
+
+                        .picbox {
+                            width: 305px;
+                            height: 200px;
+                            overflow: hidden;
+                            margin-right: 20px;
+                            margin-bottom: 20px;
+
+                            &:nth-child(2n) {
+                                margin-right: 0;
+                            }
+
+                            &:nth-child(n+3) {
+                                margin-bottom: 0;
+                            }
+
+                            .pic {
+                                background-repeat: no-repeat;
+                                background-position: center;
+                                background-size: cover;
+                                width: 100%;
+                                height: 100%;
+                                transition: all 0.6s;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+        .swiper-pagination-bullet-active {
+            width: 20px;
+            border-radius: 30px;
+            background-color: @mainOColor;
+            opacity: 1 !important;
+        }
+
+        .swiper-pagination-bullet {
+            background-color: @mainOColor;
+            opacity: .5;
+        }
+
+
+    }
+
+    .swiper-button-next {
+        background: url(/cms/home/images/click/sw2_next.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        right: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+
+        }
+    }
+
+    .swiper-button-prev {
+        background: url(/cms/home/images/click/sw2_prev.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        left: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.sys_sw5 {
+    height: 548px;
+
+    .swiper {
+        width: 100%;
+        height: 100%;
+
+        .swiper-wrapper {
+            .swiper-slide {
+                border-radius: 10px;
+                background-color: #fff;
+                padding: 40px;
+                box-sizing: border-box;
+                display: flex;
+                flex-wrap: wrap;
+
+                .item {
+                    width: 285px;
+                    height: 224px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    position: relative;
+                    margin-right: 20px;
+                    cursor: pointer;
+
+                    &:nth-child(4n) {
+                        margin-right: 0;
+                    }
+
+                    &:nth-child(n+5) {
+                        margin-top: 20px;
+                    }
+
+                    &:hover {
+                        .picbox {
+                            .pic {
+                                transform: scale(1.1);
+                            }
+                        }
+                    }
+
+                    .picbox {
+                        width: 285px;
+                        height: 224px;
+                        overflow: hidden;
+
+                        .pic {
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: cover;
+                            width: 100%;
+                            height: 100%;
+                            transition: all 0.6s;
+                        }
+                    }
+
+                    .txt {
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 40px;
+                        background: rgba(0, 0, 0, 0.6);
+                        text-align: center;
+                        padding: 0 10px;
+                        box-sizing: border-box;
+                        color: #fff;
+                        font-size: 16px;
+                        line-height: 40px;
+                        .text-hide(1);
+                    }
+
+                }
+            }
+        }
+
+        .swiper-pagination-bullet-active {
+            width: 20px;
+            border-radius: 30px;
+            background-color: @mainOColor;
+            opacity: 1 !important;
+        }
+
+        .swiper-pagination-bullet {
+            background-color: @mainOColor;
+            opacity: .5;
+        }
+
+
+    }
+
+    .swiper-button-next {
+        background: url(/cms/home/images/click/sw2_next.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        right: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+
+        }
+    }
+
+    .swiper-button-prev {
+        background: url(/cms/home/images/click/sw2_prev.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        left: -5%;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        width: 56px;
+        height: 56px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+.sys_sw6 {
+    height: 330px;
+
+    .swiper {
+        width: 100%;
+        height: 100%;
+
+        .swiper-wrapper {
+            .swiper-slide {
+                border-radius: 10px;
+                box-sizing: border-box;
+                display: flex;
+                flex-wrap: wrap;
+
+                .item {
+                    width: 312px;
+                    height: 100px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: relative;
+                    margin-right: 10px;
+                    background-color: #fff;
+
+                    &:nth-child(4n) {
+                        margin-right: 0;
+                    }
+
+                    .picbox {
+                        width: 262px;
+                        height: 70px;
+                        overflow: hidden;
+
+                        .pic {
+                            background-repeat: no-repeat;
+                            background-position: center;
+                            background-size: contain;
+                            width: 100%;
+                            height: 100%;
+                            transition: all 0.6s;
+                        }
+                    }
+                }
+            }
+        }
+
+        .swiper-pagination-bullet-active {
+            width: 20px;
+            border-radius: 30px;
+            background-color: @mainOColor;
+            opacity: 1 !important;
+        }
+
+        .swiper-pagination-bullet {
+            background-color: @mainOColor;
+            opacity: .5;
+        }
+
+
+    }
+
+    .swiper-button-next {
+        background: url(/cms/home/images/click/sw6_next.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        right: 0;      
+        top: 340px;
+        margin: auto;
+        width: 150px;
+        height: 11px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+
+        }
+    }
+
+    .swiper-button-prev {
+        background: url(/cms/home/images/click/sw6_prev.png) no-repeat;
+        background-size: cover;
+        position: absolute;
+        left: 0;    
+        top: 340px;
+        margin: auto;
+        width: 150px;
+        height: 11px;
+        cursor: pointer;
+        z-index: 1;
+        opacity: .6;
+
+        &::after {
+            content: none;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}
+
+// 轮播=============================END
+
+//分页样式====================================
+.sys_pagebox1 {
+    text-align: center;
+
+    a {
+        display: inline-block;
+        min-width: 16px;
+        padding: 0 14px;
+        line-height: 40px;
+        height: 40px;  
+        font-size: 16px;
+        font-weight: 400;
+        color: #999999;
+        background: #FFFFFF;
+        border: 1px solid #E0E0E0;
+        margin-right: 10px;
+
+        &:hover {
+            background: @mainOColor;
+            border: 1px solid transparent;
+            color: #ffffff;
+        }
+    }
+
+    .active {
+        background: @mainOColor;
+        border: 1px solid transparent;
+        color: #ffffff;
+    }
+}
+
+//分页样式====================================END
+
+//弹窗样式====================================
+//弹窗样式1
+.sys_dialog_bg1 {
+    display: none;
+    position: fixed;
+    background: rgba(0, 0, 0, .5);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+}
+
+.sys_dialog_show1 {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 800px;
+    height: 80vh;
+    transform: translateX(-50%) translateY(-50%) scale(0.8, 0.8);
+    padding: 20px;
+    z-index: 9999;
+    background: rgba(0, 93, 127, 0.53);
+    border: 2px solid #00689f;
+    border-radius: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all .3s;
+
+    &.dialog_active {
+        transform: translateX(-50%) translateY(-50%) scale(1, 1);
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .con {
+        width: 100%;
+        height: 100%;
+        padding: 10px;
+    }
+
+    .scrollBox {
+        overflow-y: auto !important;
+    }
+
+    .scrollBox::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollBox::-webkit-scrollbar-thumb {
+        background: #f0b318;
+        border-radius: 4px;
+    }
+
+    .scrollBox::-webkit-scrollbar-resizer {
+        background: #f0b318;
+    }
+
+    .scrollBox::-webkit-scrollbar-track-piece {
+        background: #3a97d0;
+        border-radius: 4px;
+    }
+
+    .close {
+        width: 40px;
+        height: 40px;
+        display: block;
+        background: none;
+        position: absolute;
+        top: -30px;
+        right: -40px;
+        cursor: pointer;
+        font-size: 30px;
+        color: #fff;
+        text-align: center;
+        line-height: 40px;
+    }
+}
+
+//弹窗样式====================================END
+
+
+//标题样式====================================
+.sys_biaoti1 {
+    text-align: center;
+    line-height: 1;
+    color: #4C4948;
+
+    h1 {
+        font-size: 40px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        position: relative;
+
+        i {
+            display: inline-block;
+            margin: 16px 8px;
+            width: 20px;
+            height: 1px;
+            background: #4C4948;
+        }
+    }
+
+    p {
+        font-size: 20px;
+        text-transform: uppercase;
+    }
+}
+
+.sys_biaoti2 {
+    p {
+        text-align: center;
+        font-size: 36px;
+        color: #333;
+    }
+
+    .subtitle {
+        text-align: center;
+
+        img {
+            width: 200px;
+            height: 14px;
+            display: inline-block;
+        }
+
+        span {
+            display: inline-block;
+            margin: 0 30px;
+            font-size: 14px;
+            color: #999999;
+            text-transform: uppercase;
+        }
+    }
+}
+
+.sys_biaoti3 {
+    text-align: center;
+
+    .atitle {
+        font-size: 36px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .btitle {
+        font-size: 24px;
+        color: #333;
+    }
+
+    .xian {
+        width: 36px;
+        height: 3px;
+        background: @mainOColor;
+        display: block;
+        margin: 20px auto 0 auto;
+    }
+}
+
+.sys_biaoti4 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .left {
+        .p1 {
+            font-size: 36px;
+            font-family: Microsoft YaHei, serif;
+            font-weight: bold;
+            color: #000000;
+            position: relative;
+            line-height: 1;
+            z-index: 1;
+        }
+
+        .p2 {
+            font-size: 30px;
+            font-family: Arial, serif;
+            font-weight: bold;
+            color: #DDDDDD;
+            line-height: 1;
+            padding-left: 58px;
+            margin-top: -10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+
+        }
+    }
+
+    .right {
+        display: flex;
+        align-items: center;
+
+        a {
+            font-size: 16px;
+            font-family: Microsoft YaHei, serif;
+            font-weight: 400;
+            color: #000;
+            display: inline-block;
+            position: relative;
+            transition: all .4s ease;
+            line-height: 60px;
+            margin-right: 30px;
+
+            &:hover,
+            &.active {
+                color: @mainOColor;
+                transition: all .4s ease;
+
+                &::after {
+                    width: 100%;
+                    transition: all .4s ease;
+                }
+            }
+
+            &::after {
+                content: '';
+                width: 0;
+                height: 2px;
+                background: @mainOColor;
+                position: absolute;
+                left: 0;
+                bottom: 0;
+            }
+        }
+    }
+}
+
+.sys_biaoti5 {
+    position: relative;
+    text-align: center;
+
+    .atitle {
+        font-size: 36px;
+        font-weight: bold;
+        color: #010101;
+        position: relative;
+        z-index: 1;
+    }
+
+    .btitle {
+        font-size: 16px;
+        color: #999999;
+    }
+
+    .bg {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 80px;
+        background: url(/cms/home/webimages/biaoti/biaoti5_bg.png) no-repeat center;
+        background-size: 100%;
+    }
+}
+
+
+//标题样式====================================END
+
+//地图=================================
+#map_title_my {
+    font-weight: bold;
+    color: #CE5521;
+    font-size: 14px;
+}
+
+#map_content_my {
+    table-layout: fixed;
+    width: 100%;
+    font: 12px arial, simsun, sans-serif;
+}
+
+#map_content_my tbody>tr td:nth-child(1) {
+    vertical-align: top;
+    line-height: 16px;
+    width: 38px;
+    white-space: nowrap;
+    word-break: keep-all;
+}
+
+#map_content_my tbody>tr td:nth-child(2) {
+    vertical-align: top;
+    line-height: 16px;
+}
+
+//地图=================================END
+
+
+//分类导航=================================
+.sys_catebox1 {
+    text-align: center;
+
+    a {
+        font-size: 20px;
+        font-family: Microsoft YaHei, serif;
+        font-weight: bold;
+        color: #999999;
+        height: 60px;
+        line-height: 60px;
+        padding: 0 10px;
+        margin: 0 10px;
+        display: inline-block;
+        position: relative;
+        transition: all .4s ease;
+
+        &:hover,
+        &.active {
+            color: #000000;
+            transition: all .4s ease;
+
+            &::after {
+                width: 100%;
+                transition: all .4s ease;
+            }
+        }
+
+        &::after {
+            content: '';
+            width: 0;
+            height: 2px;
+            background: @mainOColor;
+            position: absolute;
+            left: 0;
+            bottom: 0;
+        }
+    }
+}
+
+.sys_catebox2 {
+    text-align: center;
+
+    a {
+        width: 160px;
+        height: 40px;
+        border-radius: 40px;
+        font-size: 16px;
+        font-family: Microsoft YaHei, serif;
+        font-weight: bold;
+        color: @mainOColor;
+        line-height: 40px;
+        margin: 0 10px;
+        display: inline-block;
+        text-align: center;
+        box-sizing: border-box;
+        border: 1px solid @mainOColor;
+        transition: all .4s;
+
+        &:hover,
+        &.active {
+            background: @mainOColor;
+            color: #fff;
+        }
+    }
+}
+
+//分类导航=================================END
+
+//内页广告=================================
+.sys_nbanner1 {
+    height: 440px;
+    position: relative;
+
+    .banner_bg {
+        width: 100%;
+        height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .banner_text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 9;
+        color: @mainOColor;
+        text-align: center;
+
+        h4 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        p {
+            text-transform: uppercase;
+            font-size: 20px;
+            letter-spacing: 8px;
+            margin-top: 10px;
+            color: #fff;
+        }
+    }
+}
+
+.sys_nbanner2 {
+    height: 400px;
+    position: relative;
+
+    .banner_bg {
+        width: 100%;
+        height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .banner_text {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 140px;
+        z-index: 9;
+        text-align: center;
+
+        h4 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .xian {
+            width: 36px;
+            height: 2px;
+            margin: 12px auto;
+            background: #FFFFFF;
+        }
+
+        p {
+            font-size: 16px;
+            margin-top: 10px;
+            color: #ccc;
+        }
+    }
+}
+
+.sys_nbanner3 {
+    height: 400px;
+    position: relative;
+
+    .banner_bg {
+        width: 100%;
+        height: 100%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+
+    }
+
+    .banner_text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+
+        .p1 {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #000;
+        }
+
+        .p2 {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .com_btn_zixun {
+            margin-top: 40px;
+        }
+
+    }
+}
+
+//内页广告=================================END
+
+//通栏广告=================================
+.sys_madbox {
+    width: 100%;
+    height: 200px;
+    margin: 0 auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    .contentbox {
+        position: relative;
+
+        .info {
+            position: absolute;
+            top: 24px;
+            right: 10px;
+
+            .ad_tel {
+                width: 240px;
+                height: 90px;
+                position: relative;
+                padding: 20px 0;
+                box-sizing: border-box;
+
+                .tel {
+                    width: 40px;
+                    height: 40px;
+                    display: inline-block;
+                    background: url(/cms/home/images/icon/mad_tel.png) no-repeat;
+                    background-size: cover;
+                    margin: auto 6px auto auto;
+                }
+
+                .txt {
+                    display: inline-block;
+                }
+
+                p,
+                h4 {
+                    text-align: left;
+                    color: #fff;
+                    line-height: 1.2;
+                }
+
+                p {
+                    font-size: 20px;
+                }
+
+                h4 {
+                    font-size: 20px;
+                }
+            }
+
+            .zixun {
+                width: 160px;
+                height: 40px;
+                background: @mainOColor;
+                text-align: center;
+                display: block;
+
+                img {
+                    width: 14px;
+                    height: 14px;
+                    margin-right: 10px;
+                    display: inline-block;
+                }
+
+                span {
+                    display: inline-block;
+                    font-size: 16px;
+                    font-family: Microsoft YaHei, serif;
+                    font-weight: 400;
+                    color: #ffffff;
+                    line-height: 40px;
+                }
+            }
+        }
+    }
+}
+
+.sys_madbox2 {
+    width: 100%;
+    height: 200px;
+    margin: 0 auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    .contentbox {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .wenzi {
+            .p1 {
+                font-size: 24px;
+                color: #fff;
+                font-weight: bold;
+            }
+
+            .p2 {
+                font-size: 20px;
+                color: #fff;
+                margin-top: 10px;
+            }
+        }
+
+        .info {
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            width: 280px;
+            height: 80px;
+            background: #4BB13F;
+            transform: translateY(-50%);
+            border-radius: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .ad_tel {
+                position: relative;
+                box-sizing: border-box;
+
+                .tel {
+                    width: 40px;
+                    height: 40px;
+                    display: inline-block;
+                    background: url(/cms/home/images/icon/mad2_tel.png) no-repeat;
+                    background-size: cover;
+                    margin: auto 6px auto auto;
+                }
+
+                .txt {
+                    display: inline-block;
+                }
+
+                p,
+                h4 {
+                    text-align: left;
+                    color: #fff;
+                    line-height: 1.2;
+                }
+
+                p {
+                    font-size: 20px;
+                }
+
+                h4 {
+                    font-size: 20px;
+                }
+            }
+        }
+    }
+}
+
+.sys_madbox3 {
+    width: 100%;
+    height: 200px;
+    margin: 0 auto;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    .contentbox {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .wenzi {
+            margin-left: 400px;
+
+            .p1 {
+                font-size: 32px;
+                color: #FFE063;
+                font-weight: bold;
+            }
+
+            .p2 {
+                font-size: 26px;
+                color: #fff;
+                margin-top: 10px;
+            }
+
+            .p3 {
+                font-size: 16px;
+                color: #fff;
+
+                span {
+                    font-size: 16px;
+                    color: #fff;
+                    margin: 0 8px;
+                }
+            }
+        }
+
+        .ecode {
+            display: flex;
+            align-items: center;
+            margin-right: 100px;
+
+            img {
+                width: 100px;
+                height: 100px;
+                margin-right: 20px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+            }
+
+            p {
+                font-size: 20px;
+                font-family: Microsoft YaHei, serif;
+                font-weight: 400;
+                color: #fff;
+            }
+        }
+    }
+}
+
+//通栏广告=================================END
+
+//Tab选项=================================
+.sys_tab1 {
+    height: 60px;
+    border-bottom: 1px solid #E6EBE6;
+    width: 100%;
+    background-color: #fff;
+    z-index: 9;
+
+    &.ouyfixed {
+        position: fixed;
+        top: 0;
+    }
+
+    .tabcon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .item {
+            width: 20%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: #000;
+            cursor: pointer;
+
+            &:hover,
+            &.active {
+                color: @mainOColor;
+                border-bottom: 1px solid @mainOColor;
+            }
+        }
+    }
+}
+
+//Tab选项=================================END
+
+
+//列表=================================
+.sys_rylist {
+    .ryitem {
+        width: 305px;
+        height: 272px;
+        float: left;
+        margin-right: 20px;
+
+        &:nth-child(4n) {
+            margin-right: 0;
+        }
+
+        .itempic {
+            margin: 0 auto;
+            position: relative;
+
+            .kuang {
+                max-width: 100%;
+                max-height: 100%;
+                display: block;
+                margin: auto;
+            }
+
+            .rongyu {
+                position: absolute;
+                top: 7px;
+                left: 27px;
+                width: 248px;
+                height: 168px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                .picbox {
+                    width: 248px;
+                    height: 168px;
+                    overflow: hidden;
+                    display: block;
+
+                    .pic {
+                        background-repeat: no-repeat;
+                        background-position: center;
+                        background-size: contain;
+                        width: 248px;
+                        height: 168px;
+                        transition: all 0.6s;
+                    }
+                }
+
+            }
+
+        }
+
+        .tt {
+            width: 270px;
+            font-size: 16px;
+            font-family: Microsoft YaHei, serif;
+            font-weight: 400;
+            color: #000000;
+            text-align: center;
+            .text-hide(2);
+            margin: 10px auto 20px auto;
+        }
+    }
+}
+
+//列表=================================END
