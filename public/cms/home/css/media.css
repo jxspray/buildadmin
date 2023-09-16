@@ -1,0 +1,14 @@
+/* 1680 */
+@media (max-width: 1366px) {
+  .appContent .sys_sw1 .swiper-button-prev,
+  .appContent .sys_sw1 .swiper-button-next {
+    display: none;
+  }
+  .page_caseth .anli .swiper-button-prev,
+  .page_caseth .anli .swiper-button-next {
+    display: none;
+  }
+}
+/* 1280 */
+/* 1152 */
+/*# sourceMappingURL=media.css.map */

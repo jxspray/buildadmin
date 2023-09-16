@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "jquery": "^3.7.1",
+    "requirejs": "^2.3.6",
+    "wow.js": "^1.2.2"
+  }
+}
