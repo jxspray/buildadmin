@@ -28,21 +28,13 @@ var config = deepExtend(configParams, {
     },
     shim: {
         common: ['layui'],
+        swiper: ['jquery'],
     }
 });
 require.config(config);
-require(["jquery"], function($) {
-    if (typeof (menuIndex) != "undefined") {
-        $(".new_head_nav li").each(function () {
-            if ($(this).data("id") == menuIndex) {
-                $(".new_head_nav li").removeClass("active");
-                $(this).addClass("active");
-            }
-        });
-    }
-});
 var downOver = false;
-require(["jquery", "waypoint", "countto"], function($, waypoint, countto) {
+// require(["jquery"]);
+require(["jquery", "waypoint", "countto", "wow"], function($, waypoint, countto, wow) {
     if ($('.counter').length) {
         var counter = $('.counter');
         counter.waypoint(function (direction) {
@@ -52,4 +44,23 @@ require(["jquery", "waypoint", "countto"], function($, waypoint, countto) {
             }
         }, { offset: '100%'});
     }
+
+    new wow().init();
+    if (typeof (menuIndex) != "undefined") {
+        $(".new_head_nav li").each(function () {
+            if ($(this).data("id") == menuIndex) {
+                $(".new_head_nav li").removeClass("active");
+                $(this).addClass("active");
+            }
+        });
+    }
+    // 所有专题的案例展示板块取得滑动组件
+    // if($(".anli_sw")[0]) {
+    //     var $sysSw1 = $(".anli_sw");
+    //     var $sw1Slide = $sysSw1.find(".swiper-slide");
+    //     var $maskImg = $('<div class="qrCode"><img src="/Jzw/Tpl/Home/Default/webimages/case/code.jpg"><p>扫码了解更多优质案例</p></div>');
+    //     for(var i=0;i<$sw1Slide.length;i++){
+    //         $($sw1Slide[i]).children().append($maskImg.clone(true)[0]);
+    //     }
+    // }
 });

@@ -1,45 +1,112 @@
 
 <!-- 主页添加active -->
 <script type="text/javascript">
-    require(["jquery"], function ($) {
+
+    require(["jquery", "swiper"], function ($, Swiper) {
+        // 3d轮播图
+        var sw1 = new Swiper(".page_index .new_news .swiper", {
+            loop: true,
+            autoplay: {
+                delay: 5000,
+            },
+            watchSlidesProgress: true,
+            slidesPerView: 5,
+            centeredSlides: true,
+            navigation: {
+                nextEl: '.new_news .swiper .next',
+                prevEl: '.new_news .swiper .prev',
+            },
+            on: {
+                progress: function (progress) {
+                    for (i = 0; i < this.slides.length; i++) {
+                        var slide = this.slides.eq(i);
+                        var slideProgress = this.slides[i].progress;
+                        modify = 1;
+                        if (Math.abs(slideProgress) > 1) {
+                            modify = (Math.abs(slideProgress) - 1) * 0.3 + 1;
+                        }
+                        translate = slideProgress * 80 + 'px';
+                        scale = 1 - Math.abs(slideProgress) / 5;
+                        opacity = 1 - Math.abs(slideProgress) / 3;
+                        zIndex = 99 - Math.abs(Math.round(slideProgress));
+                        slide.transform('translateX(' + translate + ') scale(' + scale + ')');
+                        slide.css('zIndex', zIndex);
+                        slide.css('opacity', 1);
+                        if (Math.round(Math.abs(slideProgress)) <= 2) {
+                            slide.find(".pic").css('opacity', 1);
+                        } else if (Math.round(Math.abs(slideProgress)) > 2) {
+                            slide.css('opacity', 0);
+                        }
+                        if (Math.round(slideProgress) > 0) {
+                            slide.children().transform('rotateY(10deg)');
+                        } else if (Math.round(slideProgress) < 0) {
+                            slide.children().transform('rotateY(-10deg)');
+                        } else {
+                            slide.children().transform('rotateY(0deg)');
+                        }
+                    }
+                },
+                slideChangeTransitionStart: function(){
+                    for (var i = 0; i < this.slides.length; i++) {
+                        var slide = this.slides.eq(i);
+                        slide.css('transition', 'all .3s');
+                    }
+                },
+                slideChangeTransitionEnd: function(){
+                    for (var i = 0; i < this.slides.length; i++) {
+                        var slide = this.slides.eq(i);
+                        slide.css('transition', '');
+                    }
+                },
+            }
+        });
         // 添加类名方法封装
-        let addCla = function (cla, addcla, fn) {
-            let $name = $(cla);
+        var addCla = function (cla, addcla, fn) {
+            var $name = $(cla);
             $name.mouseover(function () {
-                let $this = $(this);
+                var $this = $(this);
                 $this.siblings().removeClass(addcla);
                 $this.addClass(addcla);
                 fn && fn($this);
             });
         };
+        // 产品中心板块添加类名
+        addCla(".new_index_pro .item", "cur");
         // 方案板块添加类名
         addCla(".fangleft .item", "cur", function ($this) {
-            let $fangright = $($(".fangright")[$this.index()]);
+            var $fangright = $($(".fangright")[$this.index()]);
             $fangright.siblings().removeClass("active");
             $fangright.addClass("active");
 
-            let $fangright_a = $($(".fangright_a")[$this.index()]);
+            var $fangright_a = $($(".fangright_a")[$this.index()]);
             $fangright_a.siblings().removeClass("active");
             $fangright_a.addClass("active");
         });
         // 优势板块添加类名
         addCla(".advantage_list .item", "cur", function ($this) {
-            let $advantage_desc = $($(".advantage_desc")[$this.index()]);
+            var $advantage_desc = $($(".advantage_desc")[$this.index()]);
             $advantage_desc.siblings().removeClass("active");
             $advantage_desc.addClass("active");
         });
         // 经典案例添加类名
         addCla(".new_index_cases .sys_catebox1 a", "active", function ($this) {
-            let $anlibox_desc = $($(".anlibox_desc")[$this.index()]);
+            var $anlibox_desc = $($(".anlibox_desc")[$this.index()]);
             $anlibox_desc.siblings().removeClass("cur");
             $anlibox_desc.addClass("cur");
         });
         // 新闻动态添加类名
         addCla(".new_news .sys_catebox1 a", "active", function ($this) {
-            let $newsbox = $($(".newsbox")[$this.index()]);
+            var $newsbox = $($(".newsbox")[$this.index()]);
             $newsbox.siblings().removeClass("cur");
             $newsbox.addClass("cur");
         });
-        console.log(12313)
+
+        // 解决方案板块item添加hover色块
+        var $fangRightIcon = $(".fangright .iconlist .item");
+        var $hoverBlock = $('<div class="hover_block"></div>');
+        console.log($fangRightIcon.length);
+        for(var i = 0; i < $fangRightIcon.length; i++) {
+            $fangRightIcon[i].append($hoverBlock.clone()[0]);
+        }
     })
 </script>

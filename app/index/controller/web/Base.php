@@ -16,6 +16,7 @@ class Base extends \app\index\controller\Action
         // 设置终端
         $this->settingTerminal();
         $this->categorys = cms('catalog');
+        die;
         // 设置语言数据
         $this->settingLangData();
 //        $this->assign($this->Config);
@@ -25,6 +26,7 @@ class Base extends \app\index\controller\Action
             $this->assign("init{$name}", json_decode($item));
         }
         $this->assign('Config', json_decode(json_encode(['version' => '0.0.1'])));
+        $this->assign('Categorys', $this->categorys);
     }
 
     public function catalog($catid = '', $module = ''): ?string
