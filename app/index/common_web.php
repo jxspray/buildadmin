@@ -89,12 +89,17 @@ if (!function_exists('getBlock')) {
 }
 
 if (!function_exists('getCategory')) {
+    /**
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     */
     function getCategorys($catids, $limit = '', $where = array(), $order = '')
     {
 //        if (!isset($where['ismenu'])) $where['ismenu'] = 1;
         $where['pid'] = ['in', "$catids"];
-        $order = $order ? "{$order}, listorder desc,id desc" : "listorder desc,id desc";
-        $data = \app\index\model\web\Catalog::where($where)->order($order)->limit($limit)->select();
+//        $order = $order ? "{$order}, listorder desc,id desc" : "listorder desc,id desc";
+        $data = (new \app\index\model\web\Catalog)->where("pid", $catids)->select();
 //        if ($data) {
 //            $categorys = F('Category_' . LANG_NAME);
 //            foreach ($data as &$datum) {
@@ -102,16 +107,5 @@ if (!function_exists('getCategory')) {
 //            }
 //        }
         return $data;
-    }
-    /**
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\db\exception\DbException
-     */
-    function getBlock(string $name)
-    {
-        $res = app\index\model\web\Config::load($name);
-        if (!$res) abort(500, "配置不存在");
-        return json_decode($res->value);
     }
 }

@@ -6,10 +6,11 @@ use think\Model;
 
 class Content extends Model implements \app\admin\model\cms\CmsModelInterface
 {
-    public function __construct($name = '', array $data = [])
+    public static function getInstance(string $name): static
     {
-        if (!empty($name)) $this->name = $name;
-        parent::__construct($data);
+        $instance = new self();
+        $instance->name = \app\index\logics\CmsLogic::PREFIX . $name;
+        return $instance;
     }
 
     public function getColumnAll($param = null): array

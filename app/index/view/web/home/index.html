@@ -1,7 +1,5 @@
-
 <!-- 主页添加active -->
 <script type="text/javascript">
-
     require(["jquery", "swiper"], function ($, Swiper) {
         // 3d轮播图
         var sw1 = new Swiper(".page_index .new_news .swiper", {
@@ -110,3 +108,30 @@
         }
     })
 </script>
+
+<div class="page_index">
+    <!--banner图-->
+    <div class="new_index_banner">
+        <div id="slideBox-index" class="slideBox-index new_slideBox_banner">
+            <div class="hd">
+                <ul>
+                    {foreach :getSlides(1)->list as $item}
+                        <li></li>
+                    {/foreach}
+                </ul>
+            </div>
+            <div class="bd">
+                <ul>
+                    {foreach :getSlides(1)->list as $item}
+                        <li>
+                            <a href="{$item.link}" target="_blank" title="{$item.title}"
+                               style="background-image:url({$item.image});"></a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </div>
+            <a class="prev" href="javascript:void(0)"></a>
+            <a class="next" href="javascript:void(0)"></a>
+        </div>
+    </div>
+</div>

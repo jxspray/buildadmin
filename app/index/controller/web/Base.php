@@ -16,7 +16,6 @@ class Base extends \app\index\controller\Action
         // 设置终端
         $this->settingTerminal();
         $this->categorys = cms('catalog');
-        die;
         // 设置语言数据
         $this->settingLangData();
 //        $this->assign($this->Config);

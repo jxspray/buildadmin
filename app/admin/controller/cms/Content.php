@@ -35,7 +35,7 @@ class Content extends Backend
             if (class_exists($modelClass)) {
                 $this->model = new $modelClass;
             } else {
-                $this->model = new \app\admin\model\cms\Content($module->name);
+                $this->model = \app\admin\model\cms\Content::getInstance($module->name);
             }
         } else abort(405);
     }

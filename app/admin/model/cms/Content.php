@@ -5,10 +5,11 @@ namespace app\admin\model\cms;
 
 class Content extends \think\Model
 {
-    public function __construct(string $name, array $data = [])
+    public static function getInstance(string $name): static
     {
-        $this->name = \app\index\logics\CmsLogic::PREFIX . $name;
-        parent::__construct($data);
+        $instance = new self();
+        $instance->name = \app\index\logics\CmsLogic::PREFIX . $name;
+        return $instance;
     }
 
     public static function onAfterWrite(self $model): void

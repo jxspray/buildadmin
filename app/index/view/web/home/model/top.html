@@ -10,7 +10,7 @@
 				<li class="active">
 					<a href="/" title="网站首页">网站首页</a>
 				</li>
-				{foreach $list as $item}
+				{foreach :getCategorys(0) as $item}
 					<li data-id="{$item.id}">
 						<a href="{$item.url}" title="{$item.title}">{$item.title}</a>
 						{/*<div class="new_head_menu" style="width: 140px;margin-left: -70px;">
@@ -27,10 +27,10 @@
 			</ul>
 		</div>
 		<!--头部右侧电话-->
-		{/*<div class="new_header_phone">
-			<img alt="{$site_name&cc;" src="/cms/home/webimages/phone.png" />
-			<span>{$tel&cc;</span>
-		</div>*/}
+		<div class="new_header_phone">
+			<img alt="{$initCms->site_name}" src="/cms/home/webimages/phone.png" />
+			<span>{$initCms->tel}</span>
+		</div>
 
 	</div>
 </div>
