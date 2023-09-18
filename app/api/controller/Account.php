@@ -58,12 +58,17 @@ class Account extends Frontend
             $data = $this->request->only(['id', 'avatar', 'username', 'nickname', 'gender', 'birthday', 'motto']);
             if (!isset($data['birthday'])) $data['birthday'] = null;
 
-            $model = $this->auth->getUser();
-            $model->startTrans();
             try {
                 $validate = new AccountValidate();
                 $validate->scene('edit')->check($data);
-                $model->where('id', $this->auth->id)->update($data);
+            } catch (Throwable $e) {
+                $this->error($e->getMessage());
+            }
+
+            $model = $this->auth->getUser();
+            $model->startTrans();
+            try {
+                $model->save($data);
                 $model->commit();
             } catch (Throwable $e) {
                 $model->rollback();

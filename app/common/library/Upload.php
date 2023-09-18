@@ -89,6 +89,15 @@ class Upload
     }
 
     /**
+     * 设置细目（存储目录）
+     */
+    public function setTopic(string $topic): Upload
+    {
+        $this->topic = $topic;
+        return $this;
+    }
+
+    /**
      * 检查文件类型是否允许上传
      * @return bool
      * @throws Throwable
@@ -186,7 +195,7 @@ class Upload
             '{sec}'      => date("s"),
             '{random}'   => Random::build(),
             '{random32}' => Random::build('alnum', 32),
-            '{filename}' => substr($filename, 0, 15),
+            '{filename}' => mb_substr($filename, 0, 15),
             '{suffix}'   => $suffix,
             '{.suffix}'  => $suffix ? '.' . $suffix : '',
             '{filesha1}' => $sha1,

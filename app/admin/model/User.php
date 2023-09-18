@@ -15,7 +15,12 @@ class User extends Model
 
     public function getAvatarAttr($value): string
     {
-        return htmlspecialchars_decode($value);
+        return full_url($value, false, config('buildadmin.default_avatar'));
+    }
+
+    public function setAvatarAttr($value): string
+    {
+        return $value == full_url('', false, config('buildadmin.default_avatar')) ? '' : $value;
     }
 
     public function getMoneyAttr($value): string

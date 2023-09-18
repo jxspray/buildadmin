@@ -117,7 +117,7 @@
                                     <Icon class="new-user-arrow" color="#8595F4" name="fa fa-angle-right" />
                                 </div>
                                 <div class="new-user-item">
-                                    <img class="new-user-avatar" src="~assets/avatar.png" alt="" />
+                                    <img class="new-user-avatar" :src="fullUrl('/static/images/avatar.png')" alt="" />
                                     <div class="new-user-base">
                                         <div class="new-user-name">纯属虚构</div>
                                         <div class="new-user-time">12分钟前{{ t('dashboard.Joined us') }}</div>
@@ -156,12 +156,12 @@ import { CountUp } from 'countup.js'
 import * as echarts from 'echarts'
 import { useNavTabs } from '/@/stores/navTabs'
 import { useTemplateRefsList } from '@vueuse/core'
-import { dashboard } from '/@/api/backend/dashboard'
+import { index } from '/@/api/backend/dashboard'
 import { useI18n } from 'vue-i18n'
 import { Local } from '/@/utils/storage'
 import { useAdminInfo } from '/@/stores/adminInfo'
 import { WORKING_TIME } from '/@/stores/constant/cacheKey'
-import { getGreet } from '/@/utils/common'
+import { fullUrl, getGreet } from '/@/utils/common'
 import { useEventListener } from '@vueuse/core'
 let workTimer: number
 
@@ -187,7 +187,7 @@ const state: {
     pauseWork: false,
 })
 
-dashboard().then((res) => {
+index().then((res) => {
     state.remark = res.data.remark
 })
 

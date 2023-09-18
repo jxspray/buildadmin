@@ -81,6 +81,7 @@
             </template>
         </el-dropdown>
         <el-popover
+            v-if="siteConfig.userInitialize"
             @show="onCurrentNavMenu(true, 'adminInfo')"
             @hide="onCurrentNavMenu(false, 'adminInfo')"
             placement="bottom-end"
@@ -88,11 +89,12 @@
             :width="260"
             trigger="click"
             popper-class="admin-info-box"
+            v-model:visible="state.showAdminInfoPopover"
         >
             <template #reference>
                 <div class="admin-info" :class="state.currentNavMenu == 'adminInfo' ? 'hover' : ''">
                     <el-avatar :size="25" fit="fill">
-                        <img :src="adminInfo.avatar" alt="" />
+                        <img :src="fullUrl(adminInfo.avatar)" alt="" />
                     </el-avatar>
                     <div class="admin-name">{{ adminInfo.nickname }}</div>
                 </div>
@@ -100,7 +102,7 @@
             <div>
                 <div class="admin-info-base">
                     <el-avatar :size="70" fit="fill">
-                        <img :src="adminInfo.avatar" alt="" />
+                        <img :src="fullUrl(adminInfo.avatar)" alt="" />
                     </el-avatar>
                     <div class="admin-info-other">
                         <div class="admin-info-name">{{ adminInfo.nickname }}</div>
@@ -138,17 +140,21 @@ import { routePush } from '/@/utils/router'
 import { logout } from '/@/api/backend/index'
 import { postClearCache } from '/@/api/common'
 import TerminalVue from '/@/components/terminal/index.vue'
+import { fullUrl } from '/@/utils/common'
+import { useSiteConfig } from '/@/stores/siteConfig'
 
 const { t } = useI18n()
 
 const adminInfo = useAdminInfo()
 const configStore = useConfig()
 const terminal = useTerminal()
+const siteConfig = useSiteConfig()
 
 const state = reactive({
     isFullScreen: false,
     currentNavMenu: '',
     showLayoutDrawer: false,
+    showAdminInfoPopover: false,
 })
 
 const onCurrentNavMenu = (status: boolean, name: string) => {
@@ -167,6 +173,7 @@ const onFullScreen = () => {
 }
 
 const onAdminInfo = () => {
+    state.showAdminInfoPopover = false
     routePush({ name: 'routine/adminInfo' })
 }
 

@@ -58,13 +58,25 @@ if (!function_exists('clean_xss')) {
      * 清理XSS
      * 通常只用于富文本，比 filter 慢
      * @param string $string
-     * @param bool   $htmlspecialchars
      * @return string
      */
-    function clean_xss(string $string, bool $htmlspecialchars = true): string
+    function clean_xss(string $string): string
     {
-        $string = (new AntiXSS())->xss_clean($string);
-        return $htmlspecialchars ? htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8') : $string;
+        return (new AntiXSS())->xss_clean($string);
+    }
+}
+
+if (!function_exists('htmlspecialchars_decode_improve')) {
+    /**
+     * html解码增强
+     * 被 clean_xss函数 和 filter函数 内的 htmlspecialchars 编码的字符串，需要用此函数才能完全解码
+     * @param string $string
+     * @param int    $flags
+     * @return string
+     */
+    function htmlspecialchars_decode_improve(string $string, int $flags = ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401): string
+    {
+        return htmlspecialchars_decode($string, $flags);
     }
 }
 
