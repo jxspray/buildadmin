@@ -75,6 +75,7 @@
                             <FormItem :label="t('网站foot区域')" type="string" v-model="baTable.form.items!.foot" prop="foot" :input-attr="{ placeholder: t('Please input field', { field: t('网站foot区域') }) }" />
                             <FormItem :label="t('电脑端商桥代码')" type="string" v-model="baTable.form.items!.pc_shangqiao" prop="pc_shangqiao" :input-attr="{ placeholder: t('Please input field', { field: t('电脑端商桥代码') }) }" />
                             <FormItem :label="t('移动端商桥代码')" type="string" v-model="baTable.form.items!.wap_shangqiao" prop="wap_shangqiao" :input-attr="{ placeholder: t('Please input field', { field: t('移动端商桥代码') }) }" />
+                            <FormItem :label="t('商桥链接')" type="string" v-model="baTable.form.items!.kefu_link" prop="kefu_link" :input-attr="{ placeholder: t('Please input field', { field: t('商桥链接') }) }" />
                         </template>
                     </el-form>
                 </div>

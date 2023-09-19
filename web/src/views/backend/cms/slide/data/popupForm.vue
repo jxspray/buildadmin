@@ -100,7 +100,8 @@ baTable.after = {
         ).then((res: any) => {
             const groups = res.data.row.groups
             Object.keys(groups).forEach((item) => {
-                groups[item] = baTable.form.items![item] === null ? '' : baTable.form.items![item]
+                groups[item].width = parseInt(groups[item].width)
+                groups[item].height = parseInt(groups[item].height)
             })
             
             state.groupList = groups
