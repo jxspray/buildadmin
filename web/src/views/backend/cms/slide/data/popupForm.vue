@@ -98,7 +98,12 @@ baTable.after = {
                 showSuccessMessage: false,
             }
         ).then((res: any) => {
-            state.groupList = res.data.row.groups
+            const groups = res.data.row.groups
+            Object.keys(groups).forEach((item) => {
+                groups[item] = baTable.form.items![item] === null ? '' : baTable.form.items![item]
+            })
+            
+            state.groupList = groups
             if (state.groupList.length === 0) state.groupList =  [{ name: '通用', width: 0, height: 0 }]
             const group = state.groupList[0]
             baTable.form.items!.group = group.name
@@ -111,7 +116,6 @@ baTable.after = {
 }
 
 const onChangeGroup = function (val: string) {
-    console.log(val)
     const group = state.groupList.find((item) => item.name === val)
     if (!group) return
     baTable.form.items!.width = group.width

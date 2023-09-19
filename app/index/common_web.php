@@ -99,7 +99,7 @@ if (!function_exists('getCategory')) {
 //        if (!isset($where['ismenu'])) $where['ismenu'] = 1;
         $where['pid'] = ['in', "$catids"];
 //        $order = $order ? "{$order}, listorder desc,id desc" : "listorder desc,id desc";
-        $data = (new \app\index\model\web\Catalog)->where("pid", $catids)->select();
+        $data = (new \app\index\model\web\Catalog)->where("pid", $catids)->order("weigh DESC")->select();
 //        if ($data) {
 //            $categorys = F('Category_' . LANG_NAME);
 //            foreach ($data as &$datum) {

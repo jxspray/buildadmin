@@ -12,16 +12,12 @@
 				</li>
 				{foreach :getCategorys(0) as $item}
 					<li data-id="{$item.id}">
-						<a href="{$item.url}" title="{$item.title}">{$item.title}</a>
-						{/*<div class="new_head_menu" style="width: 140px;margin-left: -70px;">
-							<a href="{$Categorys[90]['url']&cc;" title="{$Categorys[90]['catname']&cc;">{$Categorys[90]['catname']&cc;</a>
-							<a href="{$Categorys[91]['url']&cc;" title="{$Categorys[91]['catname']&cc;">{$Categorys[91]['catname']&cc;</a>
-							<a href="{$Categorys[80]['url']&cc;" title="{$Categorys[80]['catname']&cc;">{$Categorys[80]['catname']&cc;</a>
-							<a href="{$Categorys[20]['url']&cc;" title="{$Categorys[20]['catname']&cc;">{$Categorys[20]['catname']&cc;</a>
-							<a href="{$Categorys[85]['url']&cc;" title="{$Categorys[85]['catname']&cc;">{$Categorys[85]['catname']&cc;</a>
-							<a href="{$Categorys[19]['url']&cc;" title="{$Categorys[19]['catname']&cc;">{$Categorys[19]['catname']&cc;</a>
-							<a href="{$Categorys[16]['url']&cc;" title="{$Categorys[16]['catname']&cc;">{$Categorys[16]['catname']&cc;</a>
-						</div*/}>
+					<a href="{$item.url}" title="{$item.title}">{$item.title}</a>
+						<div class="new_head_menu" style="width: 140px;margin-left: -70px;">
+							{foreach $item->children as $ite}
+								<a href="{$ite.url}" title="{$ite.title}">{$ite.title}</a>
+							{/foreach}
+						</div>
 					</li>
 				{/foreach}
 			</ul>

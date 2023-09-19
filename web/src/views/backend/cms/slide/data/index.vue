@@ -2,7 +2,7 @@
  * @Author: jxspray 1532946322@qq.com
  * @Date: 2023-08-28 09:58:54
  * @LastEditors: jxspray 1532946322@qq.com
- * @LastEditTime: 2023-08-31 16:05:34
+ * @LastEditTime: 2023-09-19 11:26:31
  * @FilePath: \web\src\views\backend\cms\slide\data\index.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -70,6 +70,7 @@ const baTable = new baTableClass(
             { label: t('Operate'), align: 'center', width: 100, render: 'buttons', buttons: optButtons, operator: false },
         ],
         dblClickNotEditColumn: [undefined],
+        filter: { slide_id: route.query.slide_id },
     },
     {
         defaultItems: { slide_id: route.query.slide_id, title: null, remark: null, width: 0, height: 0, status: '1', group: null, delete_time: null, extends: null },

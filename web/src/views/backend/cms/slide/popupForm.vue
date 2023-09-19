@@ -45,10 +45,10 @@
                                     <el-input v-model="item.name"></el-input>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-input v-model="item.width"></el-input>
+                                    <el-input v-model.number="item.width" :step="1"></el-input>
                                 </el-col>
                                 <el-col :span="6">
-                                    <el-input v-model="item.height"></el-input>
+                                    <el-input v-model.number="item.height" :step="1"></el-input>
                                 </el-col>
                                 <el-col :span="4">
                                     <el-button @click="onDelArrayItem(idx)" size="small" icon="el-icon-Delete" circle />
@@ -94,8 +94,8 @@ const { t } = useI18n()
 const onAddArrayItem = () => {
     baTable.form.items!.groups.push({
         name: '',
-        width: '',
-        height: '',
+        width: 0,
+        height: 0,
     })
 }
 

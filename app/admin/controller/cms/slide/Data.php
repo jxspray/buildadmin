@@ -2,6 +2,7 @@
 
 namespace app\admin\controller\cms\slide;
 
+use think\db\Query;
 use Throwable;
 use app\common\controller\Backend;
 
@@ -50,6 +51,10 @@ class Data extends Backend
             ->withJoin($this->withJoinTable, $this->withJoinType)
             ->alias($alias)
             ->where($where)
+            ->where(function (Query $query) {
+                $slide_id = $this->request->get("slide_id");
+                if ($slide_id) $query->where("slide_id", $slide_id);
+            })
             ->order($order)
             ->paginate($limit);
         $res->visible(['slide' => ['name']]);

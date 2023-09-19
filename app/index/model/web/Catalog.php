@@ -19,4 +19,10 @@ class Catalog extends Content implements \app\admin\model\cms\CmsModelInterface
     {
         return $this->column("*", 'id');
     }
+
+
+    public function children(): \think\model\relation\HasMany
+    {
+        return $this->hasMany(self::class, 'pid', 'id')->where('status', '1')->order('weigh DESC, id ASC');
+    }
 }

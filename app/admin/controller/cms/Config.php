@@ -87,4 +87,9 @@ class Config extends Backend
             'row' => $row
         ]);
     }
+
+    public function param(): void
+    {
+        $this->success(__('Update successful'), config("cms.param"));
+    }
 }
