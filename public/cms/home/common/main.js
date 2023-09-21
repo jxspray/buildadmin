@@ -29,26 +29,32 @@ var config = deepExtend(configParams, {
     shim: {
         common: ['layui'],
         swiper: ['jquery'],
+        countto: ['jquery']
     }
 });
 require.config(config);
-var downOver = false;
-// require(["jquery"]);
-require(["jquery", "waypoint", "countto", "wow"], function($, waypoint, countto, wow) {
-    if ($('.counter').length) {
-        var counter = $('.counter');
-        counter.waypoint(function (direction) {
-            if (direction == 'down' && !downOver) {
-                downOver = true;
-                counter.countTo();
-            }
-        }, { offset: '100%'});
-    }
-
+require(["jquery", "wow", "waypoint", "countto"], function($, wow) {
     new wow().init();
+    // var downOver = false;
+    // var counter = $('.counter');
+    // if (counter.length) {
+    //     counter.waypoint(function (direction) {
+    //         if (direction === 'down' && !downOver) {
+    //             downOver = true;
+    //             counter.countTo();
+    //         }
+    //     }, { offset: '100%'});
+    // }
+
+    //二级导航
+    $(".com_header .new_head_nav li").mouseenter(function () {
+        $(this).children('div').slideDown();
+    }).mouseleave(function () {
+        $(this).children('div').stop().slideUp();
+    });
     if (typeof (menuIndex) != "undefined") {
         $(".new_head_nav li").each(function () {
-            if ($(this).data("id") == menuIndex) {
+            if ($(this).data("id") === menuIndex) {
                 $(".new_head_nav li").removeClass("active");
                 $(this).addClass("active");
             }

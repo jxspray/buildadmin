@@ -50,8 +50,8 @@ const baTable = new baTableClass(
             { label: t('cms.link.name'), prop: 'name', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE', sortable: false },
             { label: t('cms.link.url'), prop: 'url', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE', sortable: false },
             { label: t('cms.link.logo'), prop: 'logo', align: 'center', render: 'image', operator: false },
-            { label: t('cms.link.status'), prop: 'status', align: 'center', render: 'switch', operator: 'eq', sortable: false, replaceValue: { '0': t('cms.link.status 0'), '1': t('cms.link.status 1') } },
             { label: t('cms.link.weigh'), prop: 'weigh', align: 'center', operator: 'RANGE', sortable: 'custom' },
+            { label: t('cms.link.status'), prop: 'status', align: 'center', render: 'switch', operator: 'eq', sortable: false, replaceValue: { '0': t('cms.link.status 0'), '1': t('cms.link.status 1') } },
             { label: t('cms.link.update_time'), prop: 'update_time', align: 'center', render: 'datetime', operator: 'RANGE', sortable: 'custom', width: 160, timeFormat: 'yyyy-mm-dd hh:MM:ss' },
             { label: t('cms.link.create_time'), prop: 'create_time', align: 'center', render: 'datetime', operator: 'RANGE', sortable: 'custom', width: 160, timeFormat: 'yyyy-mm-dd hh:MM:ss' },
             { label: t('Operate'), align: 'center', width: 140, render: 'buttons', buttons: optButtons, operator: false },
@@ -60,7 +60,7 @@ const baTable = new baTableClass(
         defaultOrder: { prop: 'weigh', order: 'desc' },
     },
     {
-        defaultItems: { status: '1', weigh: 0 },
+        defaultItems: { weigh: 0, status: '1' },
     }
 )
 

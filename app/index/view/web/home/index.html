@@ -1,6 +1,6 @@
 <!-- 主页添加active -->
 <script type="text/javascript">
-    require(["jquery", "swiper"], function ($, Swiper) {
+    require(["jquery", "swiper", "superSlide"], function ($, Swiper) {
         // 3d轮播图
         var sw1 = new Swiper(".page_index .new_news .swiper", {
             loop: true,
@@ -106,6 +106,67 @@
         for(var i = 0; i < $fangRightIcon.length; i++) {
             $fangRightIcon[i].append($hoverBlock.clone()[0]);
         }
+
+        // 弹窗
+        var open_dialog1 = function () {
+            $(".dialog_bg1").show();
+            $(".dialog_show1").addClass("dialog_active");
+        }
+        var close_dialog1 = function () {
+            $(".dialog_bg1").hide();
+            $(".dialog_show1").removeClass("dialog_active");
+        }
+
+        // 轮播
+        var ary = location.href.split("&");
+        jQuery(".new_slideBox_banner").slide({
+            mainCell: ".bd ul",
+            effect: "fold",
+            autoPlay: true,
+            delayTime: 800,
+            interTime: 8000,
+        });
+        // 头部滚动以及初始位置的判断实现图片颜色等的替换
+        setTimeout(function () {
+            $(".com_header").removeClass("bg-fff");
+            $(".com_header").addClass("active");
+            $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");
+            $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone1.png");
+        }, 100);
+
+        function getTop(clsName) {
+            var obj = document.getElementsByClassName(clsName)[0];
+            return obj.getBoundingClientRect().top;
+        }
+
+        function getDom(clsName) {
+            var obj = document.getElementsByClassName(clsName)[0];
+            return obj;
+        }
+        window.addEventListener('scroll', function () {
+            var scrollT = document.documentElement.scrollTop || document.body.scrollTop;
+            if (getTop('new_index_banner') == 0) {
+                getDom('com_header').classList.add('active');
+                getDom('com_header').classList.remove('bg-fff');
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone1.png");
+            }
+            if (getTop('new_index_banner') < 0) {
+                getDom('com_header').classList.remove('active');
+                getDom('com_header').classList.add('bg-fff');
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone.png");
+            }
+        });
+        setTimeout(function () {
+            var mTop = $(".new_index_banner").offset().top - $(window).scrollTop();
+            if (mTop < 0) {
+                $(".com_header").addClass("bg-fff");
+                $(".com_header").removeClass("active");
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone.png");
+            }
+        }, 100);
     })
 </script>
 

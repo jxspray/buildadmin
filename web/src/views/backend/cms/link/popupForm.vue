@@ -34,8 +34,8 @@
                     <FormItem :label="t('cms.link.url')" type="string" v-model="baTable.form.items!.url" prop="url" :placeholder="t('Please input field', { field: t('cms.link.url') })" />
                     <FormItem :label="t('cms.link.logo')" type="image" v-model="baTable.form.items!.logo" prop="logo" />
                     <FormItem :label="t('cms.link.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :input-attr="{ rows: 3 }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" :placeholder="t('Please input field', { field: t('cms.link.remark') })" />
-                    <FormItem :label="t('cms.link.status')" type="switch" v-model="baTable.form.items!.status" prop="status" :data="{ content: { '0': t('cms.link.status 0'), '1': t('cms.link.status 1') } }" />
                     <FormItem :label="t('cms.link.weigh')" type="number" prop="weigh" :input-attr="{ step: 1 }" v-model.number="baTable.form.items!.weigh" :placeholder="t('Please input field', { field: t('cms.link.weigh') })" />
+                    <FormItem :label="t('cms.link.status')" type="switch" v-model="baTable.form.items!.status" prop="status" :data="{ content: { '0': t('cms.link.status 0'), '1': t('cms.link.status 1') } }" />
                 </el-form>
             </div>
         </el-scrollbar>
