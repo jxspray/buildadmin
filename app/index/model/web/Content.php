@@ -2,19 +2,10 @@
 
 namespace app\index\model\web;
 
-use think\Model;
-
-class Content extends Model implements \app\admin\model\cms\CmsModelInterface
+class Content
 {
-    public static function getInstance(string $name): static
+    public static function getInstance(string $name): object
     {
-        $instance = new self();
-        $instance->name = \app\index\logics\CmsLogic::PREFIX . $name;
-        return $instance;
-    }
-
-    public function getColumnAll($param = null): array
-    {
-        return $this->column("*", 'id');
+        return \think\facade\Db::name(\app\index\logics\CmsLogic::PREFIX . $name);
     }
 }

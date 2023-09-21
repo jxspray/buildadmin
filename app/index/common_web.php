@@ -94,18 +94,23 @@ if (!function_exists('getCategory')) {
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      */
-    function getCategorys($catids, $limit = '', $where = array(), $order = '')
+    function getCategorys($catids, $limit = '', $where = array(), $order = ''): array|\think\Collection
     {
-//        if (!isset($where['ismenu'])) $where['ismenu'] = 1;
         $where['pid'] = ['in', "$catids"];
-//        $order = $order ? "{$order}, listorder desc,id desc" : "listorder desc,id desc";
         $data = (new \app\index\model\web\Catalog)->where("pid", $catids)->order("weigh DESC")->select();
-//        if ($data) {
-//            $categorys = F('Category_' . LANG_NAME);
-//            foreach ($data as &$datum) {
-//                $datum = $categorys[$datum['id']];
-//            }
-//        }
+        return $data;
+    }
+}
+
+if (!function_exists('getData')) {
+    /**
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     */
+    function getData($table, $where = array(), $limit = '', $order = 0, $field = '*', $gorup = ''): array|\think\Collection
+    {
+        $data = \app\index\model\web\Content::getInstance($table)->select();
         return $data;
     }
 }

@@ -5,7 +5,7 @@ namespace app\index\model\web;
 use think\Model;
 use think\model\concern\SoftDelete;
 
-class Module extends Content implements \app\admin\model\cms\CmsModelInterface
+class Module extends Model implements \app\admin\model\cms\CmsModelInterface
 {
 //    use SoftDelete;
 //    protected $autoWriteTimestamp = 'int';
