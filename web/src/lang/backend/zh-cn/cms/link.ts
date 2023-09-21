@@ -1,0 +1,15 @@
+export default {
+    id: 'ID',
+    name: '网站名称',
+    url: '网站地址',
+    logo: '网站logo',
+    remark: '备注',
+    status: '状态',
+    'status 0': '隐藏',
+    'status 1': '显示',
+    weigh: '权重',
+    update_time: '修改时间',
+    create_time: '创建时间',
+    delete_time: '删除时间',
+    'quick Search Fields': 'ID',
+}

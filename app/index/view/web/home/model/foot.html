@@ -1,0 +1,85 @@
+{include file='web/home/model/right' /}
+<!--底部-->
+<div class="com_footer">
+	<div class="contentbox">
+		<div class="new_footer_in" style="margin-left: 35px;">
+			<h2>产品中心</h2>
+			<ul>
+				{foreach :getCategorys(6) as $item}
+					<li><a href="{$item->url}" title="{$item->title}">{$item->title}</a></li>
+				{/foreach}
+			</ul>
+		</div>
+		<div class="new_footer_in">
+			<h2>经典案例</h2>
+			<ul>
+				{foreach :getCategorys(4) as $item}
+					<li><a href="{$item->url}" title="{$item->title}">{$item->title}</a></li>
+				{/foreach}
+			</ul>
+		</div>
+		<div class="new_footer_in">
+			<h2>新闻中心</h2>
+			<ul>
+				{foreach :getCategorys(3) as $item}
+					<li><a href="{$item->url}" title="{$item->title}">{$item->title}</a></li>
+				{/foreach}
+			</ul>
+		</div>
+		<div class="new_footer_in">
+			<h2>关于我们</h2>
+			<ul>
+				<li><a href="{$Categorys[2]['url']}" title="企业介绍">企业介绍</a></li>
+				<li><a href="{$Categorys[2]['url']}" title="企业文化">企业文化</a></li>
+				<li><a href="{$Categorys[2]['url']}" title="公司优势">公司优势</a></li>
+				<li><a href="{$Categorys[2]['url']}" title="团队风采">团队风采</a></li>
+				<li><a href="{$Categorys[2]['url']}" title="合作伙伴">合作伙伴</a></li>
+			</ul>
+		</div>
+		<div class="new_footer_in" style="margin-right: 0;">
+			<h2>联系我们</h2>
+			<ul>
+				<li><a href="{$Categorys[1]['url']}" title="电话">电话：{:getBlock('cms')->tel}</a></li>
+				<li> <a href="{$Categorys[1]['url']}" title="地址" class="dizhi">地址：{:getBlock('cms')->address}</a></li>
+				<!-- <li><a href="/cms/home/images/yingye_shui.jpg" target="_blank" title="营业执照">营业执照：点击查看</a>
+				</li> -->
+				<li><a href="{$Categorys[1]['url']}" title="地图查看我们">地图查看我们</a></li>
+			</ul>
+		</div>
+
+		<div class="new_footer_ewm">
+			<span class="Maximg">
+				<img alt="" src="/cms/home/webimages/2019/footer_ewm_05.jpg" />
+			</span>
+			<p>咨询热线（Tel）： </p>
+			<h3>{:getBlock('cms')->tel}</h3>
+		</div>
+	</div>
+	<!--底部友情链接-->
+	<div class="new_fonter_lianjie">
+		<div class="contentbox">
+			<a href="http://wpa.qq.com/msgrd?v=3&uin=254248895&site=qq&menu=yes" target="_blank">友情链接：交换链接请联系(权重≥01):
+				<img src="/cms/home/webimages/qq.png" alt="">
+			</a>
+			|
+			{foreach :getLinks(3) as $key => $item}
+				{if $key!=0}&nbsp;|&nbsp;{/if}
+				<a href="{$item->url}" target="_blank" title="{$item->name}">{$item->name}</a>
+			{/foreach}
+		</div>
+	</div>
+	<!--底部备案-->
+	<div class="new_fooer_beian">
+		Copyright 2018 &copy; {:getBlock('cms')->site_name}&nbsp;版权所有 &nbsp;&nbsp;&nbsp;All Rights Reserved 技术支持：
+		<a href="http://www.hnjovo.com" title="网站建设" target="_blank">网站建设</a>-
+		<a href="http://www.hnjovo.com" title="聚之唯" target="_blank">聚之唯</a> <a href="https://beian.miit.gov.cn/"
+			title="{:getBlock('cms')->icpnum}" target="_blank">{:getBlock('cms')->icpnum}</a>
+		<a href="https://beian.miit.gov.cn/" target="_blank">
+			<img
+				src="/cms/home/webimages/gongan.png"  alt=""/>湘公网安备 43019002001342号</a>
+	</div>
+</div>
+<script type="text/javascript">
+	// goTopEx();
+</script>
+<a style="display:none;" id="aFootKefu" href="{:getBlock('base')->kefu_link}"></a>

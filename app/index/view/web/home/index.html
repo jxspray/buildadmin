@@ -1118,4 +1118,45 @@
             </div> -->
         </div>
     </div>
+    <!--广告位2-->
+    <div class="new_banner2">
+        <div class="contentbox new_banner_in">
+            <div class="inleft">
+                <div class="txt">
+                    <div class="t1">多一份参考，总有益处</div>
+                    <div class="t2">联系聚之唯，免费获得专属《技术需求方案及报价》</div>
+                </div>
+            </div>
+            <div class="inright">
+                <div class="txt">咨询相关问题，可以通过电话与我们联系</div>
+                <form class="zixun" id="ajaxFrom1" method="post">
+                    <input type="hidden" name="catid" value="3">
+                    <input type="hidden" name="ctype" value="首页_免费获取方案">
+                    <input type="text" class="name" name="name" maxlength="10" placeholder="请输入您的姓名">
+                    <input type="hidden" name="name_rq" value="1">
+                    <input type="text" class="phone" name="phone" maxlength="11" placeholder="请输入您的联系方式">
+                    <input type="hidden" name="phone_rq" value="1">
+                    <a href="javascript:liuyan1_save()" class="btn">立即咨询</a>
+                </form>
+            </div>
+            <script type="text/javascript">
+                function liuyan1_save() {
+                    myajax("/index.php?g=Home&m=Index&a=message", $("#ajaxFrom1").serialize(), "json", "post",
+                            true,
+                            callback);
+
+                    function callback(res) {
+                        myajax_close(function () {});
+                        if (res.status == "1") {
+                            la_open(res.msg, 1, function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            la_open(res.msg, 2, function () {});
+                        }
+                    }
+                }
+            </script>
+        </div>
+    </div>
 </div>

@@ -74,6 +74,19 @@ if (!function_exists('getSlides')) {
     }
 }
 
+if (!function_exists('getLinks')) {
+    /**
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\db\exception\DbException
+     */
+    function getLinks(array|int $where = [], $limit = NULL)
+    {
+        $res = (new app\index\model\web\Link)->getList($where);
+        return $res;
+    }
+}
+
 if (!function_exists('getBlock')) {
     /**
      * @throws \think\db\exception\DataNotFoundException

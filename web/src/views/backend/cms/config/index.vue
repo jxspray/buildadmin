@@ -69,6 +69,8 @@
                             <FormItem :label="t('网站网址')" type="string" v-model="baTable.form.items!.site_url" prop="site_url" :input-attr="{ placeholder: t('Please input field', { field: t('网站网址') }) }" />
                             <FormItem :label="t('网站邮箱')" type="string" v-model="baTable.form.items!.site_email" prop="site_email" :input-attr="{ placeholder: t('Please input field', { field: t('网站邮箱') }) }" />
                             <FormItem :label="t('座机号')" type="string" v-model="baTable.form.items!.tel" prop="tel" :input-attr="{ placeholder: t('Please input field', { field: t('座机号') }) }" />
+                            <FormItem :label="t('备案号')" type="string" v-model="baTable.form.items!.icpnum" prop="icpnum" :input-attr="{ placeholder: t('Please input field', { field: t('备案号') }) }" />
+                            <FormItem :label="t('地址')" type="string" v-model="baTable.form.items!.address" prop="address" :input-attr="{ placeholder: t('Please input field', { field: t('地址') }) }" />
                         </template>
                         <template v-if="state.type == 'base'">
                             <FormItem :label="t('网站head区域')" type="string" v-model="baTable.form.items!.head" prop="head" :input-attr="{ placeholder: t('Please input field', { field: t('网站head区域') }) }" />
