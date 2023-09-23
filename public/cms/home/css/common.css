@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden;
+  letter-spacing: 1px;
+}
 /* 滚动条清除样式 */
 /* 设置整体的高度 */
 html,

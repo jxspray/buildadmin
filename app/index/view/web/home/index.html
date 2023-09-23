@@ -145,7 +145,8 @@
         }
         window.addEventListener('scroll', function () {
             var scrollT = document.documentElement.scrollTop || document.body.scrollTop;
-            if (getTop('new_index_banner') == 0) {
+            console.log(getTop('new_index_banner'));
+            if (getTop('new_index_banner') === 0) {
                 getDom('com_header').classList.add('active');
                 getDom('com_header').classList.remove('bg-fff');
                 $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");

@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden;
+  letter-spacing: 1px;
+}
 .right_nav_new {
   position: fixed;
   width: 50px;

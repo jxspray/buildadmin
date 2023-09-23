@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden;
+  letter-spacing: 1px;
+}
 .contentbox {
   width: 1280px;
   margin: 0 auto;

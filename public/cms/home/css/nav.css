@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden;
+  letter-spacing: 1px;
+}
 .sys_nav1 {
   position: fixed;
   left: 0;

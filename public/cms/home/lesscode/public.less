@@ -6,6 +6,10 @@
 
 @rightBox: rightbox1; // 左侧导航模板
 
+body {
+	overflow-x: hidden;
+	letter-spacing: 1px;
+}
 .text-hide(@hang: 1) {
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -14,14 +18,20 @@
 	-webkit-line-clamp: @hang;
 }
 // 文字隐藏
-.sys-text-hide(@height, @hang: 1) {
-	width: 100%;
+.sys-text-hide(@height: auto, @hang: 1) {
+	max-width: 100%;
 	height: @height;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	display: -webkit-box;
 	-webkit-box-orient: vertical;
 	-webkit-line-clamp: @hang;
+}
+// 快速调整文字属性
+.sys-font(@size, @color:#333333, @bold: normal) {
+	font-size: @size;
+	font-weight: @bold;
+	color: @color;
 }
 // 副轴居中弹性盒子
 .sys-flex(@justify: center,@direction: column) {
@@ -39,6 +49,13 @@
 	background: @color;
 	color: #ffffff;
 }
+// 方形盒子
+.sys-boxsize(@width, @height, @radius: none, @bg: none) {
+	width: @width;
+	height: @height;
+	background-color: @bg;
+	border-radius: @radius;
+}
 // 图片容器
 .sys-picbox(@width: 100%, @height:100%, @size: contain) {
 	.picbox {
@@ -55,10 +72,19 @@
 		}
 	}
 }
-// 箭头(方向与渐变方向一致：0 => 上，90 => 右，180 => 下，270 => 左
-.sys-arrow(@direction, @size, @color, @ratio1: 1, @ratio2: 1) {
+// 实心箭头(方向与渐变方向一致：0 => 上，90 => 右，180 => 下，270 => 左
+.sys-arrow(@direction, @size, @color, @ratio1: 1, @ratio2: @ratio1) {
 	transform: rotate(@direction);
 	border-bottom: @size solid @color;
 	border-left: (@size*@ratio1) solid transparent;
 	border-right: (@size*@ratio2) solid transparent;
+}
+
+// 空心箭头(方向：315 => 上，45 => 右，135 => 下，225 => 左
+.sys-jiantou(@direction, @size, @color, @width: 2px) {
+	width: @size;
+	height: @size;
+	transform: rotate(@direction);
+	border-top: @width solid @color;
+	border-right: @width solid @color;
 }

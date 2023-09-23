@@ -1,3 +1,7 @@
+body {
+  overflow-x: hidden;
+  letter-spacing: 1px;
+}
 .sys_bannerbox1 .swiper-container {
   height: 500px;
 }

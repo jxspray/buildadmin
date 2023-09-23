@@ -29,6 +29,7 @@ var config = deepExtend(configParams, {
     shim: {
         common: ['layui'],
         swiper: ['jquery'],
+        superSlide: ['jquery'],
         countto: ['jquery']
     }
 });
