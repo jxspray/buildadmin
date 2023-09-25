@@ -25,12 +25,14 @@ var config = deepExtend(configParams, {
         waypoint: '/cms/home/js/jishu/waypoints.min',
         countto: '/cms/home/js/jishu/jquery.countto.min',
         common: '/cms/home/common/index',
+        num: '/cms/home/jovoweb/js/num',
     },
     shim: {
         common: ['layui'],
         swiper: ['jquery'],
         superSlide: ['jquery'],
-        countto: ['jquery']
+        countto: ['jquery'],
+        num: ['jquery']
     }
 });
 require.config(config);
