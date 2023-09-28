@@ -3,21 +3,19 @@
 namespace app\admin\model\cms;
 
 
-class Content extends \think\Model
+class Content
 {
-    public static function getInstance(string $name): static
+    public static function getInstance(string $name): object
     {
-        $instance = new self();
-        $instance->name = \app\index\logics\CmsLogic::PREFIX . $name;
-        return $instance;
+        return \think\facade\Db::name(\app\index\logics\CmsLogic::PREFIX . $name);
     }
 
-    public static function onAfterWrite(self $model): void
-    {
-        // 设置url
-        // 获取栏目目录
-        $catalog = cms('catalog')[$model->catid];
-        $model->url = $catalog['url'] . '/' . $model->id . '.html';
-        $model->save();
-    }
+//    public static function onAfterWrite(self $model): void
+//    {
+//        // 设置url
+//        // 获取栏目目录
+//        $catalog = cms('catalog')[$model->catid];
+//        $model->url = $catalog['url'] . '/' . $model->id . '.html';
+//        $model->save();
+//    }
 }

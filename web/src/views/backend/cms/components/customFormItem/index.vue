@@ -97,7 +97,7 @@ export default defineComponent({
             inputAttr.remoteUrl =  remoteUrls[props.option.setup.remoteName]
 
             if (needTreeApi.includes(props.option.setup.remoteName)) {
-                inputAttr.params = { isTree: true }
+                inputAttr.params = { isTree: true, module_id: props.option.module_id }
             }
         }
         const type = computed(() => {
@@ -118,11 +118,7 @@ export default defineComponent({
             'checkbox'
         ]
         if (needHandlerOption.includes(type.value)) {
-            let content:any = {};
-            props.option.setup.options.forEach((item: any) => {
-                content[item.key] = item.value
-            });
-            data = { content: content }
+            data = { content: props.option.setup.options }
         }
 
         const needMultiple = [

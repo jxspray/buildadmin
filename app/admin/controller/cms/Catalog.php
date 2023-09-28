@@ -113,8 +113,10 @@ class Catalog extends Backend
     {
         $isTree = $this->request->param('isTree');
         $current_id = $this->request->param('current_id');
+        $module_id = $this->request->param('module_id');
         $where = [];
         if ($current_id > 0) $where[] = ['id', '<>', $current_id];
+        if ($module_id > 0) $where[] = ['module_id', '=', $module_id];
         $data   = $this->getCatalogs($where);
 
         if ($isTree && !$this->keyword) {

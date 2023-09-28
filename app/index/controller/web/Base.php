@@ -4,6 +4,7 @@ declare (strict_types = 1);
 namespace app\index\controller\web;
 
 use app\index\model\web\Config;
+use app\index\model\web\Content;
 
 class Base extends \app\index\controller\Action
 {
@@ -37,6 +38,11 @@ class Base extends \app\index\controller\Action
         $cat['catid'] = $catid;
         $cat['catname'] = $cat['title'];
         unset($cat['id'], $cat['title']);
+
+        // 加载列表
+        $lists = Content::getInstance($cat['module'])->where('catid', $catid)->paginate(10);
+        $this->assign('list', $lists->items());
+        $this->assign('pages', $lists->render());
         $this->assign($cat);
         $this->settingSEOData();
         return $this->fetch("{$module}/{$cat['template_show']}");
@@ -54,6 +60,11 @@ class Base extends \app\index\controller\Action
         $this->assign($cat);
         $this->settingSEOData();
         return $this->fetch("{$module}/{$cat['template_show']}");
+    }
+
+    public function info()
+    {
+
     }
 
     /**
