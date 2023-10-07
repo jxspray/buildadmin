@@ -34,10 +34,16 @@ const { t } = useI18n()
 const route = useRoute()
 const tableRef = ref()
 const optButtons = defaultOptButtons(["weigh-sort","edit","delete"])
+const contentApi = new baTableApi('/admin/cms.content/')
+const module: string = route.path.match(/\/(\w+)$/)![1]
+contentApi.actionUrl.set('index', `/admin/cms.content/index/module/${module}`)
+contentApi.actionUrl.set('add', `/admin/cms.content/add/module/${module}`)
+contentApi.actionUrl.set('edit', `/admin/cms.content/edit/module/${module}`)
+contentApi.actionUrl.set('del', `/admin/cms.content/del/module/${module}`)
+contentApi.actionUrl.set('sortable', `/admin/cms.content/sortable/module/${module}`)
 const baTable = new baTableClass(
-    new baTableApi('/admin/cms.content/'),
+    contentApi,
     {
-        filter: { route: route.name },
         pk: 'id',
         column: [
             { type: 'selection', align: 'center', operator: false },
@@ -50,7 +56,7 @@ const baTable = new baTableClass(
         defaultOrder: { prop: 'weigh', order: 'desc' },
     },
     {
-        defaultItems: {"links_type":"0","blank":"0","show":"1","status":"1"},
+        defaultItems: {"weigh":"0", "status":"1"},
     }
 )
 baTable.api.actionUrl.set('getFields', '/admin/cms.fields/getFields')
