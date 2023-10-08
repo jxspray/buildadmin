@@ -27,19 +27,19 @@
             <ul>
                 {foreach $list as $item}
                     <li class="wow animated bounceIn">
-                        <a href="{$item->url}" title="{$item->title}">
-                            {if $vo['thumb']}
-                                <div class="picbox"><div class="pic" style="background-image: url({$item->thumb})"></div></div>
+                        <a href="{$item.url}" title="{$item.title}">
+                            {if $item['thumb']}
+                                <div class="picbox"><div class="pic" style="background-image: url({$item.thumb})"></div></div>
                             {else/}
                                 <div class="picbox"><div class="pic" style="background-image: url(/cms/assets/images/nopic.jpg)"></div></div>
                             {/if}
-                            <div class="newsTitle">{$item->title}</div>
+                            <div class="newsTitle">{$item.title}</div>
                         </a>
                         <div>
-                            <p class="details-on">{:str_cut($item->description, 120)}</p>
+                            <p class="details-on">{:str_cut($item['description'], 120)}</p>
                             <div class="publishTime">
-                                <a href="{$item->url}" title="{$item->title}">查看详情</a>
-                                <span>{:date($item->create_time, "Y-m-d")}</span>
+                                <a href="{$item.url}" title="{$item.title}">查看详情</a>
+                                <span>{$item['create_time']|date="Y-m-d"}</span>
                             </div>
                         </div>
                     </li>
@@ -52,12 +52,12 @@
             <ul style="padding: 0 80px; margin-right: 0;">
                 {foreach $list as $item}
                     <li class="wow animated bounceIn" style="width: 260px; margin: 0 10px 20px;">
-                        <a href="javascript:" class="video1_open" data-src="{$item->copyfrom}" title="{$item->title}" style="height: 530px;">
+                        <a href="javascript:" class="video1_open" data-src="{$item.copyfrom}" title="{$item.title}" style="height: 530px;">
                             <div class="picbox" style="padding: 118px 42px 50px;">
                                 <div class="pic" style="background-image: url(/cms/assets/images/nopic.jpg)"></div>
                                 <div class="telbox"><div class="play"></div></div>
                             </div>
-                            <div class="newsTitle">{$item->title}</div>
+                            <div class="newsTitle">{$item.title}</div>
                         </a>
                     </li>
                 {/foreach}
@@ -67,7 +67,7 @@
     <div class="hei80"></div>
     <!-- page分页开始 -->
     <div class="sys_pagebox1">
-        {$pages}
+        {$pages|raw}
     </div>
     <!-- page分页结束 -->
     <div class="hei80"></div>
