@@ -13,6 +13,7 @@ class Base extends \app\index\controller\Action
 
     public function __construct(\think\App $app)
     {
+        getData('article');die;
         parent::__construct($app);
         // 设置终端
         $this->settingTerminal();

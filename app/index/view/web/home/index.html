@@ -959,32 +959,32 @@
                 <div class="newsbox">
                     <div class="newscontent">
                         {foreach :getData($item->module) as $ite}
-                            <a class="conleft" href="{$ite->url}" title="{$ite->title}">
+                            <a class="conleft" href="{$ite.url}" title="{$ite.title}">
                                 <div class="picbox">
-                                    <div class="pic" style="background-image: url({$v.thumb})"></div>
+                                    <div class="pic" style="background-image: url({$ite.thumb})"></div>
                                 </div>
                                 <div class="txt">
                                     <div class="t1">
-                                        <p class="p1">{:date('d', $ite->create_time)}</p>
-                                        <p class="p2">{:date('Y-m', $ite->create_time)}</p>
+                                        <p class="p1">{:date('d', $ite['create_time'])}</p>
+                                        <p class="p2">{:date('Y-m', $ite['create_time'])}</p>
                                     </div>
                                     <div class="t2">
-                                        <p class="p1">{$ite->title}</p>
-                                        <p class="p2">{$ite->description}</p>
+                                        <p class="p1">{$ite.title}</p>
+                                        <p class="p2">{$ite.description}</p>
                                     </div>
                                 </div>
                             </a>
                         {/foreach}
                         <div class="conright">
                             {foreach :getData($item->module) as $ite}
-                                <a class="txt" href="{$ite->url}" title="{$ite->title}">
+                                <a class="txt" href="{$ite.url}" title="{$ite.title}">
                                     <div class="t1">
-                                        <p class="p1">{:date('d', $ite->create_time)}</p>
-                                        <p class="p2">{:date('Y-m', $ite->create_time)}</p>
+                                        <p class="p1">{:date('d', $ite['create_time'])}</p>
+                                        <p class="p2">{:date('Y-m', $ite['create_time'])}</p>
                                     </div>
                                     <div class="t2">
-                                        <p class="p1">{$ite->title}</p>
-                                        <p class="p2">{$ite->description}</p>
+                                        <p class="p1">{$ite.title}</p>
+                                        <p class="p2">{$ite.description}</p>
                                     </div>
                                 </a>
                             {/foreach}
@@ -997,9 +997,9 @@
                     <div class="swiper">
                         <div class="swiper-wrapper">
                             {foreach :getData($item->module) as $ite}
-                                <div class="swiper-slide video1_open" data-src="{$ite->copyfrom}">
+                                <div class="swiper-slide video1_open" data-src="{$ite.copyfrom}">
                                     <a href="javascript:" class="picbox">
-                                        <div class="pic" style="background-image: url(/cms/home/webimages/case/jian/{$ite->title}.jpg)"></div>
+                                        <div class="pic" style="background-image: url(/cms/home/webimages/case/jian/{$ite.title}.jpg)"></div>
                                         <div class="telbox"><div class="play"></div></div>
                                     </a>
                                 </div>

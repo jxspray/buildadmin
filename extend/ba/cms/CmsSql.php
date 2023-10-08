@@ -118,10 +118,11 @@ class CmsSql
     {
         // 设置数据库字段长度
         if (!in_array($type, ['text', 'image', 'select', 'remoteSelect'])) return 0;
+        if (in_array($type, ['image', 'file'])) return 255;
         $attrType = match ($setup['type']) {
             'key' => 'number',
             'keyValue' => 'string',
-            default => $setup['type'],
+            default => $setup['type'] ?? 'text',
         };
         $attrList = [
             'number' => [1, 11, 11],

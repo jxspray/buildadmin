@@ -10,7 +10,8 @@ use app\common\controller\Backend;
  */
 class Content extends Backend
 {
-    protected string $con = self::class;
+    protected self $con;
+    protected bool $modelValidate = false;
 
     protected string|array $quickSearchField = ['id'];
 
@@ -21,14 +22,16 @@ class Content extends Backend
 
     public function initialize(): void
     {
-        $route = $this->request->get('route');
-        if ($route && $module = \app\admin\model\cms\Module::where('path', $route)->find()) {
+        $mod = $this->request->param('module');
+        if ($mod && $module = \app\admin\model\cms\Module::where('name', $mod)->find()) {
             $name = ucfirst($module->name);
             /* 检查控制器是否存在 */
             $controllerClass = "\app\admin\controller\cms\contents\\$name";
             if (class_exists($controllerClass)) {
                 $this->con = new $controllerClass;
                 $this->con::initialize();
+            } else {
+                $this->con = $this;
             }
             /* 检查模型是否存在 */
             $modelClass = "\app\admin\model\cms\contents\\$name";
