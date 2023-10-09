@@ -13,7 +13,6 @@ class Base extends \app\index\controller\Action
 
     public function __construct(\think\App $app)
     {
-        getData('article');die;
         parent::__construct($app);
         // 设置终端
         $this->settingTerminal();
@@ -63,9 +62,20 @@ class Base extends \app\index\controller\Action
         return $this->fetch("{$module}/{$cat['template_show']}");
     }
 
-    public function info()
+    public function info($catid = '', $module = ''): ?string
     {
+        if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
+        $id = $this->request->param("id", '', 'intval');
 
+        if (!$catid) abort(404);
+        $cat = $this->categorys[$catid];
+        $cat['catid'] = $catid;
+        $cat['catname'] = $cat['title'];
+        unset($cat['id'], $cat['title']);
+        $this->assign($cat);
+        $this->settingSEOData();
+        $this->assign(getInfo($module, $id));
+        return $this->fetch("{$module}/{$cat['template_show']}");
     }
 
     /**

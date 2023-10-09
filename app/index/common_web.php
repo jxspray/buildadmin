@@ -184,3 +184,16 @@ if (!function_exists('getData')) {
         return $data;
     }
 }
+
+if (!function_exists('getInfo')) {
+    /**
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     */
+    function getInfo($table, array | int $where = array(), $field = '*'): array|\think\Collection
+    {
+        $data = \app\index\model\web\Content::getInstance($table)->find($where);
+        return $data;
+    }
+}

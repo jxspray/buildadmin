@@ -22,23 +22,27 @@ class EmptyController extends Action
         /* 路由判断 */
         $id = $this->request->param('id', '', 'intval');
         $catid = $this->request->param('catid', '', 'intval');
-
+        $module = '';
         if ($this->module == "urlRule") {
             $catdir = $this->request->param('catdir');
             if ($catdir) {
                 $catid = $catid ?: cms('cat')[$catdir];
             }
+            $action = $this->request->param("action");
+            $modules = cms('module');
             if ($catid) {
                 if ($catalogs[$catid]['module_id'] > 1) {
                     $module = $catalogs[$catid]['module'];
-                    $action = 'catalog';
                 } else {
                     $module = 'single';
                     $action = 'single';
                 }
                 $id = $catid;
-            } else {
-                abort(404);
+            }
+            if ($action == 'info') {
+                foreach ($modules as $item) {
+                    if ($catdir == $item['rule']) return $this->base->$action($id, $item['name']);
+                }
             }
         } else {
             abort(404);
