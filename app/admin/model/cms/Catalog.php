@@ -39,6 +39,15 @@ class Catalog extends Model
         $model->url = "/" . $model->pdir . $model->catdir . "/";
         $model->module_id = $model->module_id ?? 1;
         $model->module = cms("module")[$model->module_id]['name'];
+        $chage_all = isset($model->chage_all);
+        if (isset($model->id) && $chage_all) { // 多栏目设置
+            // 查询子栏目
+            (new self)->where('pid', $model->id)
+                ->update([
+                    'status' => $model->status,
+                    'template_index' => $model->template_index, 'template_info' => $model->template_info
+                ]);
+        }
         return true;
     }
 

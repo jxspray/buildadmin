@@ -45,7 +45,7 @@ class Base extends \app\index\controller\Action
         $this->assign('pages', $lists->render());
         $this->assign($cat);
         $this->settingSEOData();
-        return $this->fetch("{$module}/{$cat['template_show']}");
+        return $this->fetch("{$module}/{$cat['template_index']}");
     }
 
     public function single($catid = '', $module = ''): ?string
@@ -59,7 +59,7 @@ class Base extends \app\index\controller\Action
         unset($cat['id'], $cat['title']);
         $this->assign($cat);
         $this->settingSEOData();
-        return $this->fetch("{$module}/{$cat['template_show']}");
+        return $this->fetch("{$module}/{$cat['template_index']}");
     }
 
     public function info($catid = '', $module = ''): ?string
@@ -75,7 +75,7 @@ class Base extends \app\index\controller\Action
         $this->assign($cat);
         $this->settingSEOData();
         $this->assign(getInfo($module, $id));
-        return $this->fetch("{$module}/{$cat['template_show']}");
+        return $this->fetch("{$module}/{$cat['template_index']}");
     }
 
     /**

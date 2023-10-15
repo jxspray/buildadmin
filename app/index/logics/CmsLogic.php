@@ -143,14 +143,17 @@ class CmsLogic
             $data = [];
             foreach ($files as $file) {
                 $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
-                $data[$file] = $file;
+                if (!str_contains($file, '/')) $data[$file] = $file;
             }
-            if ($module['type'] == '0') $template[$module['id']]['show'] = $data;
-            else if ($module['type'] == '1') {
-                foreach ($data as $file) {
-                    if (preg_match('/^.*_show$/', $file)) $template[$module['id']]['show'][$file] = $file;
-                    if (preg_match('/^.*_info$/', $file)) $template[$module['id']]['info'][$file] = $file;
+            $template[$module['id']]['index'] = $data;
+            if ($module['type'] == '1') {
+                $files = Filesystem::getDirFiles(root_path() . self::baseViewPath . "\\home\\" . $module['name'] . "\\info", ['html']);
+                $data = [];
+                foreach ($files as $file) {
+                    $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+                    if (!str_contains($file, '/')) $data[$file] = $file;
                 }
+                $template[$module['id']]['info'] = $data;
             }
         }
         return $template;
