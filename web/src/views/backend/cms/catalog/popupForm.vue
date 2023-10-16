@@ -65,8 +65,7 @@
                             <FormItem :label="t('cms.catalog.description')" type="textarea" v-model="baTable.form.items!.description" prop="description" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.catalog.description') }) }" />
                             <FormItem :label="t('cms.catalog.catdir')" type="string" v-model="baTable.form.items!.catdir" prop="catdir" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.catdir') }) }" />
                             <FormItem :label="t('cms.catalog.weigh')" type="number" prop="weigh" v-model.number="baTable.form.items!.weigh" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.weigh') }) }" />
-                            <FormItem label="多栏目设置" type="checkbox" v-model="baTable.form.items!.chage_all" :input-attr="{ size: 'large' }" :data="{ childrenAttr: { border: true }, content: { '1': '将以下设置应用到所有子栏目' } }"
-            />
+                            <FormItem label="多栏目设置" type="checkbox" v-model="baTable.form.items!.chage_all" :input-attr="{ size: 'large' }" :data="{ childrenAttr: { border: true }, content: { '1': '将以下设置应用到所有子栏目' } }" />
                             <FormItem :label="t('cms.catalog.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.catalog.status 0'), 1: t('cms.catalog.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.status') }) }" />
                             
                             <el-form-item :label="t('cms.catalog.template_index')" prop="template_index">
