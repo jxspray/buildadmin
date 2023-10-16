@@ -5,6 +5,7 @@ namespace app\index\controller\web;
 
 use app\index\model\web\Config;
 use app\index\model\web\Content;
+use think\db\exception\DbException;
 
 class Base extends \app\index\controller\Action
 {
@@ -29,6 +30,9 @@ class Base extends \app\index\controller\Action
         $this->assign('Categorys', $this->categorys);
     }
 
+    /**
+     * @throws DbException
+     */
     public function catalog($catid = '', $module = ''): ?string
     {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');

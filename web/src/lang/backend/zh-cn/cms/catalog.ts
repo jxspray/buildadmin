@@ -2,7 +2,7 @@
  * @Author: jxspray 1532946322@qq.com
  * @Date: 2023-07-17 10:42:44
  * @LastEditors: jxspray 1532946322@qq.com
- * @LastEditTime: 2023-08-14 17:09:45
+ * @LastEditTime: 2023-10-16 17:14:36
  * @FilePath: \web\src\lang\backend\zh-cn\cms\catalog.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -22,10 +22,10 @@ export default {
     "seo_title": "标题",
     "seo_keywords": "关键字",
     "seo_description": "描述",
-    "links_type": "自定义链接",
+    "links_type": "链接方式",
     "links_type 0": "默认",
     "links_type 1": "指定",
-    "links_value": "连接页面(json对象,存在不同的类型)",
+    "links_value": "指定链接",
     "weigh": "权重",
     "module": "模型",
     "module_id": "模型",
