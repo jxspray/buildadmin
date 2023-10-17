@@ -68,6 +68,7 @@ class Catalog extends Backend
         }
 
         if ($this->request->isPost()) {
+            die;
             $data = $this->request->post();
             if (!$data) {
                 $this->error(__('Parameter %s can not be empty', ['']));

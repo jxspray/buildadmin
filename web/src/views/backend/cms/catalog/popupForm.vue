@@ -2,7 +2,7 @@
  * @Author: jxspray 1532946322@qq.com
  * @Date: 2023-08-11 11:16:59
  * @LastEditors: jxspray 1532946322@qq.com
- * @LastEditTime: 2023-08-21 14:19:05
+ * @LastEditTime: 2023-10-17 11:01:24
  * @FilePath: \web\src\views\backend\cms\catalog\popupForm.vue
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
@@ -61,13 +61,15 @@
                             <FormItem :label="t('cms.catalog.title')" type="string" v-model="baTable.form.items!.title" prop="title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.title') }) }" />
                             <FormItem :label="t('cms.catalog.show')" type="radio" v-model="baTable.form.items!.show" :input-attr="{ size: 'large' }" :data="{ childrenAttr: { border: true }, content: { 0: '不显示', 1: '都显示', 2: '头部显示', 3: '底部显示' } }" />
                             <FormItem :label="t('cms.catalog.links_type')" type="radio" v-model="baTable.form.items!.links_type" :input-attr="{ size: 'large' }" :data="{ childrenAttr: { border: true }, content: { 0: '默认', 1: '指定' } }" />
-                            <FormItem :label="t('cms.catalog.links_value')" type="string" v-model="baTable.form.items!.links_value" prop="title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.title') }) }" />
+                            <el-form-item :label="t('cms.catalog.links_value')" prop="links_value">
+                                <ElLinkSelect v-model="baTable.form.items!.links_value" size=""></ElLinkSelect>
+                            </el-form-item>
                             <FormItem :label="t('cms.catalog.description')" type="textarea" v-model="baTable.form.items!.description" prop="description" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.catalog.description') }) }" />
                             <FormItem :label="t('cms.catalog.catdir')" type="string" v-model="baTable.form.items!.catdir" prop="catdir" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.catdir') }) }" />
                             <FormItem :label="t('cms.catalog.weigh')" type="number" prop="weigh" v-model.number="baTable.form.items!.weigh" :input-attr="{ step: '1', placeholder: t('Please input field', { field: t('cms.catalog.weigh') }) }" />
                             <FormItem label="多栏目设置" type="checkbox" v-model="baTable.form.items!.chage_all" :input-attr="{ size: 'large' }" :data="{ childrenAttr: { border: true }, content: { '1': '将以下设置应用到所有子栏目' } }" />
                             <FormItem :label="t('cms.catalog.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { 0: t('cms.catalog.status 0'), 1: t('cms.catalog.status 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.catalog.status') }) }" />
-                            
+
                             <el-form-item :label="t('cms.catalog.template_index')" prop="template_index">
                                 <el-select v-model="baTable.form.items!.template_index" clearable :placeholder="t('Please select field', { field: t('cms.catalog.template_index') })" class="w100">
                                     <el-option
@@ -128,6 +130,7 @@ import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 import CustomFormItem from '../components/CustomFormItem/index.vue'
 import createAxios from '/@/utils/axios'
+import ElLinkSelect from '../components/ElLinkSelect/index.vue'
 
 
 const formRef = ref<InstanceType<typeof ElForm>>()
