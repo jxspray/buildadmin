@@ -1,5 +1,7 @@
 <template>
-    <el-input v-if="props.show" :value="state.title" :size="props.size" @click="openDialog" :disabled="true"></el-input>
+    <el-form-item v-if="props.show" :label="props.label" :prop="props.prop">
+        <el-input :value="state.title" :size="props.size" @click="openDialog" :readonly="true"></el-input>
+    </el-form-item>
     <el-dialog
         class="el-link-dialog"
         :close-on-click-modal="false"
@@ -73,7 +75,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const formRef = ref<FormInstance>()
-const props = defineProps(['modelValue', 'size', 'show'])
+const props = defineProps(['modelValue', 'size', 'show', 'prop', 'label'])
 const emit = defineEmits(['update:modelValue'])
 
 const state: {
