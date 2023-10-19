@@ -1,5 +1,5 @@
 <template>
-    <el-input :value="state.title" :size="props.size" @click="openDialog"></el-input>
+    <el-input v-if="props.show" :value="state.title" :size="props.size" @click="openDialog" :disabled="true"></el-input>
     <el-dialog
         class="el-link-dialog"
         :close-on-click-modal="false"
@@ -29,7 +29,7 @@
                 <el-form-item label="类型：" prop="table">
                     <el-select placeholder="请选择类型" v-model="state.valueForm.table" @change="detailsListSearch()" filterable>
                         <el-option
-                            v-for="(item, index) in state.tableList" :label="item.title" :value="item.table"
+                            v-for="(item, index) in state.tableList" :label="item.title" :value="item.name"
                             :key="index"></el-option>
                     </el-select>
                 </el-form-item>
@@ -73,7 +73,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const formRef = ref<FormInstance>()
-const props = defineProps(['modelValue', 'size'])
+const props = defineProps(['modelValue', 'size', 'show'])
 const emit = defineEmits(['update:modelValue'])
 
 const state: {
@@ -90,8 +90,8 @@ const state: {
     title: string
     rules: Partial<Record<string, FormItemRule[]>>
 } = reactive({
-    url: "/api/catalog/link",
-    catalogUrl: "/api/catalog",
+    url: "/admin/cms.api/link",
+    catalogUrl: "/admin/cms.api/catalog",
     linkForm: { type: "0", value: {} },
     linkDefault: {
         type: "0",
@@ -239,10 +239,10 @@ const typeChange = () => {
  * 初始化
  */
 const tableListSearch = () => {
-    if (state.linkForm.type == '2' && this.tableList.length == 0) {
+    if (state.linkForm.type == '2' && state.tableList.length == 0) {
         createAxios(
             {
-                url: state.catalogUrl,
+                url: state.url,
                 method: 'post',
                 data: {},
             },
@@ -250,18 +250,33 @@ const tableListSearch = () => {
                 showSuccessMessage: false,
             }
         ).then((res: any) => {
-            state.catalogList = tree.convertString(res.data);
+            state.tableList = res.data;
+            console.log(state.tableList)
         })
-        request.post(self.url, {}, function(res) {
-            self.tableList = res.data;
-        });
     }
 }
 
 /**
  * 初始化
  */
-const detailsListSearch = () => {
+const detailsListSearch = (keyword = "") => {
+    if (state.linkForm.type == '2' && state.valueForm.table != '') {
+        createAxios(
+            {
+                url: state.url,
+                method: 'post',
+                data: {
+                    table: state.valueForm.table, keyword: keyword
+                },
+            },
+            {
+                showSuccessMessage: false,
+            }
+        ).then((res: any) => {
+            console.log(res.data)
+            state.detailsList = res.data;
+        })
+    }
 }
 
 /**

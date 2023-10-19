@@ -61,7 +61,7 @@
                             <FormItem :label="t('cms.catalog.title')" type="string" v-model="baTable.form.items!.title" prop="title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.catalog.title') }) }" />
                             <FormItem :label="t('cms.catalog.show')" type="radio" v-model="baTable.form.items!.show" :input-attr="{ size: 'large' }" :data="{ childrenAttr: { border: true }, content: { 0: '不显示', 1: '都显示', 2: '头部显示', 3: '底部显示' } }" />
                             <FormItem :label="t('cms.catalog.links_type')" type="radio" v-model="baTable.form.items!.links_type" :input-attr="{ size: 'large' }" :data="{ childrenAttr: { border: true }, content: { 0: '默认', 1: '指定' } }" />
-                            <el-form-item :label="t('cms.catalog.links_value')" prop="links_value">
+                            <el-form-item :label="t('cms.catalog.links_value')" prop="links_value" v-if="baTable.form.items!.links_type == 1">
                                 <ElLinkSelect v-model="baTable.form.items!.links_value" size=""></ElLinkSelect>
                             </el-form-item>
                             <FormItem :label="t('cms.catalog.description')" type="textarea" v-model="baTable.form.items!.description" prop="description" :input-attr="{ rows: 3, placeholder: t('Please input field', { field: t('cms.catalog.description') }) }" />
@@ -128,9 +128,9 @@ import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
 import type { ElForm, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
-import CustomFormItem from '../components/CustomFormItem/index.vue'
+import CustomFormItem from '/src/views/backend/cms/components/CustomFormItem/index.vue'
 import createAxios from '/@/utils/axios'
-import ElLinkSelect from '../components/ElLinkSelect/index.vue'
+import ElLinkSelect from '/src/views/backend/cms/components/ElLinkSelect/index.vue'
 
 
 const formRef = ref<InstanceType<typeof ElForm>>()
