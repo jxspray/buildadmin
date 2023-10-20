@@ -7,6 +7,8 @@ use think\model\concern\SoftDelete;
 
 class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
 {
+    use \ba\cms\traits\CustomCatalog;
+
 //    use SoftDelete;
 //    protected $autoWriteTimestamp = 'int';
 //
@@ -14,6 +16,10 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
 //    protected $updateTime = 'updatetime';
 
     protected $name = "cms_catalog";
+    protected $json = ['links_value'];
+    protected $append = [
+        'url'
+    ];
 
     public function getColumnAll($param = null): array
     {

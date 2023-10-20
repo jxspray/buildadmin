@@ -6,6 +6,7 @@
         class="el-link-dialog"
         :close-on-click-modal="false"
         :model-value="state.dialog"
+        @close="closeDialog"
         top="20px" title="设置链接" width="540px" append-to-body>
         <el-form
             ref="formRef"
@@ -172,7 +173,15 @@ let tree = {
  * 打开弹窗
  */
 const openDialog = () => {
+    state.valueForm = state.linkForm['value'][state.linkForm.type]
     state.dialog = true
+}
+
+/**
+ * 打开弹窗
+ */
+const closeDialog = () => {
+    state.dialog = false
 }
 /**
  * 确定
@@ -216,6 +225,7 @@ const catalogListSearch = () => {
 const typeChange = () => {
     // this.$refs.valueForm.clearValidate();
     state.valueForm = state.linkForm['value'][state.linkForm.type]
+    console.log(state.valueForm.value)
     let rules = {}
     switch(state.linkForm.type){
         case '1':
@@ -234,6 +244,7 @@ const typeChange = () => {
             break
     }
     state.rules = rules
+    titleSearch()
     init()
 }
 
@@ -253,6 +264,7 @@ const tableListSearch = () => {
             }
         ).then((res: any) => {
             state.tableList = res.data;
+            state.valueForm = state.linkForm['value'][state.linkForm.type]
             console.log(state.tableList)
         })
     }
@@ -265,10 +277,10 @@ const detailsListSearch = (keyword = "") => {
     if (state.linkForm.type == '2' && state.valueForm.table != '') {
         createAxios(
             {
-                url: state.url,
+                url: `${state.url}/table/${state.valueForm.table}`,
                 method: 'post',
                 data: {
-                    table: state.valueForm.table, keyword: keyword
+                    keyword: keyword
                 },
             },
             {
@@ -305,15 +317,16 @@ const titleSearch = () => {
 /**
  * 初始化
  */
-const init = () => {
+const init = (type = '') => {
     catalogListSearch()
     tableListSearch()
     detailsListSearch()
-    titleSearch()
+    if (type != 'load') titleSearch()
 }
 onMounted(() => {
-    console.log(value.value);
-    state.linkForm = JSON.stringify(value.value) === "{}" || value.value.length === 0 ? state.linkDefault : value.value;
-    init();
+    console.log(value.value)
+    state.linkForm = JSON.stringify(value.value) === "{}" || value.value.length === 0 ? state.linkDefault : value.value
+    typeChange()
+    init('load')
 })
 </script>

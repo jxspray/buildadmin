@@ -3,6 +3,7 @@ declare (strict_types = 1);
 
 namespace app\index\controller\web;
 
+use app\index\model\web\Catalog;
 use app\index\model\web\Config;
 use app\index\model\web\Content;
 use think\db\exception\DbException;
@@ -18,6 +19,10 @@ class Base extends \app\index\controller\Action
         // 设置终端
         $this->settingTerminal();
         $this->categorys = cms('catalog');
+        $catalog = new Catalog;
+        foreach ($this->categorys as &$item) {
+            $item['url'] = $catalog->getUrlAttr('', $item);
+        }
         // 设置语言数据
         $this->settingLangData();
 //        $this->assign($this->Config);

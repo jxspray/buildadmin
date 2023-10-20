@@ -3,6 +3,7 @@
 namespace app\admin\model\cms;
 
 use app\index\logics\CmsLogic;
+use app\index\logics\Url;
 use think\Model;
 use think\model\concern\SoftDelete;
 
@@ -24,8 +25,9 @@ class Catalog extends Model
     protected $updateTime = 'update_time';
     protected $deleteTime = "delete_time";
     protected $defaultSoftDelete = null;
-
-    protected $json = [];
+//    protected $type = [
+//        'links_value' => 'json'
+//    ];
 
     public static function onBeforeWrite(self $model): bool
     {
@@ -36,11 +38,11 @@ class Catalog extends Model
         $cat = $model->pdir . $model->catdir;
         if (isset(cms("cat")[$cat]) && cms("cat")[$cat] != $model->id)
             throw new \think\exception\ValidateException("栏目目录已存在");
-        $model->url = "/" . $model->pdir . $model->catdir . "/";
+        $model->seo_url = $model->pdir . $model->catdir;
         $model->module_id = $model->module_id ?? 1;
         $model->module = cms("module")[$model->module_id]['name'];
-        $chage_all = isset($model->chage_all);
-        if (isset($model->id) && $chage_all) { // 多栏目设置
+        $change_all = isset($model->change_all);
+        if (isset($model->id) && $change_all) { // 多栏目设置
             // 查询子栏目
             (new self)->where('pid', $model->id)
                 ->update([
@@ -53,10 +55,10 @@ class Catalog extends Model
 
     protected static function onAfterInsert(self $model): void
     {
-        if ($model->weigh == 0) {
-            $pk = $model->getPk();
-            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
-        }
+//        if ($model->weigh == 0) {
+//            $pk = $model->getPk();
+//            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
+//        }
     }
 
     public static function onAfterWrite(self $model): void
@@ -73,17 +75,12 @@ class Catalog extends Model
         \app\admin\model\cms\contents\CatalogExtend::where("id", $model->id)->delete();
     }
 
-    public function getGroupIdAttr($value, $row)
+    public function getGroupIdAttr($value, $row): string
     {
         return !$value ? '' : $value;
     }
 
-    public function getFieldAttr($value, $row)
-    {
-        return !$value ? '' : $value;
-    }
-
-    public function getLinksValueAttr($value, $row)
+    public function getFieldAttr($value, $row): string
     {
         return !$value ? '' : $value;
     }

@@ -68,7 +68,6 @@ class Catalog extends Backend
         }
 
         if ($this->request->isPost()) {
-            die;
             $data = $this->request->post();
             if (!$data) {
                 $this->error(__('Parameter %s can not be empty', ['']));
@@ -91,6 +90,7 @@ class Catalog extends Backend
                 Db::commit();
             } catch (ValidateException|PDOException|\Exception $e) {
                 Db::rollback();
+                \think\facade\Log::error("Msg: {$e->getMessage()}; File: {$e->getFile()}; Line: {$e->getLine()}");
                 $this->error($e->getMessage());
             }
             if ($result !== false) {

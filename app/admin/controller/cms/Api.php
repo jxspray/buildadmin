@@ -11,18 +11,19 @@ class Api extends Backend
      */
     public function link()
     {
-        $input = input('post.');
-        if (!isset($input['table'])){
-            $data = \app\admin\model\cms\Module::where('status', '1')->where('type', '1')->select();
-        } else {
-            $model = \app\admin\model\cms\Content::getInstance($input['table']);
+        $table = $this->request->param('table');
+        if ($table){
+            $keyword = $this->request->post('keyword');
+            $model = \app\admin\model\cms\Content::getInstance($table);
             // 模糊查找
-            if (! empty($input['keyword'])) {
-                $where[] = ['title', 'like', '%'.$input['keyword'].'%'];
+            if (! empty($keyword)) {
+                $where[] = ['title', 'like', '%'.$keyword.'%'];
             }
             // 状态正常
             $where[] = ['status', '=', 1];
             $data = $model->where($where)->field('id,title,url,catid')->limit(10)->select();
+        } else {
+            $data = \app\admin\model\cms\Module::where('status', '1')->where('type', '1')->select();
         }
         $this->success("获取成功", $data);
     }
