@@ -5,14 +5,14 @@ import router from '/@/router/index'
 import Icon from '/@/components/icon/index.vue'
 import { useNavTabs } from '/@/stores/navTabs'
 import { useMemberCenter } from '/@/stores/memberCenter'
-import { FormInstance } from 'element-plus'
+import type { FormInstance } from 'element-plus'
 import { useSiteConfig } from '../stores/siteConfig'
 import { useTitle } from '@vueuse/core'
 import { i18n } from '../lang'
 import { getUrl } from './axios'
-import { adminBaseRoute } from '/@/router/static'
+import { adminBaseRoutePath } from '/@/router/static/adminBase'
 import { trim, trimStart } from 'lodash-es'
-import { TranslateOptions } from 'vue-i18n'
+import type { TranslateOptions } from 'vue-i18n'
 
 export function registerIcons(app: App) {
     /*
@@ -155,10 +155,11 @@ export const buildJsonToElTreeData = (data: any): ElTreeData[] => {
  * @param path 不传递则通过当前路由 path 检查
  */
 export const isAdminApp = (path = '') => {
+    const regex = new RegExp(`^${adminBaseRoutePath}`)
     if (path) {
-        return /^\/admin/.test(path)
+        return regex.test(path)
     }
-    if (/^\/admin/.test(getCurrentRoutePath())) {
+    if (regex.test(getCurrentRoutePath())) {
         return true
     }
     return false
@@ -251,7 +252,7 @@ export const __ = (key: string, named?: Record<string, unknown>, options?: Trans
     let langPath = ''
     const path = getCurrentRoutePath()
     if (isAdminApp()) {
-        langPath = path.slice(path.indexOf(adminBaseRoute.path) + adminBaseRoute.path.length)
+        langPath = path.slice(path.indexOf(adminBaseRoutePath) + adminBaseRoutePath.length)
         langPath = trim(langPath, '/').replaceAll('/', '.')
     } else {
         langPath = trim(path, '/').replaceAll('/', '.')
