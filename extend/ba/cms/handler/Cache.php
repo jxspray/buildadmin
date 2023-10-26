@@ -1,8 +1,9 @@
 <?php
 
-namespace app\index\logics\handler;
+namespace ba\cms\handler;
 
-class CmsCache
+
+class Cache
 {
     const CACHE_GET = 'get';
     const CACHE_SET = 'set';
@@ -10,15 +11,15 @@ class CmsCache
     const CACHE_CLEAR = 'clear';
 
     /**
-     * @var CmsCache[] $instances
+     * @var Cache[] $instances
      */
     private static array $instances = [];
 
     private string $name;
     /**
-     * @var \app\index\logics\CmsLogic $logic
+     * @var \ba\cms\Cms $logic
      */
-    private static \app\index\logics\CmsLogic $logic;
+    private static \ba\cms\Cms $logic;
 
     public function __construct($name)
     {
@@ -31,7 +32,7 @@ class CmsCache
         return self::$instances[$name];
     }
 
-    public static function setLogic(\app\index\logics\CmsLogic $logic): void
+    public static function setLogic(\ba\cms\Cms $logic): void
     {
         self::$logic = $logic;
     }
@@ -43,7 +44,7 @@ class CmsCache
             $data = $type;
             $type = self::CACHE_SET;
         }
-        $name = \app\index\logics\CmsLogic::PREFIX . $this->name;
+        $name = \ba\cms\Cms::PREFIX . $this->name;
         switch ($type) {
             case self::CACHE_HAS:
                 return \think\facade\Cache::has($name);

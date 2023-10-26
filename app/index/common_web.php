@@ -107,8 +107,8 @@ if (!function_exists("cms")) {
     {
         switch ($type) {
             case 'cache':
-                if (\app\index\logics\CmsLogic::getInstance()->getType($name))
-                    return \app\index\logics\handler\CmsCache::getInstance($name)->checkCache()->cache();
+                if (\ba\cms\Cms::getInstance()->getType($name))
+                    return \ba\cms\handler\Cache::getInstance($name)->checkCache()->cache();
                 return false;
         }
         return false;

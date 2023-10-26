@@ -10,7 +10,7 @@
 // | Author: zhangyajun <448901948@qq.com>
 // +----------------------------------------------------------------------
 
-namespace app\index\logics;
+namespace ba\cms\utils;
 
 use think\Paginator;
 

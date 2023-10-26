@@ -3,7 +3,6 @@
 namespace app\admin\model\cms;
 
 use think\Model;
-use think\model\concern\SoftDelete;
 
 /**
  * Field
@@ -56,7 +55,7 @@ class Fields extends Model
         $model->getSqlFieldInstance()->deleteField($model['field']);
     }
 
-    public function getSqlFieldInstance(): \ba\cms\CmsSql
+    public function getSqlFieldInstance(): \ba\cms\utils\Sql
     {
         static $instance = null;
         if ($instance === null) {
@@ -65,7 +64,7 @@ class Fields extends Model
             $module = cms("module");
             $moduleInfo = $module[$data['module_id']] ?? [];
             if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
-            $instance = \ba\cms\CmsSql::getInstance($data['module_id'] == 1 ? 'catalog_extend' : $moduleInfo['name'], "ADD");
+            $instance = \ba\cms\utils\Sql::getInstance($data['module_id'] == 1 ? 'catalog_extend' : $moduleInfo['name'], "ADD");
         }
         return $instance;
     }

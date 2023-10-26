@@ -2,16 +2,16 @@
 
 namespace app\admin\controller;
 
-use app\index\logics\CmsLogic;
-use Throwable;
-use ba\Terminal;
-use think\Response;
-use think\facade\Db;
-use think\facade\Cache;
-use think\facade\Event;
 use app\admin\model\AdminLog;
-use app\common\library\Upload;
 use app\common\controller\Backend;
+use app\common\library\Upload;
+use ba\cms\Cms;
+use ba\Terminal;
+use think\facade\Cache;
+use think\facade\Db;
+use think\facade\Event;
+use think\Response;
+use Throwable;
 
 class Ajax extends Backend
 {
@@ -108,8 +108,8 @@ class Ajax extends Backend
         $type = $this->request->post('type');
         if ($type == 'tp' || $type == 'all') {
             Cache::clear();
-            CmsLogic::getInstance()->forceUpdateAll();
-            CmsLogic::getInstance()->updateParam();
+            Cms::getInstance()->forceUpdateAll();
+            Cms::getInstance()->updateParam();
         } else {
             $this->error(__('Parameter error'));
         }

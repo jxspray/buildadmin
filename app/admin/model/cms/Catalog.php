@@ -2,8 +2,7 @@
 
 namespace app\admin\model\cms;
 
-use app\index\logics\CmsLogic;
-use app\index\logics\Url;
+use ba\cms\Cms;
 use think\Model;
 use think\model\concern\SoftDelete;
 
@@ -64,14 +63,14 @@ class Catalog extends Model
     public static function onAfterWrite(self $model): void
     {
         $model->catalogExtend()->save($model->catalogExtend);
-        CmsLogic::getInstance()->forceUpdate('catalog');
-        CmsLogic::getInstance()->forceUpdate('field_1');
+        Cms::getInstance()->forceUpdate('catalog');
+        Cms::getInstance()->forceUpdate('field_1');
     }
 
     public static function onAfterDelete(self $model): void
     {
-        CmsLogic::getInstance()->forceUpdate('catalog');
-        CmsLogic::getInstance()->forceUpdate('field_1');
+        Cms::getInstance()->forceUpdate('catalog');
+        Cms::getInstance()->forceUpdate('field_1');
         \app\admin\model\cms\contents\CatalogExtend::where("id", $model->id)->delete();
     }
 

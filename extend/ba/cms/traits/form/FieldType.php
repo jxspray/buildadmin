@@ -1,8 +1,8 @@
 <?php
 
-namespace ba\cms\traits;
+namespace ba\cms\traits\form;
 
-trait SqlType
+trait FieldType
 {
 
     /* ####################################################### 常用字段类型 ###################################################### */

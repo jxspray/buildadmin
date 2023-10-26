@@ -1,8 +1,8 @@
 <?php
 
-namespace ba\cms\traits;
+namespace ba\cms\traits\module;
 
-use app\index\logics\Url;
+use ba\cms\utils\Url;
 
 trait CustomCatalog
 {

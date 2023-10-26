@@ -30,7 +30,7 @@ class Module extends \think\Model
     public static function onBeforeInsert(self $model): bool
     {
         /* 检查数据表是否存在 */
-        if (\ba\cms\CmsSql::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
+        if (\ba\cms\utils\Sql::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
 
         $model['name'] = $name = strtolower($model['name']);
         $model['path'] = "cms/content/$name";
@@ -74,7 +74,7 @@ class Module extends \think\Model
 
     public static function onAfterWrite(self $model): void
     {
-        \app\index\logics\CmsLogic::getInstance()->forceUpdate('module');
+        \ba\cms\Cms::getInstance()->forceUpdate('module');
     }
 
     /**
@@ -85,7 +85,7 @@ class Module extends \think\Model
     public static function onBeforeDelete(self $model): bool
     {
         // 执行模型卸载程序
-        \ba\cms\CmsSql::getInstance($model['name'])->deleteTable();
+        \ba\cms\utils\Sql::getInstance($model['name'])->deleteTable();
         /* 清空字段 */
         Fields::where('module_id', $model['id'])->delete();
         /* 删除菜单 */

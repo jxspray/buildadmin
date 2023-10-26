@@ -1,9 +1,6 @@
 <?php
 
-namespace ba\cms\traits;
-
-use app\admin\model\cms\Content;
-use think\Model;
+namespace ba\cms\traits\module;
 
 trait CustomContent
 {
@@ -22,7 +19,7 @@ trait CustomContent
         if (!count(self::$mod)) self::$mod = cms("mod");
         if (!isset(self::$mod[$name])) abort(500, '模型不存在');
         $module = cms('module')[self::$mod[$name]];
-        $instance = new self(\app\index\logics\CmsLogic::PREFIX . $name, $data);
+        $instance = new self(\ba\cms\Cms::PREFIX . $name, $data);
         $instance->moduleName = $name;
         $instance->moduleData = $module;
         return $instance;

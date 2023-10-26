@@ -36,7 +36,7 @@ class Action extends \app\BaseController
 
         static $initState = false;
         if ($initState === false) {
-            \app\index\logics\CmsLogic::init();
+            \ba\cms\Cms::init();
             $initState = true;
         }
     }
@@ -47,11 +47,11 @@ class Action extends \app\BaseController
      */
     public function index(): string
     {
-        $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->pattern}\\" . ucfirst($this->module);
+        $namespace = \ba\cms\Cms::basePath . "\\{$this->pattern}\\" . ucfirst($this->module);
         $action = $this->action;
         /* 如果控制不存在 */
         if (!class_exists($namespace)) {
-            $namespace = \app\index\logics\CmsLogic::basePath . "\\{$this->pattern}\\EmptyController";
+            $namespace = \ba\cms\Cms::basePath . "\\{$this->pattern}\\EmptyController";
             $action = "_empty";
             if (!method_exists($namespace, $action)) abort(404);
         }

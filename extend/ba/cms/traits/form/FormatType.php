@@ -1,8 +1,8 @@
 <?php
 
-namespace ba\cms\traits;
+namespace ba\cms\traits\form;
 
-trait Type
+trait FormatType
 {
 
     /* ######################################################### 组件 ######################################################## */

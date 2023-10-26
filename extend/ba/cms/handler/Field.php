@@ -1,6 +1,6 @@
 <?php
 
-namespace app\index\logics\handler;
+namespace ba\cms\handler;
 
 class Field
 {

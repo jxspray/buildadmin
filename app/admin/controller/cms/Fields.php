@@ -3,7 +3,6 @@
 namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
-use app\index\logics\CmsLogic;
 
 /**
  * 模型字段管理

@@ -1,8 +1,8 @@
 <?php
 
-namespace app\index\logics;
+namespace ba\cms;
 
-use app\index\logics\handler\CmsCache;
+use ba\cms\handler\Cache;
 use ba\Filesystem;
 
 /**
@@ -21,7 +21,7 @@ use ba\Filesystem;
  * @property $catalog
  * @property $rule
  */
-class CmsLogic
+class Cms
 {
     const PREFIX = "cms_";
     const basePath = "app\\index\\controller\\web";
@@ -30,7 +30,7 @@ class CmsLogic
 //    const ALLOW_TYPE = ['module', 'catalog', 'rule', 'fields'];
 
     /**
-     * @var \app\index\logics\handler\Type[] $typeItem
+     * @var \ba\cms\handler\Type[] $typeItem
      */
     private array $typeItem = [];
 
@@ -41,10 +41,10 @@ class CmsLogic
 
     public function __construct()
     {
-        CmsCache::setLogic($this);
+        Cache::setLogic($this);
         foreach (self::ALLOW_TYPE as $name) {
             $this->getType($name);
-            CmsCache::getInstance($name)->checkCache();
+            Cache::getInstance($name)->checkCache();
         }
     }
 
@@ -66,7 +66,7 @@ class CmsLogic
         }
     }
 
-    public function forceUpdate(\app\index\logics\handler\Type|string $type = null): void
+    public function forceUpdate(\ba\cms\handler\Type|string $type = null): void
     {
 //        $name = ucfirst($item);
         if (is_string($type)) $type = $this->getType($type);
@@ -87,7 +87,7 @@ class CmsLogic
             $instance = new $namespace();
             $data = $instance->getColumnAll();
         }
-        CmsCache::getInstance($type->getKey())->cache($data);
+        Cache::getInstance($type->getKey())->cache($data);
     }
 
     public static function update(\app\admin\model\cms\CmsModelInterface $instance, array $data, mixed $value, bool $isDelete): array
@@ -113,7 +113,7 @@ class CmsLogic
         foreach ($data as $datum) {
             $mod[$datum['name']] = $datum['id'];
         }
-        CmsCache::getInstance('mod')->cache($mod);
+        Cache::getInstance('mod')->cache($mod);
         return $data;
     }
     public static function updateCatalog(mixed $value = [], bool $isDelete = false): array
@@ -131,7 +131,7 @@ class CmsLogic
         }
         // 获取扩展模型字段数据
 //        $fields = cms('fields');
-        CmsCache::getInstance('cat')->cache($cat);
+        Cache::getInstance('cat')->cache($cat);
         return $data;
     }
     public static function updateTemplate(mixed $value = [], bool $isDelete = false): array
@@ -167,12 +167,12 @@ class CmsLogic
 
     /**
      * @param string $name
-     * @return \app\index\logics\handler\Type|null
+     * @return \ba\cms\handler\Type|null
      */
-    public function getType(string $name): \app\index\logics\handler\Type|null
+    public function getType(string $name): \ba\cms\handler\Type|null
     {
         if (!isset($this->typeItem[$name])) {
-            $this->typeItem[$name] = \app\index\logics\handler\Type::getInstance($name);
+            $this->typeItem[$name] = \ba\cms\handler\Type::getInstance($name);
         }
         return $this->typeItem[$name];
     }

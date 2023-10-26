@@ -10,11 +10,14 @@
 // +----------------------------------------------------------------------
 declare (strict_types = 1);
 
-namespace app\index\logics;
+namespace ba\cms\utils;
 
-use app\index\model\web\Catalog;
+use app\index\logics\分类详情;
+use app\index\logics\单页详情;
+use app\index\logics\自定义参数;
 use app\index\model\web\Content;
 use app\index\model\web\Module;
+use function app\index\logics\index_url;
 
 /**
  * 获取index应用url

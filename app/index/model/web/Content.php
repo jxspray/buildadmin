@@ -6,5 +6,5 @@ use think\Model;
 
 class Content extends Model
 {
-    use \ba\cms\traits\CustomContent;
+    use \ba\cms\traits\module\CustomContent;
 }

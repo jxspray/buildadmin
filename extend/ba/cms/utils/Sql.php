@@ -1,10 +1,10 @@
 <?php
 
-namespace ba\cms;
+namespace ba\cms\utils;
 
 use Exception;
 
-class CmsSql
+class Sql
 {
     private static self $instance;
     private string $pattern;
@@ -20,12 +20,12 @@ class CmsSql
     /**
      * 载入SQL类型处理实例
      */
-    use traits\SqlType;
+    use \ba\cms\traits\form\FieldType;
 
     /**
      * 载入字段类型处理实例
      */
-    use traits\Type;
+    use \ba\cms\traits\form\FormatType;
 
     public function __construct($table, $pattern = 'CREATE')
     {
