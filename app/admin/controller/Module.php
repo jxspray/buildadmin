@@ -136,13 +136,14 @@ class Module extends Backend
     public function upload()
     {
         AdminLog::setTitle(__('Upload install module'));
-        $file = $this->request->get("file/s", '');
-        if (!$file) {
-            $this->error(__('Parameter error'));
-        }
+        $file  = $this->request->get("file/s", '');
+        $token = $this->request->get("token/s", '');
+        if (!$file) $this->error(__('Parameter error'));
+        if (!$token) $this->error(__('Please login to the official website account first'));
+
         $info = [];
         try {
-            $info = Manage::instance()->upload($file);
+            $info = Manage::instance()->upload($token, $file);
         } catch (Exception $e) {
             $this->error(__($e->getMessage()), $e->getData(), $e->getCode());
         } catch (Throwable $e) {

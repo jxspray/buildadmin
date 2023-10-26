@@ -38,10 +38,6 @@ class Module extends Model
             list($sql, $fdata) = $model->createField($model['id'], new SqlField($table), $model['type']);
             Db::query("CREATE TABLE `$table` ($sql) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='{$model['title']}'");
             (new Field())->saveAll($fdata);
-//                $commands = Config::get('terminal.commands');
-//                Config::set(array_merge($commands, ['module_install' => "php think crud -t $tableName"]), 'terminal.commands');
-//                Terminal::getOutputFromProc('module_install');
-//                Config::set($commands, 'terminal.commands');
             /* 添加菜单 */
             $menu = [
                 'type' => 'menu',

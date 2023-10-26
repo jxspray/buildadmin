@@ -51,6 +51,12 @@ class Module extends \app\common\controller\Backend
                 $this->error($e->getMessage());
             }
             if ($result !== false) {
+                $module = cms("module");
+                $moduleInfo = $module[$this->model->id] ?? [];
+                if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
+                $instance = \ba\cms\utils\Sql::getInstance($moduleInfo['name'], "CREATE");
+                // 批量生成字段
+                !$instance->tableExists() && $instance->createTable($moduleInfo);
                 $this->success(__('Added successfully'), $this->model->getData());
             } else {
                 $this->error(__('No rows were added'));
@@ -66,14 +72,14 @@ class Module extends \app\common\controller\Backend
      */
     public function createTemplateField(): void
     {
-        $module_id = $this->request->post('module_id');
-
-        $module = cms("module");
-        $moduleInfo = $module[$module_id] ?? [];
-        if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
-        $instance = \ba\cms\utils\Sql::getInstance($moduleInfo['name'], "CREATE");
-        // 批量生成字段
-        !$instance->tableExists() && $instance->createTable($moduleInfo);
+//        $module_id = $this->request->post('module_id');
+//
+//        $module = cms("module");
+//        $moduleInfo = $module[$module_id] ?? [];
+//        if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
+//        $instance = \ba\cms\CmsSql::getInstance($moduleInfo['name'], "CREATE");
+//        // 批量生成字段
+//        !$instance->tableExists() && $instance->createTable($moduleInfo);
 
         $this->success("模板字段创建成功");
     }

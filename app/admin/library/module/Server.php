@@ -23,6 +23,8 @@ class Server
 {
     private static ?Client $client = null;
 
+    private static string $apiBaseUrl = '/api/v6.store/';
+
     /**
      * 下载
      * @throws Throwable
@@ -32,7 +34,7 @@ class Server
         $tmpFile = $dir . $uid . ".zip";
         try {
             $client   = self::getClient();
-            $response = $client->get('/api/v6.store/download', ['query' => array_merge(['uid' => $uid, 'server' => 1], $extend)]);
+            $response = $client->get(self::$apiBaseUrl . 'download', ['query' => array_merge(['uid' => $uid, 'server' => 1], $extend)]);
             $body     = $response->getBody();
             $content  = $body->getContents();
             if ($content == '' || stripos($content, '<title>系统发生错误</title>') !== false) {
@@ -52,6 +54,33 @@ class Server
             return $tmpFile;
         }
         throw new Exception("No permission to write temporary files");
+    }
+
+    /**
+     * 安装预检
+     * @throws Throwable
+     */
+    public static function installPreCheck(array $query = []): bool
+    {
+        try {
+            $client     = self::getClient();
+            $response   = $client->get(self::$apiBaseUrl . 'preCheck', ['query' => $query]);
+            $body       = $response->getBody();
+            $statusCode = $response->getStatusCode();
+            $content    = $body->getContents();
+            if ($content == '' || stripos($content, '<title>系统发生错误</title>') !== false || $statusCode != 200) {
+                return true;
+            }
+            if (str_starts_with($content, '{')) {
+                $json = json_decode($content, true);
+                if ($json && $json['code'] == 0) {
+                    throw new Exception($json['msg'], $json['code'], $json['data'] ?? []);
+                }
+            }
+        } catch (TransferException $e) {
+            throw new Exception('package check failed', 0, ['msg' => $e->getMessage()]);
+        }
+        return true;
     }
 
     public static function getConfig(string $dir, $key = ''): array
@@ -115,14 +144,50 @@ class Server
         return $conflict;
     }
 
+    /**
+     * 获取模块[冲突]文件列表
+     * @param string $dir          模块目录
+     * @param bool   $onlyConflict 是否只获取冲突文件
+     */
     public static function getFileList(string $dir, bool $onlyConflict = false): array
     {
         if (!is_dir($dir)) {
             return [];
         }
 
-        $fileList     = [];
-        $overwriteDir = self::getOverwriteDir();
+        $fileList       = [];
+        $overwriteDir   = self::getOverwriteDir();
+        $moduleFileList = self::getRuntime($dir, 'files');
+
+        if ($moduleFileList) {
+            // 有冲突的文件
+            if ($onlyConflict) {
+                // 排除的文件
+                $excludeFile = [
+                    'info.ini'
+                ];
+                foreach ($moduleFileList as $file) {
+                    // 如果是要安装到项目的文件，从项目根目录开始，如果不是，从模块根目录开始
+                    $path          = Filesystem::fsFit(str_replace($dir, '', $file['path']));
+                    $paths         = explode(DIRECTORY_SEPARATOR, $path);
+                    $overwriteFile = in_array($paths[0], $overwriteDir) ? root_path() . $path : $dir . $path;
+                    if (is_file($overwriteFile) && !in_array($path, $excludeFile) && (filesize($overwriteFile) != $file['size'] || md5_file($overwriteFile) != $file['md5'])) {
+                        $fileList[] = $path;
+                    }
+                }
+            } else {
+                // 要安装的文件
+                foreach ($overwriteDir as $item) {
+                    $baseDir = $dir . $item;
+                    foreach ($moduleFileList as $file) {
+                        if (!str_starts_with($file['path'], $baseDir)) continue;
+                        $fileList[] = Filesystem::fsFit(str_replace($dir, '', $file['path']));
+                    }
+                }
+            }
+            return $fileList;
+        }
+
         foreach ($overwriteDir as $item) {
             $baseDir = $dir . $item;
             if (!is_dir($baseDir)) {
@@ -214,6 +279,16 @@ class Server
             $installedList[] = $info;
         }
         return $installedList;
+    }
+
+    public static function getInstalledIds(string $dir): array
+    {
+        $installedIds = [];
+        $installed    = self::installedList($dir);
+        foreach ($installed as $item) {
+            $installedIds[] = $item['uid'];
+        }
+        return $installedIds;
     }
 
     /**
@@ -439,6 +514,51 @@ class Server
             }
         }
         return false;
+    }
+
+    /**
+     * 创建 .runtime
+     */
+    public static function createRuntime(string $dir): void
+    {
+        $runtimeFilePath = $dir . '.runtime';
+        $files           = new RecursiveIteratorIterator(
+            new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::LEAVES_ONLY
+        );
+        $filePaths       = [];
+        foreach ($files as $file) {
+            if (!$file->isDir()) {
+                $pathName = $file->getPathName();
+                if ($pathName == $runtimeFilePath) continue;
+                $filePaths[] = [
+                    'path' => Filesystem::fsFit($pathName),
+                    'size' => filesize($pathName),
+                    'md5'  => md5_file($pathName),
+                ];
+            }
+        }
+
+        file_put_contents($runtimeFilePath, json_encode([
+            'files' => $filePaths,
+            'pure'  => Config::get('buildadmin.module_pure_install'),
+        ]));
+    }
+
+    /**
+     * 读取 .runtime
+     */
+    public static function getRuntime(string $dir, string $key = ''): mixed
+    {
+        $runtimeFilePath   = $dir . '.runtime';
+        $runtimeContent    = @file_get_contents($runtimeFilePath);
+        $runtimeContentArr = json_decode($runtimeContent, true);
+        if (!$runtimeContentArr) return [];
+
+        if ($key) {
+            return $runtimeContentArr[$key] ?? [];
+        } else {
+            return $runtimeContentArr;
+        }
     }
 
     /**

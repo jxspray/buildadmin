@@ -2,20 +2,26 @@
 
 namespace app\admin\controller;
 
-use app\admin\model\AdminLog;
-use app\common\controller\Backend;
-use app\common\library\Upload;
-use ba\cms\Cms;
-use ba\Terminal;
-use think\facade\Cache;
-use think\facade\Db;
-use think\facade\Event;
-use think\Response;
 use Throwable;
+use ba\Terminal;
+use ba\cms\Cms;
+use think\Response;
+use think\facade\Db;
+use think\facade\Cache;
+use think\facade\Event;
+use app\admin\model\AdminLog;
+use app\common\library\Upload;
+use app\common\controller\Backend;
 
 class Ajax extends Backend
 {
     protected array $noNeedPermission = ['*'];
+
+    /**
+     * 无需登录的方法
+     * terminal 内部自带验权
+     */
+    protected array $noNeedLogin = ['terminal'];
 
     public function initialize(): void
     {
@@ -115,5 +121,14 @@ class Ajax extends Backend
         }
         Event::trigger('cacheClearAfter', $this->app);
         $this->success(__('Cache cleaned~'));
+    }
+
+    /**
+     * 终端
+     * @throws Throwable
+     */
+    public function terminal()
+    {
+        Terminal::instance()->exec();
     }
 }
