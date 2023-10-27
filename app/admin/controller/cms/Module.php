@@ -18,6 +18,9 @@ class Module extends \app\common\controller\Backend
         $this->model = new \app\admin\model\cms\Module;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function add(): void
     {
         if ($this->request->isPost()) {
@@ -51,12 +54,11 @@ class Module extends \app\common\controller\Backend
                 $this->error($e->getMessage());
             }
             if ($result !== false) {
-                $module = cms("module");
-                $moduleInfo = $module[$this->model->id] ?? [];
-                if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
-                $instance = \ba\cms\utils\Sql::getInstance($moduleInfo['name'], "CREATE");
+                /* 检查数据表是否存在 */
+                $instance = \ba\cms\utils\Sql::getInstance($this->model['name'], "CREATE");
+                if ($instance->tableExists()) $this->error("数据表已存在！");
                 // 批量生成字段
-                !$instance->tableExists() && $instance->createTable($moduleInfo);
+                $instance->createTable($this->model);
                 $this->success(__('Added successfully'), $this->model->getData());
             } else {
                 $this->error(__('No rows were added'));

@@ -84,7 +84,7 @@ class Cms
         } else {
             $namespace = "\\app\\index\\model\\web\\contents\\$name";
             if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
-            $instance = new $namespace();
+            $instance = new $namespace($name);
             $data = $instance->getColumnAll();
         }
         Cache::getInstance($type->getKey())->cache($data);

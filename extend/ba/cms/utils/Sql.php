@@ -143,13 +143,21 @@ class Sql
      * @return true
      * @throws Exception
      */
-    public function createTable($moduleRow): bool
+    public function createTable(\app\admin\model\cms\Module $moduleRow): bool
     {
+        $typeSql = match ($moduleRow['type']) {
+            "1" => "`url` varchar(20) DEFAULT NULL COMMENT '链接',",
+            default => ""
+        };
         // 创建初始表
         $this->run("query", "{$this->getTableHead('CREATE')} (
             `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-            `weigh` int(5) NULL DEFAULT 0 COMMENT '排序',
-            `lang` tinyint(1) NULL DEFAULT 0 COMMENT '语言ID',
+            `weigh` int(5) DEFAULT 0 COMMENT '排序',
+            `lang` tinyint(1) DEFAULT 0 COMMENT '语言ID',
+            `create_time` int(11) DEFAULT 0 COMMENT '创建时间',
+            `update_time` int(11) DEFAULT 0 COMMENT '更新时间',
+            `delete_time` int(11) DEFAULT 0 COMMENT '删除时间',
+            {$typeSql}
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'", true);
         // 创建字段表
@@ -159,11 +167,11 @@ class Sql
     }
 
     /**
-     * @param array $moduleRow
+     * @param \app\admin\model\cms\Module $moduleRow
      * @return bool
      * @throws Exception
      */
-    protected function createField(array $moduleRow): bool
+    protected function createField(\app\admin\model\cms\Module $moduleRow): bool
     {
         $data = [];
         switch ($moduleRow['template']) {
@@ -246,8 +254,7 @@ class Sql
             if ($tryCatch) {
                 \think\facade\Log::error("Msg: {$e->getMessage()}; File: {$e->getFile()}; Line: {$e->getLine()}");
                 return false;
-            }
-            else throw $e;
+            } else throw $e;
         }
     }
 

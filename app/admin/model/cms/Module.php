@@ -2,6 +2,8 @@
 
 namespace app\admin\model\cms;
 
+use ba\cms\utils\Sql;
+
 /**
  * Module
  * @controllerUrl 'cmsModule'
@@ -26,30 +28,15 @@ class Module extends \think\Model
      * @param self $model
      * @return bool
      * @throws \Exception
+     * @throws \Throwable
      */
     public static function onBeforeInsert(self $model): bool
     {
-        /* 检查数据表是否存在 */
-        if (\ba\cms\utils\Sql::getInstance($model['name'])->tableExists()) throw new \Exception("数据表已存在！");
+        // 检查模型是否存在
+        if (isset(cms("mod")[$model['name']])) throw new \Exception("模型 {$model['name']} 已存在！");
 
         $model['name'] = $name = strtolower($model['name']);
         $model['path'] = "cms/content/$name";
-        if (empty($name)) return false;
-        return true;
-    }
-
-    /**
-     * @param Model $model
-     * @return void
-     * @throws \Throwable
-     */
-    public static function onAfterInsert(self $model): void
-    {
-        if ($model->weigh == 0) {
-            $pk = $model->getPk();
-            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
-        }
-        $name = $model['name'];
 
         /* 添加菜单 */
         $menu = [
@@ -70,6 +57,20 @@ class Module extends \think\Model
             ]
         ];
         \app\common\library\Menu::create([$menu], 'cms');
+        return true;
+    }
+
+    /**
+     * @param Model $model
+     * @return void
+     * @throws \Throwable
+     */
+    public static function onAfterInsert(self $model): void
+    {
+        if ($model->weigh == 0) {
+            $pk = $model->getPk();
+            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
+        }
     }
 
     public static function onAfterWrite(self $model): void
