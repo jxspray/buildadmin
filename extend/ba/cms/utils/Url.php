@@ -12,12 +12,8 @@ declare (strict_types = 1);
 
 namespace ba\cms\utils;
 
-use app\index\logics\分类详情;
-use app\index\logics\单页详情;
-use app\index\logics\自定义参数;
 use app\index\model\web\Content;
 use app\index\model\web\Module;
-use function app\index\logics\index_url;
 
 /**
  * 获取index应用url
@@ -50,13 +46,17 @@ function index_url(string|int $url = '', array $vars = [], bool $theme = true): 
 class Url
 {
     /**
-     * 指定链接
-     * @param 自定义参数
+     * @param object $link 自定义参数
+     * @param bool|string $theme 主题
+     * @Author: jxspray@163.com
+     * @Date: 2023/10/28
+     * @Time: 15:04
+     * @return string
      */
-    public static function appoint($link, $theme = true): string
+    public static function appoint(object $link, bool|string $theme = true): string
     {
         $url = "";
-        if (! empty($link)) {
+        if (!empty($link)) {
             switch ($link->type) {
                 case '1':
                     if (!str_contains($link->value[1]['url'], 'http')) {
@@ -96,7 +96,12 @@ class Url
 
     /**
      * 获取分类url(包含系统页)例：news、product
-     * @param 分类详情
+     * @param array $catalog 分类详情
+     * @param string|bool $theme 主题
+     * @Author: jxspray@163.com
+     * @Date: 2023/10/28
+     * @Time: 15:06
+     * @return string
      */
     public static function catalog(array $catalog, $theme = true): string
     {
@@ -110,9 +115,14 @@ class Url
 
     /**
      * 获取单页url例：news/1
-     * @param 单页详情
+     * @param array $details 单页详情
+     * @param bool|string $theme 主题
+     * @Author: jxspray@163.com
+     * @Date: 2023/10/28
+     * @Time: 15:07
+     * @return string
      */
-    public static function getSingleUrl(array $details, $theme = true): string
+    public static function getSingleUrl(array $details, bool|string $theme = true): string
     {
         $id = explode(',', $details['catid'])[0];
         if (!empty(cms('catalog'))) {
@@ -135,13 +145,13 @@ class Url
 
     /**
      * 获取详情页url
-     * @example rule/1.html、catalog/1.html
      * @param Content $details 详情数据
-     * @param Module $module_name 模型名称
-     * @param bool $theme
+     * @param Module $module 模型数据
+     * @param string|bool $theme 主题
      * @return string
+     * @example rule/1.html、catalog/1.html
      */
-    public static function getInfoUrl(Content $details, Module $module, bool $theme = true): string
+    public static function getInfoUrl(Content $details, Module $module, bool|string $theme = true): string
     {
         $id = explode(',', $details['catid'])[0];
         // 只有获取分类时，才会重新加载
@@ -149,7 +159,7 @@ class Url
         if (! empty($catalog)) {
             $name  = empty($catalog['seo_url']) ? $catalog['id'] : $catalog['seo_url'];
             $param = empty($details['seo_url']) ? $details['id'] : $details['seo_url'];
-            return index_url($name .'/'. $param, [], $theme);
+            return index_url($name .'/'. $param);
         } else {
             return '';
         }

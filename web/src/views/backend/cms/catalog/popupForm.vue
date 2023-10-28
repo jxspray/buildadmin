@@ -8,25 +8,25 @@
 -->
 <template>
     <!-- 对话框表单 -->
-    <el-dialog 
+    <el-dialog
         :fullscreen="true" class="ba-operate-dialog" :close-on-click-modal="false"
-        :model-value="baTable.form.operate ? true : false" @close="baTable.toggleForm">
+        :model-value="!!baTable.form.operate" @close="baTable.toggleForm">
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
                 {{ baTable.form.operate ? t(baTable.form.operate) : "" }}
             </div>
         </template>
         <el-scrollbar v-loading="baTable.form.loading" class="ba-table-form-scrollbar">
-            <div 
+            <div
                 class="ba-operate-form" :class="'ba-' + baTable.form.operate + '-form'"
                 :style="'width: calc(100% - ' + baTable.form.labelWidth! / 2 + 'px)'">
-                <el-form 
+                <el-form
                     v-if="!baTable.form.loading" ref="formRef" @keyup.enter="baTable.onSubmit(formRef)"
                     :model="baTable.form.items" label-position="right" :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules">
                     <el-tabs tab-position="left" class="catalog-tabs">
                         <el-tab-pane :label="t('cms.catalog.base')">
-                            <FormItem 
+                            <FormItem
                                 type="remoteSelect" :label="t('cms.catalog.module_id')"
                                 v-model="baTable.form.items!.module_id" :input-attr="{
                                     field: 'title',
@@ -35,7 +35,7 @@
                                         field: t('cms.catalog.module_id'),
                                     }),
                                 }" />
-                            <FormItem 
+                            <FormItem
                                 type="remoteSelect" :label="t('cms.catalog.pid')" v-model="baTable.form.items!.pid"
                                 :placeholder="t('Click Select')" :input-attr="{
                                     params: { isTree: true, current_id: state.current_id },
@@ -59,7 +59,7 @@
                                     childrenAttr: { border: true },
                                     content: { 0: '默认', 1: '指定' },
                                 }" />
-                            <ElLinkSelect 
+                            <ElLinkSelect
                                 v-model="baTable.form.items!.links_value" size=""
                                 :label="t('cms.catalog.links_value')" prop="links_value"
                                 :show="baTable.form.items!.links_type == '1'"></ElLinkSelect>
@@ -108,7 +108,7 @@
                                 </el-select>
                             </el-form-item>
                             <el-form-item :label="t('cms.catalog.template_info')" prop="template_info">
-                                <el-select 
+                                <el-select
                                     v-model="baTable.form.items!.template_info" clearable :placeholder="t('Please select field', { field: t('cms.catalog.template_info') })
                                     " class="w100">
                                     <el-option v-for="item in state.temp.info" :key="item" :label="item" :value="item" />
@@ -116,21 +116,21 @@
                             </el-form-item>
                         </el-tab-pane>
                         <el-tab-pane :label="t('cms.catalog.seo')">
-                            <FormItem 
+                            <FormItem
                                 :label="t('cms.catalog.seo_title')" type="string"
                                 v-model="baTable.form.items!.seo_title" prop="seo_title" :input-attr="{
                                     placeholder: t('Please input field', {
                                         field: t('cms.catalog.seo_title'),
                                     }),
                                 }" />
-                            <FormItem 
+                            <FormItem
                                 :label="t('cms.catalog.seo_keywords')" type="string"
                                 v-model="baTable.form.items!.seo_keywords" prop="seo_keywords" :input-attr="{
                                     placeholder: t('Please input field', {
                                         field: t('cms.catalog.seo_keywords'),
                                     }),
                                 }" />
-                            <FormItem 
+                            <FormItem
                                 :label="t('cms.catalog.seo_description')" type="textarea"
                                 v-model="baTable.form.items!.seo_description" prop="seo_description" :input-attr="{
                                     placeholder: t('Please input field', {
@@ -139,7 +139,7 @@
                                 }" />
                         </el-tab-pane>
                         <el-tab-pane :label="t('cms.catalog.extend')" v-if="state.fields.length > 0">
-                            <CustomFormItem 
+                            <CustomFormItem
                                 v-for="(item, index) in state.fields" :type="item.type" :label="t(item.name)"
                                 v-model="state.catalogExtend![item.field]" :option="item" :key="index" />
                         </el-tab-pane>

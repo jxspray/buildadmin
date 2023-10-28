@@ -84,7 +84,7 @@
             </el-scrollbar>
             <template #footer>
                 <div>
-                    <el-button @click="baTable.toggleForm('')">{{ t('Cancel') }}</el-button>
+                    <el-button @click="closeModel">{{ t('Cancel') }}</el-button>
                     <el-button v-blur :loading="baTable.form.submitLoading" @click="onSubmit(formRef)" type="primary">
                         {{ t('Save') }}
                     </el-button>

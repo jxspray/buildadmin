@@ -1,5 +1,6 @@
 <?php
 
+namespace app\admin\controller;
 
 use Throwable;
 use ba\Terminal;
@@ -29,7 +30,7 @@ class Ajax extends Backend
 
     public function upload()
     {
-        AdminLog::setTitle(\app\admin\controller\__('upload'));
+        AdminLog::setTitle(__('upload'));
         $file = $this->request->file('file');
         try {
             $upload     = new Upload($file);
@@ -39,7 +40,7 @@ class Ajax extends Backend
             $this->error($e->getMessage());
         }
 
-        $this->success(\app\admin\controller\__('File uploaded successfully'), [
+        $this->success(__('File uploaded successfully'), [
             'file' => $attachment ?? []
         ]);
     }
@@ -57,8 +58,8 @@ class Ajax extends Backend
     {
         $suffix     = $this->request->param('suffix', 'file');
         $background = $this->request->param('background');
-        $content    = \app\admin\controller\build_suffix_svg((string)$suffix, (string)$background);
-        return \app\admin\controller\response($content, 200, ['Content-Length' => strlen($content)])->contentType('image/svg+xml');
+        $content    = build_suffix_svg((string)$suffix, (string)$background);
+        return response($content, 200, ['Content-Length' => strlen($content)])->contentType('image/svg+xml');
     }
 
     /**
@@ -69,14 +70,14 @@ class Ajax extends Backend
     public function getTablePk(?string $table = null)
     {
         if (!$table) {
-            $this->error(\app\admin\controller\__('Parameter error'));
+            $this->error(__('Parameter error'));
         }
         $tablePk = Db::query("SHOW TABLE STATUS LIKE '$table'", [], true);
         if (!$tablePk) {
-            $table   = \app\admin\controller\config('database.connections.mysql.prefix') . $table;
+            $table   = config('database.connections.mysql.prefix') . $table;
             $tablePk = Db::query("SHOW TABLE STATUS LIKE '$table'", [], true);
             if (!$tablePk) {
-                $this->error(\app\admin\controller\__('Data table does not exist'));
+                $this->error(__('Data table does not exist'));
             }
         }
         $tablePk = Db::table($table)->getPk();
@@ -88,23 +89,23 @@ class Ajax extends Backend
         $table = $this->request->param('table');
         $clean = $this->request->param('clean', true);
         if (!$table) {
-            $this->error(\app\admin\controller\__('Parameter error'));
+            $this->error(__('Parameter error'));
         }
 
         $tablePk = Db::name($table)->getPk();
         $this->success('', [
             'pk'        => $tablePk,
-            'fieldList' => \app\admin\controller\get_table_fields($table, $clean),
+            'fieldList' => get_table_fields($table, $clean),
         ]);
     }
 
     public function changeTerminalConfig()
     {
-        AdminLog::setTitle(\app\admin\controller\__('changeTerminalConfig'));
+        AdminLog::setTitle(__('changeTerminalConfig'));
         if (Terminal::changeTerminalConfig()) {
             $this->success();
         } else {
-            $this->error(\app\admin\controller\__('Failed to modify the terminal configuration. Please modify the configuration file manually:%s', ['/config/buildadmin.php']));
+            $this->error(__('Failed to modify the terminal configuration. Please modify the configuration file manually:%s', ['/config/buildadmin.php']));
         }
     }
 
@@ -116,10 +117,10 @@ class Ajax extends Backend
             Cms::getInstance()->forceUpdateAll();
             Cms::getInstance()->updateParam();
         } else {
-            $this->error(\app\admin\controller\__('Parameter error'));
+            $this->error(__('Parameter error'));
         }
         Event::trigger('cacheClearAfter', $this->app);
-        $this->success(\app\admin\controller\__('Cache cleaned~'));
+        $this->success(__('Cache cleaned~'));
     }
 
     /**
