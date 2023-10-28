@@ -402,3 +402,4 @@ if (!function_exists('get_upload_config')) {
         return array_merge($upload, $uploadConfig);
     }
 }
+require __DIR__ . '/index/common_web.php';

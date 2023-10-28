@@ -1,0 +1,16 @@
+export default {
+    id: 'id',
+    name: 'name',
+    remark: 'remark',
+    width: 'width',
+    height: 'height',
+    status: 'status',
+    'status 0': 'status 0',
+    'status 1': 'status 1',
+    groups: 'groups',
+    create_time: 'create_time',
+    update_time: 'update_time',
+    delete_time: 'delete_time',
+    extends: 'extends',
+    'quick Search Fields': 'id',
+}

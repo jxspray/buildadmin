@@ -1,0 +1,16 @@
+export default {
+    id: 'ID',
+    name: '名称',
+    remark: '备注',
+    width: '宽度',
+    height: '高度',
+    status: '状态',
+    'status 0': '禁用',
+    'status 1': '启用',
+    groups: '组别',
+    create_time: '创建时间',
+    update_time: '更新时间',
+    delete_time: '删除时间',
+    extends: '扩展字段',
+    'quick Search Fields': 'ID',
+}

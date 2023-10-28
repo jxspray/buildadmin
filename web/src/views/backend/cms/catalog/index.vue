@@ -1,0 +1,73 @@
+<template>
+    <div class="default-main ba-table-box">
+        <el-alert class="ba-table-alert" v-if="baTable.table.remark" :title="baTable.table.remark" type="info" show-icon />
+
+        <!-- 表格顶部菜单 -->
+        <TableHeader
+            :buttons="['refresh', 'add', 'edit', 'delete', 'unfold', 'quickSearch', 'columnDisplay']"
+            :quick-search-placeholder="t('quick Search Placeholder', { fields: t('cms.catalog.quick Search Fields') })"
+        />
+
+        <!-- 表格 -->
+        <!-- 要使用`el-table`组件原有的属性，直接加在Table标签上即可 -->
+        <Table ref="tableRef" :pagination="false" />
+
+        <!-- 表单 -->
+        <PopupForm />
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref, provide, onMounted } from 'vue'
+import baTableClass from '/@/utils/baTable'
+import { defaultOptButtons } from '/@/components/table'
+import { baTableApi } from '/@/api/common'
+import { useI18n } from 'vue-i18n'
+import PopupForm from './popupForm.vue'
+import Table from '/@/components/table/index.vue'
+import TableHeader from '/@/components/table/header/index.vue'
+
+const { t } = useI18n()
+const tableRef = ref()
+const optButtons = defaultOptButtons(["weigh-sort","edit","delete"])
+const baTable = new baTableClass(
+    new baTableApi('/admin/cms.catalog/'),
+    {
+        expandAll: true,
+        column: [
+            { type: 'selection', align: 'center', operator: false },
+            { label: t('cms.catalog.title'), prop: 'title', align: 'left' },
+            { label: t('cms.catalog.id'), prop: 'id', align: 'center', width: 70, sortable: 'custom', operator: 'RANGE' },
+            { label: t('cms.module.title'), prop: 'module.title', align: 'left' },
+            { label: t('cms.catalog.seo_url'), prop: 'seo_url', align: 'center' },
+            { label: t('Operate'), align: 'center', width: 140, render: 'buttons', buttons: optButtons, operator: false },
+        ],
+        dblClickNotEditColumn: [undefined, 'status'],
+        // defaultOrder: { prop: 'weigh', order: 'desc' },
+        dragSortLimitField: 'pid',
+    },
+    {
+        defaultItems: { "weigh":"0", "links_type":"0","blank":"0","show":"1","status":"1"},
+    }
+)
+
+provide('baTable', baTable)
+
+onMounted(() => {
+    baTable.table.ref = tableRef.value
+    baTable.mount()
+    baTable.getIndex()?.then(() => {
+        baTable.initSort()
+        baTable.dragSort()
+    })
+})
+</script>
+
+<script lang="ts">
+import { defineComponent } from 'vue'
+export default defineComponent({
+    name: 'cms/catalog',
+})
+</script>
+
+<style scoped lang="scss"></style>
