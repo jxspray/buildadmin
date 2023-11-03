@@ -1,7 +1,5 @@
 <template>
-    <el-form-item v-if="props.show" :label="props.label" :prop="props.prop">
-        <el-input :value="state.title" :size="props.size" @click="openDialog" :readonly="true"></el-input>
-    </el-form-item>
+  <el-input :value="state.title" :size="props.size" @click="openDialog" :readonly="true"></el-input>
     <el-dialog
         class="el-link-dialog"
         :close-on-click-modal="false"
@@ -76,7 +74,7 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 const formRef = ref<FormInstance>()
-const props = defineProps(['modelValue', 'size', 'show', 'prop', 'label'])
+const props = defineProps(['modelValue', 'size'])
 const emit = defineEmits(['update:modelValue'])
 
 const state: {
@@ -324,7 +322,6 @@ const init = (type = '') => {
     if (type != 'load') titleSearch()
 }
 onMounted(() => {
-    console.log(value.value)
     state.linkForm = JSON.stringify(value.value) === "{}" || value.value.length === 0 ? state.linkDefault : value.value
     typeChange()
     init('load')

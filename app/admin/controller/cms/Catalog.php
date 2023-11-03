@@ -57,7 +57,7 @@ class Catalog extends Backend
     public function edit(): void
     {
         $id  = $this->request->param($this->model->getPk());
-        $row = $this->model->with(["catalogExtend"])->find($id);
+        $row = $this->model->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
         }
@@ -148,5 +148,13 @@ class Catalog extends Backend
     public function getTemplate(): void
     {
         $this->success('', cms("template"));
+    }
+
+    public function initCatalog(): void
+    {
+        $moduleList = \app\admin\model\cms\Module::select()->toArray();
+        array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
+        $catalogList = $this->tree->assembleTree($this->tree->getTreeArray($this->getCatalogs(), 'title'));
+        $this->success('', ['moduleList' => $moduleList, 'catalogList' => $catalogList]);
     }
 }

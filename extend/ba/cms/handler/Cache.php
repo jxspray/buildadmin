@@ -49,7 +49,7 @@ class Cache
             case self::CACHE_HAS:
                 return \think\facade\Cache::has($name);
             case self::CACHE_SET:
-                \think\facade\Cache::set($name, $data);
+                \think\facade\Cache::tag('cms')->set($name, $data);
                 return true;
             case self::CACHE_GET:
             default:

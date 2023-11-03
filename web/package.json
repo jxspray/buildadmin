@@ -27,9 +27,12 @@
         "sortablejs": "1.15.0",
         "v-code-diff": "1.5.1",
         "vue": "3.3.4",
+        "vue-clipboard3": "^2.0.0",
         "vue-i18n": "9.2.2",
         "vue-qr": "4.0.9",
-        "vue-router": "4.2.2"
+        "vue-router": "4.2.2",
+        "@wangeditor/editor": "^5.1.1",
+        "@wangeditor/editor-for-vue": "^5.1.12"
     },
     "devDependencies": {
         "@types/lodash-es": "4.17.7",
