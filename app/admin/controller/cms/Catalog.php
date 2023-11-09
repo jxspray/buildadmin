@@ -3,6 +3,8 @@
 namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
+use ba\cms\Cms;
+use ba\Filesystem;
 use ba\Tree;
 use think\db\exception\PDOException;
 use think\exception\ValidateException;
@@ -44,7 +46,7 @@ class Catalog extends Backend
 
         $this->success('', [
             'list'   => $this->getCatalogs(),
-            'remark' => get_route_remark(),
+            'remark' => get_route_remark()
         ]);
     }
 
@@ -102,8 +104,7 @@ class Catalog extends Backend
         }
 //        \think\facade\Cache::clear();
         $this->success('', [
-            'row' => $row,
-            'fields' => array_values(cms('field_1')),
+            'row' => $row
         ]);
     }
 
@@ -136,18 +137,47 @@ class Catalog extends Backend
                 $where[] = [$this->quickSearchField, 'like', '%' . $item . '%'];
             }
         }
-
         // 读取用户组所有权限规则
         return $this->model
-            ->with('module')
             ->where($where)
+            ->with('module')
             ->order('weigh desc,id asc')
+            ->cache()
             ->select()->toArray();
     }
 
     public function getTemplate(): void
     {
-        $this->success('', cms("template"));
+        $template = [];
+        // 获取所有模型模板
+        $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home", ['html']);
+        $data = [];
+        foreach ($files as $file) {
+            $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+            if (!str_contains($file, '/')) $data[$file] = $file;
+        }
+        $template[0]['index'] = $data;
+        $template[0]['info'] = [];
+
+        foreach (GM("module")->getColumnAll() as $module) {
+            $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\" . $module['name'], ['html']);
+            $data = [];
+            foreach ($files as $file) {
+                $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+                if (!str_contains($file, '/')) $data[$file] = $file;
+            }
+            $template[$module['id']]['index'] = $data;
+            if ($module['type'] == '0') {
+                $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\" . $module['name'] . "\\info", ['html']);
+                $data = [];
+                foreach ($files as $file) {
+                    $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+                    if (!str_contains($file, '/')) $data[$file] = $file;
+                }
+                $template[$module['id']]['info'] = $data;
+            }
+        }
+        $this->success('', $template);
     }
 
     public function initCatalog(): void
@@ -155,6 +185,7 @@ class Catalog extends Backend
         $moduleList = \app\admin\model\cms\Module::select()->toArray();
         array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
         $catalogList = $this->tree->assembleTree($this->tree->getTreeArray($this->getCatalogs(), 'title'));
+        array_unshift($catalogList, ['id' => 0, 'title' => '无']);
         $this->success('', ['moduleList' => $moduleList, 'catalogList' => $catalogList]);
     }
 }

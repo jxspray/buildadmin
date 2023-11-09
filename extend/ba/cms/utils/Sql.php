@@ -146,9 +146,11 @@ class Sql
     public function createTable(\app\admin\model\cms\Module $moduleRow): bool
     {
         $typeSql = match ($moduleRow['type']) {
-            "1" => "`url` varchar(20) DEFAULT NULL COMMENT '链接',",
+            "0" => "`url` varchar(20) DEFAULT NULL COMMENT '链接',",
             default => ""
         };
+        // 创建字段
+
         // 创建初始表
         $this->run("query", "{$this->getTableHead('CREATE')} (
             `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -177,14 +179,16 @@ class Sql
         switch ($moduleRow['template']) {
             case 'article': // 文章模型
                 $data = [
-                    ['name' => '栏目', 'field' => 'catid', 'type' => 'remoteSelect', 'setup' => [
+                    ['name' => '栏目', 'field' => 'catid', 'type' => 'remoteSelect',
+                        'setup' => [
                             'type' => 'key',
                             'keyField' => 'id',
                             'valueField' => 'name',
                             'remoteName' => '',
                         ]
                     ],
-                    ['name' => '标题', 'field' => 'title', 'type' => 'text', 'setup' => [
+                    ['name' => '标题', 'field' => 'title', 'type' => 'text',
+                        'setup' => [
                             'type' => 'string',
                             'default' => '',
                         ]
@@ -194,25 +198,28 @@ class Sql
                             'default' => '',
                         ]
                     ],
-                    ['name' => '描述', 'field' => 'description', 'type' => 'text', 'setup' => [
+                    ['name' => '描述', 'field' => 'description', 'type' => 'text',
+                        'setup' => [
                             'type' => 'textarea',
                             'linenum' => 3,
                             'default' => '',
                         ]
                     ],
-                    ['name' => '状态', 'field' => 'status', 'type' => 'radio', 'setup' => [
+                    ['name' => '状态', 'field' => 'status', 'type' => 'radio',
+                        'setup' => [
                             'type' => 'key',
-                            'options' => ['关闭', '开启']
+                            'options' => [["key" => 0, "value" => '关闭'], ["key" => 0, "value" => '开启']]
                         ]
                     ],
                 ];
                 break;
             case 'basics': // 基础模板
                 $data = [
-                    ['name' => '状态', 'field' => 'status', 'type' => 'radio', 'setup' => [
-                        'type' => 'key',
-                        'options' => ['关闭', '开启']
-                    ]
+                    ['name' => '状态', 'field' => 'status', 'type' => 'radio',
+                        'setup' => [
+                            'type' => 'key',
+                            'options' => [["key" => 0, "value" => '关闭'], ["key" => 0, "value" => '开启']]
+                        ]
                     ],
                 ];
                 break;

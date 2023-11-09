@@ -1,6 +1,44 @@
 <!-- 主页添加active -->
 <script type="text/javascript">
     require(["jquery", "swiper", "superSlide"], function ($, Swiper) {
+        // 头部滚动以及初始位置的判断实现图片颜色等的替换
+        $(".com_header").removeClass("bg-fff").addClass("active");
+        $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");
+        $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone1.png");
+        function getTop(clsName) {
+            var obj = document.getElementsByClassName(clsName)[0];
+            return obj.getBoundingClientRect().top;
+        }
+
+        function getDom(clsName) {
+            return document.getElementsByClassName(clsName)[0];
+        }
+        window.addEventListener('scroll', function () {
+            var scrollT = document.documentElement.scrollTop || document.body.scrollTop;
+            console.log(getTop('new_index_banner'));
+            if (getTop('new_index_banner') === 0) {
+                getDom('com_header').classList.add('active');
+                getDom('com_header').classList.remove('bg-fff');
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone1.png");
+            }
+            if (getTop('new_index_banner') < 0) {
+                getDom('com_header').classList.remove('active');
+                getDom('com_header').classList.add('bg-fff');
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone.png");
+            }
+        });
+        setTimeout(function () {
+            var mTop = $(".new_index_banner").offset().top - $(window).scrollTop();
+            if (mTop < 0) {
+                $(".com_header").addClass("bg-fff");
+                $(".com_header").removeClass("active");
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone.png");
+            }
+        }, 100);
+
         // 3d轮播图
         var sw1 = new Swiper(".page_index .new_news .swiper", {
             loop: true,
@@ -126,48 +164,6 @@
             delayTime: 800,
             interTime: 8000,
         });
-        // 头部滚动以及初始位置的判断实现图片颜色等的替换
-        setTimeout(function () {
-            $(".com_header").removeClass("bg-fff");
-            $(".com_header").addClass("active");
-            $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");
-            $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone1.png");
-        }, 100);
-
-        function getTop(clsName) {
-            var obj = document.getElementsByClassName(clsName)[0];
-            return obj.getBoundingClientRect().top;
-        }
-
-        function getDom(clsName) {
-            var obj = document.getElementsByClassName(clsName)[0];
-            return obj;
-        }
-        window.addEventListener('scroll', function () {
-            var scrollT = document.documentElement.scrollTop || document.body.scrollTop;
-            console.log(getTop('new_index_banner'));
-            if (getTop('new_index_banner') === 0) {
-                getDom('com_header').classList.add('active');
-                getDom('com_header').classList.remove('bg-fff');
-                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");
-                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone1.png");
-            }
-            if (getTop('new_index_banner') < 0) {
-                getDom('com_header').classList.remove('active');
-                getDom('com_header').classList.add('bg-fff');
-                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo.png");
-                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone.png");
-            }
-        });
-        setTimeout(function () {
-            var mTop = $(".new_index_banner").offset().top - $(window).scrollTop();
-            if (mTop < 0) {
-                $(".com_header").addClass("bg-fff");
-                $(".com_header").removeClass("active");
-                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo.png");
-                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone.png");
-            }
-        }, 100);
     })
 </script>
 
@@ -177,14 +173,14 @@
         <div id="slideBox-index" class="slideBox-index new_slideBox_banner">
             <div class="hd">
                 <ul>
-                    {foreach :getSlides(1)->list as $item}
+                    {foreach $catalog.field.banner as $item}
                         <li></li>
                     {/foreach}
                 </ul>
             </div>
             <div class="bd">
                 <ul>
-                    {foreach :getSlides(1)->list as $item}
+                    {foreach $catalog.field.banner as $item}
                         <li>
                             <a href="{$item->link}" target="_blank" title="{$item->title}"
                                style="background-image:url({$item->image});"></a>
@@ -199,11 +195,11 @@
     <!--产品中心-->
     <div class="new_index_pro">
         <div class="new_index_title">
-            <h3>{:getSlides(2)->name}</h3>
-            <p>{:getSlides(2)->remark}</p>
+            <h3>{:getSlides(1)->name}</h3>
+            <p>{:getSlides(1)->remark}</p>
         </div>
         <div class="contentbox itembox">
-            {foreach :getSlides(2)->list as $item}
+            {foreach :getSlides(1)->list as $item}
                 <a href="{$item->link}" title="{$item->title}" target="_blank" class="item">
                     <div class="picbox pro4">
                         <div class="pic" style="background-image: url({$item->image})"></div>
@@ -214,7 +210,7 @@
             {/foreach}
         </div>
         <div class="hei60"></div>
-        <a href="{:getBlock('base')->kefu_link}" target="_blank" title="了解更多" class="btn">了解更多</a>
+        <a href="{$block.kefu_link}" target="_blank" title="了解更多" class="btn">了解更多</a>
     </div>
 
     <!--解决方案-->
@@ -647,7 +643,7 @@
         </div>
         <div>
             <div class="fangright_a active">
-                <a href="{$Categorys[5]['url']}" target="_blank" title="查看更多" class="btn">查看更多</a>
+                <a href="{$catalogList[5]['url']}" target="_blank" title="查看更多" class="btn">查看更多</a>
             </div>
             {/*<div class="fangright_a">
                 <a href="{$Categorys[64]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>

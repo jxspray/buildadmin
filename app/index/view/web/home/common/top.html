@@ -3,17 +3,14 @@
 	<div class="contentbox new_header_in">
 		<!--左侧logo-->
 		<div class="new_header_logo">
-			<img alt="{$initCms->site_name}" title="{$initCms->site_name}" src="/cms/home/webimages/logo.png" />
+			<img alt="{$system.site_name}" title="{$system.site_name}" src="/cms/home/webimages/logo.png" />
 		</div>
 		<div class="new_head_nav">
 			<ul>
-				<li class="active">
-					<a href="/" title="网站首页">网站首页</a>
-				</li>
-				{foreach :getCategorys(0) as $item}
+				{foreach $catalogHeader as $item}
 					<li data-id="{$item.id}">
 					<a href="{$item.url}" title="{$item.title}">{$item.title}</a>
-						{if count($item->children)}
+						{if count($item['children'])}
 							<div class="new_head_menu" style="width: 140px;margin-left: -70px;">
 								{foreach $item->children as $ite}
 									<a href="{$ite.url}" title="{$ite.title}">{$ite.title}</a>
@@ -26,8 +23,8 @@
 		</div>
 		<!--头部右侧电话-->
 		<div class="new_header_phone">
-			<img alt="{$initCms->site_name}" src="/cms/home/webimages/phone.png" />
-			<span>{$initCms->tel}</span>
+			<img alt="{$system.site_name}" src="/cms/home/webimages/phone.png" />
+			<span>{$system.tel}</span>
 		</div>
 
 	</div>

@@ -226,6 +226,9 @@ export const addRouteAll = (viewsComponent: Record<string, any>, routes: any, pa
         if (routes[idx].extend == 'add_menu_only') {
             continue
         }
+        if (routes[idx].type == 'menu' && routes[idx].menu_type == 'tab' && !viewsComponent[routes[idx].component] && /^cms\/content/.test(routes[idx].name)) {
+            routes[idx].component = "/src/views/backend/cms/content/loading.vue"
+        }
         if ((routes[idx].menu_type == 'tab' && viewsComponent[routes[idx].component]) || routes[idx].menu_type == 'iframe') {
             addRouteItem(viewsComponent, routes[idx], parentName, analyticRelation)
         }

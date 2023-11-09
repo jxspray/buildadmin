@@ -7,6 +7,7 @@ use app\index\model\web\Catalog;
 use app\index\model\web\Config;
 use app\index\model\web\Content;
 use think\db\exception\DbException;
+use think\facade\View;
 
 class Base extends \app\index\controller\Action
 {

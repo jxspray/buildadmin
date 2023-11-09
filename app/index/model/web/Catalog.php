@@ -16,35 +16,43 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
 //    protected $updateTime = 'updatetime';
 
     protected $name = "cms_catalog";
-    protected $json = ['links_value'];
-    protected $append = [
-        'url'
+    protected $type = [
+        "links_value" => 'object',
     ];
+    public function get($id) {
+
+    }
 
     public function getColumnAll($param = null): array
     {
         return $this->column("*", 'id');
     }
 
+    public function getRouteAttr($value, $array)
+    {
+        return empty($array["seo_url"]) ? $array["id"] : $array["seo_url"];
+    }
 
-    public function getFieldAttr($value, $array)
+    public function getFieldAttr($value, $array): array
     {
         $field = [];
+        $value = json_decode($value);
         foreach ($value as $k => $v) {
-            switch ($v['type']['is']) {
-                case 'el-link-select':
-                    $field[$v['field']] = Url::appoint($v['type']['value']);
+            switch ($v->type->type) {
+                case 'link-select':
+                    $field[$v->field] = Url::appoint($v->type->value);
                     break;
-                case 'el-array':
-                    $arr = $v['type']['value']['table'];
-                    foreach ($arr as $key1 => $val1) {
-                        foreach (array_keys($val1) as $key2 => $val2) {
-                            if (is_array($val1[$val2])) {
-                                $arr[$key1][$val2] = Url::appoint((object)$val1[$val2]);
+                case 'customArray':
+                    $arr = $v->type->value->table;
+                    foreach ($arr as &$val1) {
+                        foreach ($val1 as $key2 => $val2) {
+                            if (is_object($val2)) {
+                                $val1->$key2 = Url::appoint($val2);
                             }
+                            if (empty($val2)) $val1->$key2 = '';
                         }
                     }
-                    $field[$v['field']] = $arr;
+                    $field[$v->field] = $arr;
                     break;
                 default:
                     $field[$v['field']] = $v['type']['value'];

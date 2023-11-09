@@ -11,7 +11,7 @@
     <el-dialog
         class="ba-operate-dialog"
         :close-on-click-modal="false"
-        :model-value="baTable.form.operate ? true : false"
+        :model-value="!!baTable.form.operate"
         @close="baTable.toggleForm"
     >
         <template #header>
@@ -37,7 +37,7 @@
                 <FormItem :label="t('cms.module.name')" type="string" v-model="baTable.form.items!.name" prop="name" :input-attr="{ placeholder: t('Please input field', { field: t('cms.module.name') }) }" />
                 <FormItem :label="t('cms.module.title')" type="string" v-model="baTable.form.items!.title" prop="title" :input-attr="{ placeholder: t('Please input field', { field: t('cms.module.title') }) }" />
                 <FormItem :label="t('cms.module.description')" type="string" v-model="baTable.form.items!.description" prop="description" :input-attr="{ placeholder: t('Please input field', { field: t('cms.module.description') }) }" />
-                <FormItem :label="t('cms.module.type')" type="radio" v-model="baTable.form.items!.type" prop="type" :data="{ content: { 0: t('cms.module.type 0'), 1: t('cms.module.type 1'), 2: t('cms.module.type 2') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.module.type') }) }" />
+                <FormItem :label="t('cms.module.type')" type="radio" v-model="baTable.form.items!.type" prop="type" :data="{ content: { 0: t('cms.module.type 0'), 1: t('cms.module.type 1') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.module.type') }) }" />
                 <!-- <FormItem :label="t('cms.module.issystem')" type="radio" v-model="baTable.form.items!.issystem" prop="issystem" :data="{ content: { 1: t('cms.module.issystem 1'), 0: t('cms.module.issystem 0') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.module.issystem') }) }" /> -->
                 <!-- <FormItem :label="t('cms.module.issearch')" type="radio" v-model="baTable.form.items!.issearch" prop="issearch" :data="{ content: { 1: t('cms.module.issearch 1'), 0: t('cms.module.issearch 0') } }" :input-attr="{ placeholder: t('Please select field', { field: t('cms.module.issearch') }) }" /> -->
                 <!-- <FormItem :label="t('cms.module.listfields')" type="string" v-model="baTable.form.items!.listfields" prop="listfields" :input-attr="{ placeholder: t('Please input field', { field: t('cms.module.listfields') }) }" /> -->

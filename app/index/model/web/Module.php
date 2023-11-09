@@ -17,6 +17,6 @@ class Module extends Model implements \app\admin\model\cms\CmsModelInterface
 
     public function getColumnAll($param = null): array
     {
-        return $this->column("*", 'id');
+        return $this->cache()->column("*", 'id');
     }
 }

@@ -17,15 +17,10 @@ class Action extends \app\BaseController
 
     protected string $layout = "default";
 
-    /**
-     * @var \think\View
-     */
-    protected \think\View $view;
-
     public function __construct(\think\App $app)
     {
         parent::__construct($app);
-        $this->view = new \think\View($app);
+        $this->initialize();
 
         $this->pattern = input("pattern", 'home');
         $this->module = input("module", 'index');
@@ -39,6 +34,23 @@ class Action extends \app\BaseController
             \ba\cms\Cms::init();
             $initState = true;
         }
+    }
+
+    // 初始化
+    protected function initialize(): void
+    {
+        $this->assign([
+            'label'         => $this->request->label,
+            'system'        => $this->request->system,
+            'block'         => $this->request->block,
+            'crumbs'        => $this->request->crumbs,
+            'pathinfo'      => $this->request->pathinfo,
+            'catalog'       => $this->request->catalog,
+            'catalogList'   => $this->request->catalogList,
+            'catalogHeader' => $this->request->catalogHeader,
+            'catalogFooter' => $this->request->catalogFooter,
+            'htmlCheck'     => $this->request->htmlCheck,
+        ]);
     }
 
     /**
@@ -60,7 +72,7 @@ class Action extends \app\BaseController
 
     public function assign($name, $value = null): void
     {
-        $this->view->assign($name, $value);
+        \think\facade\View::assign($name, $value);
     }
 
     public function fetch(string $value, array $args = [], bool|string $layout = true)
@@ -68,7 +80,7 @@ class Action extends \app\BaseController
         $template = app()->getAppPath() . "/view/web/{$this->pattern}/$value.html";
         try {
             $this->setLayout($layout);
-            return $this->view->fetch($template, $args);
+            return \think\facade\View::fetch($template, $args);
         } catch (\Exception $e) {
             abort(404, $e->getMessage());
         }
@@ -78,7 +90,7 @@ class Action extends \app\BaseController
     {
         if (!$layout) return;
         if ($layout === true) $layout = $this->layout;
-        $this->view->engine()->layout("web/{$this->pattern}/layout/{$layout}");
+        \think\facade\View::engine()->layout("web/{$this->pattern}/layout/{$layout}");
     }
 
     public function __call($name, $arguments)

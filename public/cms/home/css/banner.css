@@ -1,0 +1,295 @@
+body {
+  overflow-x: hidden;
+  letter-spacing: 1px;
+}
+.sys_bannerbox1 .swiper-container {
+  height: 500px;
+}
+.sys_bannerbox1 .swiper-container .swiper-slide {
+  background-position: center;
+  background-size: cover;
+}
+.sys_bannerbox1 .swiper-container .swiper-slide .videobox {
+  display: block;
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+.sys_bannerbox1 .swiper-container .swiper-slide .videobox .video1_open {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -40px;
+  margin-left: -40px;
+  border: #FFF 3px solid;
+  border-radius: 100px;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+  z-index: 14;
+}
+.sys_bannerbox1 .swiper-container .swiper-slide .videobox .video1_open:hover i {
+  border-color: transparent transparent transparent #ff3318;
+}
+.sys_bannerbox1 .swiper-container .swiper-slide .videobox .video1_open i {
+  display: block;
+  width: 0;
+  height: 0;
+  border-width: 20px 0 20px 30px;
+  border-style: solid;
+  border-color: transparent transparent transparent #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -20px;
+}
+.sys_bannerbox1 .swiper-container .swiper-slide .videobox .video1_open_back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  z-index: 13;
+}
+.sys_bannerbox1 .swiper-container .swiper-pagination {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  margin: auto;
+  text-align: center;
+}
+.sys_bannerbox1 .swiper-container .swiper-pagination-switch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  background: #999999;
+  margin-right: 10px;
+  opacity: 0.8;
+  cursor: pointer;
+}
+.sys_bannerbox1 .swiper-container .swiper-visible-switch {
+  background: #999999;
+}
+.sys_bannerbox1 .swiper-container .swiper-active-switch {
+  width: 20px;
+  background: #ff3318;
+}
+.sys_bannerbox1 .swiper-container .arrow-left {
+  background: url(/cms/home/images/click/prev.png) no-repeat;
+  background-size: cover;
+  position: absolute;
+  left: 5%;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 56px;
+  height: 56px;
+  cursor: pointer;
+}
+.sys_bannerbox1 .swiper-container .arrow-left:hover {
+  opacity: 0.6;
+}
+.sys_bannerbox1 .swiper-container .arrow-right {
+  background: url(/cms/home/images/click/next.png) no-repeat;
+  background-size: cover;
+  position: absolute;
+  right: 5%;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 56px;
+  height: 56px;
+  cursor: pointer;
+}
+.sys_bannerbox1 .swiper-container .arrow-right:hover {
+  opacity: 0.6;
+}
+.sys_bannerbox2 {
+  width: 100%;
+  height: 785px;
+  white-space: nowrap;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+.sys_bannerbox2 .loading {
+  position: absolute;
+  top: 50%;
+  right: 50%;
+  z-index: 10000;
+  margin: -16px -16px;
+  color: #fff;
+  text-indent: -9999em;
+  overflow: hidden;
+  background: url('/cms/home/images/loading/ajax-loader.gif') no-repeat left top;
+  width: 31px;
+  height: 31px;
+}
+.sys_bannerbox2 .banner_m {
+  width: 50%;
+  height: 785px;
+  display: inline-block;
+  position: relative;
+}
+.sys_bannerbox2 .wrapper {
+  *float: left;
+  width: 100%;
+  height: 785px;
+  display: inline-block;
+  position: relative;
+  left: -967px;
+}
+.sys_bannerbox2 .wrapper #sys_bannerbox2_slideshow {
+  width: 100%;
+  height: 785px;
+}
+.sys_bannerbox2 .wrapper #sys_bannerbox2_slideshow ul {
+  display: none;
+}
+.sys_bannerbox2 .wrapper .box_skitter {
+  position: relative;
+  background: none;
+}
+.sys_bannerbox2 .wrapper .box_skitter ul {
+  display: none;
+}
+.sys_bannerbox2 .wrapper .box_skitter .container_skitter {
+  overflow: hidden;
+  position: relative;
+}
+.sys_bannerbox2 .wrapper .box_skitter .image {
+  overflow: hidden;
+}
+.sys_bannerbox2 .wrapper .box_skitter .image img {
+  display: none;
+}
+.sys_bannerbox2 .wrapper .box_skitter .box_clone {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100px;
+  overflow: hidden;
+  display: none;
+  z-index: 20;
+}
+.sys_bannerbox2 .wrapper .box_skitter .box_clone img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 20;
+}
+.sys_bannerbox2 .wrapper .box_skitter .prev_button {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  z-index: 100;
+  width: 56px;
+  height: 56px;
+  margin-top: -28px;
+  overflow: hidden;
+  background: url('/cms/home/images/click/prev.png') no-repeat left top !important;
+}
+.sys_bannerbox2 .wrapper .box_skitter .next_button {
+  position: absolute;
+  top: 50%;
+  right: 10%;
+  z-index: 100;
+  width: 56px;
+  height: 56px;
+  margin-top: -28px;
+  background: url('/cms/home/images/click/next.png') no-repeat left top !important;
+}
+.sys_bannerbox2 .wrapper .box_skitter .label_skitter {
+  z-index: 150;
+  position: absolute;
+  display: none;
+}
+.sys_bannerbox2 .fn-clear {
+  zoom: 1;
+}
+.sys_bannerbox3 {
+  width: 100%;
+  height: 700px;
+}
+.sys_bannerbox3 .swiper {
+  width: 100%;
+  height: 100%;
+}
+.sys_bannerbox3 .swiper .swiper-wrapper .swiper-slide .picbox {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: block;
+}
+.sys_bannerbox3 .swiper .swiper-wrapper .swiper-slide .picbox .pic {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  transition: all 0.6s;
+}
+.sys_bannerbox3 .swiper .swiper-pagination-bullet-active {
+  width: 20px;
+  border-radius: 30px;
+  background-color: #fff;
+  opacity: 1 !important;
+}
+.sys_bannerbox3 .swiper .swiper-pagination-bullet {
+  background-color: #fff;
+  opacity: 0.5;
+}
+.sys_bannerbox3 .swiper .swiper-button-next {
+  background: url(/cms/home/images/click/next.png) no-repeat;
+  background-size: cover;
+  position: absolute;
+  right: 10%;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 56px;
+  height: 56px;
+  cursor: pointer;
+  z-index: 1;
+  opacity: 0.6;
+}
+.sys_bannerbox3 .swiper .swiper-button-next::after {
+  content: none;
+}
+.sys_bannerbox3 .swiper .swiper-button-next:focus {
+  outline: none;
+}
+.sys_bannerbox3 .swiper .swiper-button-next:hover {
+  opacity: 1;
+}
+.sys_bannerbox3 .swiper .swiper-button-prev {
+  background: url(/cms/home/images/click/prev.png) no-repeat;
+  background-size: cover;
+  position: absolute;
+  left: 10%;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 56px;
+  height: 56px;
+  cursor: pointer;
+  z-index: 1;
+  opacity: 0.6;
+}
+.sys_bannerbox3 .swiper .swiper-button-prev::after {
+  content: none;
+}
+.sys_bannerbox3 .swiper .swiper-button-prev:focus {
+  outline: none;
+}
+.sys_bannerbox3 .swiper .swiper-button-prev:hover {
+  opacity: 1;
+}
+/*# sourceMappingURL=banner.css.map */

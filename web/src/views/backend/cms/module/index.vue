@@ -58,41 +58,9 @@ let optButtons: OptButton[] = [
         click: (row: TableRow) => {
             router.push({ name: 'cms/fields', query: { module_id: row[baTable.table.pk!] } })
         },
-    },
-    {
-        render: 'tipButton',
-        name: 'edit',
-        title: 'Edit',
-        text: '',
-        type: 'primary',
-        icon: 'fa fa-pencil',
-        class: 'table-row-edit',
-        disabledTip: false,
-        display: (row: TableRow, field: TableColumn) => {
-            return row.id != 1;
-        },
-    },
-    {
-        render: 'confirmButton',
-        name: 'delete',
-        title: 'Delete',
-        text: '',
-        type: 'danger',
-        icon: 'fa fa-trash',
-        class: 'table-row-delete',
-        popconfirm: {
-            confirmButtonText: t('Delete'),
-            cancelButtonText: t('Cancel'),
-            confirmButtonType: 'danger',
-            title: t('Are you sure to delete the selected record?'),
-        },
-        disabledTip: false,
-        display: (row: TableRow, field: TableColumn) => {
-            return row.id != 1;
-        },
-    },
+    }
 ]
-optButtons = optButtons.concat(defaultOptButtons(["weigh-sort"]))
+optButtons = optButtons.concat(defaultOptButtons(["edit", "delete", "weigh-sort"]))
 const baTable = new baTableClass(
     new baTableApi('/admin/cms.module/'),
     {
@@ -112,7 +80,7 @@ const baTable = new baTableClass(
     },
     {
         defaultItems: {
-            "type": "1",
+            "type": "0",
             "status": "1",
             "template": "basics"
         },

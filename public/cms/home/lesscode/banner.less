@@ -1,0 +1,353 @@
+@import "public.less";
+
+.sys_bannerbox1 {
+  .swiper-container {
+    height: 500px;
+
+    .swiper-slide {
+      background-position: center;
+      background-size: cover;
+
+      .videobox {
+        display: block;
+        position: relative;
+        height: 100%;
+        overflow: hidden;
+
+        .video1_open {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          margin-top: -40px;
+          margin-left: -40px;
+          border: #FFF 3px solid;
+          border-radius: 100px;
+          width: 80px;
+          height: 80px;
+          overflow: hidden;
+          z-index: 14;
+
+          &:hover {
+            i {
+              border-color: transparent transparent transparent @mainOColor;
+            }
+          }
+
+          i {
+            display: block;
+            width: 0;
+            height: 0;
+            border-width: 20px 0 20px 30px;
+            border-style: solid;
+            border-color: transparent transparent transparent #fff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -20px;
+          }
+        }
+
+        .video1_open_back {
+          position: absolute;
+          top: 0;
+          left: 0;
+          display: block;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.1);
+          z-index: 13;
+        }
+      }
+    }
+
+    .swiper-pagination {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      bottom: 30px;
+      margin: auto;
+      text-align: center;
+    }
+
+    .swiper-pagination-switch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 10px;
+      background: #999999;
+      margin-right: 10px;
+      opacity: 0.8;
+      cursor: pointer;
+    }
+
+    .swiper-visible-switch {
+      background: #999999;
+    }
+
+    .swiper-active-switch {
+      width: 20px;
+      background: @mainOColor;
+    }
+
+    .arrow-left {
+      background: url(/cms/home/images/click/prev.png) no-repeat;
+      background-size: cover;
+      position: absolute;
+      left: 5%;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      width: 56px;
+      height: 56px;
+      cursor: pointer;
+
+      &:hover {
+        opacity: .6;
+      }
+    }
+
+    .arrow-right {
+      background: url(/cms/home/images/click/next.png) no-repeat;
+      background-size: cover;
+      position: absolute;
+      right: 5%;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      width: 56px;
+      height: 56px;
+      cursor: pointer;
+
+      &:hover {
+        opacity: .6;
+      }
+    }
+  }
+}
+
+// 轮播效果2========================
+.sys_bannerbox2 {
+  width: 100%;
+  height: 785px;
+  white-space: nowrap;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+
+  .loading {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    z-index: 10000;
+    margin: -16px -16px;
+    color: #fff;
+    text-indent: -9999em;
+    overflow: hidden;
+    background: url('/cms/home/images/loading/ajax-loader.gif') no-repeat left top;
+    width: 31px;
+    height: 31px;
+  }
+
+  .banner_m {
+    width: 50%;
+    height: 785px;
+    display: inline-block;
+    position: relative;
+  }
+
+  .wrapper {
+    *float: left;
+    width: 100%;
+    height: 785px;
+    display: inline-block;
+    position: relative;
+    left: -967px;
+
+    #sys_bannerbox2_slideshow {
+      width: 100%;
+      height: 785px;
+    }
+
+    #sys_bannerbox2_slideshow ul {
+      display: none;
+    }
+
+    .box_skitter {
+      position: relative;
+      background: none;
+
+      ul {
+        display: none;
+      }
+
+      .container_skitter {
+        overflow: hidden;
+        position: relative;
+      }
+
+      .image {
+        overflow: hidden;
+      }
+
+      .image img {
+        display: none;
+      }
+
+      .box_clone {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100px;
+        overflow: hidden;
+        display: none;
+        z-index: 20;
+      }
+
+      .box_clone img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 20;
+      }
+
+      .prev_button {
+        position: absolute;
+        top: 50%;
+        left: 10%;
+        z-index: 100;
+        width: 56px;
+        height: 56px;
+        margin-top: -28px;
+        overflow: hidden;
+        background: url('/cms/home/images/click/prev.png') no-repeat left top !important;
+      }
+
+      .next_button {
+        position: absolute;
+        top: 50%;
+        right: 10%;
+        z-index: 100;
+        width: 56px;
+        height: 56px;
+        margin-top: -28px;
+        background: url('/cms/home/images/click/next.png') no-repeat left top !important;
+      }
+
+      .label_skitter {
+        z-index: 150;
+        position: absolute;
+        display: none;
+      }
+    }
+
+  }
+
+  .fn-clear {
+    zoom: 1;
+  }
+}
+
+//轮播效果2========================END
+
+//轮播效果3========================
+.sys_bannerbox3 {
+  width: 100%;
+  height: 700px;
+
+  .swiper {
+    width: 100%;
+    height: 100%;
+
+    .swiper-wrapper {
+      .swiper-slide {
+        .picbox {
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          display: block;
+
+          .pic {
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            width: 100%;
+            height: 100%;
+            transition: all 0.6s;
+          }
+        }
+      }
+    }
+
+    .swiper-pagination-bullet-active {
+      width: 20px;
+      border-radius: 30px;
+      background-color: #fff;
+      opacity: 1 !important;
+    }
+
+    .swiper-pagination-bullet {
+      background-color: #fff;
+      opacity: .5;
+    }
+
+    .swiper-button-next {
+      background: url(/cms/home/images/click/next.png) no-repeat;
+      background-size: cover;
+      position: absolute;
+      right: 10%;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      width: 56px;
+      height: 56px;
+      cursor: pointer;
+      z-index: 1;
+      opacity: .6;
+
+      &::after {
+        content: none;
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      &:hover {
+        opacity: 1;
+
+      }
+    }
+
+    .swiper-button-prev {
+      background: url(/cms/home/images/click/prev.png) no-repeat;
+      background-size: cover;
+      position: absolute;
+      left: 10%;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      width: 56px;
+      height: 56px;
+      cursor: pointer;
+      z-index: 1;
+      opacity: .6;
+
+      &::after {
+        content: none;
+      }
+
+      &:focus {
+        outline: none;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+//轮播效果3========================END

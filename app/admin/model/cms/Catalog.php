@@ -2,9 +2,7 @@
 
 namespace app\admin\model\cms;
 
-use ba\cms\Cms;
 use think\Model;
-use think\model\concern\SoftDelete;
 
 /**
  * Catalog
@@ -12,7 +10,7 @@ use think\model\concern\SoftDelete;
  */
 class Catalog extends Model
 {
-    use SoftDelete;
+    use \think\model\concern\SoftDelete;
 
     // 表名
     protected $name = 'cms_catalog';
@@ -22,14 +20,15 @@ class Catalog extends Model
 
     protected $createTime = 'create_time';
     protected $updateTime = 'update_time';
-    protected $deleteTime = "delete_time";
+    protected string $deleteTime = "delete_time";
     protected $defaultSoftDelete = null;
     protected $type = [
         'links_value' => 'json',
         'field' => 'json',
     ];
     protected $append = [
-        'module_name'
+        'module_name',
+        "field"
     ];
 
     public static function onBeforeWrite(self $model): bool
@@ -58,20 +57,20 @@ class Catalog extends Model
 
     protected static function onAfterInsert(self $model): void
     {
-//        if ($model->weigh == 0) {
-//            $pk = $model->getPk();
-//            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
-//        }
+        if ($model->weigh == 0) {
+            $pk = $model->getPk();
+            $model->where($pk, $model[$pk])->update(['weigh' => $model[$pk]]);
+        }
     }
 
     public static function onAfterWrite(self $model): void
     {
-        Cms::getInstance()->forceUpdate('catalog');
+        \ba\cms\Cms::getInstance()->forceUpdate('catalog');
     }
 
     public static function onAfterDelete(self $model): void
     {
-        Cms::getInstance()->forceUpdate('catalog');
+        \ba\cms\Cms::getInstance()->forceUpdate('catalog');
     }
 
     public function getModuleNameAttr($value, $data) {
@@ -79,11 +78,6 @@ class Catalog extends Model
     }
 
     public function getGroupIdAttr($value, $row): string
-    {
-        return !$value ? '' : $value;
-    }
-
-    public function getFieldAttr($value, $row): string
     {
         return !$value ? '' : $value;
     }

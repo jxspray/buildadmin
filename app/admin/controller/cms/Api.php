@@ -31,7 +31,8 @@ class Api extends Backend
     /**
      * 分类查询
      */
-    public function catalog() {
+    public function catalog(): void
+    {
         if ($this->request->isPost()) {
             $input = input('post.');
             $where[] = ['status', '=', 1];
@@ -39,7 +40,7 @@ class Api extends Backend
             if (! empty($input['type'])) {
                 $where[] = ['type','=', $input['type']];
             }
-            $data  = \app\admin\model\cms\Catalog::where($where)->field('id,pid,title,seo_url,links_type,links_value')->order(['weigh'=>'desc'])->select();
+            $data  = \app\admin\model\cms\Catalog::where($where)->field('id,pid,title,seo_url,links_type,links_value,module_id')->order(['weigh'=>'desc'])->select();
             $this->success("获取成功", $data);
         }
     }

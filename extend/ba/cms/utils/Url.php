@@ -53,23 +53,23 @@ class Url
      * @Time: 15:04
      * @return string
      */
-    public static function appoint(object $link, bool|string $theme = true): string
+    public static function appoint($link, bool|string $theme = true): string
     {
         $url = "";
         if (!empty($link)) {
             switch ($link->type) {
                 case '1':
-                    if (!str_contains($link->value[1]['url'], 'http')) {
-                        $url = index_url($link->value[1]['url'], [], $theme);
+                    if (!str_contains($link->value[1]->url, 'http')) {
+                        $url = index_url($link->value[1]->url, [], $theme);
                     } else {
-                        $url = $link['value'][1]['url'];
+                        $url = $link->value[1]->url;
                     }
                     break;
                 case '2':
-                    $url = self::getSingleUrl($link->value[2]['details'], $theme);
+                    $url = self::getSingleUrl($link->value[2]->details, $theme);
                     break;
                 case '3':
-                    $id = $link->value[3]['catalog']['id'];
+                    $id = $link->value[3]->catalog->id;
                     if (cms('catalog')) {
                         $catalog = [];
                         foreach (cms('catalog') as $key => $value) {
@@ -84,7 +84,7 @@ class Url
                         if ($catalog['links_type'] === 1) {
                             $url = self::appoint(json_decode($catalog['links_value'],true), $theme);
                         } else {
-                            $anchor = empty($link->value[3]['anchor']) ? '' : $link->value[3]['anchor'];
+                            $anchor = empty($link->value[3]->anchor) ? '' : $link->value[3]->anchor;
                             $url = self::catalog($catalog, $theme) . $anchor;
                         }
                     }

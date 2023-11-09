@@ -40,7 +40,7 @@ return [
             ],
             'radio' => ["group" => "common", "label" => "单选按钮", "value" => "radio", "setting" => ["select"], 'setup' => [
                 'type' => 'key',
-                'options' => ['关闭', '开启']
+                'options' => [["key" => 0, "value" => '关闭'], ["key" => 0, "value" => '开启']]
             ]],
             'checkbox' => ["group" => "common", "label" => "复选框", "value" => "checkbox", "setting" => ["select", "selectNum"], 'setup' => [
                 'type' => 'key',
@@ -114,5 +114,8 @@ return [
             'custom' => ["group" => "senior", "label" => "自定义多文本", "value" => "custom", "setting" => ["custom"], 'setup' => []],
             'tag' => ["group" => "senior", "label" => "标签", "value" => "tag", "setting" => ["tag"], 'setup' => []],
         ]
+    ],
+    'cache' => [
+        'expire' => 7200
     ]
 ];

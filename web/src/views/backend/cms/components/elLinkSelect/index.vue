@@ -221,9 +221,7 @@ const catalogListSearch = () => {
  * 类型改变
  */
 const typeChange = () => {
-    // this.$refs.valueForm.clearValidate();
     state.valueForm = state.linkForm['value'][state.linkForm.type]
-    console.log(state.valueForm.value)
     let rules = {}
     switch(state.linkForm.type){
         case '1':
@@ -263,7 +261,6 @@ const tableListSearch = () => {
         ).then((res: any) => {
             state.tableList = res.data;
             state.valueForm = state.linkForm['value'][state.linkForm.type]
-            console.log(state.tableList)
         })
     }
 }
@@ -285,7 +282,6 @@ const detailsListSearch = (keyword = "") => {
                 showSuccessMessage: false,
             }
         ).then((res: any) => {
-            console.log(res.data)
             state.detailsList = res.data;
         })
     }
@@ -299,7 +295,6 @@ const titleSearch = () => {
         case "0":
         case "1":
             state.title = state.valueForm['url'];
-            console.log(state.valueForm['url'])
             break;
         case "2":
             state.title = state.valueForm['details'] !== '' ? state.valueForm['details']['title'] : '';
@@ -309,7 +304,6 @@ const titleSearch = () => {
             state.title = title + state.valueForm['anchor'];
             break;
     }
-    console.log(state.title, state.valueForm)
 }
 
 /**

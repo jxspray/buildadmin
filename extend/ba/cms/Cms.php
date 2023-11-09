@@ -138,7 +138,16 @@ class Cms
     {
         $template = [];
         // 获取所有模型模板
-        foreach (cms("module") as $module) {
+        $files = Filesystem::getDirFiles(root_path() . self::baseViewPath . "\\home", ['html']);
+        $data = [];
+        foreach ($files as $file) {
+            $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+            if (!str_contains($file, '/')) $data[$file] = $file;
+        }
+        $template[0]['index'] = $data;
+        $template[0]['info'] = [];
+
+        foreach (GM("module")->getColumnAll() as $module) {
             $files = Filesystem::getDirFiles(root_path() . self::baseViewPath . "\\home\\" . $module['name'], ['html']);
             $data = [];
             foreach ($files as $file) {
@@ -146,7 +155,7 @@ class Cms
                 if (!str_contains($file, '/')) $data[$file] = $file;
             }
             $template[$module['id']]['index'] = $data;
-            if ($module['type'] == '1') {
+            if ($module['type'] == '0') {
                 $files = Filesystem::getDirFiles(root_path() . self::baseViewPath . "\\home\\" . $module['name'] . "\\info", ['html']);
                 $data = [];
                 foreach ($files as $file) {

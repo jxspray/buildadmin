@@ -12,42 +12,47 @@
         </div>
       </el-col>
       <el-col :xs="24" :span="20" style="height: 100%">
-        <div ref="designWindowRef" class="ba-scroll-style" style="height: 100%">
-          <div
-              v-for="(item, index) in state.list"
-              :key="index"
-              :class="{notset: ifset == false, set: ifset}"
-              class="el-field-content"
-              :data-id="index"
-          >
-            <el-form-item :data-id="index" :label="item.label" :key="index" class="el-form-draggable"
-                          :class="{'el-form-set': ifset}">
-              <div class="curd-icon" v-if="ifset">
-                <Icon name="el-icon-CopyDocument" class="myicon" color="var(--el-bg-color-overlay)"
-                      @click="copyItem(item, index)" title="复制"/>
-                <Icon name="el-icon-Edit" class="myicon" color="var(--el-bg-color-overlay)"
-                      @click="setItem(item, index)" title="编辑"/>
-                <Icon name="el-icon-Rank" class="rank myicon" color="var(--el-bg-color-overlay)" title="移动"/>
-                <Icon name="el-icon-Delete" class="myicon" color="var(--el-bg-color-overlay)"
-                      @click="removeItem(item, index)" title="删除"/>
-              </div>
-              <BaInput
-                  v-if="state.show && item.type.type != 'link-select'"
-                  @pointerdown.stop
-                  v-model="item.type.value"
-                  :type="item.type.type"
-              />
-              <ElLinkSelect v-if="state.show && item.type.type == 'link-select'" v-model="item.type.value" size=""/>
-            </el-form-item>
+        <el-scrollbar class="ba-table-form-scrollbar">
+          <div ref="designWindowRef" class="ba-scroll-style" style="height: 100%">
+            <div
+                v-for="(item, index) in state.list"
+                :key="index"
+                :class="{notset: ifset == false, set: ifset}"
+                class="el-field-content"
+                :data-id="index"
+            >
+              <el-form-item :data-id="index" :label="item.label" :key="index" class="el-form-draggable"
+                            :class="{'el-form-set': ifset}">
+                <div class="curd-icon" v-if="ifset">
+                  <Icon name="el-icon-CopyDocument" class="myicon" color="var(--el-bg-color-overlay)"
+                        @click="copyItem(item, index)" title="复制"/>
+                  <Icon name="el-icon-Edit" class="myicon" color="var(--el-bg-color-overlay)"
+                        @click="setItem(item, index)" title="编辑"/>
+                  <Icon name="el-icon-Rank" class="rank myicon" color="var(--el-bg-color-overlay)" title="移动"/>
+                  <Icon name="el-icon-Delete" class="myicon" color="var(--el-bg-color-overlay)"
+                        @click="removeItem(item, index)" title="删除"/>
+                </div>
+                <div v-if="state.show" class="w100">
+                  <ElLinkSelect v-if="item.type.type == 'link-select'" v-model="item.type.value" size=""/>
+                  <CustomArray v-else-if="item.type.type == 'customArray'" v-model="item.type.value"/>
+                  <BaInput
+                      v-else
+                      @pointerdown.stop
+                      v-model="item.type.value"
+                      :type="item.type.type"
+                  />
+                </div>
+              </el-form-item>
+            </div>
+            <div class="design-field-empty" v-if="!state.list.length && !state.draggingField">
+              拖动左侧元素至此处开始设计表单
+            </div>
           </div>
-          <div class="design-field-empty" v-if="!state.list.length && !state.draggingField">
-            拖动左侧元素至此处开始设计表单
-          </div>
-        </div>
+        </el-scrollbar>
       </el-col>
     </el-row>
 
-    <el-dialog :model-value="state.setShow" title="字段设置" width="500px" top="30px" append-to-body>
+    <el-dialog :model-value="state.setShow" title="字段设置" width="500px" top="30px" :close-on-click-modal="false" @close="closeDialog" append-to-body>
       <template #header>
         <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
           字段设置
@@ -65,7 +70,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
           <el-button size="small" type="primary" @click="changeItem(setFormRef)">确 定</el-button>
-          <el-button size="small" @click="closeDialog()">取 消</el-button>
+          <el-button size="small" @click="closeDialog">取 消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -82,6 +87,7 @@ import {useI18n} from "vue-i18n";
 import useClipboard from "vue-clipboard3";
 import BaInput from "/@/components/baInput/index.vue";
 import ElLinkSelect from "/@/views/backend/cms/components/elLinkSelect/index.vue";
+import CustomArray from "/@/views/backend/cms/components/customArray/index.vue";
 
 const {toClipboard} = useClipboard();
 const {t} = useI18n()
@@ -137,7 +143,7 @@ const fields: FieldType[] = [
   {label: "文本域", type: "textarea", value: "", icon: "local-duohangshurukuang"},
   {label: "编辑器", type: "editor", value: "", icon: "local-fuwenbenbianjiqi"},
   {label: "链接设置", type: "link-select", value: {}, icon: "local-lianjie"},
-  {label: "自定义数组", type: "array", value: [], icon: "local-shuzu"},
+  {label: "自定义数组", type: "customArray", value: {}, icon: "local-shuzu"},
   {label: "图片上传", type: "image", value: "", icon: "local-tupianpic"},
   {label: "图片列表", type: "images", value: [], icon: "local-huadongduotu"},
   {label: "文件上传", type: "file", value: "", icon: "local-wenjianjiawenjian"},
@@ -165,9 +171,9 @@ const state: {
 
   draggingField: false
 })
+console.log(state.list)
 const closeDialog = () => {
   state.setShow = false;
-  console.log(state.setShow)
 }
 
 /**
@@ -175,9 +181,11 @@ const closeDialog = () => {
  */
 const removeItem = (item, index) => {
   state.list.splice(index, 1);
-  // if (item.type.is == 'el-array') {
-  //   state.show = false;
-  // }
+
+  state.show = false;
+  nextTick(() => {
+    state.show = true;
+  })
 }
 /**
  * 复制字段
@@ -224,6 +232,7 @@ onMounted(() => {
     group: 'design-field',
     animation: 200,
     filter: '.design-field-empty',
+    handle: ".rank",
     onAdd: (evt: SortableEvt) => {
       if (fields[evt.oldIndex!]) {
         const field = fields[evt.oldIndex!]
@@ -237,8 +246,10 @@ onMounted(() => {
         setItem(item, evt.newIndex!)
       }
       evt.item.remove()
+      state.show = false;
       nextTick(() => {
         sortable.sort(range(fields.length).map((value) => value.toString()))
+        state.show = true;
       })
     },
     onEnd: (evt) => {
@@ -278,6 +289,12 @@ watch(
     state.list,
     (newVal) => {
       emit('update:modelValue', newVal)
+    }
+);
+watch(
+    state.show,
+    (newVal) => {
+      console.log(newVal)
     }
 );
 

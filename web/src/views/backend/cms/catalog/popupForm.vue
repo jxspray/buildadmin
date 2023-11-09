@@ -23,8 +23,8 @@
             v-if="!baTable.form.loading" ref="formRef" @keyup.enter="baTable.onSubmit(formRef)"
             :model="baTable.form.items" label-position="right" :label-width="baTable.form.labelWidth + 'px'"
             :rules="rules">
-          <el-tabs tab-position="left" class="catalog-tabs">
-            <el-tab-pane :label="t('cms.catalog.base')">
+          <el-tabs tab-position="left" class="catalog-tabs" v-model="state.activeTab">
+            <el-tab-pane :label="t('cms.catalog.base')" name="base">
               <FormItem
                   :label="t('cms.catalog.title')" type="string" v-model="baTable.form.items!.title"
                   prop="title"
@@ -55,7 +55,7 @@
                            :placeholder="t('Please select field', {field: t('cms.catalog.module_id')})">
                   <el-option
                       v-for="item in state.catalogList"
-                      :disabled="state.current_id == item.id"
+                      :disabled="item.id > 0 && state.current_id == item.id"
                       :key="item.id"
                       :label="item.title"
                       :value="item.id">
@@ -123,15 +123,15 @@
                   <el-option v-for="item in state.temp.index" :key="item" :label="item" :value="item"/>
                 </el-select>
               </el-form-item>
-              <el-form-item :label="t('cms.catalog.template_info')" prop="template_info">
+              <el-form-item :label="t('cms.catalog.template_info')" prop="template_info" v-if="baTable.form.items!.module_id > 0">
                 <el-select
-                    v-model="baTable.form.items!.template_info" clearable v-if="baTable.form.items!.module_id > 0"
+                    v-model="baTable.form.items!.template_info" clearable
                     :placeholder="t('Please select field', { field: t('cms.catalog.template_info') })" class="w100">
                   <el-option v-for="item in state.temp.info" :key="item" :label="item" :value="item"/>
                 </el-select>
               </el-form-item>
             </el-tab-pane>
-            <el-tab-pane :label="t('cms.catalog.seo')">
+            <el-tab-pane :label="t('cms.catalog.seo')" name="seo">
               <FormItem
                   :label="t('cms.catalog.seo_title')" type="string"
                   v-model="baTable.form.items!.seo_title" prop="seo_title"
@@ -157,8 +157,8 @@
                       }),
                   }"/>
             </el-tab-pane>
-            <el-tab-pane :label="t('cms.catalog.extend')" style="height: 100%">
-              <el-field v-model="baTable.form.items!.field" :ifset="true"></el-field>
+            <el-tab-pane :label="t('cms.catalog.extend')" name="extend" style="height: 100%">
+              <el-field v-model="baTable.form.items!.field" :ifset="true" v-if="!!baTable.form.operate"></el-field>
             </el-tab-pane>
           </el-tabs>
         </el-form>
@@ -186,7 +186,6 @@ import type baTableClass from "/@/utils/baTable";
 import FormItem from "/@/components/formItem/index.vue";
 import type {ElForm, FormItemRule} from "element-plus";
 import {buildValidatorData} from "/@/utils/validate";
-import CustomFormItem from "/src/views/backend/cms/components/CustomFormItem/index.vue";
 import ElField from "/src/views/backend/cms/components/elField/index.vue";
 import createAxios from "/@/utils/axios";
 import ElLinkSelect from "/src/views/backend/cms/components/ElLinkSelect/index.vue";
@@ -199,6 +198,7 @@ const state: {
   template: any[]
   temp: { index: any[]; info: any[] }
   current_id: number
+  activeTab: string
 
   moduleList: any[]
   catalogList: any[]
@@ -207,11 +207,11 @@ const state: {
   template: [],
   temp: {index: [], info: []},
   current_id: 0,
+  activeTab: "base",
 
   moduleList: [],
   catalogList: []
 });
-
 // 获取template
 const getTemplate = () => {
   createAxios(
@@ -225,8 +225,7 @@ const getTemplate = () => {
       }
   ).then((res: any) => {
     state.template = res.data;
-    console.log(baTable.form.items);
-    const module_id = baTable.form.items!.module_id || 1;
+    const module_id = baTable.form.items!.module_id || 0;
     console.log(state.template, module_id, state.template[module_id]);
     state.temp.index = state.template[module_id]!.index;
     state.temp.info = state.template[module_id]!.info;
@@ -239,6 +238,7 @@ baTable.before = {
   },
   toggleForm: function () {
     state.current_id = 0;
+    state.activeTab = "base"
   },
 };
 baTable.after = {

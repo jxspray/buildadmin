@@ -1,0 +1,323 @@
+/** ----------------------1 过渡类选中效果开始----------------- **/
+/**
+******************************目录******************************
+***1.1 淡入淡出效果
+***1.2 滑动效果
+***1.3 更换背景色效果
+***1.4 添加盒子阴影效果
+**/
+/** ----------------------1.1 淡入淡出效果开始----------------- **/
+// 左至右淡入效果
+.anime_cur_fadeInL(@cur1, @cur2, @distance: 30px, @time: 1s) {
+  .@{cur1} {
+    opacity: 0;
+    transition: all @time;
+  }
+  &.@{cur2} {
+    .@{cur1} {
+      opacity: 1;
+      transform: translateX(@distance);
+    }
+  }
+}
+
+// 右至左淡入效果
+.anime_cur_fadeInR(@cur1, @cur2, @distance: 30px, @time: 1s) {
+  .@{cur1} {
+    opacity: 0;
+    transition: all @time;
+  }
+  &.@{cur2} {
+    .@{cur1} {
+      opacity: 1;
+      transform: translateX(-@distance);
+    }
+  }
+}
+
+// 上至下淡入效果
+.anime_cur_fadeInU(@cur1, @cur2, @distance: 30px, @time: 1s) {
+  .@{cur1} {
+    opacity: 0;
+    transition: all @time;
+  }
+  &.@{cur2} {
+    .@{cur1} {
+      opacity: 1;
+      transform: translateY(@distance);
+    }
+  }
+}
+
+// 下至上淡入效果
+.anime_cur_fadeInD(@cur1, @cur2, @distance: 30px, @time: 1s) {
+  .@{cur1} {
+    opacity: 0;
+    transition: all @time;
+  }
+  &.@{cur2} {
+    .@{cur1} {
+      opacity: 1;
+      transform: translateY(-@distance);
+    }
+  }
+}
+
+/** ----------------------1.1 淡入淡出效果结束----------------- **/
+
+
+/** ----------------------1.2 滑动效果开始----------------- **/
+// 左至右滑动效果
+.anime_cur_slideInL(@cur1, @cur2, @distance: 10px, @time: 1s) {
+  .@{cur1} {
+    transition: all @time;
+  }
+  &.@{cur2} {
+    .@{cur1} {
+      transform: translateX(@distance);
+    }
+  }
+}
+
+// 右至左滑动效果
+.anime_cur_slideInR(@cur1, @cur2, @distance: 10px, @time: 1s) {
+  .@{cur1} {
+    transition: all @time;
+  }
+  &.@{cur2} {
+    .@{cur1} {
+      transform: translateX(-@distance);
+    }
+  }
+}
+
+// 上至下滑动效果
+.anime_cur_slideInU(@cur1, @cur2, @distance: 10px, @time: 1s) {
+  .@{cur1} {
+    transition: all @time;
+  }
+  &.@{cur2} {
+    .@{cur1} {
+      transform: translateY(@distance);
+    }
+  }
+}
+
+// 下至上滑动效果
+.anime_cur_slideInD(@cur1, @cur2, @distance: 10px, @time: 1s) {
+  .@{cur1} {
+    transition: all @time;
+  }
+  &.@{cur2} {
+    .@{cur1} {
+      transform: translateY(-@distance);
+    }
+  }
+}
+
+/** ----------------------1.2 滑动效果结束----------------- **/
+
+/** ----------------------1.3 更换背景色效果开始----------------- **/
+// 更换纯色背景色效果
+.anime_cur_color(@cur1, @cur2, @color: @mainOColor) {
+  .@{cur1} {
+    transition: all 1s;
+  }
+  &.@{cur2} {
+    background: @color;
+  }
+}
+
+// 从下至上更换背景色效果
+.anime_cur_colorInD(@cur1, @cur2, @color: @mainOColor) {
+  overflow: hidden;
+  .@{cur1} {
+    transition: all .6s;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 0;
+  }
+  .@{cur2} {
+    .@{cur1} {
+      background: @color;
+      height: 100%;
+    }
+  }
+}
+
+/** ----------------------1.3 更换背景色效果结束----------------- **/
+
+/** ----------------------1.4 添加盒子阴影效果开始----------------- **/
+// 添加小范围盒子阴影效果
+.anime_cur_shadow(@cur1, @cur2, @color: rgba(0, 0, 0, 0.1), @shadow: 20px, @time: 0.5s) {
+  .@{cur1} {
+    transition: all @time;
+  }
+  .@{cur2} {
+    background: #FFFFFF;
+    box-shadow: 0 0 @shadow 0 @color;
+    position: relative;
+    z-index: 5;
+  }
+}
+
+/** ----------------------1.4 添加盒子阴影效果结束----------------- **/
+
+/** ----------------------1 过渡类选中效果结束----------------- **/
+
+/** ----------------------2 过渡类触发效果开始----------------- **/
+/**
+******************************目录******************************
+***2.1 滑动效果
+***2.2 更换背景色效果
+***2.3 添加盒子阴影效果
+***2.4 旋转效果
+***2.5 变形效果
+**/
+/** ----------------------2.1 滑动效果开始----------------- **/
+// 左至右滑动效果
+.anime_hover_slideInL(@hover, @distance: 10px, @time: 1s) {
+  .@{hover} {
+    transition: all @time;
+  }
+  &:hover {
+    .@{hover} {
+      transform: translateX(@distance);
+    }
+  }
+}
+
+// 右至左滑动效果
+.anime_hover_slideInR(@hover, @distance: 10px, @time: 1s) {
+  .@{hover} {
+    transition: all @time;
+  }
+  &:hover {
+    .@{hover} {
+      transform: translateX(-@distance);
+
+    }
+  }
+}
+
+// 上至下滑动效果
+.anime_hover_slideInU(@hover, @distance: 10px, @time: 1s) {
+  .@{hover} {
+    transition: all @time;
+  }
+  &:hover {
+    .@{hover} {
+      transform: translateY(@distance);
+    }
+  }
+}
+
+// 下至上滑动效果
+.anime_hover_slideInD(@hover, @distance: 10px, @time: 1s) {
+  .@{hover} {
+    transition: all @time;
+  }
+  &:hover {
+    .@{hover} {
+      transform: translateY(-@distance);
+    }
+  }
+}
+
+/** ----------------------2.1 滑动效果结束----------------- **/
+
+/** ----------------------2.2 更换背景色效果开始----------------- **/
+// 更换纯色背景色效果
+.anime_hover_color(@color: @mainOColor, @time: 1s) {
+  transition: all @time;
+  &:hover {
+    background: @color;
+  }
+}
+
+// 从下至上更换背景色效果
+.anime_hover_colorInD(@hover, @color: @mainOColor, @time: .6s) {
+  overflow: hidden;
+  .@{hover} {
+    transition: all @time;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 0;
+  }
+  &:hover {
+    .@{hover} {
+      background: @color;
+      height: 100%;
+    }
+  }
+}
+
+/** ----------------------2.2 更换背景色效果结束----------------- **/
+
+/** ----------------------2.3 添加盒子阴影效果开始----------------- **/
+// 添加小范围盒子阴影效果
+.anime_hover_shadow(@color1: #FFFFFF, @color2: rgba(0, 0, 0, 0.1), @shadow: 20px, @time: 0.5s) {
+  transition: all @time;
+  &:hover {
+    background: @color1;
+    box-shadow: 0 0 @shadow 0 @color2;
+    position: relative;
+    z-index: 5;
+  }
+}
+
+/** ----------------------2.3 添加盒子阴影效果结束----------------- **/
+
+/** ----------------------2.4 旋转效果开始----------------- **/
+// Y轴旋转效果
+.anime_hover_rotateY(@hover, @angle: 180deg, @time: 0.5s) {
+  .@{hover} {
+    transition: all @time;
+    display: inline-block;
+  }
+  &:hover {
+    .@{hover} {
+      transform: rotateY(@angle);
+    }
+  }
+}
+
+// 平面旋转效果
+.anime_hover_rotate(@hover, @angle: 180deg, @time: 0.5s) {
+  .@{hover} {
+    transition: all @time;
+    display: inline-block;
+  }
+  &:hover {
+    .@{hover} {
+      transform: rotate(@angle);
+    }
+  }
+}
+
+/** ----------------------2.4 旋转效果结束----------------- **/
+
+/** ----------------------2.5 变形效果开始----------------- **/
+// 等倍缩放效果
+.anime_hover_scale(@hover, @rate: 1.1, @time: 0.6s) {
+  .@{hover} {
+    transition: all @time;
+  }
+  &:hover {
+    .@{hover} {
+      transform: scale(@rate);
+    }
+  }
+}
+
+/** ----------------------2.5 变形效果开始----------------- **/
+
+/** ----------------------2 过渡类触发效果结束----------------- **/
+
+/** ----------------------3 动画类效果开始----------------- **/
+
+/** ----------------------3 动画类效果结束----------------- **/

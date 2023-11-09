@@ -1,0 +1,452 @@
+@import "public.less";
+
+// 右侧导航1========================
+.right_nav_new {
+    position: fixed;
+    width: 50px;
+    right: 0;
+    top: 50%;
+    margin-top: -123px;
+    z-index: 100;
+}
+
+.fixed_right_box {
+    position: relative;
+}
+
+.right_nav_box .zx {
+    display: inline-block;
+    background: url('/cms/home/webimages/@{rightBox}/right_zx.png') no-repeat center center;
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    transition: 0.8s all; 
+}
+
+.right_nav_box .phone {
+    display: inline-block;
+    background: url('/cms/home/webimages/@{rightBox}/right_phone.png') no-repeat center center;
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    transition: 0.8s all;
+}
+
+.right_nav_box .qq {
+    display: inline-block;
+    background: url('/cms/home/webimages/@{rightBox}/right_qq.png') no-repeat center center;
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    transition: 0.8s all;
+}
+
+.right_nav_box .weixin {
+    display: inline-block;
+    background: url('/cms/home/webimages/@{rightBox}/right_erweima.png') no-repeat center center;
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    transition: 0.8s all;
+}
+
+.right_nav_box .scor_top {
+    display: inline-block;
+    background: url('/cms/home/webimages/@{rightBox}/right_top.png') no-repeat center center;
+    width: 30px;
+    height: 30px;
+    vertical-align: middle;
+    transition: 0.8s all;
+    cursor: pointer;
+}
+
+.right_nav li span {
+    margin-left: 12px;
+    cursor: pointer;
+    line-height: 28px;
+    display: inline-block;
+}
+
+.right_nav_box {
+    position: relative;
+}
+
+.right_nav_box li {
+    position: absolute;
+    transition: 0.8s background-color;
+    background-color: @mainOColor;
+    height: 46px;
+    padding: 0 12px;
+    white-space: nowrap;
+    /*border-top-left-radius: 20px;border-bottom-left-radius: 20px;*/
+}
+
+.right_nav_box li.li1 {
+    top: 0;
+}
+
+.right_nav_box li.li2 {
+    top: 50px;
+}
+
+.right_nav_box li.li3 {
+    top: 100px;
+}
+
+.right_nav_box li.li4 {
+    top: 150px;
+}
+
+.right_nav_box li.li5 {
+    top: 200px;
+}
+
+.right_nav_box li.li1 a {
+    margin-top: 8px;
+    display: block;
+}
+
+.right_nav_box li.li2 a {
+    padding-top: 8px;
+    display: block;
+}
+
+.right_nav_box li.li3 a {
+    padding-top: 8px;
+    display: block;
+}
+
+.right_nav_box li.li4 a {
+    padding-top: 8px;
+    display: block;
+}
+
+.right_nav_box li.li5 a {
+    padding-top: 8px;
+    display: block;
+}
+
+.right_nav_box li:hover {
+    background-color: @mainOColor;
+}
+
+.right_nav_box li:hover a {
+    color: #fff !important;
+}
+
+.right_nav_box li a {
+    color: #fff;
+    font-size: 16px;
+}
+
+.right_nav_box li.li4:hover .ewm_pic {
+    visibility: visible;
+    opacity: 1;
+}
+
+.right_nav_box .ewm_pic {
+    position: absolute;
+    right: 70px;
+    bottom: 0;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.5s all;
+    background-color: #fff;
+    padding: 10px;
+    width: 130px;
+    height: 130px;
+    box-sizing: border-box;
+    border: 1px solid #999;
+    border-radius: 4px;
+}
+
+.right_nav_box .ewm_pic img {
+    width: 110px;
+    height: 110px;
+    display: block;
+}
+
+.right_nav_box .ewm_pic.act {
+    visibility: visible;
+    opacity: 1;
+}
+
+// 右侧导航1 end========================
+
+// 右侧导航2=================
+.sys_rightbox2(@rightBox) when (@rightBox = rightbox2) {
+    display: none;
+    width: 58px;
+    position: fixed;
+    top: 40%;
+    right: 0;
+    z-index: 99;
+
+    .new_right_menu {
+        display: block;
+        width: 180px;
+        height: 58px;
+        margin-bottom: 10px;
+        background-color: #4C4948;
+        border-radius: 4px 0 0 4px;
+        color: #ffffff;
+        line-height: 58px;
+        position: relative;
+        cursor: pointer;
+
+    }
+
+    .new_right_menu span {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        position: absolute;
+        left: 16px;
+        top: 15px;
+        overflow: hidden;
+    }
+
+    .new_right_menu span img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .new_right_menu_in {
+        display: inline-block;
+        width: 100%;
+        text-align: right;
+        font-size: 14px;
+        padding: 0 10px 0 0;
+        box-sizing: border-box;
+    }
+
+    .new_right_menu:hover {
+        background-color: @mainOColor;
+    }
+
+    .new_right_menu_ewm {
+        display: none;
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        background-color: @mainOColor;
+        padding: 5px;
+        position: absolute;
+        top: -24px;
+        left: -120px;
+        overflow: hidden;
+    }
+
+    .new_right_menu_ewm img {
+        border-radius: 8px;
+        max-width: 100%;
+    }
+}
+
+// 右侧导航2=================END
+// 右侧导航3=================
+.sys_rightbox3(@rightBox) when (@rightBox = rightbox3) {
+    display: none;
+    width: 90px;
+    position: fixed;
+    top: 20vh;
+    right: 40px;
+    z-index: 99;
+
+    .menulist {
+        width: 100%;
+        background: #fff;
+        box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+        border-radius: 6px;
+
+        .mitem {
+            float: left;
+            width: 100%;
+            padding: 20px 0 15px 0;
+            border-bottom: 1px solid #ebebeb;
+            position: relative;
+
+            &:last-child {
+                border-bottom: none;
+            }
+
+            &:hover {
+                background: @mainOColor;
+
+                a {
+                    .cur {
+                        display: block;
+                    }
+
+                    .on {
+                        display: none;
+                    }
+
+                    span {
+                        color: #fff;
+                    }
+                }
+
+                .new_right_menu_ewm {
+                    display: block;
+                }
+            }
+
+            a {
+                display: block;
+
+                img {
+                    display: block;
+                    text-align: center;
+                    margin: 0 auto;
+                }
+
+                .cur {
+                    display: none;
+                }
+
+                span {
+                    display: block;
+                    font-size: 14px;
+                    color: #666;
+                    text-align: center;
+                }
+
+                .menu1 {
+                    width: 36px;
+                    height: 40px;
+                }
+
+                .menu2 {
+                    width: 38px;
+                    height: 38px;
+                }
+
+                .menu3 {
+                    width: 34px;
+                    height: 40px;
+                }
+
+                .menu4 {
+                    width: 34px;
+                    height: 40px;
+                }
+
+                .menu5 {
+                    width: 40px;
+                    height: 40px;
+                }
+
+                .menu6 {
+                    width: 34px;
+                    height: 40px;
+                }
+
+            }
+
+            .new_right_menu_ewm {
+                display: none;
+                width: 100px;
+                height: 100px;
+                background: #FFFFFF;
+                box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.1);
+                border-radius: 5px;
+                padding: 5px;
+                position: absolute;
+                top: -10px;
+                left: -120px;
+                overflow: hidden;
+                text-align: center;
+                line-height: 100px;
+            }
+
+            .new_right_menu_ewm img {
+                width: 90%;
+                margin: 5% auto;
+            }
+        }
+    }
+
+    .backtop {
+        width: 90px;
+        height: 100px;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+}
+
+// 右侧导航3=================END
+
+// 右侧导航4=================
+.sys_rightbox4(@rightBox) when (@rightBox = rightbox4) {
+    display: none;
+    width: 58px;
+    position: fixed;
+    top: 40%;
+    right: 0;
+    z-index: 99;
+
+    .new_right_menu {
+        display: block;
+        width: 180px;
+        height: 58px;
+        margin-bottom: 10px;
+        background-color: #4C4948;
+        border-radius: 4px 0 0 4px;
+        color: #ffffff;
+        line-height: 58px;
+        position: relative;
+        cursor: pointer;
+
+    }
+
+    .new_right_menu span {
+        display: inline-block;
+        width: 28px;
+        height: 28px;
+        position: absolute;
+        left: 16px;
+        top: 15px;
+        overflow: hidden;
+    }
+
+    .new_right_menu span img {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    .new_right_menu_in {
+        display: inline-block;
+        width: 100%;
+        text-align: right;
+        font-size: 14px;
+        padding: 0 10px 0 0;
+        box-sizing: border-box;
+    }
+
+    .new_right_menu:hover {
+        background-color: @mainOColor;
+    }
+
+    .new_right_menu_ewm {
+        display: none;
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+        background-color: @mainOColor;
+        padding: 5px;
+        position: absolute;
+        top: -24px;
+        left: -120px;
+        overflow: hidden;
+    }
+
+    .new_right_menu_ewm img {
+        border-radius: 8px;
+        max-width: 100%;
+    }
+}
+
+// 右侧导航4=================END

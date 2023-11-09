@@ -115,6 +115,25 @@ if (!function_exists("cms")) {
     }
 }
 
+if (!function_exists("GM")) {
+    /**
+     * @param string $model_name
+     */
+    function GM(string $model_name): \think\Model
+    {
+        $namespace = "\\app\\index\\model\\web\\$model_name";
+        if (!class_exists($namespace)) {
+            if (!isset(cms("mod")['model_name'])) abort(500, "{$namespace}: Class not exist!");
+            $namespace = "\\app\\index\\model\\web\\Content";
+            $instance = call_user_func([$namespace, 'getInstance'], $model_name);
+            if (!class_exists($namespace)) abort(500, "{$namespace}: Class not exist!");
+        } else {
+            $instance = new $namespace();
+        }
+        return $instance;
+    }
+}
+
 if (!function_exists('getSlides')) {
     /**
      * @throws \think\db\exception\DataNotFoundException
@@ -152,7 +171,7 @@ if (!function_exists('getBlock')) {
      */
     function getBlock(string $name)
     {
-        $res = app\index\model\web\Config::load($name);
+        $res = app\index\model\web\Config::load("block", $name);
         if (!$res) abort(500, "配置不存在");
         return json_decode($res->value);
     }

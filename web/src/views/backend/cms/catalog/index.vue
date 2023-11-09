@@ -49,7 +49,7 @@ const baTable = new baTableClass(
       dragSortLimitField: 'pid',
     },
     {
-      defaultItems: {"module_id": 0, "field": [], "weigh": "0", "links_type": "0", "links_value": {}, "blank": "0", "show": "1", "status": "1"},
+      defaultItems: {"pid": 0, "module_id": 0, "field": [], "weigh": "0", "links_type": "0", "links_value": {}, "blank": "0", "show": "1", "status": "1"},
     }
 )
 
@@ -62,14 +62,6 @@ onMounted(() => {
     baTable.initSort()
     baTable.dragSort()
   })
-})
-</script>
-
-<script lang="ts">
-import {defineComponent} from 'vue'
-
-export default defineComponent({
-  name: 'cms/catalog',
 })
 </script>
 
