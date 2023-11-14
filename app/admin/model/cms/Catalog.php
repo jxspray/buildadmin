@@ -74,15 +74,10 @@ class Catalog extends Model
     }
 
     public function getModuleNameAttr($value, $data) {
-        return cms("module")[$data['module_id']]['name']??'页面';
+        return cms("module")[$data['module_id']]['title']??'页面';
     }
 
-    public function getGroupIdAttr($value, $row): string
-    {
-        return !$value ? '' : $value;
-    }
-
-    public function module()
+    public function module(): \think\model\relation\BelongsTo
     {
         return $this->belongsTo("module", 'module_id')->joinType("left");
     }

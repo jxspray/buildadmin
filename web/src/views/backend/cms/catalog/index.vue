@@ -38,7 +38,7 @@ const baTable = new baTableClass(
       column: [
         {type: 'selection', align: 'center', operator: false},
         {label: t('cms.catalog.title'), prop: 'title', align: 'left', width: 200},
-        {label: t('cms.catalog.module'), prop: 'module_name', width: 100, align: 'left'},
+        {label: t('cms.catalog.module'), prop: 'module_name', width: 100, align: 'center'},
         {label: t('cms.catalog.show'), prop: 'show', render: 'tag', replaceValue: {0: '不显示', 1: '都显示', 2: '头部显示', 3: '底部显示'}, width: 100, align: 'left'},
         {label: t('cms.catalog.id'), prop: 'id', align: 'center', width: 100, operator: 'RANGE'},
         {label: t('State'), prop: 'status', align: 'center', render: 'tag', custom: {0: 'danger', 1: 'success'}, replaceValue: {0: t('Disable'), 1: t('Enable')},},

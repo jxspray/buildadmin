@@ -1,4 +1,4 @@
-<?php 
+<?php
 // +----------------------------------------------------------------------
 // | OneKeyAdmin [ Believe that you can do better ]
 // +----------------------------------------------------------------------
@@ -51,7 +51,7 @@ class CatalogCheck
         }
         $header = new Tree($catalogHeader);
         $footer = new Tree($catalogFooter);
-        $request->catalogHeader = $header->leaf(0); 
+        $request->catalogHeader = $header->leaf(0);
         $request->catalogFooter = $footer->leaf(0);
         // 分类路由
         $request->catalogRoute = count($request->pathArr) === 1 || $request->path === 'index';
