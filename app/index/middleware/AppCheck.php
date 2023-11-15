@@ -11,12 +11,13 @@
 declare (strict_types = 1);
 
 namespace app\index\middleware;
+
 /**
  * 环境检测
  */
 class AppCheck
 {
-    public function handle($request, \Closure $next)
+    public function handle(\app\Request $request, \Closure $next)
     {
         // 路由信息
         $request->pathinfo = str_replace('.html', '', $request->pathinfo());

@@ -1,9 +1,9 @@
 <?php
 
 use think\facade\Route;
-Route::resource("storage", "vue/error");
-Route::resource("cms", "vue/error");
 
+// 配置后台访问
+Route::rule("sysjovo/", "vue/index");
 // ------------------------注意------------------------
 // 1.访问地址不得在中间书写纯数字，数字只能写在末尾
 
@@ -15,10 +15,6 @@ $indexAppend = [
 $append = [
     'pattern' => 'home',
 ];
-// 配置后台访问
-Route::rule("sysjovo/", "vue/index");
-Route::rule("sysjovo", "vue/indexjump");
-
 /* 是否必要.html */
 /** 栏目规则生成 */
 $pathInfo = request()->pathinfo();
@@ -74,7 +70,7 @@ Route::rule("index", "action/index")->append($indexAppend)->middleware($middlewa
 //Route::rule(":catdir", "action/index")->append($append)->middleware($middleware);
 
 /* 默认首页，需要放在末尾 */
-//Route::rule("/", "action/index")->append($indexAppend)->middleware($middleware);
+Route::rule("/", "action/index")->append($indexAppend)->middleware($middleware);
 Route::miss(function() {
     return '404 Not Found!';
 });

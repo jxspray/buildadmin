@@ -6,10 +6,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Loading...</title>
         <script type="application/javascript">
+            var buildconfig = {};
             try {
                 {$buildconfig|raw}
             } catch (e) {
-                console.log(e);
+                console.log("未成功初始化参数配置");
             }
         </script>
     </head>

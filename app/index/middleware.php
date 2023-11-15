@@ -4,6 +4,6 @@
 // +----------------------------------------------------------------------
 
 return [
-    // 环境检测
-    app\index\middleware\AppCheck::class,
+    app\index\middleware\InterceptorCheck::class, // 资源拦截器
+    app\index\middleware\AppCheck::class, // 应用加载器
 ];

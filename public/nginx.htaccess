@@ -1,8 +1,0 @@
-location / {
-    index index.php error/index.html;
-
-    if (!-e $request_filename) {
-        rewrite  ^(.*)$  /index.php?s=/$1  last;
-        break;
-    }
-}
