@@ -30,12 +30,13 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "ext-gd": "*",
-        "topthink/think-template": "^3.0",
-        "topthink/think-view": "^2.0"
+        "topthink/think-view": "^2.0",
+        "aliyuncs/oss-sdk-php": "^2.6"
     },
     "require-dev": {
         "symfony/var-dumper": "^5.4",
-        "topthink/think-trace": "^1.0"
+        "topthink/think-trace": "^1.0",
+        "phpunit/phpunit": "^9.6"
     },
     "autoload": {
         "psr-4": {

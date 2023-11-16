@@ -12,12 +12,15 @@
     "dependencies": {
         "@element-plus/icons-vue": "2.1.0",
         "@vueuse/core": "10.2.0",
+        "@wangeditor/editor": "^5.1.1",
+        "@wangeditor/editor-for-vue": "^5.1.12",
         "axios": "1.4.0",
         "countup.js": "2.6.2",
         "echarts": "5.4.2",
         "element-plus": "2.3.7",
         "esno": "0.16.3",
         "font-awesome": "4.7.0",
+        "jssha": "^3.3.0",
         "lodash-es": "4.17.21",
         "mitt": "3.0.0",
         "nprogress": "0.2.0",
@@ -25,14 +28,13 @@
         "pinia-plugin-persistedstate": "3.1.0",
         "screenfull": "6.0.2",
         "sortablejs": "1.15.0",
+        "tz-minio-upload_beta": "^0.1.0",
         "v-code-diff": "1.5.1",
         "vue": "3.3.4",
         "vue-clipboard3": "^2.0.0",
         "vue-i18n": "9.2.2",
         "vue-qr": "4.0.9",
-        "vue-router": "4.2.2",
-        "@wangeditor/editor": "^5.1.1",
-        "@wangeditor/editor-for-vue": "^5.1.12"
+        "vue-router": "4.2.2"
     },
     "devDependencies": {
         "@types/lodash-es": "4.17.7",

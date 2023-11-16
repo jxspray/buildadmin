@@ -2,12 +2,71 @@
 
 namespace modules\cms;
 
-use think\facade\Db;
+use app\common\model\Attachment;
+use ba\Filesystem;
+use think\App;
 use app\common\library\Menu;
 use app\admin\model\MenuRule;
+use think\facade\Event;
 
 class Cms
 {
+
+    private string $uid = 'alioss';
+
+    /**
+     * @throws \Throwable
+     */
+    public function AppInit(): void
+    {
+        // 上传配置初始化
+        Event::listen('uploadConfigInit', function (App $app) {
+            $uploadConfig = get_sys_config('', 'upload');
+            if ($uploadConfig['upload_mode'] == 'serveoss' && empty($app->request->upload)) {
+                $bucketUrl    = 'https://api.oss.jxspray.top';
+                $upload       = \think\facade\Config::get('upload');
+                $maxSize      = Filesystem::fileUnitToByte($upload['maxsize']);
+                $conditions[] = ['content-length-range', 0, $maxSize];
+                $expire       = time() + 3600;
+                $policy       = base64_encode(json_encode([
+                    'expiration' => date('Y-m-d\TH:i:s.Z\Z', $expire),
+                    'conditions' => $conditions,
+                ]));
+                $signature    = base64_encode(hash_hmac('sha1', $policy, $uploadConfig['upload_secret_key'], true));
+
+                $app->request->upload = [
+                    'cdn'    => $uploadConfig['upload_cdn_url'] ?: $bucketUrl,
+                    'mode'   => $uploadConfig['upload_mode'],
+                    'url'    => $bucketUrl,
+                    'accessKey' => '5GX4DZWmnObk0OLCQW8m',
+                    'secretKey' => 'qi9uyC4kvQT9DEsQR1YDVpbvXDxVekdDR9ZLLaQW',
+                    'bucket' => "cms-oss",
+                    'params' => [
+                        'OSSAccessKeyId' => $uploadConfig['upload_access_id'],
+                        'policy'         => $policy,
+                        'Signature'      => $signature,
+                        'Expires'        => $expire,
+                    ]
+                ];
+            }
+        });
+
+        // 附件管理中删除了文件
+        Event::listen('AttachmentDel', function (Attachment $attachment) {
+            if ($attachment->storage != 'serveoss') {
+                return true;
+            }
+            $uploadConfig = get_sys_config('', 'upload');
+            if (!$uploadConfig['upload_access_id'] || !$uploadConfig['upload_secret_key'] || !$uploadConfig['upload_bucket']) {
+                return true;
+            }
+            $OssClient = new OssClient($uploadConfig['upload_access_id'], $uploadConfig['upload_secret_key'], 'http://' . $uploadConfig['upload_url'] . '.aliyuncs.com');
+            $url       = str_replace(full_url(), '', ltrim($attachment->url, '/'));
+            $OssClient->deleteObject($uploadConfig['upload_bucket'], $url);
+            return true;
+        });
+    }
+
     /**
      * 安装模块时执行的方法
      */
