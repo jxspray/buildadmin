@@ -33,6 +33,8 @@ class Ajax extends Backend
         AdminLog::setTitle(__('upload'));
         $file = $this->request->file('file');
         try {
+
+            \think\facade\Filesystem::getConfig();
             $upload     = new Upload($file);
             $attachment = $upload->upload(null, $this->auth->id);
             unset($attachment['create_time'], $attachment['quote']);

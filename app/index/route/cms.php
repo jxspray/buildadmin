@@ -1,7 +1,7 @@
 <?php
 
 use think\facade\Route;
-
+dump(\think\facade\Filesystem::disk("minio")->fileSize("/a.jpg"));die;
 // 配置后台访问
 Route::rule("sysjovo/", "vue/index");
 // ------------------------注意------------------------

@@ -20,5 +20,16 @@ return [
             'visibility' => 'public',
         ],
         // 更多的磁盘配置信息
+        'minio'  => [
+            'type' => \ba\cms\driver\filesystem\Minio::class,
+            'host' => 'https://api.oss.jxspray.top',
+            'region' => 'cn-north-1',
+            'version' => 'latest',
+            'bucket' => 'cms-oss',
+            'credentials' => [
+                'key' => '5GX4DZWmnObk0OLCQW8m',
+                'secret' => 'qi9uyC4kvQT9DEsQR1YDVpbvXDxVekdDR9ZLLaQW',
+            ],
+        ],
     ],
 ];

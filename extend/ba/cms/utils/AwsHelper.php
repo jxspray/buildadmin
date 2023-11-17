@@ -2,29 +2,49 @@
 
 namespace ba\cms\utils;
 
+use Aws\S3\Exception\S3MultipartUploadException;
 use Aws\S3\MultipartUploader;
 use Aws\s3\S3Client;
+use Aws\S3\S3ClientInterface;
+use League\Flysystem\Config;
+use League\Flysystem\FileAttributes;
+use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\Util;
 
-class AwsHelper
+class AwsHelper implements FilesystemAdapter
 {
-    private \Aws\s3\S3Client $s3Client;
-    private string $endpoint = "https://api.oss.jxspray.top"; //此处注意端口不要写错为9090（若你是按照官方文档安装的minio）
-    private string $key = "5GX4DZWmnObk0OLCQW8m"; //登录http://127.0.0.1:9090/browser 时的账户名
-    private string $secret = "qi9uyC4kvQT9DEsQR1YDVpbvXDxVekdDR9ZLLaQW"; //密码
-    private string $bucket = "cms-oss"; //桶名称
+    private S3ClientInterface $s3Client;
+    private string $bucket; //桶名称
+    protected array $options = [];
+    protected bool $streamReads = false;
 
-    public function __construct()
+    public function __construct(S3ClientInterface $client, $bucket, $prefix = '', array $options = [], $streamReads = true)
     {
-        $this->s3Client = new S3Client([
-            'version' => 'latest',
-            'region' => 'cn-north-1', //China (Beijing)
-            'endpoint' => $this->endpoint,
-            'use_path_style_endpoint' => true,
-            'credentials' => [
-                'key' => $this->key,
-                'secret' => $this->secret,
-            ],
-        ]);
+        $this->s3Client = $client;
+        $this->bucket = $bucket;
+        $this->setPathPrefix($prefix);
+        $this->options = $options;
+        $this->streamReads = $streamReads;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setPathPrefix($prefix)
+    {
+        $prefix = ltrim((string) $prefix, '/');
+
+
+        $prefix = (string) $prefix;
+
+        if ($prefix === '') {
+            $this->pathPrefix = null;
+
+            return;
+        }
+
+        $this->pathPrefix = rtrim($prefix, '\\/') . $this->pathSeparator;
+
     }
 
     /**
@@ -72,7 +92,6 @@ class AwsHelper
         if (!$objectName) {
             $objectName = basename($objectPath);
         }
-
 
         $uploader = new MultipartUploader($this->s3Client, $objectPath, [
             'bucket' => $this->bucket,
@@ -358,4 +377,153 @@ class AwsHelper
         return true;
     }
 
+    public function fileExists(string $path): bool
+    {
+        return false;
+        // TODO: Implement fileExists() method.
+    }
+
+
+    /**
+     * Upload an object.
+     *
+     * @param string          $path
+     * @param string|resource $body
+     * @param Config          $config
+     *
+     * @return array|bool
+     */
+    protected function upload($path, $body, Config $config)
+    {
+        $key = $this->applyPathPrefix($path);
+        $options = $this->getOptionsFromConfig($config);
+        $acl = array_key_exists('ACL', $options) ? $options['ACL'] : 'private';
+
+        if (!$this->isOnlyDir($path)) {
+            if ( ! isset($options['ContentType'])) {
+                $options['ContentType'] = \League\Flysystem\Util::guessMimeType($path, $body);
+            }
+
+            if ( ! isset($options['ContentLength'])) {
+                $options['ContentLength'] = is_resource($body) ? Util::getStreamSize($body) : Util::contentSize($body);
+            }
+
+            if ($options['ContentLength'] === null) {
+                unset($options['ContentLength']);
+            }
+        }
+
+        try {
+            $this->s3Client->upload($this->bucket, $key, $body, $acl, ['params' => $options]);
+        } catch (S3MultipartUploadException $multipartUploadException) {
+            return false;
+        }
+
+        return $this->normalizeResponse($options, $path);
+    }
+    public function write(string $path, string $contents, Config $config): void
+    {
+        $this->upload($path, $contents, $config);
+    }
+
+    public function writeStream(string $path, $contents, Config $config): void
+    {
+        // TODO: Implement writeStream() method.
+    }
+
+    public function read(string $path): string
+    {
+        // TODO: Implement read() method.
+    }
+
+    public function readStream(string $path)
+    {
+        // TODO: Implement readStream() method.
+    }
+
+    public function delete(string $path): void
+    {
+        // TODO: Implement delete() method.
+    }
+
+    public function deleteDirectory(string $path): void
+    {
+        // TODO: Implement deleteDirectory() method.
+    }
+
+    public function createDirectory(string $path, Config $config): void
+    {
+        // TODO: Implement createDirectory() method.
+    }
+
+    public function setVisibility(string $path, string $visibility): void
+    {
+        // TODO: Implement setVisibility() method.
+    }
+
+    public function visibility(string $path): FileAttributes
+    {
+        // TODO: Implement visibility() method.
+    }
+
+    public function mimeType(string $path): FileAttributes
+    {
+        // TODO: Implement mimeType() method.
+    }
+
+    public function lastModified(string $path): FileAttributes
+    {
+        // TODO: Implement lastModified() method.
+    }
+
+    public function fileSize(string $path): FileAttributes
+    {
+        // TODO: Implement fileSize() method.
+    }
+
+    public function listContents(string $path, bool $deep): iterable
+    {
+        // TODO: Implement listContents() method.
+    }
+
+    public function move(string $source, string $destination, Config $config): void
+    {
+        // TODO: Implement move() method.
+    }
+
+    public function copy(string $source, string $destination, Config $config): void
+    {
+        // TODO: Implement copy() method.
+    }
+
+
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function applyPathPrefix($path)
+    {
+        return ltrim($this->getPathPrefix() . ltrim($path, '\\/'), '/');
+    }
+
+    /**
+     * Get the path prefix.
+     *
+     * @return string|null path prefix or null if pathPrefix is empty
+     */
+    public function getPathPrefix()
+    {
+        return $this->pathPrefix;
+    }
+
+    /**
+     * @var string|null path prefix
+     */
+    protected $pathPrefix;
+
+    /**
+     * @var string
+     */
+    protected $pathSeparator = '/';
 }
