@@ -27,12 +27,12 @@ $middleware = ([
 
 $infoAppend = [
     'pattern' => 'home',
-    'module' => 'urlRule',
+    'module' => 'moduleRule',
     'action' => 'info'
 ];
 // 模型路由访问
 foreach (cms("module") as $module) {
-    if ($module['rule']) Route::get("{$module['rule']}/:id", "action/index")->append(array_merge($infoAppend, ['path' => $module['rule']]))->middleware($middleware);
+    if ($module['rule']) Route::get("{$module['rule']}/:id", "action/module")->append(array_merge($infoAppend, ['path' => $module['name']]))->middleware($middleware);
 }
 $catalogAppend = [
     'pattern' => 'home',

@@ -9,10 +9,10 @@ namespace app\index\controller;
 
 class Action extends \app\BaseController
 {
-    private static array $verityModule = ['index', 'urlRule'];
-    private static array $verityAction = ['index', 'catalog', 'info'];
-    protected mixed $action;
-    protected mixed $module;
+    const verityModule = ['index', 'urlRule', "moduleRule"];
+    const verityAction = ['index', 'catalog', 'info'];
+    protected string $action;
+    protected string $module;
     protected string $pattern;
 
     protected string $layout = "default";
@@ -26,8 +26,8 @@ class Action extends \app\BaseController
         $this->module = input("module", 'index');
         $this->action = input("action", 'index');
         /* 检查action是否合规 */
-        if (!in_array($this->module, self::$verityModule)) abort(404);
-        if (!in_array($this->action, self::$verityAction)) abort(404);
+//        if (!in_array($this->module, self::verityModule)) abort(404);
+        if (!in_array($this->action, self::verityAction)) abort(404);
 
         static $initState = false;
         if ($initState === false) {
@@ -59,7 +59,23 @@ class Action extends \app\BaseController
      */
     public function index(): string
     {
-        $namespace = \ba\cms\Cms::basePath . "\\{$this->pattern}\\" . ucfirst($this->module);
+        // index
+        // 直接访问 Index控制器
+        // urlRule
+        // 访问栏目、加载栏目数据
+        // moduleRule
+        // 通过模型路由访问详情页，不加载栏目数据，走默认栏目
+
+        $namespace = "";
+        if ($this->module == 'moduleRule') {
+            $namespace = \ba\cms\Cms::basePath . "\\{$this->pattern}\\" . ucfirst($this->request->param("path"));
+            /* 如果模型控制器不存在 */
+            if (!class_exists($namespace)) {
+
+                abort(404);
+            }
+            return app($namespace)->{$this->action}();
+        }
         $action = $this->action;
         /* 如果控制不存在 */
         if (!class_exists($namespace)) {
@@ -68,6 +84,17 @@ class Action extends \app\BaseController
             if (!method_exists($namespace, $action)) abort(404);
         }
         return app($namespace)->$action();
+    }
+
+    public function module() {
+        $namespace = \ba\cms\Cms::basePath . "\\{$this->pattern}\\" . ucfirst($this->request->param("path"));
+        /* 如果模型控制器不存在 */
+        if (!class_exists($namespace)) {
+
+            abort(404);
+        }
+        return app($namespace)->{$this->action}();
+
     }
 
     public function assign($name, $value = null): void

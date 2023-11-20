@@ -44,18 +44,12 @@ class Base extends \app\index\controller\Action
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
         if (!$catid) abort(404);
-        $cat = $this->categorys[$catid];
-        $cat['catid'] = $catid;
-        $cat['catname'] = $cat['title'];
-        unset($cat['id'], $cat['title']);
-
         // 加载列表
-        $lists = Content::getInstance($cat['module'])->where('catid', $catid)->paginate(10);
+        $lists = Content::getInstance($this->request->catalog['module'])->where('catid', $catid)->paginate(10);
         $this->assign('list', $lists->items());
         $this->assign('pages', $lists->render());
-        $this->assign($cat);
         $this->settingSEOData();
-        return $this->fetch("{$module}/{$cat['template_index']}");
+        return $this->fetch("{$module}/{$this->request->catalog['template_index']}");
     }
 
     public function single($catid = '', $module = ''): ?string
@@ -63,13 +57,8 @@ class Base extends \app\index\controller\Action
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
         if (!$catid) abort(404);
-        $cat = $this->categorys[$catid];
-        $cat['catid'] = $catid;
-        $cat['catname'] = $cat['title'];
-        unset($cat['id'], $cat['title']);
-        $this->assign($cat);
         $this->settingSEOData();
-        return $this->fetch("{$module}/{$cat['template_index']}");
+        return $this->fetch("{$module}/{$this->request->catalog['template_index']}");
     }
 
     public function info($catid = '', $module = ''): ?string

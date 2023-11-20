@@ -23,6 +23,9 @@ class EmptyController extends Action
         $id = $this->request->param('id', '', 'intval');
         $catid = $this->request->param('catid', '', 'intval');
         $module = '';
+        if ($this->module == 'moduleRule') {
+
+        }
         if ($this->module == "urlRule") {
             $catdir = $this->request->param('catdir');
             if ($catdir) {
