@@ -33,7 +33,9 @@
         "topthink/think-view": "^2.0",
         "aliyuncs/oss-sdk-php": "^2.6",
         "league/flysystem-aws-s3-v3": "^3.0",
-        "league/flysystem": "^3.0"
+        "league/flysystem": "^3.0",
+        "league/flysystem-path-prefixing": "^3.3",
+        "league/flysystem-read-only": "^3.3"
     },
     "require-dev": {
         "symfony/var-dumper": "^5.4",

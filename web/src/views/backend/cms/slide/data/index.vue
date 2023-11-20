@@ -59,7 +59,7 @@ const baTable = new baTableClass(
             { label: t('cms.slide.data.id'), prop: 'id', align: 'center', width: 70, operator: 'RANGE', sortable: 'custom' },
             { label: t('cms.slide.data.slide__name'), prop: 'slide.name', align: 'center', operatorPlaceholder: t('Fuzzy query'), render: 'tags', operator: 'LIKE' },
             { label: t('cms.slide.data.title'), prop: 'title', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE', sortable: false },
-            { label: t('cms.slide.data.image'), prop: 'image', align: 'center', render: 'image', sortable: false },
+            { label: t('cms.slide.data.cdn_image'), prop: 'image', align: 'center', render: 'image', sortable: false },
             { label: t('cms.slide.data.remark'), prop: 'remark', align: 'center', operatorPlaceholder: t('Fuzzy query'), operator: 'LIKE', sortable: false },
             { label: t('cms.slide.data.width'), prop: 'width', align: 'center', operator: 'RANGE', sortable: false },
             { label: t('cms.slide.data.height'), prop: 'height', align: 'center', operator: 'RANGE', sortable: false },

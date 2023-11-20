@@ -12,7 +12,7 @@
 					<a href="{$item.url}" title="{$item.title}">{$item.title}</a>
 						{if count($item['children'])}
 							<div class="new_head_menu" style="width: 140px;margin-left: -70px;">
-								{foreach $item->children as $ite}
+								{foreach $item.children as $ite}
 									<a href="{$ite.url}" title="{$ite.title}">{$ite.title}</a>
 								{/foreach}
 							</div>

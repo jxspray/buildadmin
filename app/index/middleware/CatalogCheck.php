@@ -13,6 +13,7 @@ declare (strict_types = 1);
 namespace app\index\middleware;
 
 use app\index\model\web\Catalog;
+use app\Request;
 use ba\cms\utils\Tree;
 
 /**
@@ -20,7 +21,7 @@ use ba\cms\utils\Tree;
  */
 class CatalogCheck
 {
-    public function handle($request, \Closure $next)
+    public function handle(Request $request, \Closure $next)
     {
         // 所有分类菜单
         $append  = ['url', 'route'];
@@ -28,13 +29,13 @@ class CatalogCheck
 //        $where[] = ['theme', '=', theme()];
         $catalogList = Catalog::where($where)->order('weigh','desc')
 //            ->cache('catalog_'.theme())
-                ->cache(true, config("cms.cache."))
+                ->cache()
             ->append($append)->select()->toArray();
         $request->catalogList = array_combine(array_column($catalogList, 'id'), $catalogList);
         // 头部底部菜单
         $catalogHeader = [];
         $catalogFooter = [];
-        foreach ($request->catalogList as $key => $val) {
+        foreach ($request->catalogList as $val) {
             if ($request->isMobile() && $val['mobile'] === 0) continue;
                 switch ($val['show']) {
                     case 1:
@@ -53,22 +54,15 @@ class CatalogCheck
         $footer = new Tree($catalogFooter);
         $request->catalogHeader = $header->leaf(0);
         $request->catalogFooter = $footer->leaf(0);
-        // 分类路由
-        $request->catalogRoute = count($request->pathArr) === 1 || $request->path === 'index';
-        // 分页路由
-        $request->singleRoute  = count($request->pathArr) === 2;
-        // 详情路由
-        $request->PageRoute    = in_array('page', $request->pathArr) && isset($request->pathArr[2]) && is_numeric($request->pathArr[2]);
         // 当前分类
         $catalog = [];
-        foreach ($request->catalogList as $key => $val) {
-            if ($val['seo_url'] == $request->path || $val['id'] == $request->path) {
-                if ($request->catalogRoute || $request->singleRoute || $request->PageRoute) {
-                    $catalog = $val;
-                    // 指定链接
-                    if ($catalog['links_type'] == 1) {
-                        return redirect($catalog['url']);
-                    }
+        $path = $request->param("path", "index");
+        foreach ($request->catalogList as $val) {
+            if ($val['seo_url'] == $path || $val['id'] == $path) {
+                $catalog = $val;
+                // 指定链接
+                if ($catalog['links_type'] == 1) {
+                    return redirect($catalog['url']);
                 }
             }
         }
@@ -76,7 +70,7 @@ class CatalogCheck
         if (empty($catalog)) {
             foreach ($request->catalogList as $key => $val) {
                 if ($val['links_type'] == 1) {
-                    if (str_contains($val['url'], $request->domain() . '/' . implode('/', $request->pathArr))) {
+                    if (str_contains($val['url'], $request->domain() . '/' . $path)) {
                         $catalog = $val;
                     }
                 }
@@ -108,12 +102,12 @@ class CatalogCheck
 //                'group_id'        => [],
                 'show'            => 0,
                 'language'        => $request->lang,
-                'route'           => $request->pathinfo,
+                'route'           => $request->pathinfo(),
             ];
         }
         // 当前面包屑
         $catalogTree = new Tree($request->catalogList);
-        $request->crumbs = $catalogTree->navi($catalog['id']);
+        $request->crumbs = !empty($catalog['id']) ? $catalogTree->navi($catalog['id']) : [];
         // 分类等级
         foreach ($request->crumbs as $key => $val) {
             $level = 'level' . ($key + 1);

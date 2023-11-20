@@ -246,7 +246,9 @@ class Upload
                 ['storage', '=', $params['storage']],
             ])->find();
         } else {
-            $this->move($saveName);
+            $filesystem = new \ba\filesystem\Filesystem(app());
+            $filesystem->disk("s3")->putFileAs("/", $this->file, $params['url']);
+//            $this->move($saveName);
         }
 
         return $attachment->toArray();

@@ -20,14 +20,13 @@ class AppCheck
     public function handle(\app\Request $request, \Closure $next)
     {
         // 路由信息
-        $request->pathinfo = str_replace('.html', '', $request->pathinfo());
-
-        $pathArr = explode('/', $request->pathinfo);
+        $pathinfo = str_replace('.html', '', $request->pathinfo());
+        $pathArr = explode('/', $pathinfo);
         foreach ($pathArr as $key => $val) {
             if (empty($val)) unset($pathArr[$key]);
         }
-        $request->pathArr  = array_values($pathArr);
-        $request->path     = empty($request->pathArr[0]) ? 'index' : $request->pathArr[0];
+        if (count($pathArr) === 0) $pathinfo = "index";
+        $request->setPathinfo($pathinfo);
         // 绑定事件
         event('AppCheck', $request);
         // 下一步

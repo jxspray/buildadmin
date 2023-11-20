@@ -24,7 +24,9 @@ use app\index\model\web\Module;
  */
 function index_url(string|int $url = '', array $vars = [], bool $theme = true): string
 {
-    $url = empty($url) || $url == 'index' ? '' : '/' . $url . '.html';
+    // 配置.html访问
+    $url = empty($url) || $url == 'index' ? '' : '/' . $url;
+//    $url = $url . '.html';
 //    if ($theme && ! empty(input('theme'))) {
 //        $vars['theme'] = theme();
 //    }

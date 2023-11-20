@@ -19,7 +19,14 @@ class Data extends Model
     protected $type = [
         'delete_time' => 'timestamp:Y-m-d H:i:s',
     ];
+    protected $append = [
+        'cdn_image'
+    ];
 
+    public function getCdnImageAttr($value, $row): string
+    {
+        return $row['image'] ? full_url($row['image']) : '';
+    }
 
     public function slide(): \think\model\relation\BelongsTo
     {
