@@ -32,7 +32,8 @@ $infoAppend = [
 ];
 // 模型路由访问
 foreach (cms("module") as $module) {
-    if ($module['rule']) Route::get("{$module['rule']}/:id", "action/module")->append(array_merge($infoAppend, ['path' => $module['name']]))->middleware($middleware);
+    $infoAppend['module_id'] = $module['id'];
+    if ($module['rule']) Route::get("{$module['rule']}/:id", "action/index")->append(array_merge($infoAppend, ['path' => $module['name']]))->middleware($middleware);
 }
 $catalogAppend = [
     'pattern' => 'home',
@@ -51,6 +52,11 @@ foreach (cms("catalog") as $catalog) {
         $catalogAppend['catid'] = $catalog['id'];
         $catalogAppend['module_id'] = $catalog['module_id'];
         $catalogAppend['path'] = $catalog['seo_url'];
+        if ($catalog['module_id'] > 0) {
+            $catalogAppend['action'] = 'catalog';
+        } else {
+            $catalogAppend['action'] = "single";
+        }
         if ($catalog['seo_url'] === 'index') {
             $indexAppend['catid'] = $catalog['id'];
             $indexAppend['path'] = $catalog['seo_url'];

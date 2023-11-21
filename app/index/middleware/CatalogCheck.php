@@ -56,13 +56,23 @@ class CatalogCheck
         $request->catalogFooter = $footer->leaf(0);
         // 当前分类
         $catalog = [];
-        $path = $request->param("path", "index");
-        foreach ($request->catalogList as $val) {
-            if ($val['seo_url'] == $path || $val['id'] == $path) {
-                $catalog = $val;
-                // 指定链接
-                if ($catalog['links_type'] == 1) {
-                    return redirect($catalog['url']);
+        $module = $request->param("module", "index");
+        if ($module == "moduleRule") {
+            // 获取排序值最大的栏目 TODO 计划将在模型内绑定默认栏目
+            $catalog = Catalog::where("module_id", $request->param("module_id"))->order("weigh DESC")->find();
+            // 指定链接
+            if ($catalog['links_type'] == 1) {
+                return redirect($catalog['url']);
+            }
+        } else {
+            $path = $request->param("path", "index");
+            foreach ($request->catalogList as $val) {
+                if ($val['seo_url'] == $path || $val['id'] == $path) {
+                    $catalog = $val;
+                    // 指定链接
+                    if ($catalog['links_type'] == 1) {
+                        return redirect($catalog['url']);
+                    }
                 }
             }
         }

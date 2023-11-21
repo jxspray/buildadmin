@@ -43,7 +43,7 @@ class Base extends \app\index\controller\Action
     {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
-        if (!$catid) abort(404);
+        if (!$catid) abort(404, "页面不存在！");
         // 加载列表
         $lists = Content::getInstance($this->request->catalog['module'])->where('catid', $catid)->paginate(10);
         $this->assign('list', $lists->items());
@@ -56,7 +56,7 @@ class Base extends \app\index\controller\Action
     {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
 
-        if (!$catid) abort(404);
+        if (!$catid) abort(404, "页面不存在！");
         $this->settingSEOData();
         return $this->fetch("{$module}/{$this->request->catalog['template_index']}");
     }
@@ -67,14 +67,11 @@ class Base extends \app\index\controller\Action
         $id = $this->request->param("id", '', 'intval');
 
         if (!$catid) abort(404);
-        $cat = $this->categorys[$catid];
-        $cat['catid'] = $catid;
-        $cat['catname'] = $cat['title'];
-        unset($cat['id'], $cat['title']);
-        $this->assign($cat);
         $this->settingSEOData();
-        $this->assign(getInfo($module, $id));
-        return $this->fetch("{$module}/{$cat['template_index']}");
+        $info = getInfo($module, $id);
+        if (empty($info)) abort(404, "页面不存在！");
+        $this->assign($info);
+        return $this->fetch("{$module}/{$this->request->catalog['template_index']}");
     }
 
     /**

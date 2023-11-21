@@ -210,9 +210,9 @@ if (!function_exists('getInfo')) {
      * @throws \think\db\exception\DataNotFoundException
      * @throws \think\db\exception\DbException
      */
-    function getInfo($table, array | int $where = array(), $field = '*'): array|\think\Collection
+    function getInfo($table, array | int $where = array(), $field = '*'): array|null
     {
         $data = \app\index\model\web\Content::getInstance($table)->find($where);
-        return $data;
+        return $data ? $data->toArray() : null;
     }
 }
