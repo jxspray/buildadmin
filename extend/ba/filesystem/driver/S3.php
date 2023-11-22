@@ -4,17 +4,16 @@ declare(strict_types=1);
 
 namespace ba\filesystem\driver;
 
+use Aws\S3\S3Client;
 use League\Flysystem\AwsS3V3\AwsS3V3Adapter;
 use League\Flysystem\Visibility;
 use think\helper\Arr;
 use ba\filesystem\Driver;
-use Aws\S3\S3Client;
 use League\Flysystem\AwsS3V3\PortableVisibilityConverter as AwsS3PortableVisibilityConverter;
 
 class S3 extends Driver
 {
-
-    protected function createAdapter()
+    protected function createAdapter(): AwsS3V3Adapter
     {
         $s3Config = $this->formatS3Config($this->config);
         $root = (string) ($s3Config['root'] ?? '');
@@ -35,7 +34,7 @@ class S3 extends Driver
         return new AwsS3V3Adapter($client,$s3Config['bucket'],$root, $visibility, null, $this->config['options'] ?? [], $streamReads);
     }
 
-    protected function formatS3Config(array $config)
+    protected function formatS3Config(array $config): array
     {
         $config += ['version' => 'latest'];
 

@@ -1,5 +1,5 @@
 <?php
-namespace Aws;
+namespace feature;
 
 /**
  * A command object encapsulates the input parameters used to control the

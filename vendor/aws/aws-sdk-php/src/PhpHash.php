@@ -1,5 +1,5 @@
 <?php
-namespace Aws;
+namespace feature;
 
 /**
  * Incremental hashing using PHP's hash functions.

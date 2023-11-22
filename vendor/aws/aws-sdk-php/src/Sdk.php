@@ -1,5 +1,5 @@
 <?php
-namespace Aws;
+namespace feature;
 
 /**
  * Builds AWS clients based on configuration settings.

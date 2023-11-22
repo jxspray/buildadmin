@@ -1,5 +1,5 @@
 <?php
-namespace Aws;
+namespace feature;
 
 use Aws\Exception\AwsException;
 use GuzzleHttp\Promise\Coroutine;

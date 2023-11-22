@@ -1,5 +1,5 @@
 <?php
-namespace Aws;
+namespace feature;
 
 use Aws\Api\ApiProvider;
 use Aws\Api\DocModel;

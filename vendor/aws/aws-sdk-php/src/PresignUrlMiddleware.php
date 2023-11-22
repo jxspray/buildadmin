@@ -1,5 +1,5 @@
 <?php
-namespace Aws;
+namespace feature;
 
 use Aws\Signature\SignatureV4;
 use Aws\Endpoint\EndpointProvider;

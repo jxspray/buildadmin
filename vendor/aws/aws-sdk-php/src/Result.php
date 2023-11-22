@@ -1,5 +1,5 @@
 <?php
-namespace Aws;
+namespace feature;
 
 use JmesPath\Env as JmesPath;
 
