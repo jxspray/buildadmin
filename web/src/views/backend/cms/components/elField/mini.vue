@@ -185,7 +185,7 @@ onMounted(() => {
       state.list.splice(evt.oldIndex!, 1)
       state.list.splice(evt.newIndex!, 0, temp)
       nextTick(() => {
-          sortable.sort(range(state.list.length).map((value) => value.toString()))
+        sortable.sort(range(state.list.length).map((value) => value.toString()))
       })
     },
   })
