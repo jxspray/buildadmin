@@ -30,7 +30,7 @@
                         @click="setItem(item, index)" title="编辑"/>
                   <Icon name="el-icon-Rank" class="rank myicon" color="var(--el-bg-color-overlay)" title="移动"/>
                   <Icon name="el-icon-Delete" class="myicon" color="var(--el-bg-color-overlay)"
-                        @click="removeItem(item, index)" title="删除"/>
+                        @click="removeItem(index)" title="删除"/>
                 </div>
                 <div v-if="state.show" class="w100">
                   <ElLinkSelect v-if="item.type.type == 'link-select'" v-model="item.type.value" size=""/>
@@ -103,13 +103,13 @@ const state: {
   list: { field: string, label: string, type: FieldType }[]
 
   draggingField: boolean
-  setForm: { label?: string, field?: string, type?: string }
+  setForm: { field: string, label: string, type?: FieldType }
   setShow: boolean
   setIndex: number
 } = reactive({
   show: true,
   list: props.modelValue,
-  setForm: {},
+  setForm: { field: "", label: ""},
   setShow: false,
   setIndex: 0,
 
@@ -122,7 +122,7 @@ const closeDialog = () => {
 /**
  * 删除
  */
-const removeItem = (item: FieldType, index: number) => {
+const removeItem = (index: number) => {
   state.list.splice(index, 1)
 
   state.show = false
@@ -133,7 +133,7 @@ const removeItem = (item: FieldType, index: number) => {
 /**
  * 设置
  */
-const setItem = (item: FieldType, index: number) => {
+const setItem = (item: { field: string, label: string, type: FieldType }, index: number) => {
   state.setIndex = index
   state.setForm = JSON.parse(JSON.stringify(item))
   state.setShow = true
@@ -217,12 +217,6 @@ watch(
     state.list,
     (newVal) => {
       emit('update:modelValue', newVal)
-    }
-);
-watch(
-    state.show,
-    (newVal) => {
-      console.log(newVal)
     }
 );
 
