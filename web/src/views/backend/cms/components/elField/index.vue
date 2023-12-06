@@ -15,7 +15,7 @@
                 <el-scrollbar class="ba-table-form-scrollbar">
                     <div ref="designWindowRef" class="ba-scroll-style" style="height: 100%">
                         <div
-                                v-for="(item, index) in state.list"
+                                v-for="(item, index) in state.module.list"
                                 :key="index"
                                 :class="{notset: ifset == false, set: ifset}"
                                 class="el-field-content"
@@ -33,7 +33,7 @@
                                     <Icon name="el-icon-Delete" class="myicon" color="var(--el-bg-color-overlay)"
                                           @click="state.removeItem(index)" title="删除"/>
                                 </div>
-                                <div v-if="state.show" class="w100">
+                                <div v-if="state.module.show" class="w100">
                                     <ElLinkSelect v-if="item.type!.type == 'link-select'" v-model="item.type!.value"
                                                   size=""/>
                                     <CustomArray v-else-if="item.type!.type == 'customArray'" v-model="item.type!.value"/>
@@ -46,7 +46,7 @@
                                 </div>
                             </el-form-item>
                         </div>
-                        <div class="design-field-empty" v-if="!state.list.length && !state.draggingField">
+                        <div class="design-field-empty" v-if="!state.module.list.length && !state.module.draggingField">
                             拖动左侧元素至此处开始设计表单
                         </div>
                     </div>
@@ -54,8 +54,7 @@
             </el-col>
         </el-row>
 
-        <el-dialog :model-value="state.setShow" title="字段设置" width="500px" top="30px" :close-on-click-modal="false"
-                   @close="state.closeItemDialog" append-to-body>
+        <el-dialog :model-value="state.form.setShow" title="字段设置" width="500px" top="30px" :close-on-click-modal="false" append-to-body>
             <template #header>
                 <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
                     字段设置
@@ -63,17 +62,17 @@
             </template>
             <el-form
                     ref="setFormRef" @keyup.enter="state.submitItem(setFormRef)"
-                    :model="state.setForm" :label-width="labelWidth">
+                    :model="state.form.setForm" :label-width="labelWidth">
                 <el-form-item label="字段标题：" prop="label">
-                    <el-input v-model="state.setForm.label" placeholder="如：内容"></el-input>
+                    <el-input v-model="state.form.setForm.label" placeholder="如：内容"></el-input>
                 </el-form-item>
                 <el-form-item label="字段变量：" prop="field">
-                    <el-input v-model="state.setForm.field" placeholder="如：content"></el-input>
+                    <el-input v-model="state.form.setForm.field" placeholder="如：content"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
           <el-button size="small" type="primary" @click="state.submitItem(setFormRef)">确 定</el-button>
-          <el-button size="small" @click="state.closeItemDialog">取 消</el-button>
+          <el-button size="small" @click="state.closeItemDialog()">取 消</el-button>
       </span>
         </el-dialog>
     </div>
@@ -106,7 +105,7 @@ onMounted(() => {
     })
 })
 watch(
-    state.list,
+    state.module.list,
     (newVal) => {
         emit('update:modelValue', newVal)
     }
