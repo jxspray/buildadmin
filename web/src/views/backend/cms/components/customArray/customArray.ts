@@ -1,5 +1,6 @@
-import {reactive} from "vue";
-import {FormInstance} from "element-plus";
+import {nextTick, reactive} from "vue";
+import {FormInstance, FormItemRule} from "element-plus";
+import {buildValidatorData} from "/@/utils/validate";
 
 interface FieldType { label: string, type: string, width: string, value: any }
 interface ValueProps {
@@ -12,28 +13,36 @@ interface CustomArrayForm {
     fieldList: FieldType[]
 }
 export default class customArray {
-    public module: {value: ValueProps, column: { label: string, field: string, type?: FieldType }[], table: any[]} = reactive({
+    public module: {value: ValueProps, column: { label: string, field: string, type?: FieldType }[], table: any[], show: boolean} = reactive({
         value: {column: [], table: []},
         column: [],
-        table: []
+        table: [],
+		show: true
     })
     public form: CustomArrayForm = reactive({
         setShow: false,
         setForm: {label: '', field: '', type: undefined},
-        fieldList: [
-            {label: '文本', type: 'string', width:'200px', value: ''},
-            {label: '文本域', type: 'textarea', width:'300px', value: ''},
-            {label: '编辑器', type: 'editor', width:'700px', value: ''},
-            {label: '图片上传', type: 'image', width:'344px', value: ''},
-            {label: '文件上传', type: 'file', width:'344px', value: ''},
-            {label: '链接', type: 'link-select', width:'300px', value: {}}
-        ]
     })
+	public fieldList: FieldType[] =  [
+		{label: '文本', type: 'string', width:'200px', value: ''},
+		{label: '文本域', type: 'textarea', width:'300px', value: ''},
+		{label: '编辑器', type: 'editor', width:'700px', value: ''},
+		{label: '图片上传', type: 'image', width:'344px', value: ''},
+		{label: '文件上传', type: 'file', width:'344px', value: ''},
+		{label: '链接', type: 'link-select', width:'300px', value: {}}
+	]
+	public rules: Partial<Record<string, FormItemRule[]>> = reactive({
+		label: [buildValidatorData({name: 'required', title: '字段标题'})],
+		field: [buildValidatorData({name: 'required', title: '字段变量'})],
+		type: [buildValidatorData({name: 'required', title: '字段类型'})],
+	})
 
     constructor(value: ValueProps|string) {
 		this.module.value = typeof(value) != 'string'
             ? value
             : {table: [], column: [{label: '标题', field: 'title', type: {label: '文本', type: 'string', width: "300px", value: ''}}]}
+		this.module.column = this.module.value.column
+		this.module.table = this.module.value.table
 	}
 	/**
 	 * 新增字段
@@ -62,12 +71,17 @@ export default class customArray {
 	 * 删除字段
 	 */
 	public delField(index: number) {
-		let prop = this.module.column[index]['field']
+		let prop = this.module.column[index].field
 		this.module.column.splice(index, 1)
 		this.module.table.forEach(function(item, index) {
             delete item[prop]
 		})
-        console.log(this.module.table.toString())
+		this.module.show = false
+		nextTick(() => {
+			this.module.show = true
+		}).then(r => {
+			// console.error(r)
+		})
 	}
 	/**
 	 * 新增行
