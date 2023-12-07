@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import customArray from "./customArray";
 import {ref, watch} from 'vue'
-import {ElForm} from "element-plus";
+import {ElForm, FormInstance} from "element-plus";
 const fieldFormRef = ref<InstanceType<typeof ElForm>>();
 const props = defineProps(['modelValue'])
 const emit = defineEmits(['update:modelValue'])

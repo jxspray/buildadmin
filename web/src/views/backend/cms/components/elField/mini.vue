@@ -71,9 +71,9 @@
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
-          <el-button size="small" type="primary" @click="state.submitItem(setFormRef)">确 定</el-button>
-          <el-button size="small" @click="state.closeItemDialog()">取 消</el-button>
-      </span>
+              <el-button size="small" type="primary" @click="state.submitItem(setFormRef)">确 定</el-button>
+              <el-button size="small" @click="state.closeItemDialog()">取 消</el-button>
+          </span>
         </el-dialog>
     </div>
 </template>
@@ -82,7 +82,7 @@
 import elField from "./elField";
 import {onMounted, ref, watch} from "vue";
 import {useTemplateRefsList} from "@vueuse/core";
-import {ElForm} from "element-plus";
+import {ElForm, FormInstance} from "element-plus";
 import Icon from "/@/components/icon/index.vue";
 import ElLinkSelect from "/@/views/backend/cms/components/elLinkSelect/index.vue";
 import CustomArray from "/@/views/backend/cms/components/customArray/index.vue";
@@ -97,6 +97,20 @@ const emit = defineEmits(['update:modelValue'])
 const state = new elField(props.modelValue)
 const tabsRefs = useTemplateRefsList<HTMLElement>()
 
+const onSubmit = (formEl: FormInstance | undefined = undefined) => {
+    if (formEl) {
+        formEl.validate((valid: boolean) => {
+            if (valid) {
+                state.module.list[state.form.setIndex] = state.form.setForm
+                state.closeItemDialog()
+            }
+        }).then(r => {
+            // console.error(r)
+        })
+    } else {
+        return false;
+    }
+}
 
 onMounted(() => {
     state.createSortable(designWindowRef.value)
