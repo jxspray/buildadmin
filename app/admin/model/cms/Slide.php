@@ -20,6 +20,7 @@ class Slide extends Model
         'groups'      => 'json',
         'delete_time' => 'timestamp:Y-m-d H:i:s',
         'extends'     => 'json',
+        'field'     => 'json',
     ];
 
 
@@ -29,6 +30,11 @@ class Slide extends Model
     }
 
     public function getExtendsAttr($value): array
+    {
+        return !$value ? [] : json_decode($value, true);
+    }
+
+    public function getFieldAttr($value): array
     {
         return !$value ? [] : json_decode($value, true);
     }

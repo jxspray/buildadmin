@@ -87,13 +87,13 @@ const baTable = new baTableClass(
             }, operator: false },
             { label: t('cms.slide.create_time'), prop: 'create_time', align: 'center', render: 'datetime', operator: 'RANGE', sortable: 'custom', width: 160, timeFormat: 'yyyy-mm-dd hh:MM:ss' },
             { label: t('cms.slide.update_time'), prop: 'update_time', align: 'center', render: 'datetime', operator: 'RANGE', sortable: 'custom', width: 160, timeFormat: 'yyyy-mm-dd hh:MM:ss' },
-            
+
             { label: t('Operate'), align: 'center', width: 100, render: 'buttons', buttons: optButtons, operator: false },
         ],
         dblClickNotEditColumn: [undefined],
     },
     {
-        defaultItems: { name: null, remark: null, width: 0, height: 0, status: '1', groups: [], delete_time: null, extends: [] },
+        defaultItems: { name: null, remark: null, width: 0, height: 0, status: '1', groups: [], delete_time: null, extends: [], field: [] },
     }
 )
 

@@ -39,6 +39,11 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
         $value = json_decode($value);
         foreach ($value as $k => $v) {
             switch ($v->type->type) {
+                case 'image':
+                    $field[$v->field] = full_url($v->type->value);
+                case 'file':
+                    $field[$v->field] = full_url($v->type->value);
+                    break;
                 case 'link-select':
                     $field[$v->field] = Url::appoint($v->type->value);
                     break;
@@ -55,7 +60,7 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
                     $field[$v->field] = $arr;
                     break;
                 default:
-                    $field[$v['field']] = $v['type']['value'];
+                    $field[$v->field] = $v->type->value;
                     break;
             }
         }

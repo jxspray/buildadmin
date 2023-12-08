@@ -3,12 +3,8 @@
     <!-- 建议使用 Prettier 格式化代码 -->
     <!-- el-form 内可以混用 el-form-item、FormItem、ba-input 等输入组件 -->
     <el-dialog
-        class="ba-operate-dialog"
-        :close-on-click-modal="false"
-        :model-value="['Add', 'Edit'].includes(baTable.form.operate!)"
-        @close="baTable.toggleForm"
-        width="50%"
-    >
+            :fullscreen="true" class="ba-operate-dialog" :close-on-click-modal="false"
+            :model-value="!!baTable.form.operate" @close="baTable.toggleForm">
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
                 {{ baTable.form.operate ? t(baTable.form.operate) : '' }}
@@ -30,69 +26,78 @@
                     :label-width="baTable.form.labelWidth + 'px'"
                     :rules="rules"
                 >
-                    <FormItem :label="t('cms.slide.name')" type="string" v-model="baTable.form.items!.name" prop="name" :placeholder="t('Please input field', { field: t('cms.slide.name') })" />
-                    <FormItem :label="t('cms.slide.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :input-attr="{ rows: 3 }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" :placeholder="t('Please input field', { field: t('cms.slide.remark') })" />
-                    <FormItem :label="t('cms.slide.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { '0': t('cms.slide.status 0'), '1': t('cms.slide.status 1') } }" :placeholder="t('Please select field', { field: t('cms.slide.status') })" />
-                    <el-form-item :label="t('cms.slide.groups')" prop="groups">
-                        <div style="width: 100%;">
-                            <el-row :gutter="10">
-                                <el-col :span="6" class="ba-array-name">分组名</el-col>
-                                <el-col :span="6" class="ba-array-width">宽</el-col>
-                                <el-col :span="6" class="ba-array-height">高</el-col>
-                            </el-row>
-                            <el-row class="ba-array-item" v-for="(item, idx) in baTable.form.items!.groups" :gutter="10" :key="idx">
-                                <el-col :span="6">
-                                    <el-input v-model="item.name"></el-input>
-                                </el-col>
-                                <el-col :span="6">
-                                    <el-input v-model.number="item.width" :step="1"></el-input>
-                                </el-col>
-                                <el-col :span="6">
-                                    <el-input v-model.number="item.height" :step="1"></el-input>
-                                </el-col>
-                                <el-col :span="4">
-                                    <el-button @click="onDelArrayItem('groups', idx)" size="small" icon="el-icon-Delete" circle />
-                                </el-col>
-                            </el-row>
-                            <el-row :gutter="10">
-                                <el-col :span="10" :offset="8">
-                                    <el-button v-blur class="ba-add-array-item" @click="onAddArrayItem()" icon="el-icon-Plus">{{ t('Add') }}</el-button>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </el-form-item>
-                    <el-form-item :label="t('cms.slide.extends')" prop="extends">
-                        <div style="width: 100%;">
-                            <el-row :gutter="10">
-                                <el-col :span="6" class="ba-array-name">字段</el-col>
-                                <el-col :span="6" class="ba-array-width">标题</el-col>
-                                <el-col :span="6" class="ba-array-height">类型</el-col>
-                            </el-row>
-                            <el-row class="ba-array-item" v-for="(item, idx) in baTable.form.items!.extends" :gutter="10" :key="idx">
-                                <el-col :span="6">
-                                    <el-input v-model="item.field"></el-input>
-                                </el-col>
-                                <el-col :span="6">
-                                    <el-input v-model="item.label"></el-input>
-                                </el-col>
-                                <el-col :span="6">
-                                    <el-select style="width:100%" v-model="item.type" value-key="label"
-                                               placeholder="请选择字段类型" filterable>
-                                        <el-option v-for="(ite, index) in fields" :key="index" :label="ite.label"
-                                                   :value="ite"></el-option>
-                                    </el-select>
-                                </el-col>
-                                <el-col :span="4">
-                                    <el-button @click="onDelArrayItem('extends', idx)" size="small" icon="el-icon-Delete" circle />
-                                </el-col>
-                            </el-row>
-                            <el-row :gutter="10">
-                                <el-col :span="10" :offset="8">
-                                    <el-button v-blur class="ba-add-array-item" @click="onAddArrayItem('extends')" icon="el-icon-Plus">{{ t('Add') }}</el-button>
-                                </el-col>
-                            </el-row>
-                        </div>
-                    </el-form-item>
+                    <el-tabs tab-position="left" v-model="state.activeTab">
+                        <el-tab-pane :label="t('基础字段')" name="base">
+                            <FormItem :label="t('cms.slide.name')" type="string" v-model="baTable.form.items!.name" prop="name" :placeholder="t('Please input field', { field: t('cms.slide.name') })" />
+                            <FormItem :label="t('cms.slide.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :input-attr="{ rows: 3 }" @keyup.enter.stop="" @keyup.ctrl.enter="baTable.onSubmit(formRef)" :placeholder="t('Please input field', { field: t('cms.slide.remark') })" />
+                            <FormItem :label="t('cms.slide.status')" type="radio" v-model="baTable.form.items!.status" prop="status" :data="{ content: { '0': t('cms.slide.status 0'), '1': t('cms.slide.status 1') } }" :placeholder="t('Please select field', { field: t('cms.slide.status') })" />
+                        </el-tab-pane>
+                        <el-tab-pane :label="t('图册配置')" name="data">
+                            <el-form-item :label="t('cms.slide.groups')" prop="groups">
+                                <div style="width: 100%;">
+                                    <el-row :gutter="10">
+                                        <el-col :span="6" class="ba-array-name">分组名</el-col>
+                                        <el-col :span="6" class="ba-array-width">宽</el-col>
+                                        <el-col :span="6" class="ba-array-height">高</el-col>
+                                    </el-row>
+                                    <el-row class="ba-array-item" v-for="(item, idx) in baTable.form.items!.groups" :gutter="10" :key="idx">
+                                        <el-col :span="6">
+                                            <el-input v-model="item.name"></el-input>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-input v-model.number="item.width" :step="1"></el-input>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-input v-model.number="item.height" :step="1"></el-input>
+                                        </el-col>
+                                        <el-col :span="4">
+                                            <el-button @click="onDelArrayItem('groups', idx)" size="small" icon="el-icon-Delete" circle />
+                                        </el-col>
+                                    </el-row>
+                                    <el-row :gutter="10">
+                                        <el-col :span="10" :offset="8">
+                                            <el-button v-blur class="ba-add-array-item" @click="onAddArrayItem()" icon="el-icon-Plus">{{ t('Add') }}</el-button>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                            </el-form-item>
+                            <el-form-item :label="t('cms.slide.extends')" prop="extends">
+                                <div style="width: 100%;">
+                                    <el-row :gutter="10">
+                                        <el-col :span="6" class="ba-array-name">字段</el-col>
+                                        <el-col :span="6" class="ba-array-width">标题</el-col>
+                                        <el-col :span="6" class="ba-array-height">类型</el-col>
+                                    </el-row>
+                                    <el-row class="ba-array-item" v-for="(item, idx) in baTable.form.items!.extends" :gutter="10" :key="idx">
+                                        <el-col :span="6">
+                                            <el-input v-model="item.field"></el-input>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-input v-model="item.label"></el-input>
+                                        </el-col>
+                                        <el-col :span="6">
+                                            <el-select style="width:100%" v-model="item.type" value-key="label"
+                                                       placeholder="请选择字段类型" filterable>
+                                                <el-option v-for="(ite, index) in fields" :key="index" :label="ite.label"
+                                                           :value="ite"></el-option>
+                                            </el-select>
+                                        </el-col>
+                                        <el-col :span="4">
+                                            <el-button @click="onDelArrayItem('extends', idx)" size="small" icon="el-icon-Delete" circle />
+                                        </el-col>
+                                    </el-row>
+                                    <el-row :gutter="10">
+                                        <el-col :span="10" :offset="8">
+                                            <el-button v-blur class="ba-add-array-item" @click="onAddArrayItem('extends')" icon="el-icon-Plus">{{ t('Add') }}</el-button>
+                                        </el-col>
+                                    </el-row>
+                                </div>
+                            </el-form-item>
+                        </el-tab-pane>
+                        <el-tab-pane :label="t('扩展字段')" name="extend">
+                            <el-field v-model="baTable.form.items!.field" :ifset="true" v-if="!!baTable.form.operate"></el-field>
+                        </el-tab-pane>
+                    </el-tabs>
                 </el-form>
             </div>
         </el-scrollbar>
@@ -115,6 +120,7 @@ import FormItem from '/@/components/formItem/index.vue'
 import type { FormInstance, FormItemRule } from 'element-plus'
 import { buildValidatorData } from '/@/utils/validate'
 import {ElForm} from "element-plus";
+import ElField from "/@/views/backend/cms/components/elField/index.vue";
 
 const formRef = ref<FormInstance>()
 const baTable = inject('baTable') as baTableClass
@@ -124,7 +130,8 @@ const { t } = useI18n()
 const state = reactive({
     setShow: false,
     setIndex: 0,
-    setForm: {field: "", label: "", type: undefined}
+    setForm: {field: "", label: "", type: undefined},
+    activeTab: "base"
 })
 
 const obj = {
@@ -200,6 +207,36 @@ const rules: Partial<Record<string, FormItemRule[]>> = reactive({
 
 
 <style scoped lang="scss">
+.ba-operate-dialog .el-dialog__body {
+  height: 92%;
+  padding-top: 0;
+  padding-bottom: 52px;
+}
+
+.ba-operate-dialog .el-scrollbar__view {
+  height: 100%;
+}
+
+.ba-operate-form {
+  height: 100%;
+
+  .el-form {
+    height: 100%;
+
+    .el-tabs {
+      height: 100%;
+
+      .el-tabs__content {
+        height: 100%;
+
+        .el-tab-pane {
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
 .ba-array-name,
 .ba-array-width,
 .ba-array-height {

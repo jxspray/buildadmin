@@ -33,6 +33,7 @@
                     <FormItem :label="t('cms.slide.data.slide_id')" type="remoteSelect" v-model="baTable.form.items!.slide_id" prop="slide_id" :input-attr="{ pk: 'ba_cms_slide.id', field: 'name', 'remote-url': '/admin/cms.Slide/index' }" :placeholder="t('Please select field', { field: t('cms.slide.data.slide_id') })" />
                     <FormItem :label="t('cms.slide.data.title')" type="string" v-model="baTable.form.items!.title" prop="title" :placeholder="t('Please input field', { field: t('cms.slide.data.title') })" />
 
+                    <FormItem :label="t('cms.slide.data.image')" type="image" v-model="baTable.form.items!.image" prop="image" />
                     <el-form-item v-for="(item, index) in slide.extends" :label="item.label" :key="index" >
                         <div class="w100">
                             <ElLinkSelect v-if="item.type!.type == 'link-select'" v-model="baTable.form.items!.extends[item.field]"/>
@@ -40,7 +41,6 @@
                             <BaInput v-else @pointerdown.stop :type="item.type!.type" v-model="baTable.form.items!.extends[item.field]"/>
                         </div>
                     </el-form-item>
-<!--                    <FormItem :label="t('cms.slide.data.image')" type="image" v-model="baTable.form.items!.image" prop="image" />-->
 <!--                    <FormItem :label="t('cms.slide.data.link')" type="string" v-model="baTable.form.items!.link" prop="link" :placeholder="t('Please input field', { field: t('cms.slide.data.link') })" />-->
                     <FormItem :label="t('cms.slide.data.remark')" type="textarea" v-model="baTable.form.items!.remark" prop="remark" :placeholder="t('Please input field', { field: t('cms.slide.data.remark') })" />
                     <FormItem :label="t('cms.slide.data.width')" type="number" prop="width" :input-attr="{ step: 1 }" v-model.number="baTable.form.items!.width" :placeholder="t('Please input field', { field: t('cms.slide.data.width') })" />

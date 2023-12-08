@@ -136,13 +136,16 @@ export default class elField {
                 }).then(r => {
                     // console.error(r)
                 })
+                console.log(6666)
             },
             onEnd: (evt) => {
                 const temp = this.module.list[evt.oldIndex!]
                 this.module.list.splice(evt.oldIndex!, 1)
                 this.module.list.splice(evt.newIndex!, 0, temp)
+                this.module.show = false;
                 nextTick(() => {
                     sortable.sort(range(this.module.list.length).map((value) => value.toString()))
+                    this.module.show = true;
                 }).then(r => {
                     // console.error(r)
                 })
