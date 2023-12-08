@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 use GuzzleHttp\Psr7;
 use Psr\Http\Message\RequestInterface;

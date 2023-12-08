@@ -33,17 +33,11 @@
                     <FormItem :label="t('cms.slide.data.slide_id')" type="remoteSelect" v-model="baTable.form.items!.slide_id" prop="slide_id" :input-attr="{ pk: 'ba_cms_slide.id', field: 'name', 'remote-url': '/admin/cms.Slide/index' }" :placeholder="t('Please select field', { field: t('cms.slide.data.slide_id') })" />
                     <FormItem :label="t('cms.slide.data.title')" type="string" v-model="baTable.form.items!.title" prop="title" :placeholder="t('Please input field', { field: t('cms.slide.data.title') })" />
 
-                    <el-form-item v-for="(item, index) in state.extends" :data-id="index" :label="item.label" :key="index" >
+                    <el-form-item v-for="(item, index) in slide.extends" :label="item.label" :key="index" >
                         <div class="w100">
-                            <ElLinkSelect v-if="item.type!.type == 'link-select'" v-model="item.type!.value"
-                                          size=""/>
-                            <CustomArray v-else-if="item.type!.type == 'customArray'" v-model="item.type!.value"/>
-                            <BaInput
-                                    v-else
-                                    @pointerdown.stop
-                                    v-model="item.type!.value"
-                                    :type="item.type!.type"
-                            />
+                            <ElLinkSelect v-if="item.type!.type == 'link-select'" v-model="baTable.form.items!.extends[item.field]"/>
+                            <CustomArray v-else-if="item.type!.type == 'customArray'" v-model="baTable.form.items!.extends[item.field]"/>
+                            <BaInput v-else @pointerdown.stop :type="item.type!.type" v-model="baTable.form.items!.extends[item.field]"/>
                         </div>
                     </el-form-item>
 <!--                    <FormItem :label="t('cms.slide.data.image')" type="image" v-model="baTable.form.items!.image" prop="image" />-->
@@ -55,14 +49,14 @@
                     <el-form-item :label="t('cms.slide.data.group')" prop="group">
                         <el-select v-model="baTable.form.items!.group" clearable :placeholder="t('Please input field', { field: t('cms.slide.data.group') })" class="w100" @change="onChangeGroup">
                             <el-option
-                            v-for="(item, index) in state.groupList"
+                            v-for="(item, index) in groupList"
                             :key="index"
                             :label="item.name + ':' + item.width + 'x' + item.height"
                             :value="item.name"
                             />
                         </el-select>
                     </el-form-item>
-                    <FormItem :label="t('cms.slide.data.extends')" type="string" v-model="baTable.form.items!.extends" prop="extends" :placeholder="t('Please input field', { field: t('cms.slide.data.extends') })" />
+<!--                    <FormItem :label="t('cms.slide.data.extends')" type="string" v-model="baTable.form.items!.extends" prop="extends" :placeholder="t('Please input field', { field: t('cms.slide.data.extends') })" />-->
                 </el-form>
             </div>
         </el-scrollbar>
@@ -78,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, inject } from 'vue'
+import {reactive, ref, inject} from 'vue'
 import { useI18n } from 'vue-i18n'
 import type baTableClass from '/@/utils/baTable'
 import FormItem from '/@/components/formItem/index.vue'
@@ -87,66 +81,33 @@ import { buildValidatorData } from '/@/utils/validate'
 
 const formRef = ref<FormInstance>()
 const baTable = inject('baTable') as baTableClass
-import createAxios from '/@/utils/axios'
-import { useRoute } from 'vue-router'
 import BaInput from "/@/components/baInput/index.vue";
 import ElLinkSelect from "/@/views/backend/cms/components/elLinkSelect/index.vue";
 import CustomArray from "/@/views/backend/cms/components/customArray/index.vue";
-import Icon from "/@/components/icon/index.vue";
-const route = useRoute()
+const props = defineProps(['slide', 'groupList'])
 
 const { t } = useI18n()
-
-const state: {
-    groupList: { name: string, width: number, height: number }[]
-    extends: {
-        field: string
-        label: string
-        type?: {
-            value: any
-            label: string
-            type: string
-        }
-    }[]
-} = reactive({
-    groupList: [{ name: '通用', width: 0, height: 0 }],
-    extends: [],
-})
 
 baTable.after = {
     toggleForm: function () {
         if (!baTable.form.operate) return true
-        createAxios(
-            {
-                url: '/admin/cms.Slide/edit',
-                method: 'get',
-                params: { id: route.query.slide_id },
-            },
-            {
-                showSuccessMessage: false,
-            }
-        ).then((res: any) => {
-            const groups = res.data.row.groups
-            state.extends = res.data.row.extends
-            Object.keys(groups).forEach((item) => {
-                groups[item].width = parseInt(groups[item].width)
-                groups[item].height = parseInt(groups[item].height)
-            })
-
-            state.groupList = groups
-            if (state.groupList.length === 0) state.groupList =  [{ name: '通用', width: 0, height: 0 }]
-            const group = state.groupList[0]
-            baTable.form.items!.group = group.name
-            if (baTable.form.operate == 'Add') {
-                baTable.form.items!.width = group.width
-                baTable.form.items!.height = group.height
-            }
+		const group = props.groupList[0]
+		baTable.form.items!.group = group.name
+		if (baTable.form.operate == 'Add') {
+			baTable.form.items!.width = group.width
+			baTable.form.items!.height = group.height
+		}
+    },
+	requestEdit: res => {
+		let ext = res.res.data.row.extends
+        props.slide.extends.map((item: any) => {
+			if (item.field in ext) return item.type.value = ext[item.field]
         })
     }
 }
 
 const onChangeGroup = function (val: string) {
-    const group = state.groupList.find((item) => item.name === val)
+    const group = props.groupList.find((item: {name: string, width: number, height: number}) => item.name === val)
     if (!group) return
     baTable.form.items!.width = group.width
     baTable.form.items!.height = group.height

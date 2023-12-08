@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 use Psr\Http\Message\RequestInterface;
 use Aws\Exception\AwsException;

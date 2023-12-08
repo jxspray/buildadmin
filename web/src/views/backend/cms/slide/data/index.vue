@@ -23,12 +23,12 @@
         <Table ref="tableRef"></Table>
 
         <!-- 表单 -->
-        <PopupForm />
+        <PopupForm :slide="state.slide" :groupList="state.groupList" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, provide, onMounted } from 'vue'
+import {ref, provide, onMounted, reactive} from 'vue'
 import baTableClass from '/@/utils/baTable'
 import { defaultOptButtons } from '/@/components/table'
 import { baTableApi } from '/@/api/common'
@@ -37,10 +37,20 @@ import PopupForm from './popupForm.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
 import { useRoute } from 'vue-router'
+import createAxios from "/@/utils/axios";
 const route = useRoute()
+interface Groups {name: string, width: number, height: number}
+interface Slide {id: number, name: string, groups: Groups[], extends: {[key: string]: any}}
+const state: {
+	slide: Slide
+	groupList: Groups[]
+} = reactive({
+    slide: {id: 0, name: "", groups:[], extends: {}},
+	groupList: []
+})
 
 defineOptions({
-    name: 'cms/slide/data',
+    name: 'cms/slide/data'
 })
 
 const { t } = useI18n()
@@ -73,7 +83,7 @@ const baTable = new baTableClass(
         filter: { slide_id: route.query.slide_id },
     },
     {
-        defaultItems: { slide_id: route.query.slide_id, title: null, remark: null, width: 0, height: 0, status: '1', group: null, delete_time: null, extends: null },
+        defaultItems: { slide_id: route.query.slide_id, title: null, remark: null, width: 0, height: 0, status: '1', group: null, extends: {} },
     }
 )
 
@@ -86,6 +96,23 @@ onMounted(() => {
         baTable.initSort()
         baTable.dragSort()
     })
+	createAxios(
+		{
+			url: '/admin/cms.Slide/edit',
+			method: 'get',
+			params: { id: route.query.slide_id },
+		},
+		{
+			showSuccessMessage: false,
+		}
+	).then((res: any) => {
+		state.slide = res.data.row
+		state.groupList = state.slide.groups
+		if (state.groupList.length === 0) state.groupList =  [{ name: '通用', width: 0, height: 0 }]
+		state.slide.extends.map((item: any) => {
+			baTable.form.defaultItems!.extends[item.field] = item.type.value
+		})
+	})
 })
 </script>
 

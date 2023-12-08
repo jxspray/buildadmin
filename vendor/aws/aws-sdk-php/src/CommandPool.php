@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Promise\PromisorInterface;

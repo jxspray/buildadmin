@@ -4,25 +4,26 @@ import {buildValidatorData} from "/@/utils/validate";
 
 interface FieldType { label: string, type: string, width: string, value: any }
 interface ValueProps {
-    column: { label: string, field: string, type?: FieldType }[]
-    table: any[]
+	column: { label: string, field: string, type?: FieldType }[]
+	table: any[]
 }
 interface CustomArrayForm {
-    setShow: boolean
-    setForm: { label: string, field: string, type?: FieldType}
-    fieldList: FieldType[]
+	setShow: boolean
+	setForm: { label: string, field: string, type?: FieldType}
+	fieldList: FieldType[]
 }
 export default class customArray {
-    public module: {value: ValueProps, column: { label: string, field: string, type?: FieldType }[], table: any[], show: boolean} = reactive({
-        value: {column: [], table: []},
-        column: [],
-        table: [],
+	public module: {value: ValueProps, column: { label: string, field: string, type?: FieldType }[], table: any[], show: boolean} = reactive({
+		value: {column: [], table: []},
+		column: [],
+		table: [],
 		show: true
-    })
-    public form: CustomArrayForm = reactive({
-        setShow: false,
-        setForm: {label: '', field: '', type: undefined},
-    })
+	})
+	public form: CustomArrayForm = reactive({
+		setShow: false,
+		setForm: {label: '', field: '', type: undefined},
+		fieldList: []
+	})
 	public fieldList: FieldType[] =  [
 		{label: '文本', type: 'string', width:'200px', value: ''},
 		{label: '文本域', type: 'textarea', width:'300px', value: ''},
@@ -37,10 +38,10 @@ export default class customArray {
 		type: [buildValidatorData({name: 'required', title: '字段类型'})],
 	})
 
-    constructor(value: ValueProps|string) {
+	constructor(value: ValueProps|string) {
 		this.module.value = typeof(value) != 'string'
-            ? value
-            : {table: [], column: [{label: '标题', field: 'title', type: {label: '文本', type: 'string', width: "300px", value: ''}}]}
+			? value
+			: {table: [], column: [{label: '标题', field: 'title', type: {label: '文本', type: 'string', width: "300px", value: ''}}]}
 		this.module.column = this.module.value.column
 		this.module.table = this.module.value.table
 	}
@@ -61,8 +62,8 @@ export default class customArray {
 					this.form.setForm = {label: '', field: '', type: undefined}
 				}
 			}).then(r => {
-                console.log(r)
-            })
+				console.log(r)
+			})
 		} else {
 			return false;
 		}
@@ -73,8 +74,8 @@ export default class customArray {
 	public delField(index: number) {
 		let prop = this.module.column[index].field
 		this.module.column.splice(index, 1)
-		this.module.table.forEach(function(item, index) {
-            delete item[prop]
+		this.module.table.forEach(item => {
+			delete item[prop]
 		})
 		this.module.show = false
 		nextTick(() => {
@@ -86,12 +87,12 @@ export default class customArray {
 	/**
 	 * 新增行
 	 */
-	public pushTable(index: number|string) {
+	public pushTable(index: number|undefined) {
 		let ob: any = {};
-		this.module.column.forEach( function (item, index) {
+		this.module.column.forEach( item => {
 			ob[item.field] = item.type?.value;
 		});
-		index === "" ? this.module.table.push(ob) : this.module.table.splice(index + 1, 0, ob);
+		index === undefined ? this.module.table.push(ob) : this.module.table.splice(index + 1, 0, ob);
 	}
 	/**
 	 * 删除数组
@@ -102,7 +103,7 @@ export default class customArray {
 
 	public unshiftTable() {
 		let ob: any = {};
-		this.module.column.forEach( function (item, index) {
+		this.module.column.forEach( item => {
 			ob[item.field] = item.type?.value;
 		});
 		this.module.table.unshift(ob);

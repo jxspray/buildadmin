@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 /**
  * Interface that allows implementing various incremental hashes.

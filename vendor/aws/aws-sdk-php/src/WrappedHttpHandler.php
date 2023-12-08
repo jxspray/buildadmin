@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 use Aws\Api\Parser\Exception\ParserException;
 use Aws\Exception\AwsException;

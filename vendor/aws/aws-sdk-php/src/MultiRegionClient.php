@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 use Aws\Endpoint\PartitionEndpointProvider;
 use Aws\Endpoint\PartitionInterface;

@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 /**
  * Interface for adding and retrieving client-side monitoring events

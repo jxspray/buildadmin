@@ -65,11 +65,10 @@ class Filesystem extends Manager
 
 
         if (isset( $this->customCreators[$name] )) {
-            return $this->callCustomCreator( $type );
+            return $this->callCustomCreator( $this->getConfig( "disks.{$name}" ) );
         }
 
         $method = 'create'.Str::studly( $type ).'Driver';
-
         $params = $this->resolveParams( $name );
 
 
@@ -103,7 +102,7 @@ class Filesystem extends Manager
      * @param string $disk
      * @param null $name
      * @param null $default
-     * @return array
+     * @return string
      */
     public function getDiskConfig($disk,$name = null,$default = null)
     {

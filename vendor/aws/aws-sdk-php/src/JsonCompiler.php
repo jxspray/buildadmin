@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 /**
  * Loads JSON files and compiles them into PHP arrays.

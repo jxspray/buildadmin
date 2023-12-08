@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 /**
  * Builds a single handler function from zero or more middleware functions and

@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 use Aws\Api\Service;
 use Psr\Http\Message\RequestInterface;

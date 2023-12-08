@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 interface ConfigurationProviderInterface
 {

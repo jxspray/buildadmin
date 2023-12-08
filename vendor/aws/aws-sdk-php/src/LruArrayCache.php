@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 /**
  * Simple in-memory LRU cache that limits the number of cached entries.

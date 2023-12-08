@@ -18,6 +18,7 @@ class Data extends Model
     // 字段类型转换
     protected $type = [
         'delete_time' => 'timestamp:Y-m-d H:i:s',
+        'extends' => "json"
     ];
     protected $append = [
         'cdn_image'

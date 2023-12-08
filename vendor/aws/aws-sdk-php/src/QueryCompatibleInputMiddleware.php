@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 use Aws\Api\ListShape;
 use Aws\Api\MapShape;

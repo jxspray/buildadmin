@@ -1,6 +1,6 @@
 <?php
 
-namespace feature;
+namespace Aws;
 
 use Psr\Http\Message\ResponseInterface;
 

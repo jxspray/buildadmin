@@ -1,5 +1,5 @@
 <?php
-namespace feature;
+namespace Aws;
 
 use Aws\Exception\AwsException;
 use Aws\Retry\RetryHelperTrait;
