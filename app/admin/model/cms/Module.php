@@ -54,7 +54,7 @@ class Module extends \think\Model
                 ['type' => 'button', 'title' => '快速排序', 'name' => "cms/content/$name/sortable"],
             ]
         ];
-        \app\common\library\Menu::create([$menu], 'cms');
+        \app\common\library\Menu::create([$menu], 'cms/content');
         return true;
     }
 

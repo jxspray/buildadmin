@@ -40,7 +40,7 @@ return [
             ],
             'radio' => ["group" => "common", "label" => "单选按钮", "value" => "radio", "setting" => ["select"], 'setup' => [
                 'type' => 'key',
-                'options' => [["key" => 0, "value" => '关闭'], ["key" => 0, "value" => '开启']]
+                'options' => [["key" => 0, "value" => '关闭'], ["key" => 1, "value" => '开启']]
             ]],
             'checkbox' => ["group" => "common", "label" => "复选框", "value" => "checkbox", "setting" => ["select", "selectNum"], 'setup' => [
                 'type' => 'key',

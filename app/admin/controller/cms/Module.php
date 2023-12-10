@@ -47,6 +47,11 @@ class Module extends \app\common\controller\Backend
                     }
                 }
                 $result = $this->model->save($data);
+                /* 检查数据表是否存在 */
+                $instance = \ba\cms\utils\Sql::getInstance($this->model['name'], "CREATE");
+                if ($instance->tableExists()) $this->error("数据表已存在！");
+                // 批量生成字段
+                $instance->createTable($this->model);
                 $this->model->commit();
             } catch (\Throwable $e) {
                 $this->model->rollback();
@@ -54,11 +59,7 @@ class Module extends \app\common\controller\Backend
                 $this->error($e->getMessage());
             }
             if ($result !== false) {
-                /* 检查数据表是否存在 */
-                $instance = \ba\cms\utils\Sql::getInstance($this->model['name'], "CREATE");
-                if ($instance->tableExists()) $this->error("数据表已存在！");
-                // 批量生成字段
-                $instance->createTable($this->model);
+//                $instance->createField($this->model);
                 $this->success(__('Added successfully'), $this->model->getData());
             } else {
                 $this->error(__('No rows were added'));

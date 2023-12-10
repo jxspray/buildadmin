@@ -146,25 +146,25 @@ class Sql
     public function createTable(\app\admin\model\cms\Module $moduleRow): bool
     {
         $typeSql = match ($moduleRow['type']) {
-            "0" => "`url` varchar(20) DEFAULT NULL COMMENT '链接',",
+            "0" => "`url` VARCHAR(20) DEFAULT NULL COMMENT '链接',",
             default => ""
         };
         // 创建字段
 
         // 创建初始表
         $this->run("query", "{$this->getTableHead('CREATE')} (
-            `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-            `weigh` int(5) DEFAULT 0 COMMENT '排序',
-            `lang` tinyint(1) DEFAULT 0 COMMENT '语言ID',
-            `create_time` int(11) DEFAULT 0 COMMENT '创建时间',
-            `update_time` int(11) DEFAULT 0 COMMENT '更新时间',
-            `delete_time` int(11) DEFAULT 0 COMMENT '删除时间',
+            `id` INT(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+            `weigh` INT(5) DEFAULT 0 COMMENT '排序',
+            `lang` TINYINT(1) DEFAULT 0 COMMENT '语言ID',
+            `create_time` INT(11) DEFAULT 0 COMMENT '创建时间',
+            `update_time` INT(11) DEFAULT 0 COMMENT '更新时间',
+            `delete_time` INT(11) DEFAULT 0 COMMENT '删除时间',
             {$typeSql}
             PRIMARY KEY (`id`)
         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='{$moduleRow['title']}'", true);
         // 创建字段表
 //        self::$instance->pattern = 'ALTER';
-        $this->createField($moduleRow);
+//        $this->createField($moduleRow);
         return true;
     }
 
@@ -173,7 +173,7 @@ class Sql
      * @return bool
      * @throws Exception
      */
-    protected function createField(\app\admin\model\cms\Module $moduleRow): bool
+    public function createField(\app\admin\model\cms\Module $moduleRow)
     {
         $data = [];
         switch ($moduleRow['template']) {
@@ -198,6 +198,12 @@ class Sql
                             'default' => '',
                         ]
                     ],
+                    ['name' => '点击次数', 'field' => 'hits', 'type' => 'text', 'setup' => [
+                            'type' => 'number',
+                            'step' => 1,
+                            'default' => '',
+                        ]
+                    ],
                     ['name' => '描述', 'field' => 'description', 'type' => 'text',
                         'setup' => [
                             'type' => 'textarea',
@@ -205,10 +211,41 @@ class Sql
                             'default' => '',
                         ]
                     ],
+                    ['name' => '缩略图', 'field' => 'image', 'type' => 'text',
+                        'setup' => config("cms.param.typeOptions.images.setup")
+                    ],
+                    ['name' => '内容', 'field' => 'content', 'type' => 'editor',
+                        'setup' => [
+                            'autoThumb' => 0,
+                            'autoKeyword' => 0,
+                            'minShow' => 3,
+                            'autoDescription' => 0,
+                            'beforeNum' => '200',
+                            'default' => ''
+                        ]
+                    ],
                     ['name' => '状态', 'field' => 'status', 'type' => 'radio',
                         'setup' => [
                             'type' => 'key',
-                            'options' => [["key" => 0, "value" => '关闭'], ["key" => 0, "value" => '开启']]
+                            'options' => [["key" => 0, "value" => '关闭'], ["key" => 1, "value" => '开启']]
+                        ]
+                    ],
+                    ['name' => 'SEO标题', 'field' => 'seo_title', 'type' => 'text',
+                        'setup' => [
+                            'type' => 'string',
+                            'default' => '',
+                        ]
+                    ],
+                    ['name' => 'SEO关键词', 'field' => 'seo_keywords', 'type' => 'text', 'setup' => [
+                        'type' => 'string',
+                        'default' => '',
+                    ]
+                    ],
+                    ['name' => 'SEO描述', 'field' => 'seo_description', 'type' => 'text',
+                        'setup' => [
+                            'type' => 'textarea',
+                            'linenum' => 3,
+                            'default' => '',
                         ]
                     ],
                 ];
@@ -218,7 +255,7 @@ class Sql
                     ['name' => '状态', 'field' => 'status', 'type' => 'radio',
                         'setup' => [
                             'type' => 'key',
-                            'options' => [["key" => 0, "value" => '关闭'], ["key" => 0, "value" => '开启']]
+                            'options' => [["key" => 0, "value" => '关闭'], ["key" => 1, "value" => '开启']]
                         ]
                     ],
                 ];

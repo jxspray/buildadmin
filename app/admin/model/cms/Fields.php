@@ -63,7 +63,7 @@ class Fields extends Model
 //            \think\facade\Cache::delete('module');
             $module = cms("module");
             $moduleInfo = $module[$data['module_id']] ?? [];
-            if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在");
+            if (empty($moduleInfo) || empty($moduleInfo['name'])) abort(502, "模型不存在!");
             $instance = \ba\cms\utils\Sql::getInstance($moduleInfo['name'], "ADD");
         }
         return $instance;

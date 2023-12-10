@@ -28,7 +28,7 @@
                     :rules="rules"
                 >
                 <el-tabs tab-position="left" class="catalog-tabs">
-                    <el-tab-pane :label="t('cms.catalog.base')" v-if="baseFields.length">
+                    <el-tab-pane label="基础内容设置" v-if="baseFields.length">
                         <CustomFormItem
                             v-for="(item, index) in baseFields"
                             :type="item.type"
@@ -38,19 +38,19 @@
                             :key="index"
                         />
                     </el-tab-pane>
-                    <el-tab-pane :label="t('cms.catalog.seo')" v-if="seoFields.length">
+                    <el-tab-pane label="内容设置" v-if="extendFields.length">
                         <CustomFormItem
-                            v-for="(item, index) in seoFields"
-                            :type="item.type"
-                            :label="t(item.name)"
-                            v-model="baTable.form.items![item.field]"
-                            :option="item"
-                            :key="index"
+                                v-for="(item, index) in extendFields"
+                                :type="item.type"
+                                :label="t(item.name)"
+                                v-model="baTable.form.items![item.field]"
+                                :option="item"
+                                :key="index"
                         />
                     </el-tab-pane>
-                    <el-tab-pane :label="t('cms.catalog.extend')" v-if="extendFields.length">
+                    <el-tab-pane label="TDK设置" v-if="seoFields.length">
                         <CustomFormItem
-                            v-for="(item, index) in extendFields"
+                            v-for="(item, index) in seoFields"
                             :type="item.type"
                             :label="t(item.name)"
                             v-model="baTable.form.items![item.field]"
