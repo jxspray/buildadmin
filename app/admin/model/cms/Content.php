@@ -9,7 +9,7 @@ class Content extends Model
 {
     use \ba\cms\traits\module\CustomContent;
 
-    public static function onBeforeWrite(self $model): void
+    public static function onAfterWrite(self $model): void
     {
         // 设置url
         // 获取栏目目录
@@ -19,7 +19,9 @@ class Content extends Model
         if ($module['rule']) {
             $model->url = '/' . $module['rule'] . '/' . $model->id . '.html';
         } else {
-            $model->url = $catalog['url'] . '/' . $model->id . '.html';
+            $model->url = '/' . $catalog['seo_url'] . '/' . $model->id . '.html';
         }
+        $pk = $model->getPk();
+        $model->where($pk, $model[$pk])->update(['url' => $model->url]);
     }
 }

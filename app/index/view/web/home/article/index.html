@@ -16,13 +16,13 @@
     <script type="text/javascript">
         $(function () {
             $("#ulullist").find("a").each(function () {
-                if ($(this).data("cid") == '{$catid}') {
+                if ($(this).data("cid") == '{$catalog.id}') {
                     $(this).addClass("active");
                 }
             });
         });
     </script>
-    {if $catid!='89'}
+    {if $catalog['id']!='89'}
         <div class="newsList contentbox">
             <ul>
                 {foreach $list as $item}

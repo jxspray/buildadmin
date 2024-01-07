@@ -25,12 +25,7 @@ class CatalogCheck
     {
         // 所有分类菜单
         $append  = ['url', 'route'];
-        $where[] = ['status', '=', 1];
-//        $where[] = ['theme', '=', theme()];
-        $catalogList = Catalog::where($where)->order('weigh','desc')
-//            ->cache('catalog_'.theme())
-                ->cache()
-            ->append($append)->select()->toArray();
+        $catalogList = Catalog::where('status', 1)->order('weigh','desc')->cache()->append($append)->select()->toArray();
         $request->catalogList = array_combine(array_column($catalogList, 'id'), $catalogList);
         // 头部底部菜单
         $catalogHeader = [];
@@ -61,18 +56,14 @@ class CatalogCheck
             // 获取排序值最大的栏目 TODO 计划将在模型内绑定默认栏目
             $catalog = Catalog::where("module_id", $request->param("module_id"))->order("weigh DESC")->find();
             // 指定链接
-            if ($catalog['links_type'] == 1) {
-                return redirect($catalog['url']);
-            }
+            if ($catalog['links_type'] == 1) return redirect($catalog['url']);
         } else {
             $path = $request->param("path", "index");
             foreach ($request->catalogList as $val) {
-                if ($val['seo_url'] == $path || $val['id'] == $path) {
+                if (in_array($path, [$val['seo_url'], $val['id']])) {
                     $catalog = $val;
                     // 指定链接
-                    if ($catalog['links_type'] == 1) {
-                        return redirect($catalog['url']);
-                    }
+                    if ($catalog['links_type'] == 1) return redirect($catalog['url']);
                 }
             }
         }

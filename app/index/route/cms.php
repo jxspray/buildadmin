@@ -16,10 +16,10 @@ Route::pattern([
 ]);
 // 配置cms中间件
 $middleware = ([
-    // 分类检测
-    app\index\middleware\CatalogCheck::class,
     // 配置检测
     app\index\middleware\ConfigCheck::class,
+    // 分类检测
+    app\index\middleware\CatalogCheck::class,
     // TDK检测
     app\index\middleware\TdkCheck::class,
 ]);
@@ -62,9 +62,9 @@ foreach (cms("catalog") as $catalog) {
             $indexAppend['path'] = $catalog['seo_url'];
             Route::get("index", "action/index")->append($indexAppend)->middleware($middleware);
         } else {
-            Route::get($catalog['seo_url'], "action/index")->append($catalogAppend)->middleware($middleware);
-            Route::get("{$catalog['seo_url']}-:page", "action/index")->append($catalogAppend)->middleware($middleware);
             Route::get("{$catalog['seo_url']}/:id", "action/index")->append($infoAppend)->middleware($middleware);
+            Route::get("{$catalog['seo_url']}-:page", "action/index")->append($catalogAppend)->middleware($middleware);
+            Route::get($catalog['seo_url'], "action/index")->append($catalogAppend)->middleware($middleware);
         }
     }
 }

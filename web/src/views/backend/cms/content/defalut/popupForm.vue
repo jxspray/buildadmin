@@ -4,7 +4,7 @@
         :fullscreen="true"
         class="ba-operate-dialog"
         :close-on-click-modal="false"
-        :model-value="baTable.form.operate ? true : false"
+        :model-value="!!baTable.form.operate"
         @close="baTable.toggleForm"
     >
         <template #header>

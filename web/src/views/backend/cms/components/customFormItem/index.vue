@@ -33,7 +33,13 @@ export const inputTypes = [
 const remoteUrls: any = {
     catalog: '/admin/cms.catalog/index'
 }
-
+interface FieldType {
+    id: number
+    module_id: number
+    name: string
+    field: string
+    setup: any
+}
 export default defineComponent({
     name: 'formItem',
     props: {
@@ -54,7 +60,7 @@ export default defineComponent({
             required: true,
         },
         option: {
-            type: Object,
+            type: Object as PropType<FieldType>,
             default: () => {},
         },
         // 输入框的附加属性
@@ -87,17 +93,17 @@ export default defineComponent({
         let inputAttr: InputAttr = {
             field: '',
         }
-        
+
         const needTreeApi = [
             'catalog'
         ]
         if (props.type == 'remoteSelect') {
-            console.log(props.option.setup!.valueField)
-            inputAttr.field = props.option.setup!.valueField
             inputAttr.remoteUrl =  remoteUrls[props.option.setup.remoteName]
 
             if (needTreeApi.includes(props.option.setup.remoteName)) {
                 inputAttr.params = { isTree: true, module_id: props.option.module_id }
+                inputAttr.pk = props.option.setup.keyField
+                inputAttr.field = props.option.setup.valueField
             }
         }
         const type = computed(() => {
@@ -118,7 +124,12 @@ export default defineComponent({
             'checkbox'
         ]
         if (needHandlerOption.includes(type.value)) {
-            data = { content: props.option.setup.options }
+            let content = {}
+            props.option.setup.options.map(item => {
+                content[item.key] = item.value
+            })
+            data = {content: content}
+            console.log(data)
         }
 
         const needMultiple = [
@@ -130,6 +141,7 @@ export default defineComponent({
                 inputAttr.multiple = true
                 // inputAttr['max'] = option.setup.maxselect
             }
+            console.log(props.option.setup)
         }
         // inputAttr['multiple'] = false
 

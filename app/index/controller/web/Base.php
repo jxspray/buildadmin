@@ -28,6 +28,7 @@ class Base extends \app\index\controller\Action
         $this->settingLangData();
 //        $this->assign($this->Config);
 
+        unset($item);
         foreach ((new \app\index\model\web\Config)->column('value', 'name') as $name => $item) {
             $name = ucfirst($name);
             $this->assign("init{$name}", json_decode($item));
@@ -61,6 +62,15 @@ class Base extends \app\index\controller\Action
         return $this->fetch("{$module}/{$this->request->catalog['template_index']}");
     }
 
+    /**
+     * @Author jxspray@163.com
+     * @param $catid
+     * @param $module
+     * @return string|null
+     * @throws DbException
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
     public function info($catid = '', $module = ''): ?string
     {
         if (empty($catid)) $catid = $this->request->param("catid", '', 'intval');
@@ -71,7 +81,7 @@ class Base extends \app\index\controller\Action
         $info = getInfo($module, $id);
         if (empty($info)) abort(404, "页面不存在！");
         $this->assign($info);
-        return $this->fetch("{$module}/{$this->request->catalog['template_index']}");
+        return $this->fetch("{$module}/info/{$this->request->catalog['template_info']}");
     }
 
     /**
