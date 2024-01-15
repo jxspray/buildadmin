@@ -43,7 +43,7 @@ export const routePush = async (to: RouteLocationRaw) => {
 /**
  * 获取第一个菜单
  */
-export const getFirstRoute = (routes: RouteRecordRaw[]): false | RouteRecordRaw => {
+export const getFirstRoute = (routes: RouteRecordRaw[], menuType = 'tab'): false | RouteRecordRaw => {
     const routerPaths: string[] = []
     const routers = router.getRoutes()
     routers.forEach((item) => {
@@ -51,7 +51,7 @@ export const getFirstRoute = (routes: RouteRecordRaw[]): false | RouteRecordRaw 
     })
     let find: boolean | RouteRecordRaw = false
     for (const key in routes) {
-        if (routes[key].meta?.menu_type == 'tab' && routerPaths.indexOf(routes[key].path) !== -1) {
+        if (routes[key].meta?.type == 'menu' && routes[key].meta?.menu_type == menuType && routerPaths.indexOf(routes[key].path) !== -1) {
             return routes[key]
         } else if (routes[key].children && routes[key].children?.length) {
             find = getFirstRoute(routes[key].children!)
@@ -109,11 +109,11 @@ export const handleFrontendRoute = (routes: any, menus: any) => {
     }
     if (menus.length && isEmpty(memberCenter.state.viewRoutes)) {
         addRouteAll(viewsComponent, menus, memberCenterBaseRoute.name as string)
-        const menuMemberCenterBaseRoute = '/' + (memberCenterBaseRoute.name as string) + '/'
+        const menuMemberCenterBaseRoute = (memberCenterBaseRoute.path as string) + '/'
         memberCenter.mergeAuthNode(handleAuthNode(menus, menuMemberCenterBaseRoute))
 
         memberCenter.mergeNavUserMenus(handleMenuRule(menus, '/', ['nav_user_menu']))
-        memberCenter.setShowHeadline(menus.length > 1 ? true : false)
+        memberCenter.setShowHeadline(menus.length > 1)
         memberCenter.setViewRoutes(handleMenuRule(menus, menuMemberCenterBaseRoute))
     }
 }
@@ -124,7 +124,7 @@ export const handleFrontendRoute = (routes: any, menus: any) => {
 export const handleAdminRoute = (routes: any) => {
     const viewsComponent = import.meta.glob('/src/views/backend/**/*.vue')
     addRouteAll(viewsComponent, routes, adminBaseRoute.name as string)
-    const menuAdminBaseRoute = '/' + (adminBaseRoute.name as string) + '/'
+    const menuAdminBaseRoute = (adminBaseRoute.path as string) + '/'
 
     // 更新stores中的路由菜单数据
     const navTabs = useNavTabs()

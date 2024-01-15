@@ -74,13 +74,18 @@ export function setTitleFromRoute() {
 }
 
 /**
- * 设置浏览器标题-只能在路由加载完成后调用
+ * 设置浏览器标题
  * @param webTitle 新的标题
  */
 export function setTitle(webTitle: string) {
-    const title = useTitle()
-    const siteConfig = useSiteConfig()
-    title.value = `${webTitle}${siteConfig.siteName ? ' - ' + siteConfig.siteName : ''}`
+    if (router.currentRoute.value) {
+        router.currentRoute.value.meta.title = webTitle
+    }
+    nextTick(() => {
+        const title = useTitle()
+        const siteConfig = useSiteConfig()
+        title.value = `${webTitle}${siteConfig.siteName ? ' - ' + siteConfig.siteName : ''}`
+    })
 }
 
 /**
@@ -92,7 +97,8 @@ export function isExternal(path: string): boolean {
 }
 
 /**
- * 防抖
+ * 全局防抖
+ * 与 _.debounce 不同的是，间隔期间如果再次传递不同的函数，两个函数也只会执行一次
  * @param fn 执行函数
  * @param ms 间隔毫秒数
  */
