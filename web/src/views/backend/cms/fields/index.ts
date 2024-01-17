@@ -10,8 +10,8 @@ import { reactive } from 'vue'
 import { param } from '/@/api/backend/cms/config'
 
 
-export interface TypeOptions { 
-    [key: string]: { group: 'common' | 'base' | 'senior', label: string; value: string, setting: string[], setup: { [key: string]: any } } 
+export interface TypeOptions {
+    [key: string]: { group: 'common' | 'base' | 'senior', label: string; value: string, setting: string[], setup: { [key: string]: any } }
 }
 export interface OptionGroup {
     label: 'common' | 'base' | 'senior'
@@ -60,7 +60,6 @@ export const initParam = () => {
     } else {
         const param = JSON.parse(cmsParam);
         state.typeOptions = param.typeOptions
-        console.log(state.typeOptions)
         state.uploadAllowFormat = param.uploadAllowFormat
         state.types = []
         for (const key in state.optionGroup) state.optionGroup[key].options = []

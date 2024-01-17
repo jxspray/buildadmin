@@ -10,6 +10,7 @@ export default {
     "base": "基本设置",
     "seo": "SEO设置",
     "extend": "扩展设置",
+    "common": "公共配置",
     "links_type": "链接方式",
     "links_type 0": "默认",
     "links_type 1": "指定",

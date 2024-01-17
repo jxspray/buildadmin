@@ -40,10 +40,10 @@
                   }),
                 }"/>
               <el-form-item :label="t('cms.catalog.module_id')" prop="module_id">
-                <el-select v-model="baTable.form.items!.module_id" class="w100"
+                <el-select v-model="baTable.form.items!.module_id" class="w100" @change="moduleChange"
                   :placeholder="t('Please select field', {field: t('cms.catalog.module_id')})">
                   <el-option
-                    v-for="item in state.moduleList"
+                    v-for="item in baTable.moduleList"
                     :key="item.id"
                     :label="item.title"
                     :value="item.id">
@@ -54,7 +54,7 @@
                 <el-select v-model="baTable.form.items!.pid" class="w100"
                   :placeholder="t('Please select field', {field: t('cms.catalog.module_id')})">
                   <el-option
-                    v-for="item in state.catalogList"
+                    v-for="item in baTable.catalogList"
                     :disabled="item.id > 0 && state.current_id == item.id"
                     :key="item.id"
                     :label="item.title"
@@ -120,7 +120,7 @@
                   v-model="baTable.form.items!.template_index" clearable
                   :placeholder="t('Please select field', { field: t('cms.catalog.template_index') })"
                   class="w100">
-                  <el-option v-for="item in state.temp.index" :key="item" :label="item" :value="item"/>
+                  <el-option v-for="item in baTable.template.index" :key="item" :label="item" :value="item"/>
                 </el-select>
               </el-form-item>
               <el-form-item :label="t('cms.catalog.template_info')" prop="template_info" v-if="baTable.form.items!.module_id > 0">
@@ -128,7 +128,7 @@
                   v-model="baTable.form.items!.template_info" clearable
                   :placeholder="t('Please select field', { field: t('cms.catalog.template_info') })"
                   class="w100">
-                  <el-option v-for="item in state.temp.info" :key="item" :label="item" :value="item"/>
+                  <el-option v-for="item in  baTable.template.info" :key="item" :label="item" :value="item"/>
                 </el-select>
               </el-form-item>
             </el-tab-pane>
@@ -158,6 +158,18 @@
                     }),
                 }"/>
             </el-tab-pane>
+            <el-tab-pane :label="t('cms.catalog.common')" name="common">
+              <el-tabs tab-position="top" class="common-tabs" v-model="state.commonActiveTab">
+<!--                <CustomFormItem
+                  v-for="(item, index) in baTable.commonFormField!.top"
+                  :type="item.type.type"
+                  :label="t(item.label)"
+                  v-model="baTable.form.items![item.field]"
+                  :option="item"
+                  :key="index"
+                />-->
+              </el-tabs>
+            </el-tab-pane>
             <el-tab-pane :label="t('cms.catalog.extend')" name="extend" style="height: 100%">
               <el-field v-model="baTable.form.items!.field" :ifset="true" v-if="!!baTable.form.operate"></el-field>
             </el-tab-pane>
@@ -179,55 +191,26 @@
 <script setup lang="ts">
 import {reactive, ref, inject, watch, onMounted} from "vue";
 import {useI18n} from "vue-i18n";
-import type baTableClass from "/@/utils/baTable";
 import FormItem from "/@/components/formItem/index.vue";
 import type {ElForm, FormItemRule} from "element-plus";
 import {buildValidatorData} from "/@/utils/validate";
 import ElField from "/src/views/backend/cms/components/elField/index.vue";
-import createAxios from "/@/utils/axios";
 import ElLinkSelect from "/src/views/backend/cms/components/ElLinkSelect/index.vue";
+import catalogTable from "/@/views/backend/cms/catalog/catalogTable";
+import CustomFormItem from "/@/views/backend/cms/components/customFormItem/index.vue";
 
 const formRef = ref<InstanceType<typeof ElForm>>();
-const baTable = inject("baTable") as baTableClass;
+const baTable = inject("baTable") as catalogTable;
 
 const state: {
-  fields: any[]
-  template: any[]
-  temp: { index: any[]; info: any[] }
   current_id: number
   activeTab: string
-
-  moduleList: any[]
-  catalogList: any[]
+  commonActiveTab: string
 } = reactive({
-  fields: [],
-  template: [],
-  temp: {index: [], info: []},
   current_id: 0,
   activeTab: "base",
-
-  moduleList: [],
-  catalogList: []
+  commonActiveTab: "top",
 });
-// 获取template
-const getTemplate = () => {
-  createAxios(
-    {
-      url: "/admin/cms.catalog/getTemplate",
-      method: "post",
-      data: {},
-    },
-    {
-      showSuccessMessage: false,
-    }
-  ).then((res: any) => {
-    state.template = res.data;
-    const module_id = baTable.form.items!.module_id || 0;
-    console.log(state.template, module_id, state.template[module_id]);
-    state.temp.index = state.template[module_id]!.index;
-    state.temp.info = state.template[module_id]!.info;
-  });
-};
 
 baTable.before = {
   onSubmit: function (res: any) {
@@ -240,42 +223,14 @@ baTable.before = {
 };
 baTable.after = {
   requestEdit: function (res: any) {
-    let fields = [];
-    for (const key in res.res.data.fields) {
-      fields.push(res.res.data.fields[key]);
-    }
-    state.fields = fields;
+    baTable.setTemplate(baTable.form.items?.module_id)
   },
 };
-getTemplate();
-watch(
-  () => baTable.form.items!.module_id,
-  (newVal) => {
-    if (newVal > 0) {
-      state.temp.index = state.template[newVal]!["index"];
-      state.temp.info = state.template[newVal]!["info"];
-    }
-  }
-);
+const moduleChange = (e: number) => {
+  baTable.setTemplate(e)
+}
 
 const {t} = useI18n();
-
-onMounted(() => {
-  // 初始化数据表单选项
-  createAxios(
-    {
-      url: "/admin/cms.catalog/initCatalog",
-      method: 'post',
-      data: {},
-    },
-    {
-      showSuccessMessage: false,
-    }
-  ).then((res: any) => {
-    state.moduleList = res.data.moduleList
-    state.catalogList = res.data.catalogList
-  })
-})
 
 const rules: Partial<Record<string, FormItemRule[]>> = reactive({
   title: [buildValidatorData({name: 'required', title: t('cms.catalog.title')})],

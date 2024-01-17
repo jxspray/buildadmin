@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import {reactive} from "vue";
+import {inject, reactive} from "vue";
 import ElField from "/@/views/backend/cms/components/elField/index.vue";
 import {useI18n} from "vue-i18n";
-import baTableClass from "/@/utils/baTable";
 import {baTableApi} from "/@/api/common";
+import catalogTable, {CmsCommonField} from "/@/views/backend/cms/catalog/catalogTable";
+import createAxios from "/@/utils/axios";
 const {t} = useI18n();
 
 const state = reactive({
@@ -15,34 +16,27 @@ const state = reactive({
     top: []
   }
 })
-const baTable = new baTableClass(
-  new baTableApi('/admin/cms.config/'),
-  {pk: 'name', column: []}
-)
+const baTable = inject("baTable") as catalogTable;
 const onClose = () => {
-  state.show = false;
+  state.show = false
 }
 const onOpen = () => {
-  state.show = true;
-  state.loading = true;
-  return baTable.api
-    .edit({
-      [baTable.table.pk!]: "common",
-      group: "catalog",
-    })
-    .then((res) => {
-      state.value = res.data.row.value
-      state.loading = false;
-    })
-    .catch((err) => {
-      state.loading = false;
-      onClose()
+  state.show = true
+  state.loading = true
+  return createAxios<CmsCommonField>({
+    url: baTable.api.actionUrl.get('configEdit'),
+    method: 'get',
+  }).then((res) => {
+    state.value = res.data
+    state.loading = false
+  })
+    .finally(() => {
+      state.loading = false
     })
 }
 const onSubmit = () => {
   state.submitLoading = true
-  baTable.api
-    .postData('edit', {name: "common", group: "catalog", value: state.value})
+  baTable.api.postData("configEdit", {name: "common", group: "catalog", value: state.value})
     .then((res) => {
       state.submitLoading = false
       onClose()

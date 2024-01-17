@@ -146,8 +146,14 @@ class Catalog extends Backend
             ->select()->toArray();
     }
 
-    public function getTemplate(): void
+
+    public function init(): void
     {
+        $moduleList = \app\admin\model\cms\Module::select()->toArray();
+        array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
+        $catalogList = $this->tree->assembleTree($this->tree->getTreeArray($this->getCatalogs(), 'title'));
+        array_unshift($catalogList, ['id' => 0, 'title' => '无']);
+
         $template = [];
         // 获取所有模型模板
         $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home", ['html']);
@@ -177,15 +183,8 @@ class Catalog extends Backend
                 $template[$module['id']]['info'] = $data;
             }
         }
-        $this->success('', $template);
-    }
 
-    public function initCatalog(): void
-    {
-        $moduleList = \app\admin\model\cms\Module::select()->toArray();
-        array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
-        $catalogList = $this->tree->assembleTree($this->tree->getTreeArray($this->getCatalogs(), 'title'));
-        array_unshift($catalogList, ['id' => 0, 'title' => '无']);
-        $this->success('', ['moduleList' => $moduleList, 'catalogList' => $catalogList]);
+        $commonField = json_decode(\app\admin\model\cms\Config::where(['name' => "common", "group" => "catalog"])->value("value"), true);
+        $this->success('', ['moduleList' => $moduleList, 'catalogList' => $catalogList, "templates" => $template, "commonField" => $commonField]);
     }
 }

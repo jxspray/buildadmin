@@ -22,7 +22,6 @@
 
 <script setup lang="ts">
 import {ref, provide, onMounted} from 'vue'
-import baTableClass from '/@/utils/baTable'
 import {defaultOptButtons} from '/@/components/table'
 import {baTableApi} from '/@/api/common'
 import {useI18n} from 'vue-i18n'
@@ -30,12 +29,12 @@ import PopupForm from './popupForm.vue'
 import CommonField from './commonField.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
-import createAxios from "/@/utils/axios";
+import catalogTable from "/@/views/backend/cms/catalog/catalogTable";
 
 const {t} = useI18n()
 const tableRef = ref()
 const optButtons = defaultOptButtons(["weigh-sort", "edit", "delete"])
-const baTable = new baTableClass(
+const baTable = new catalogTable(
   new baTableApi('/admin/cms.catalog/'),
   {
     expandAll: true,
