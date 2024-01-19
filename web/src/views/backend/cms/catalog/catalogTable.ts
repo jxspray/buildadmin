@@ -57,7 +57,12 @@ export default class catalogTable extends baTable {
     } else return commonField;
   }
   setTemplate = (module_id: number) => {
-    this.template.index =  this.templates[module_id]!.index;
-    this.template.info =  this.templates[module_id]!.info;
+    if (typeof this.templates[module_id] != "undefined") {
+      this.template.index =  this.templates[module_id]!.index;
+      this.template.info =  this.templates[module_id]!.info;
+    } else {
+      this.template.index = [];
+      this.template.info = [];
+    }
   }
 }
