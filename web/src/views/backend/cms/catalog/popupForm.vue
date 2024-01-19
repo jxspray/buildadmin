@@ -76,6 +76,13 @@
                     childrenAttr: { border: true },
                     content: { 0: '默认', 1: '指定' },
                 }"/>
+              <FormItem
+                :label="t('cms.catalog.top_type')" type="radio"
+                v-model="baTable.form.items!.top_type" :input-attr="{ size: 'large' }"
+                :data="{
+                    childrenAttr: { border: true },
+                    content: { 0: '无', 1: '跟随上级栏目', 2: '自定义' },
+                }"/>
               <el-form-item :label="t('cms.catalog.links_value')" prop="links_value"
                 :style="baTable.form.items!.links_type == '1' ? 'display: flex' : 'display: none'">
                 <ElLinkSelect v-model="baTable.form.items!.links_value"></ElLinkSelect>
@@ -158,17 +165,8 @@
                     }),
                 }"/>
             </el-tab-pane>
-            <el-tab-pane :label="t('cms.catalog.common')" name="common">
-              <el-tabs tab-position="top" class="common-tabs" v-model="state.commonActiveTab">
-<!--                <CustomFormItem
-                  v-for="(item, index) in baTable.commonFormField!.top"
-                  :type="item.type.type"
-                  :label="t(item.label)"
-                  v-model="baTable.form.items![item.field]"
-                  :option="item"
-                  :key="index"
-                />-->
-              </el-tabs>
+            <el-tab-pane :label="t('cms.catalog.common')" name="top_field" v-if="typeof baTable.form.items!.top_field != 'undefined'">
+              <el-field v-model="baTable.form.items!.top_field" :ifset="false" v-if="!!baTable.form.operate"></el-field>
             </el-tab-pane>
             <el-tab-pane :label="t('cms.catalog.extend')" name="extend" style="height: 100%">
               <el-field v-model="baTable.form.items!.field" :ifset="true" v-if="!!baTable.form.operate"></el-field>
@@ -223,7 +221,10 @@ baTable.before = {
 };
 baTable.after = {
   requestEdit: function (res: any) {
-    baTable.setTemplate(baTable.form.items?.module_id)
+    baTable.setTemplate(baTable.form.items!.module_id)
+    console.log(baTable.form.items!.top_field);
+    // 整合字段值
+    baTable.form.items!.top_field = baTable.handleCommonField(baTable.form.items!.top_field, "top")
   },
 };
 const moduleChange = (e: number) => {

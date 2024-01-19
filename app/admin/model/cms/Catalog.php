@@ -25,10 +25,12 @@ class Catalog extends Model
     protected $type = [
         'links_value' => 'json',
         'field' => 'json',
+        'top_field' => 'json',
     ];
     protected $append = [
         'module_name',
-        "field"
+        "field",
+        "top_field"
     ];
 
     public static function onBeforeWrite(self $model): bool

@@ -11,6 +11,7 @@ export default {
     "seo": "SEO设置",
     "extend": "扩展设置",
     "common": "公共配置",
+    "top_type": "头部显示",
     "links_type": "链接方式",
     "links_type 0": "默认",
     "links_type 1": "指定",

@@ -32,9 +32,29 @@ export default class catalogTable extends baTable {
       this.catalogList = res.data.catalogList
       this.templates = res.data.templates
       this.commonField = res.data.commonField
+      this.form.defaultItems!.top_field = this.commonField.top
       this.setTemplate(0)
       this.runAfter('requestInit', { res })
     })
+  }
+  handleCommonField = (oldCommonField: any[], type: string) => {
+    var commonField: any[] = JSON.parse(JSON.stringify(this.commonField[type]))
+    if (oldCommonField && typeof oldCommonField != "undefined" && oldCommonField.length) {
+      var fields: any[] = []
+      var oldField: { [key: string]: any } = {}
+      oldCommonField.forEach((item: any) => {
+        oldField[item.field] = item.type.value
+      })
+      commonField.forEach((item, commonFieldKey) => {
+        var oldTypeof = typeof oldField[item.field]
+        if (typeof oldTypeof == "undefined" || oldTypeof != typeof item.type.value) commonField[commonFieldKey] = item
+        else {
+          item.type.value = oldField[item.field]
+          fields[commonFieldKey] = item
+        }
+      })
+      return fields;
+    } else return commonField;
   }
   setTemplate = (module_id: number) => {
     this.template.index =  this.templates[module_id]!.index;

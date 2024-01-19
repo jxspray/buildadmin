@@ -1,8 +1,8 @@
 <template>
   <div class="el-field" :class="{'el-field-set': ifset}" :style="{display: ifset ? 'flex' : 'block'}">
     <el-row class="fields-box" :gutter="20">
-      <el-col :xs="24" :span="4" style="height: 100%">
-        <div class="el-field-push" v-if="ifset">
+      <el-col :xs="24" :span="4" style="height: 100%" v-if="ifset">
+        <div class="el-field-push">
           <div class="add-draggable" :ref="tabsRefs.set">
             <div v-for="item in state.fields" class="el-field-move-item">
               <Icon :name="item.icon" color="var(--el-text-color-primary)"/>
