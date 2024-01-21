@@ -165,7 +165,7 @@
                     }),
                 }"/>
             </el-tab-pane>
-            <el-tab-pane :label="t('cms.catalog.common')" name="top_field" v-if="typeof baTable.form.items!.top_field != 'undefined'">
+            <el-tab-pane :label="t('cms.catalog.top_field')" name="top_field" v-if="typeof baTable.form.items!.top_field != 'undefined'">
               <el-field v-model="baTable.form.items!.top_field" :ifset="false" v-if="!!baTable.form.operate"></el-field>
             </el-tab-pane>
             <el-tab-pane :label="t('cms.catalog.extend')" name="extend" style="height: 100%">

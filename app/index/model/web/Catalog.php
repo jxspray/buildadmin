@@ -4,21 +4,23 @@ namespace app\index\model\web;
 
 use ba\cms\utils\Url;
 use think\Model;
+use think\model\concern\SoftDelete;
 
 class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
 {
     use \ba\cms\traits\module\CustomCatalog;
 
-//    use SoftDelete;
-//    protected $autoWriteTimestamp = 'int';
-//
-//    protected $createTime = 'createtime';
-//    protected $updateTime = 'updatetime';
+    use SoftDelete;
+    protected $autoWriteTimestamp = 'int';
+
+    protected $createTime = 'createtime';
+    protected $updateTime = 'updatetime';
 
     protected $name = "cms_catalog";
     protected $type = [
         "links_value" => 'object',
     ];
+
     public function get($id) {
 
     }
@@ -34,6 +36,40 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
     }
 
     public function getFieldAttr($value, $array): array
+    {
+        $field = [];
+        $value = json_decode($value);
+        foreach ($value as $k => $v) {
+            switch ($v->type->type) {
+                case 'image':
+                    $field[$v->field] = full_url($v->type->value);
+                case 'file':
+                    $field[$v->field] = full_url($v->type->value);
+                    break;
+                case 'link-select':
+                    $field[$v->field] = Url::appoint($v->type->value);
+                    break;
+                case 'customArray':
+                    $arr = $v->type->value->table;
+                    foreach ($arr as &$val1) {
+                        foreach ($val1 as $key2 => $val2) {
+                            if (is_object($val2)) {
+                                $val1->$key2 = Url::appoint($val2);
+                            }
+                            if (empty($val2)) $val1->$key2 = '';
+                        }
+                    }
+                    $field[$v->field] = $arr;
+                    break;
+                default:
+                    $field[$v->field] = $v->type->value;
+                    break;
+            }
+        }
+        return $field;
+    }
+
+    public function getTopFieldAttr($value, $array): array
     {
         $field = [];
         $value = json_decode($value);
