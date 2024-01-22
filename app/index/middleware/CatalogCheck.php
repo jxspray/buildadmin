@@ -75,34 +75,36 @@ class CatalogCheck
                 }
             }
         }
-        // 默认信息
-        $catalog = [
-            'id'              => '',
-            'pid'             => '0',
-            'title'           => '',
-            'description'     => '',
-            'template_index'  => '',
-            'template_info'   => '',
-            'seo_url'         => '',
-            'seo_title'       => '',
-            'seo_keywords'    => '',
-            'seo_description' => '',
-            'catdir'          => '',
-            'pdir'            => 1,
-            'weigh'           => 0,
-            'module'          => '',
-            'module_id'       => '',
-            'field'           => [],
-            'top_field'       => [],
-            'status'          => 1,
-//                'mobile'          => 1,
-//                'level1'          => '',
-//                'theme'           => theme(),
-//                'group_id'        => [],
-            'show'            => 0,
-            'language'        => $request->lang,
-            'route'           => $request->pathinfo(),
-        ];
+        if (empty($catalog)) {
+            // 默认信息
+            $catalog = [
+                'id'              => '',
+                'pid'             => '0',
+                'title'           => '',
+                'description'     => '',
+                'template_index'  => '',
+                'template_info'   => '',
+                'seo_url'         => '',
+                'seo_title'       => '',
+                'seo_keywords'    => '',
+                'seo_description' => '',
+                'catdir'          => '',
+                'pdir'            => 1,
+                'weigh'           => 0,
+                'module'          => '',
+                'module_id'       => '',
+                'field'           => [],
+                'top_field'       => [],
+                'status'          => 1,
+    //                'mobile'          => 1,
+    //                'level1'          => '',
+    //                'theme'           => theme(),
+    //                'group_id'        => [],
+                'show'            => 0,
+                'language'        => $request->lang,
+                'route'           => $request->pathinfo(),
+            ];
+        }
         // 当前面包屑
         $catalogTree = new Tree(CatalogService::$catalogList);
         CatalogService::$crumbs = !empty($catalog['id']) ? $catalogTree->navi($catalog['id']) : [];

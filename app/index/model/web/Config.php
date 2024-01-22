@@ -28,8 +28,9 @@ class Config extends Model
 
     public function getValueAttr($value, $array): array
     {
+        if ($array['group'] == "catalog") return json_decode($value, true);
         $field = [];
-        $value = json_decode($value);
+        $value = is_array($value) ? $value : json_decode($value);
         foreach ($value as $k => $v) {
             switch ($v->type->type) {
                 case 'link-select':

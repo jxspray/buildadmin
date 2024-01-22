@@ -6,35 +6,25 @@ namespace app\index\controller\web;
 use app\index\model\web\Catalog;
 use app\index\model\web\Config;
 use app\index\model\web\Content;
+use app\index\services\CatalogService;
 use think\db\exception\DbException;
 use think\facade\View;
 
 class Base extends \app\index\controller\Action
 {
     protected string $terminal;
-    protected array $categorys;
+    protected array $catalog;
 
     public function __construct(\think\App $app)
     {
         parent::__construct($app);
+        $this->catalog = CatalogService::$catalog;
         // 设置终端
         $this->settingTerminal();
-        $this->categorys = cms('catalog');
-        $catalog = new Catalog;
-        foreach ($this->categorys as &$item) {
-            $item['url'] = $catalog->getUrlAttr('', $item);
-        }
         // 设置语言数据
         $this->settingLangData();
-//        $this->assign($this->Config);
 
-        unset($item);
-        foreach ((new \app\index\model\web\Config)->column('value', 'name') as $name => $item) {
-            $name = ucfirst($name);
-            $this->assign("init{$name}", json_decode($item));
-        }
         $this->assign('Config', json_decode(json_encode(['version' => '0.0.1'])));
-        $this->assign('Categorys', $this->categorys);
     }
 
     /**
@@ -46,11 +36,11 @@ class Base extends \app\index\controller\Action
 
         if (!$catid) abort(404, "页面不存在！");
         // 加载列表
-        $lists = Content::getInstance($this->request->catalog['module'])->where('catid', $catid)->paginate(10);
+        $lists = Content::getInstance($this->catalog['module'])->where('catid', $catid)->paginate(10);
         $this->assign('list', $lists->items());
         $this->assign('pages', $lists->render());
         $this->settingSEOData();
-        return $this->fetch("{$module}/{$this->request->catalog['template_index']}");
+        return $this->fetch("{$module}/{$this->catalog['template_index']}");
     }
 
     public function single($catid = '', $module = ''): ?string
@@ -59,7 +49,7 @@ class Base extends \app\index\controller\Action
 
         if (!$catid) abort(404, "页面不存在！");
         $this->settingSEOData();
-        return $this->fetch("{$module}/{$this->request->catalog['template_index']}");
+        return $this->fetch("{$module}/{$this->catalog['template_index']}");
     }
 
     /**
@@ -81,7 +71,7 @@ class Base extends \app\index\controller\Action
         $info = getInfo($module, $id);
         if (empty($info)) abort(404, "页面不存在！");
         $this->assign($info);
-        return $this->fetch("{$module}/info/{$this->request->catalog['template_info']}");
+        return $this->fetch("{$module}/info/{$this->catalog['template_info']}");
     }
 
     /**

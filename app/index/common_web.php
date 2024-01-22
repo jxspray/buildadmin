@@ -216,68 +216,53 @@ if (!function_exists('getInfo')) {
         return $data ? $data->toArray() : null;
     }
 }
-
 if (!function_exists("banner")) {
-    // 头部检查
-    // 是否启用头部
-    // 检查头部字段是否存在，如果不存在调用上级，如果上级头部也不存在则直接调用config（理论上不会调用到config）
-    function banner()
+    function banner($catid = null)
     {
-        $catalog = \app\index\services\CatalogService::$catalog;
-        $topField = $catalog["top_field"];
-        $parentTopField = [];
-        $pid = $catalog['pid'];
-        if ($pid > 0) {
-            $parentCatalogs = [];
-            while (!$parentTopField) {
-                $parentCatalogs = \app\index\services\CatalogService::$catalogList[$pid];
-//                if (!empty())
-//                if ($parentCatalog['pid'] == 0) break;
-            }
-        }
-        if (empty(\app\index\services\CatalogService::$catalog["top_field"])) {
-
-        }
-        $configTopField = \app\index\model\web\Config::load("catalog", "common")->value['top'];
+        extract(top($catid));
+        $pc_banner = isset($pc_banner) && !empty($pc_banner) ? $pc_banner : "";
+        $wap_banner = isset($wap_banner) && !empty($wap_banner) ? $wap_banner : "";
+        if (\app\index\services\CatalogService::$mode == "pc") return $pc_banner ?: $wap_banner;
+        if (\app\index\services\CatalogService::$mode == "wap") return $wap_banner ?: $pc_banner;
+        return $banner ?? $pc_banner;
     }
 }
-if (function_exists("getTopField")) {
-    function getTopField($field, $catalog = null)
+
+if (!function_exists("top")) {
+    function top($catid = null)
     {
-        static $configTopField = [];
-        if (empty($configTopField)) $configTopField = \app\index\model\web\Config::load("catalog", "common")->value['top']??[];
-        $catalog = $catalog ?: \app\index\services\CatalogService::$catalog;
+        $catalogList = \app\index\services\CatalogService::$catalogList;
+        $catalog = $catid > 0 ? $catalogList[$catid] : \app\index\services\CatalogService::$catalog;
+        $catid = $catalog['id'];
+        static $data = [];
+        if (isset($data[$catid])) return $data[$catid];
+
+        $configTopField = \app\index\services\CatalogService::$configField['top'];
+        foreach ($configTopField as $field => $item) {
+            $data[$catid][$field] = $item;
+        }
         switch ($catalog['top_type']) {
-            case "0":
+            case "1":// 跟随上级栏目
+                $parentCatalog = $catalog;
+                while ($parentCatalog["top_type"] == 1) {
+                    if ($parentCatalog["pid"] == 0) break;
+                    $parentCatalog = $catalogList[$catalog["pid"]];
+                    if ($parentCatalog["top_type"] == 2) break;
+                    else if ($parentCatalog["top_type"] == 0) {
+                        $parentCatalog["top_field"] = $configTopField;
+                        break;
+                    }
+                }
+                foreach ($parentCatalog["top_field"] as $field => $item) {
+                    if ($item) $data[$catid][$field] = $item;
+                }
+                break;
+            case "2":// 自定义
+                foreach ($catalog["top_field"] as $field => $item) {
+                    if ($item) $data[$catid][$field] = $item;
+                }
+                break;
         }
-        $pc_banner = "";
-        $wap_banner = "";
-        if (isset($catalog["top_field"]['pc_banner'])) $pc_banner = $catalog["top_field"]['pc_banner'];
-        if (isset($catalog["top_field"]['wap_banner'])) $wap_banner = $catalog["top_field"]['wap_banner'];
-        $parentCatalogs = [];
-        $pid = $catalog["pid"];
-        if ($pid > 0 && empty($parentCatalogs)) {
-            while ($pid > 0) {
-                $parentCatalogs = \app\index\services\CatalogService::$catalogList[$pid];
-//                if (!empty())
-//                    if ($parentCatalog['pid'] == 0) break;
-            }
-        }
-        if (empty($configTopField)) $configTopField = \app\index\services\CatalogService::$catalog;
-        $parentTopFields = [];
-        $pid = $catalog['pid'];
-        if ($pid > 0) {
-            $parentCatalogs = [];
-//            while (!$parentTopField) {
-//                $parentCatalogs = \app\index\services\CatalogService::$catalogList[$pid];
-//                if (!empty())
-//                    if ($parentCatalog['pid'] == 0) break;
-//            }
-        }
-        if (empty(\app\index\services\CatalogService::$catalog["top_field"])) {
-
-        }
-        $configTopField = \app\index\model\web\Config::load("catalog", "common")->value['top'];
-
+        return $data[$catid];
     }
 }

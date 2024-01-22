@@ -8,6 +8,7 @@
 namespace app\index\controller;
 
 use app\index\controller\web\Base;
+use app\index\services\CatalogService;
 
 class Action extends \app\BaseController
 {
@@ -45,12 +46,12 @@ class Action extends \app\BaseController
             'label'         => $this->request->label,
             'system'        => $this->request->system,
             'block'         => $this->request->block,
-            'crumbs'        => $this->request->crumbs,
             'pathinfo'      => $this->request->pathinfo,
-            'catalog'       => $this->request->catalog,
-            'catalogList'   => $this->request->catalogList,
-            'catalogHeader' => $this->request->catalogHeader,
-            'catalogFooter' => $this->request->catalogFooter,
+            'crumbs'        => CatalogService::$crumbs,
+            'catalog'       => CatalogService::$catalog,
+            'catalogList'   => CatalogService::$catalogList,
+            'catalogHeader' => CatalogService::$catalogHeader,
+            'catalogFooter' => CatalogService::$catalogFooter,
             'htmlCheck'     => $this->request->htmlCheck,
         ]);
     }
@@ -83,7 +84,7 @@ class Action extends \app\BaseController
             if (!class_exists($namespace)) abort(404);
         }
         if (!method_exists($namespace, $action)) abort(404);
-        return app($namespace)->$action($this->request->catalog['id'], $this->request->catalog['module']);
+        return app($namespace)->$action(CatalogService::$catalog['id'], CatalogService::$catalog['module']);
     }
 
     public function module() {

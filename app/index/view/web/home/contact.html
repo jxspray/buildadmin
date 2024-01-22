@@ -1,13 +1,15 @@
 <!--start section-->
 <section class="page_contact">
     <!--start 大图-->
+    {if $catalog.top_type}
     <div class="yz-banner-img">
-        <img src="/cms/home/webimages/nbanner/lianxi.jpg"/>
+        <img src="{:banner()}"/>
         <div class="yz-banner-t">
-            <em>有问题可随时联系我们，我们会及时回复您！</em>
-            <h2>CONTACT US</h2>
+            <em>{:top()['desc']}</em>
+            <h2>{:top()['enname']}</h2>
         </div>
     </div>
+    {/if}
     <!--start 大图 end-->
     <!--联系我们-->
     <div class="yz-lifs">

@@ -72,19 +72,20 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
     public function getTopFieldAttr($value, $array): array
     {
         $field = [];
-        $value = json_decode($value);
+        $value = is_array($value) ? $value : json_decode($value, true);
+        if (empty($value)) return [];
         foreach ($value as $k => $v) {
-            switch ($v->type->type) {
+            switch ($v['type']['type']) {
                 case 'image':
-                    $field[$v->field] = full_url($v->type->value);
+                    $field[$v['field']] = full_url($v['type']['value']);
                 case 'file':
-                    $field[$v->field] = full_url($v->type->value);
+                    $field[$v['field']] = full_url($v['type']['value']);
                     break;
                 case 'link-select':
-                    $field[$v->field] = Url::appoint($v->type->value);
+                    $field[$v['field']] = Url::appoint($v['type']['value']);
                     break;
                 case 'customArray':
-                    $arr = $v->type->value->table;
+                    $arr = $v['type']['value']['table'];
                     foreach ($arr as &$val1) {
                         foreach ($val1 as $key2 => $val2) {
                             if (is_object($val2)) {
@@ -93,10 +94,10 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
                             if (empty($val2)) $val1->$key2 = '';
                         }
                     }
-                    $field[$v->field] = $arr;
+                    $field[$v['field']] = $arr;
                     break;
                 default:
-                    $field[$v->field] = $v->type->value;
+                    $field[$v['field']] = $v['type']['value'];
                     break;
             }
         }
