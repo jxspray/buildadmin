@@ -4,6 +4,7 @@ namespace app\admin\controller;
 
 use Throwable;
 use ba\Terminal;
+use ba\cms\Cms;
 use think\Response;
 use think\facade\Db;
 use think\facade\Cache;
@@ -113,6 +114,8 @@ class Ajax extends Backend
         $type = $this->request->post('type');
         if ($type == 'tp' || $type == 'all') {
             Cache::clear();
+            Cms::getInstance()->forceUpdateAll();
+            Cms::getInstance()->updateParam();
         } else {
             $this->error(__('Parameter error'));
         }

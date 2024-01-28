@@ -41,10 +41,10 @@ if (!$server) {
      * 检测是否已编译前端-s
      * 如果存在 index.html 则访问 index.html
      */
-    if (is_file($rootPath . 'index.html')) {
-        header("location:" . DIRECTORY_SEPARATOR . 'index.html');
-        exit();
-    }
+//    if (is_file($rootPath . 'index.html')) {
+//        header("location:" . DIRECTORY_SEPARATOR . 'index.html');
+//        exit();
+//    }
     // 检测是否已编译前端-e
 }
 
