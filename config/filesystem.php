@@ -20,5 +20,17 @@ return [
             'visibility' => 'public',
         ],
         // 更多的磁盘配置信息
+        's3'  => [
+            'type' => 's3',
+            'endpoint' => 'https://api.oss.jxspray.top',
+            'region' => 'cn-north-1',
+            'version' => 'latest',
+            'use_path_style_endpoint' => true,
+            'bucket' => 'cms-oss',
+            'credentials' => [
+                'key' => '5GX4DZWmnObk0OLCQW8m',
+                'secret' => 'qi9uyC4kvQT9DEsQR1YDVpbvXDxVekdDR9ZLLaQW',
+            ],
+        ],
     ],
 ];
