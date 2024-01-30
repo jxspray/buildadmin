@@ -38,6 +38,7 @@ export default {
     'Use current source': '使用当前源',
     recommend: '（推荐）',
     TaoBao: '淘宝',
+    Tencent: '腾讯',
     'Click to test': '点击进行测试',
     'Can execute': '可以执行',
     'Command execution test failed': '命令执行测试失败',

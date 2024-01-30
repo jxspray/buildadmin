@@ -88,7 +88,7 @@
                         <el-radio label="none" size="large">{{ t('Use current source') }}</el-radio>
                         <el-radio label="taobao" size="large">{{ t('TaoBao') }}</el-radio>
                         <el-radio label="npm" size="large">NPM</el-radio>
-                        <el-radio label="rednpm" size="large">RedNPM</el-radio>
+                        <el-radio label="tencent" size="large">{{ t('Tencent') }}</el-radio>
                     </el-radio-group>
                 </el-form-item>
             </el-form>
