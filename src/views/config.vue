@@ -373,14 +373,16 @@ const execMigrate = () => {
 
 const migrateDone = () => {
     if (state.execMigrateIdx) terminal.delTask(state.execMigrateIdx)
-    commandExecComplete({
-        type: 'migrate',
-        adminname: state.formItem.adminname.value,
-        adminpassword: state.formItem.adminpassword.value,
-        sitename: state.formItem.sitename.value,
-    }).then(() => {
-        execWebCommand()
-    })
+    setTimeout(() => {
+        commandExecComplete({
+            type: 'migrate',
+            adminname: state.formItem.adminname.value,
+            adminpassword: state.formItem.adminpassword.value,
+            sitename: state.formItem.sitename.value,
+        }).then(() => {
+            execWebCommand()
+        })
+    }, 2000)
 }
 
 /**
