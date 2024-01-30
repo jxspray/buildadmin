@@ -1,0 +1,18 @@
+export default {
+    id: 'id',
+    slide_id: 'slide_id',
+    slide__name: 'name',
+    title: 'title',
+    remark: 'remark',
+    width: 'width',
+    height: 'height',
+    status: 'status',
+    'status 0': 'status 0',
+    'status 1': 'status 1',
+    group: 'group',
+    create_time: 'create_time',
+    update_time: 'update_time',
+    delete_time: 'delete_time',
+    extends: 'extends',
+    'quick Search Fields': 'id',
+}

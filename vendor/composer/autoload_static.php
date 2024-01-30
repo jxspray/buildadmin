@@ -30,6 +30,7 @@ class ComposerStaticInit97d00a3c10283d20ced17a5af453bf8e
         ),
         't' => 
         array (
+            'think\\view\\driver\\' => 18,
             'think\\trace\\' => 12,
             'think\\migration\\' => 16,
             'think\\middleware\\' => 17,
@@ -84,6 +85,10 @@ class ComposerStaticInit97d00a3c10283d20ced17a5af453bf8e
             0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
             1 => __DIR__ . '/..' . '/voku/portable-utf8/src/voku',
         ),
+        'think\\view\\driver\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/topthink/think-view/src',
+        ),
         'think\\trace\\' => 
         array (
             0 => __DIR__ . '/..' . '/topthink/think-trace/src',
@@ -102,9 +107,10 @@ class ComposerStaticInit97d00a3c10283d20ced17a5af453bf8e
         ),
         'think\\' => 
         array (
-            0 => __DIR__ . '/..' . '/topthink/think-helper/src',
-            1 => __DIR__ . '/..' . '/topthink/think-orm/src',
-            2 => __DIR__ . '/..' . '/topthink/framework/src/think',
+            0 => __DIR__ . '/..' . '/topthink/framework/src/think',
+            1 => __DIR__ . '/..' . '/topthink/think-helper/src',
+            2 => __DIR__ . '/..' . '/topthink/think-orm/src',
+            3 => __DIR__ . '/..' . '/topthink/think-template/src',
         ),
         'modules\\' => 
         array (
@@ -156,8 +162,8 @@ class ComposerStaticInit97d00a3c10283d20ced17a5af453bf8e
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (

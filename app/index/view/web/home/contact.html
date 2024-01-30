@@ -1,0 +1,175 @@
+<!--start section-->
+<section class="page_contact">
+    <!--start 大图-->
+    {if $catalog.top_type}
+    <div class="yz-banner-img">
+        <img src="{:banner()}"/>
+        <div class="yz-banner-t">
+            <em>{:top()['desc']}</em>
+            <h2>{:top()['enname']}</h2>
+        </div>
+    </div>
+    {/if}
+    <!--start 大图 end-->
+    <!--联系我们-->
+    <div class="yz-lifs">
+        <div class="yz-lifs-logo">
+            <h3>联系我们</h3>
+            <span>Contact Us</span>
+            <em>有问题可随时咨询！</em>
+        </div>
+        <div class="yz-lifs-nav" id="yz-lifs-nav">
+            <ul>
+                <li>
+                    <a href="javascript:" title="电话">
+                        <span></span>
+                        <p>电话</p>
+                        <p id="copy-tel">{$system.tel}</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:" title="邮箱">
+                        <span></span>
+                        <p>邮箱</p>
+                        <p id="copy-mail">{$system.site_email}</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:sayKeFu();" title="在线咨询">
+                        <span></span>
+                        <p>在线咨询</p>
+                        <p>竭诚为您服务</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:" title="地址">
+                        <span></span>
+                        <p>地址</p>
+                        <p id="copy-address">{$system.address}</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="yz-chche">
+        <div class="yz-chche-top">
+            <em>附近乘车路线</em>
+            <a href="https://router.map.qq.com/short?l=fc5ca535c0b2e24101745132d563b6cc" target="_blank"
+               title="路线查询">
+                <div class="yz-chche-topr">
+                    <p>路线查询</p>
+                </div>
+            </a>
+        </div>
+        <div class="yz-chche-bot">
+            <ul>
+                <li>
+                    <h4>锦和园小区北</h4>
+                    <p>18路;268路;312路;366路;385路;916路;w109路;
+                        <br/>穿梭巴士3号线;高新区园区穿梭巴士;</p>
+                </li>
+                <li>
+                    <h4>文轩路麓云路口</h4>
+                    <p>312路;366路;385路;916路;w109路;</p>
+                </li>
+                <li>
+                    <h4>地铁站</h4>
+                    <p>麓云路口——滴滴打车2.3公里
+                        <br/>文化艺术中心地铁站——滴滴打2.8公里</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--联系我们 end-->
+    <!--大图-->
+    <div class="yz-foott-img">
+        <div class="yz-font-tlb">
+            <div class="yz-tlb-in">
+                <div class="yz-tlb">
+                    <p>聚之唯欢迎您</p>
+                    <input type="text" id="t_name" maxlength="10" placeholder="请输入您的姓名"/>
+                    <input type="text" id="t_phone" maxlength="11" placeholder="请输入您的电话"/>
+                    <input type="text" id="t_company" maxlength="20" placeholder="请输入您的公司名称"/>
+                    <textarea placeholder="请输入您的留言！" id="t_remark"></textarea>
+                    <input type="button" onclick="dosub();" value="提交 "/>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    require(['jquery'], function($) {
+        //验证手机格式
+        function isPhone(str) {
+            var pattern = "^0?(13[0-9]|15[0-9]|18[0-9]|17[0-9]|14[0-9])[0-9]{8}$";
+            var check = new RegExp(pattern);
+            return check.test(str);
+        }
+
+        function dosub() {
+            var t_phone = $("#t_phone").val();
+            var t_name = $("#t_name").val();
+            var t_company = $("#t_company").val();
+            var t_remark = $("#t_remark").val();
+            if (t_phone == "" || t_name == "") {
+                alert("请填写您的姓名和手机号码");
+                return;
+            }
+            if (!isPhone(t_phone)) {
+                alert("请输入正确的手机号码");
+                return;
+            }
+            if (t_remark.length > 200) {
+                alert("留言内容不能超过200字符");
+                return;
+            }
+            myajax("/index.php?g=Home&m=Index&a=message", {
+                name: t_name,
+                phone: t_phone,
+                company: t_company,
+                remark: t_remark,
+                catid: 29
+            }, "json", "post", true, callback);
+
+            function callback(res) {
+                myajax_close(function () {
+                });
+                if (res.status == "1") {
+                    la_open(res.msg, 1, function () {
+                        window.location.reload();
+                    });
+                } else {
+                    la_open(res.msg, 2, function () {
+                    });
+                }
+            }
+        }
+
+        function copy(string) {
+            var input = document.createElement("input");
+            document.body.appendChild(input);
+            input.setAttribute('value', string);
+            input.setAttribute('readonly', 'readonly');
+            input.select();
+            input.setSelectionRange(0, input.value.length);
+            if (document.execCommand('copy')) {
+                document.execCommand('copy');
+                alert("内容已复制到剪切板");
+            }
+            document.body.removeChild(input);
+        }
+
+        var tel = document.getElementById("copy-tel");
+        var mail = document.getElementById("copy-mail");
+        var address = document.getElementById("copy-address");
+        tel.parentElement.addEventListener("click", function () {
+            copy(tel.innerHTML);
+        });
+        mail.parentElement.addEventListener("click", function () {
+            copy(mail.innerHTML);
+        });
+        address.parentElement.addEventListener("click", function () {
+            copy(address.innerHTML);
+        });
+    })
+</script>
