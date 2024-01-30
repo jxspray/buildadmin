@@ -6,8 +6,8 @@ import langZhcn from '/@/lang/zh-cn'
 import langEn from '/@/lang/en'
 
 const pagesLang = {
-    'zh-cn': getLangFileMessage(import.meta.globEager('./pages/zh-cn/**/*.ts'), 'zh-cn'),
-    en: getLangFileMessage(import.meta.globEager('./pages/en/**/*.ts'), 'en'),
+    'zh-cn': getLangFileMessage(import.meta.glob('./pages/zh-cn/**/*.ts', { eager: true }), 'zh-cn'),
+    en: getLangFileMessage(import.meta.glob('./pages/en/**/*.ts', { eager: true }), 'en'),
 }
 
 const messages = {
