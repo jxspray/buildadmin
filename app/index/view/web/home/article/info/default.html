@@ -1,0 +1,183 @@
+<section class="page_newsinfo">
+    <!--start 大图-->
+    <div class="focus-picture">
+        <img src="{$catalog['field']['banner']}"/>
+    </div>
+    <!--end  大图-->
+    <!--你的位置-->
+    <div class="yz-xw-banner-topnav contentbox">
+        <ul>
+            <li>您的位置 :&emsp;</li>
+            <li>
+                <a href="/" target="_blank">首页</a>&gt
+
+            <li>{$title}</li>
+        </ul>
+    </div>
+    <!--你的位置 end-->
+    <!--主体内容-->
+    <div class="yz-xw-mian1 contentbox">
+        <div class="yz-xw-mian1-in">
+            <div class="yz-xw-mian1-in-l">
+                <div class="yz-xw-mian1-in-top">
+                    <h3>{$title}</h3>
+                    <em id="time-em1">时间：{$create_time}</em>
+                    <em id="time-em2">作者：聚之唯</em>
+                    <em id="time-em3">点击：{$hits}</em>
+                    <div class="yz-xw-mian1-in-top-d"></div>
+                </div>
+                <div class="yz-xw-mian1-in-jianjie">
+                    <p>&emsp;&emsp;{$description}</p>
+                </div>
+                <div class="yz-xw-mian1-in-maint contentInfo">
+                    {$content}
+                    <div style="font-size:14px;">作者:
+                        <a href="http://www.hnjovo.com" title="微信小程序" target="_blank">微信小程序</a>，
+                        <a href="http://www.hnjovo.com" title="营销型网站建设" target="_blank">营销型网站建设</a>，
+                        <a href="http://www.hnjovo.com" title="长沙网站建设" target="_blank">长沙网站建设</a>，
+                        <a href="http://www.hnjovo.com" title="手机网站建设" target="_blank">手机网站建设</a>，
+                        <a href="http://www.hnjovo.com" title="微商城" target="_blank">微商城</a>，
+                        <a href="http://www.hnjovo.com" title="微分销开发专家聚之唯"
+                           target="_blank">微分销开发专家聚之唯</a>。
+                        本文源自长沙网站建设（
+                        <a href="http://www.hnjovo.com" title="http://www.hnjovo.com"
+                           target="_blank">http://www.hnjovo.com</a>），转载请注明出处！
+                    </div>
+                </div>
+                <div class="yz-xw-mian1-in-fenxiang" style="margin-top:36px;">
+                    <div class="yz-xw-fenxiang-in">
+                        <div class="jiathis_style_24x24 share">
+                            <span class="jiathis_txt">分享到：</span>
+
+                            <div class="bdsharebuttonbox jiathis_a">
+                                <a href="javascript:;" class="jiathis_button_weixin" data-cmd="weixin"
+                                   title="分享到微信"
+                                   style="background-image: url(/Jzw/Tpl/Home/Default/webimages/2019/news-icon_03.png);"></a>
+                                <a href="javascript:;" class="jiathis_button_cqq"
+                                   style="background-image: url(/Jzw/Tpl/Home/Default/webimages/2019/news-icon_05.png);"
+                                   data-cmd="sqq" title="分享到QQ好友"></a>
+                                <a href="javascript:;" class="jiathis_button_tsina"
+                                   style="background-image: url(/Jzw/Tpl/Home/Default/webimages/2019/news-icon_07.png);"
+                                   data-cmd="tsina" title="分享到新浪微博"></a>
+                            </div>
+                        </div>
+
+                        <script>
+                            window._bd_share_config = {
+                                "common": {
+                                    "bdSnsKey": {},
+                                    "bdText": "",
+                                    "bdMini": "2",
+                                    "bdMiniList": false,
+                                    "bdPic": "",
+                                    "bdStyle": "0",
+                                    "bdSize": "16"
+                                },
+                                "share": {}
+                            };
+                            with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src =
+                                    'http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion=' + ~(-new Date() / 36e5)];
+                        </script>
+
+                        <div class="yz-xw-fanhui">
+                            <a href="{$Categorys[$catid]['url']}" title="返回列表">
+                                返回列表
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="yz-xw-fenxiang-bot">
+                    <ul>
+                        <?php
+								$pre = M($module_name)->where("id<$id and catid=$catid")->field("title,url")->order("id
+                        desc")->find();
+                        $next = M($module_name)->where("id>$id and catid=$catid")->field("title,url")->order("id
+                        asc")->find();
+                        $pre ? $pre = '
+                        <li>上一篇：<a href="'.$pre['url'].'" target="blank"
+                                      title="'.$pre['title'].'">'.$pre['title'].'</a></li>
+                        ' : $pre = '
+                        <li>上一篇：<a href="javascript:;">没有了</a></li>
+                        ';
+                        $next ? $next = '
+                        <li id="yz-xyp">下一篇：<a href="'.$next['url'].'" target="blank" title="'.$next['title'].'">'.$next['title'].'</a>
+                        </li>
+                        ' : $next = '
+                        <li>下一篇：<a href="javascript:;">没有了</a></li>
+                        ';
+                        ?>
+                        {$pre} {$next}
+                    </ul>
+                </div>
+            </div>
+            <div class="yz-xw-mian1-in-r">
+                <div class="yz-wzbq">
+                    <h5>文章标签 </h5>
+                    <div class="yz-bq-a">
+                        <a href="/biaoqian/?tags=" title=""><p>aaa</p></a>
+                    </div>
+                </div>
+                <div class="yz-rmwz">
+                    <h5>热门文章 </h5>
+                    <ul>
+                        <php> $data = jovo_data('article','',2);</php>
+                        <volist name="data" id="vo">
+                            <li>
+                                <a href="{$vo.url}" title="{$vo.title}">
+                                    <div class="yz-rmwz-l">
+                                        <img src="{$vo.thumb}" alt="{$vo.title}">
+                                    </div>
+                                    <div class="yz-rmwz-r">
+                                        <p>{$vo.title}</p>
+                                        <em class="yz-rmwz-em1">阅读量:{$vo.hits}</em>
+                                        <em class="yz-rmwz-em2">{:date('Y-m-d',$vo['createtime'])}</em>
+                                    </div>
+                                </a>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+                <div class="yz-xhal">
+                    <h5>相关案例
+                        <span>
+								<a href="{$Categorys[6]['url']}" title="相关案例">MORE</a>
+							</span>
+                    </h5>
+                    <ul>
+                        <php> $data = jovo_data('case','',2);</php>
+                        <volist name="data" id="vo">
+                            <li>
+                                <a href="{$vo.url}" title="{$vo.title}">
+                                    <div class="yz-xhal-img">
+                                        <img src="/Jzw/Tpl/Home/Default/webimages/case/thumb/{$vo.imgs}"
+                                             alt="{$vo.title}">
+                                    </div>
+                                    <p>{$vo.title}</p>
+                                </a>
+                            </li>
+                        </volist>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--主体内容 end-->
+    <!--推荐案例-->
+    <div class="yz-tj-mian contentbox">
+        <div class="yz-tj-mian-in">
+            <h3>推荐案例</h3>
+            <em>
+                <a href="{$Categorys[6]['url']}" title="查看更多">查看更多</a>
+            </em>
+            <php> $data = jovo_data('case','',4);</php>
+            <ul id="list_random">
+                <volist name="data" id="vo">
+                    <li><a href="{$vo.url}" title="{$vo.title}">
+                        <div class="yz-tj-mian-in-img"><img
+                                src="/Jzw/Tpl/Home/Default/webimages/case/thumb/{$vo.imgs}"/></div>
+                        <p>{$vo.title}</p></a></li>
+                </volist>
+            </ul>
+        </div>
+    </div>
+</section>

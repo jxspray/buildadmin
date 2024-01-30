@@ -1,0 +1,1220 @@
+<!-- 主页添加active -->
+<script type="text/javascript">
+    require(["jquery", "swiper", "superSlide"], function ($, Swiper) {
+        // 头部滚动以及初始位置的判断实现图片颜色等的替换
+        $(".com_header").removeClass("bg-fff").addClass("active");
+        $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");
+        $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone1.png");
+        function getTop(clsName) {
+            var obj = document.getElementsByClassName(clsName)[0];
+            return obj.getBoundingClientRect().top;
+        }
+
+        function getDom(clsName) {
+            return document.getElementsByClassName(clsName)[0];
+        }
+        window.addEventListener('scroll', function () {
+            var scrollT = document.documentElement.scrollTop || document.body.scrollTop;
+            console.log(getTop('new_index_banner'));
+            if (getTop('new_index_banner') === 0) {
+                getDom('com_header').classList.add('active');
+                getDom('com_header').classList.remove('bg-fff');
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo1.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone1.png");
+            }
+            if (getTop('new_index_banner') < 0) {
+                getDom('com_header').classList.remove('active');
+                getDom('com_header').classList.add('bg-fff');
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone.png");
+            }
+        });
+        setTimeout(function () {
+            var mTop = $(".new_index_banner").offset().top - $(window).scrollTop();
+            if (mTop < 0) {
+                $(".com_header").addClass("bg-fff");
+                $(".com_header").removeClass("active");
+                $(".com_header .new_header_logo img").attr("src", "/cms/home/webimages/logo.png");
+                $(".com_header .new_header_phone img").attr("src", "/cms/home/webimages/phone.png");
+            }
+        }, 100);
+
+        // 3d轮播图
+        var sw1 = new Swiper(".page_index .new_news .swiper", {
+            loop: true,
+            autoplay: {
+                delay: 5000,
+            },
+            watchSlidesProgress: true,
+            slidesPerView: 5,
+            centeredSlides: true,
+            navigation: {
+                nextEl: '.new_news .swiper .next',
+                prevEl: '.new_news .swiper .prev',
+            },
+            on: {
+                progress: function (progress) {
+                    for (i = 0; i < this.slides.length; i++) {
+                        var slide = this.slides.eq(i);
+                        var slideProgress = this.slides[i].progress;
+                        modify = 1;
+                        if (Math.abs(slideProgress) > 1) {
+                            modify = (Math.abs(slideProgress) - 1) * 0.3 + 1;
+                        }
+                        translate = slideProgress * 80 + 'px';
+                        scale = 1 - Math.abs(slideProgress) / 5;
+                        opacity = 1 - Math.abs(slideProgress) / 3;
+                        zIndex = 99 - Math.abs(Math.round(slideProgress));
+                        slide.transform('translateX(' + translate + ') scale(' + scale + ')');
+                        slide.css('zIndex', zIndex);
+                        slide.css('opacity', 1);
+                        if (Math.round(Math.abs(slideProgress)) <= 2) {
+                            slide.find(".pic").css('opacity', 1);
+                        } else if (Math.round(Math.abs(slideProgress)) > 2) {
+                            slide.css('opacity', 0);
+                        }
+                        if (Math.round(slideProgress) > 0) {
+                            slide.children().transform('rotateY(10deg)');
+                        } else if (Math.round(slideProgress) < 0) {
+                            slide.children().transform('rotateY(-10deg)');
+                        } else {
+                            slide.children().transform('rotateY(0deg)');
+                        }
+                    }
+                },
+                slideChangeTransitionStart: function(){
+                    for (var i = 0; i < this.slides.length; i++) {
+                        var slide = this.slides.eq(i);
+                        slide.css('transition', 'all .3s');
+                    }
+                },
+                slideChangeTransitionEnd: function(){
+                    for (var i = 0; i < this.slides.length; i++) {
+                        var slide = this.slides.eq(i);
+                        slide.css('transition', '');
+                    }
+                },
+            }
+        });
+        // 添加类名方法封装
+        var addCla = function (cla, addcla, fn) {
+            var $name = $(cla);
+            $name.mouseover(function () {
+                var $this = $(this);
+                $this.siblings().removeClass(addcla);
+                $this.addClass(addcla);
+                fn && fn($this);
+            });
+        };
+        // 产品中心板块添加类名
+        addCla(".new_index_pro .item", "cur");
+        // 方案板块添加类名
+        addCla(".fangleft .item", "cur", function ($this) {
+            var $fangright = $($(".fangright")[$this.index()]);
+            $fangright.siblings().removeClass("active");
+            $fangright.addClass("active");
+
+            var $fangright_a = $($(".fangright_a")[$this.index()]);
+            $fangright_a.siblings().removeClass("active");
+            $fangright_a.addClass("active");
+        });
+        // 优势板块添加类名
+        addCla(".advantage_list .item", "cur", function ($this) {
+            var $advantage_desc = $($(".advantage_desc")[$this.index()]);
+            $advantage_desc.siblings().removeClass("active");
+            $advantage_desc.addClass("active");
+        });
+        // 经典案例添加类名
+        addCla(".new_index_cases .sys_catebox1 a", "active", function ($this) {
+            var $anlibox_desc = $($(".anlibox_desc")[$this.index()]);
+            $anlibox_desc.siblings().removeClass("cur");
+            $anlibox_desc.addClass("cur");
+        });
+        // 新闻动态添加类名
+        addCla(".new_news .sys_catebox1 a", "active", function ($this) {
+            var $newsbox = $($(".newsbox")[$this.index()]);
+            $newsbox.siblings().removeClass("cur");
+            $newsbox.addClass("cur");
+        });
+
+        // 解决方案板块item添加hover色块
+        var $fangRightIcon = $(".fangright .iconlist .item");
+        var $hoverBlock = $('<div class="hover_block"></div>');
+        console.log($fangRightIcon.length);
+        for(var i = 0; i < $fangRightIcon.length; i++) {
+            $fangRightIcon[i].append($hoverBlock.clone()[0]);
+        }
+
+        // 弹窗
+        var open_dialog1 = function () {
+            $(".dialog_bg1").show();
+            $(".dialog_show1").addClass("dialog_active");
+        }
+        var close_dialog1 = function () {
+            $(".dialog_bg1").hide();
+            $(".dialog_show1").removeClass("dialog_active");
+        }
+
+        // 轮播
+        var ary = location.href.split("&");
+        jQuery(".new_slideBox_banner").slide({
+            mainCell: ".bd ul",
+            effect: "fold",
+            autoPlay: true,
+            delayTime: 800,
+            interTime: 8000,
+        });
+    })
+</script>
+
+<div class="page_index">
+    <!--banner图-->
+    <div class="new_index_banner">
+        <div id="slideBox-index" class="slideBox-index new_slideBox_banner">
+            <div class="hd">
+                <ul>
+                    {foreach $catalog.field.banner as $item}
+                        <li></li>
+                    {/foreach}
+                </ul>
+            </div>
+            <div class="bd">
+                <ul>
+                    {foreach $catalog.field.banner as $item}
+                        <li>
+                            <a href="{$item->link}" target="_blank" title="{$item->title}"
+                               style="background-image:url({$item->image});"></a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </div>
+            <a class="prev" href="javascript:void(0)"></a>
+            <a class="next" href="javascript:void(0)"></a>
+        </div>
+    </div>
+    <!--产品中心-->
+    <div class="new_index_pro">
+        <div class="new_index_title">
+            <h3>{$catalogList[7]['title']}</h3>
+            <p>{:getSlides(1)->remark}</p>
+        </div>
+        <div class="contentbox itembox">
+            {foreach :getSlides(1)->list as $item}
+                <a href="{$item->link}" title="{$item->title}" target="_blank" class="item">
+                    <div class="picbox pro4">
+                        <div class="pic" style="background-image: url({$item->image})"></div>
+                        <div class="pic cur" style="background-image: url({$item->image})"></div>
+                    </div>
+                    <p class="itemtitle">{$item->title}</p>
+                </a>
+            {/foreach}
+        </div>
+        <div class="hei60"></div>
+        <a href="{$block.kefu_link}" target="_blank" title="了解更多" class="btn">了解更多</a>
+    </div>
+
+    <!--解决方案-->
+    <div class="new_index_fangan">
+        <div class="new_index_title">
+            <h3>个性化行业解决方案</h3>
+            <p>针对行业特征及细分业务场景深度定制，一站式引领业务升级</p>
+        </div>
+        <div class="fanganbox">
+            <div class="fangleft">
+                <div class="item cur">
+                    <div class="itemleft">
+                        <div class="shuzi">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/01_w.png)"></div>
+                        </div>
+                        <div class="txt">教育直播<br>解决方案</div>
+                    </div>
+                    <div class="itemright"><img src="/cms/home/webimages/2022/fang_left.png" alt="">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="itemleft">
+                        <div class="shuzi">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/02_w.png)"></div>
+                        </div>
+                        <div class="txt">社交电商<br>解决方案</div>
+                    </div>
+                    <div class="itemright"><img src="/cms/home/webimages/2022/fang_left.png" alt="">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="itemleft">
+                        <div class="shuzi">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/03_w.png)"></div>
+                        </div>
+                        <div class="txt">礼品提货<br>解决方案</div>
+                    </div>
+                    <div class="itemright"><img src="/cms/home/webimages/2022/fang_left.png" alt="">
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="itemleft">
+                        <div class="shuzi">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/04_w.png)"></div>
+                        </div>
+                        <div class="txt">餐饮服务<br>解决方案</div>
+                    </div>
+                    <div class="itemright"><img src="/cms/home/webimages/2022/fang_left.png" alt="">
+                    </div>
+                </div>
+            </div>
+            <div class="fangright active">
+                <div class="shuzi" style="background-image: url(/cms/home/webimages/2022/01.png)"></div>
+                <div class="righttitle">教育直播解决方案</div>
+                <div class="rightsub">为教育客户提供高可用，定制化的在线视频解决方案，满足各类教育直播场景，快速完成线下和线上直播需求。一站式互动教学服务
+                    提升授课观感体验强大的在线直播授课功能，满足各行业教育、培训的多样化需求。</div>
+                <div class="iconlist">
+                    <div class="item">
+                        <div class="picbox fang1">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon1.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">推流直播</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang2">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon2.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">多终端同步</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang3">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon3.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">名师授课</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang4">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon4.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">视频直播</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang1">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon5.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">电子白板</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang2">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon6.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">文件共享</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang3">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon7.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">实时互动</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang4">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon8.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">数据分析</div>
+                    </div>
+                </div>
+                <div class="hzlist">
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_26.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_16.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_35.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_27.jpg)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fangright">
+                <div class="shuzi" style="background-image: url(/cms/home/webimages/2022/02.png)"></div>
+                <div class="righttitle">社交电商解决方案</div>
+                <div class="rightsub">直播互动+线上购买+裂变活动+数据分析，低门槛高转化，助力企业快速实现私域流量变现，专业为企业提供直播电商定制开发+策划运营。</div>
+                <div class="iconlist">
+                    <div class="item">
+                        <div class="picbox fang1">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon9.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">高效引流</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang2">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon10.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">营销转化</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang3">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon11.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">私域变现</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang4">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon12.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">商品推送</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang1">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon13.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">转化闭环</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang2">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon14.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">实时互动</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang3">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon15.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">强力吸粉</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang4">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon16.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">输出价值</div>
+                    </div>
+                </div>
+                <div class="hzlist">
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_31.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_36.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_37.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_38.jpg)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fangright">
+                <div class="shuzi" style="background-image: url(/cms/home/webimages/2022/03.png)"></div>
+                <div class="righttitle">礼品提货解决方案</div>
+                <div class="rightsub">基于微信小程序开发的提货卡提货系统，支持多门店自助提货与物流配送两种提货方式
+                    支持提货券、电子券、优惠券、提货卡、等多种卡券使用的专业的提货卡提货系统。</div>
+                <div class="iconlist">
+                    <div class="item">
+                        <div class="picbox fang1">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon17.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">在线提货</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang2">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon18.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">计划定制</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang3">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon19.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">客户管理</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang4">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon20.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">商品管理</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang1">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon21.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">可视库存</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang2">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon22.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">实时物流</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang3">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon23.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">便捷高效</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang4">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon24.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">品牌输出</div>
+                    </div>
+                </div>
+                <div class="hzlist">
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_28.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_29.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_30.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_22.jpg)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fangright">
+                <div class="shuzi" style="background-image: url(/cms/home/webimages/2022/04.png)"></div>
+                <div class="righttitle">餐饮服务解决方案</div>
+                <div class="rightsub">线上线下高效连通，提高餐厅营收能力，无缝连接商家与用户，满足商家堂食、外卖业务模式，助力线下门店服务升级，带来更优的消费体验。</div>
+                <div class="iconlist">
+                    <div class="item">
+                        <div class="picbox fang1">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon25.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">极速下单</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang2">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon26.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">接单通知</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang3">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon27.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">引流获客</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang4">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon28.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">门店管理</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang1">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon29.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">数据分析</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang2">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon30.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">实时互动</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang3">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon31.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">电子大屏</div>
+                    </div>
+                    <div class="item">
+                        <div class="picbox fang4">
+                            <div class="pic"
+                                 style="background-image: url(/cms/home/webimages/2022/fang_icon32.png)">
+                            </div>
+                        </div>
+                        <div class="itemtitle">降低成本</div>
+                    </div>
+                </div>
+                <div class="hzlist">
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_32.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_33.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_34.jpg)">
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/logo/企业logo-220x100_08.jpg)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="fangright_a active">
+                <a href="{$catalogList[5]['url']}" target="_blank" title="查看更多" class="btn">查看更多</a>
+            </div>
+            {/*<div class="fangright_a">
+                <a href="{$Categorys[64]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
+            </div>
+            <div class="fangright_a">
+                <a href="{$Categorys[88]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
+            </div>
+            <div class="fangright_a">
+                <a href="{$Categorys[76]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
+            </div>*/}
+        </div>
+    </div>
+    <!--我们的优势-->
+    <div class="new_index_advantage">
+        <div class="new_index_title">
+            <h3>我们的优势</h3>
+            <p>自主开发，底层架构牢固，性能强大，安全，稳定，易于迭代扩展</p>
+        </div>
+
+        <div class="advantage">
+            <div class="advantage_list">
+                <div class="item cur wow bounceInUp" data-wow-delay="0.2s" data-wow-offset="100" data-wow-duration="1s">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_s1.png)">
+                        </div>
+                    </div>
+                    <div class="itemtitle">营销模式策划</div>
+                </div>
+                <div class="item wow bounceInUp" data-wow-delay="0.2s" data-wow-offset="100" data-wow-duration="1.4s">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_s2.png)">
+                        </div>
+                    </div>
+                    <div class="itemtitle">自营+实战经验</div>
+                </div>
+                <div class="item wow bounceInUp" data-wow-delay="0.2s" data-wow-offset="100" data-wow-duration="1.8s">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_s3.png)">
+                        </div>
+                    </div>
+                    <div class="itemtitle">高并发处理技术</div>
+                </div>
+                <div class="item wow bounceInUp" data-wow-delay="0.2s" data-wow-offset="100" data-wow-duration="1.2s">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_s4.png)">
+                        </div>
+                    </div>
+                    <div class="itemtitle">掌握物联网技术</div>
+                </div>
+                <div class="item wow bounceInUp" data-wow-delay="0.2s" data-wow-offset="100" data-wow-duration="2s">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_s5.png)">
+                        </div>
+                    </div>
+                    <div class="itemtitle">超100项检测标准</div>
+                </div>
+                <div class="item wow bounceInUp" data-wow-delay="0.2s" data-wow-offset="100" data-wow-duration="1.6s">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_s6.png)">
+                        </div>
+                    </div>
+                    <div class="itemtitle">安全防护机制</div>
+                </div>
+            </div>
+            <div class="advantage_desc active">
+                <div class="desc">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_b1.png)">
+                        </div>
+                    </div>
+                    <div class="txt">
+                        <div class="t1">营销模式策划</div>
+                        <div class="t2">10年互联行业经验顾问<br />
+                            分析项目可行性<br />
+                            提供完整营销技术解决方案<br />
+                            免费提供电商营销思路和模式</div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="advantage_desc">
+                <div class="desc">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_b2.png)">
+                        </div>
+                    </div>
+                    <div class="txt">
+                        <div class="t1">自营+实战经验</div>
+                        <div class="t2">经历过500+定制电商项目<br />
+                            自营社区团购“多快好省”流水超800W<br />
+                            开发平台总流水超3000W</div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="advantage_desc">
+                <div class="desc">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_b3.png)">
+                        </div>
+                    </div>
+                    <div class="txt">
+                        <div class="t1">高并发处理技术</div>
+                        <div class="t2">大数据处理能力<br />
+                            缓存机制解决高并发问题<br />
+                            数据库+存储+代码分离部署机制<br />
+                            CDN负载均衡</div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="advantage_desc">
+                <div class="desc">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_b4.png)">
+                        </div>
+                    </div>
+                    <div class="txt">
+                        <div class="t1">掌握物联网技术</div>
+                        <div class="t2">智能AI算法<br />
+                            人脸识别技术<br />
+                            文字语音智能识别<br />
+                            可接入传感器、智能硬件对接</div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage_desc">
+                <div class="desc">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_b5.png)">
+                        </div>
+                    </div>
+                    <div class="txt">
+                        <div class="t1">超100项检测标准</div>
+                        <div class="t2">严格按照内部质检标准进行测验<br />
+                            提供检测和整改报告<br />
+                            达到用户流畅体验度</div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage_desc">
+                <div class="desc">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image: url(/cms/home/webimages/2022/advantage_b6.png)">
+                        </div>
+                    </div>
+                    <div class="txt">
+                        <div class="t1">安全防护机制</div>
+                        <div class="t2">安全支付防护技术防CC攻击，篡改和盗链<br />
+                            数据传输加密算法<br />
+                            云服务器安全防护机制</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <a href="{$block.kefu_link}" target="_blank" class="btn" title="立即咨询">立即咨询</a>
+        <div class="bg1">
+            <div class="bg2"></div>
+        </div>
+    </div>
+    <!--广告位-->
+    <div class="new_banner">
+        <div class="contentbox new_banner_in">
+            <div class="inleft">
+                <div class="picbox">
+                    <div class="pic"
+                         style="background-image: url(/cms/home/webimages/2022/banner_img.png)"></div>
+                </div>
+                <div class="txt">
+                    <div class="t1">多一份参考，总有益处</div>
+                    <div class="t2">联系聚之唯，免费获得专属《技术需求方案及报价》</div>
+                </div>
+            </div>
+            <div class="inright">
+                <a href="{$block.kefu_link}" target="_blank" title="了解更多" class="btn1">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image:url(/cms/home/webimages/2022/weixin_w.png)"></div>
+                    </div>
+                    <span>立即咨询</span>
+                </a>
+                <a href="{$block.kefu_link}" target="_blank" title="了解更多" class="btn2">
+                    <div class="picbox">
+                        <div class="pic"
+                             style="background-image:url(/cms/home/webimages/2022/tel_w.png)"></div>
+                    </div>
+                    <span>联系我们</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!--经典案例-->
+    <div class="new_index_cases">
+        <div class="new_index_title">
+            <h3>经典案例</h3>
+            <p>我们用实力说话，有案例为证</p>
+        </div>
+        <div class="sys_catebox1">
+            {foreach :getCategorys(4) as $item}
+                <a href="{$item->url}" class="active" title="{$item->title}" data-url="{$item->url}">{$item->title}</a>
+            {/foreach}
+        </div>
+        {foreach :getCategorys(4) as $item}
+            <div class="anlibox_desc cur">
+                <div class="anlibox">
+                    {foreach :getData($item->module) as $ite}
+                        <a class="item" href="{$ite->url}" title="{$ite->title}">
+                            <div class="picbox">
+                                <div class="pic" style="background-image: url({$ite->image})"></div>
+                                <div class="txt">
+                                    <div class="t1">{$ite->title}</div>
+                                    <div class="t2">精品案例</div>
+                                </div>
+                            </div>
+                            <div class="itemtitle">
+                                <div class="t1">{$ite->title}</div>
+                                <div class="t2">高端定制 | 小程序 | 服务业</div>
+                            </div>
+                        </a>
+                    {/foreach}
+                </div>
+                <a href="{$item->url}" title="查看更多" class="btn">查看更多</a>
+            </div>
+        {/foreach}
+
+    </div>
+    <!-- 经验 -->
+    <div class="new_index_exp">
+        <div class="expbox">
+            <div class="expleft">
+                <div class="t1">全面赋能企业 持续高速成长</div>
+                <div class="t2">了解聚之唯让企业<br>高速增长的秘诀</div>
+                <a href="{$Categorys[1]['url']}" title="{$Categorys[1]['title']}" class="btn">more&nbsp;<span class="pls">+</span></a>
+            </div>
+            <div class="expmiddle">
+                <div class="t1">
+                    <p class="p1">
+                        <span class="s1 counter" data-speed="2000" data-from="0" data-to="10"></span>
+                        <span class="s2">年</span>
+                        <span class="bg"
+                              style="background-image: url(/cms/home/webimages/2022/exp_icon1.png)"></span>
+                    </p>
+                    <p class="p2">高端项目定制经验</p>
+                </div>
+                <div class="t2">
+                    <p class="p1">
+                        <span class="s1 counter" data-speed="2000" data-from="0" data-to="30"></span><span
+                            class="pls">+</span>
+                        <span class="s2">家</span>
+                        <span class="bg"
+                              style="background-image: url(/cms/home/webimages/2022/exp_icon3.png)"></span>
+                    </p>
+                    <p class="p2">政府单位的认可</p>
+                </div>
+            </div>
+            <div class="expright">
+                <div class="t1">
+                    <p class="p1">
+                        <span class="s1 counter" data-speed="2000" data-from="0" data-to="60"></span><span
+                            class="pls">+</span>
+                        <span class="s2">家</span>
+                        <span class="bg"
+                              style="background-image: url(/cms/home/webimages/2022/exp_icon2.png)"></span>
+                    </p>
+                    <p class="p2">上市公司的选择</p>
+                </div>
+                <div class="t2">
+                    <p class="p1">
+                        <span class="s1 counter" data-speed="2000" data-from="0" data-to="1200"></span><span
+                            class="pls">+</span>
+                        <span class="s2">个</span>
+                        <span class="bg"
+                              style="background-image: url(/cms/home/webimages/2022/exp_icon4.png)"></span>
+                    </p>
+                    <p class="p2">品牌客户的选择</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 新闻动态 -->
+    <div class="new_news">
+
+        <div class="new_index_title">
+            <h3>新闻动态</h3>
+            <p>关注聚之唯，关注移动互联网最新动态</p>
+        </div>
+
+        <div class="sys_catebox1">
+            {foreach :getCategorys(3) as $item}
+                <a href="javascript:" class="active" title="{$item->title}"
+                   data-url="{$item->url}">{$item->title}</a>
+            {/foreach}
+        </div>
+        <div class="news-container">
+            {foreach :getCategorys(3) as $item}
+                {if $item->id == 7}
+                <div class="newsbox">
+                    <div class="newscontent">
+                        {foreach :getData($item->module) as $ite}
+                            <a class="conleft" href="{$ite.url}" title="{$ite.title}">
+                                <div class="picbox">
+                                    <div class="pic" style="background-image: url({$ite.thumb})"></div>
+                                </div>
+                                <div class="txt">
+                                    <div class="t1">
+                                        <p class="p1">{:date('d', $ite['create_time'])}</p>
+                                        <p class="p2">{:date('Y-m', $ite['create_time'])}</p>
+                                    </div>
+                                    <div class="t2">
+                                        <p class="p1">{$ite.title}</p>
+                                        <p class="p2">{$ite.description}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        {/foreach}
+                        <div class="conright">
+                            {foreach :getData($item->module) as $ite}
+                                <a class="txt" href="{$ite.url}" title="{$ite.title}">
+                                    <div class="t1">
+                                        <p class="p1">{:date('d', $ite['create_time'])}</p>
+                                        <p class="p2">{:date('Y-m', $ite['create_time'])}</p>
+                                    </div>
+                                    <div class="t2">
+                                        <p class="p1">{$ite.title}</p>
+                                        <p class="p2">{$ite.description}</p>
+                                    </div>
+                                </a>
+                            {/foreach}
+                        </div>
+                    </div>
+                    <a href="{$item->url}" title="查看更多" class="btn">查看更多</a>
+                </div>
+                {else /}
+                <div class="newsbox cur">
+                    <div class="swiper">
+                        <div class="swiper-wrapper">
+                            {foreach :getData($item->module) as $ite}
+                                <div class="swiper-slide video1_open" data-src="{$ite.copyfrom}">
+                                    <a href="javascript:" class="picbox">
+                                        <div class="pic" style="background-image: url(/cms/home/webimages/case/jian/{$ite.title}.jpg)"></div>
+                                        <div class="telbox"><div class="play"></div></div>
+                                    </a>
+                                </div>
+                            {/foreach}
+                        </div>
+                        <div class="next">
+                            <div class="jiantou"></div>
+                        </div>
+                        <div class="prev">
+                            <div class="jiantou"></div>
+                        </div>
+                    </div>
+                    <a href="{$item->url}" title="查看更多" class="btn">查看更多</a>
+                </div>
+                {/if}
+            {/foreach}
+        </div>
+    </div>
+    <!-- 视频弹窗 -->
+    <div class="sys_shipin">
+        <div class="spdialog video1">
+            <div class="spdialog-close"><img src="/cms/home/webimages/del.png" alt=""></div>
+            <div class="videoshow" id="video1">
+                <video width="100%" height="100%" id="myVideo1" controls poster="" playsinline title="点击关闭">
+                    <source src="" />
+                </video>
+            </div>
+        </div>
+    </div>
+    <!--合作伙伴-->
+    <div class="new_index_hzhb">
+
+        <div class="new_index_title">
+            <h3>助力合作伙伴数字化转型升级</h3>
+            <p>全球1200+企业选择聚之唯，客户的满意是我们不懈的动力</p>
+        </div>
+
+        <div class="hzbox">
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_10.png)">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.2s"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_11.png)">
+                    </div>
+                </div>
+            </div> -->
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.4s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_12.png)">
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.6s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_13.png)">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.8s"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_14.png)">
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_15.png)">
+                    </div>
+                </div>
+            </div> -->
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.2s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_16.png)">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.4s"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_17.png)">
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.6s"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_18.png)">
+                    </div>
+                </div>
+            </div> -->
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.8s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_19.png)">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_20.png)">
+                    </div>
+                </div>
+            </div> -->
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.2s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_21.png)">
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.4s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_22.png)">
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.6s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_23.png)">
+                    </div>
+                </div>
+            </div>
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.8s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_24.png)">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_25.png)">
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.2s"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_26.png)">
+                    </div>
+                </div>
+            </div> -->
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.4s"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_27.png)">
+                    </div>
+                </div>
+            </div> -->
+            <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.6s"
+                         style="background-image: url(/cms/home/webimages/2022/2022hz_logo_28.png)">
+                    </div>
+                </div>
+            </div>
+            <!-- <div class="item">
+                <div class="picbox">
+                    <div class="pic wow flipInY" data-wow-delay="0.8s"
+                        style="background-image: url(/cms/home/webimages/2022/2022hz_logo_29.png)">
+                    </div>
+                </div>
+            </div> -->
+        </div>
+    </div>
+    <!--广告位2-->
+    <div class="new_banner2">
+        <div class="contentbox new_banner_in">
+            <div class="inleft">
+                <div class="txt">
+                    <div class="t1">多一份参考，总有益处</div>
+                    <div class="t2">联系聚之唯，免费获得专属《技术需求方案及报价》</div>
+                </div>
+            </div>
+            <div class="inright">
+                <div class="txt">咨询相关问题，可以通过电话与我们联系</div>
+                <form class="zixun" id="ajaxFrom1" method="post">
+                    <input type="hidden" name="catid" value="3">
+                    <input type="hidden" name="ctype" value="首页_免费获取方案">
+                    <input type="text" class="name" name="name" maxlength="10" placeholder="请输入您的姓名">
+                    <input type="hidden" name="name_rq" value="1">
+                    <input type="text" class="phone" name="phone" maxlength="11" placeholder="请输入您的联系方式">
+                    <input type="hidden" name="phone_rq" value="1">
+                    <a href="javascript:liuyan1_save()" class="btn">立即咨询</a>
+                </form>
+            </div>
+            <script type="text/javascript">
+                function liuyan1_save() {
+                    myajax("/index.php?g=Home&m=Index&a=message", $("#ajaxFrom1").serialize(), "json", "post",
+                            true,
+                            callback);
+
+                    function callback(res) {
+                        myajax_close(function () {});
+                        if (res.status == "1") {
+                            la_open(res.msg, 1, function () {
+                                window.location.reload();
+                            });
+                        } else {
+                            la_open(res.msg, 2, function () {});
+                        }
+                    }
+                }
+            </script>
+        </div>
+    </div>
+</div>

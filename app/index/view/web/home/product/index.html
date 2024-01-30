@@ -1,0 +1,114 @@
+<!--start section-->
+<section class="page_newslist">
+    <!--start 大图-->
+    <div class="focus-picture">
+        <img src="/cms/home/webimages/nbanner/xinwen.jpg"  alt=""/>
+    </div>
+    <!--end  大图-->
+
+    <!-- 主体开始 start -->
+    <div class="bread contentbox flexed" id="ulullist">
+        {foreach :getCategorys(3) as $item}
+            <a href="{$item->url}" class="bread" title="{$item->title}"
+               data-cid="{$item->id}">{$item->title}</a>
+        {/foreach}
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            $("#ulullist").find("a").each(function () {
+                if ($(this).data("cid") == '{$catid}') {
+                    $(this).addClass("active");
+                }
+            });
+        });
+    </script>
+    {if $catid!='89'}
+        <div class="newsList contentbox">
+            <ul>
+                {foreach $list as $item}
+                    <li class="wow animated bounceIn">
+                        <a href="{$item.url}" title="{$item.title}">
+                            {if $item['thumb']}
+                                <div class="picbox"><div class="pic" style="background-image: url({$item.thumb})"></div></div>
+                            {else/}
+                                <div class="picbox"><div class="pic" style="background-image: url(/cms/assets/images/nopic.jpg)"></div></div>
+                            {/if}
+                            <div class="newsTitle">{$item.title}</div>
+                        </a>
+                        <div>
+                            <p class="details-on">{:str_cut($item['description'], 120)}</p>
+                            <div class="publishTime">
+                                <a href="{$item.url}" title="{$item.title}">查看详情</a>
+                                <span>{$item['create_time']|date="Y-m-d"}</span>
+                            </div>
+                        </div>
+                    </li>
+                {/foreach}
+            </ul>
+            <div class="clear"></div>
+        </div>
+    {else/}
+        <div class="newsList contentbox">
+            <ul style="padding: 0 80px; margin-right: 0;">
+                {foreach $list as $item}
+                    <li class="wow animated bounceIn" style="width: 260px; margin: 0 10px 20px;">
+                        <a href="javascript:" class="video1_open" data-src="{$item.copyfrom}" title="{$item.title}" style="height: 530px;">
+                            <div class="picbox" style="padding: 118px 42px 50px;">
+                                <div class="pic" style="background-image: url(/cms/assets/images/nopic.jpg)"></div>
+                                <div class="telbox"><div class="play"></div></div>
+                            </div>
+                            <div class="newsTitle">{$item.title}</div>
+                        </a>
+                    </li>
+                {/foreach}
+            </ul>
+        </div>
+    {/if}
+    <div class="hei80"></div>
+    <!-- page分页开始 -->
+    <div class="sys_pagebox1">
+        {$pages|raw}
+    </div>
+    <!-- page分页结束 -->
+    <div class="hei80"></div>
+</section>
+
+<!-- 视频弹窗 -->
+<div class="sys_shipin">
+    <div class="spdialog video1">
+        <div class="spdialog-close"><img src="/cms/home/webimages/webimages/del.png" alt=""></div>
+        <div class="videoshow" id="video1">
+            <video width="100%" height="100%" id="myVideo2" controls poster="" playsinline title="点击关闭">
+                <source src="" />
+            </video>
+        </div>
+    </div>
+</div>
+<script>
+    require(['jquery'], function ($) {
+        //视频点击
+        var myVideo1 = document.getElementById('myVideo2');
+        $('.video1_open').click(function () {
+            $('.video1').addClass("opacityshow");
+            $('body').addClass("ovnone");
+            var videoSrc = $(this).data('src');
+            myVideo1.src = videoSrc;
+            myVideo1.play();
+        });
+        $('.video1 .spdialog-close').click(function () {
+            $('.video1').removeClass("opacityshow");
+            $('body').removeClass("ovnone");
+            myVideo1.pause();
+        });
+        myVideo1.addEventListener("click", function(e) {
+            e = e || window.event;
+            if (window.event) {
+                e.cancelBubble = true;
+            } else {
+                e.stopPropagation();
+            }
+            if(myVideo1.paused) myVideo1.play();
+            else myVideo1.pause();
+        });
+    })
+</script>
