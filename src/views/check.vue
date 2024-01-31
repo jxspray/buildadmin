@@ -182,6 +182,7 @@ const onLabelNeed = (link: CheckLink) => {
     } else if (link.type == 'install-package-manager') {
         // 安装包管理器
         state.checkDoneIndex = 'executing'
+        setNpmRegistry()
         terminal.toggle(true)
         terminal.addTaskPM('install', true, '', (res: number) => {
             terminal.toggle(false)
@@ -204,7 +205,6 @@ const onLabelNeed = (link: CheckLink) => {
                         pm: terminal.state.packageManager,
                     },
                 })
-                setNpmRegistry()
                 addCheckNpmInstall()
             }
         })
