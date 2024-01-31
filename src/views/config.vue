@@ -382,7 +382,7 @@ const migrateDone = () => {
         }).then(() => {
             execWebCommand()
         })
-    }, 2000)
+    }, 1500)
 }
 
 /**
