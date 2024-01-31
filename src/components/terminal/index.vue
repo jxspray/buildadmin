@@ -13,16 +13,16 @@
                 :key="idx"
                 class="task-item"
                 :class="'task-status-' + item.status"
-                :type="(getTaskStatus(item.status)['statusType'] as TimelineItemProps['type'])"
+                :type="getTaskStatus(item.status)['statusType'] as TimelineItemProps['type']"
                 center
                 :timestamp="item.createtime"
                 placement="top"
             >
                 <el-card>
                     <div>
-                        <el-tag :type="(getTaskStatus(item.status)['statusType'] as TagProps['type'])">{{
-                            getTaskStatus(item.status)['statusText']
-                        }}</el-tag>
+                        <el-tag :type="getTaskStatus(item.status)['statusType'] as TagProps['type']">
+                            {{ getTaskStatus(item.status)['statusText'] }}
+                        </el-tag>
                         <el-tag
                             class="block-on-failure-tag"
                             v-if="(item.status == taskStatus.Failed || item.status == taskStatus.Unknown) && item.blockOnFailure"
@@ -71,7 +71,7 @@
                             class="exec-message"
                             :class="'exec-message-' + item.uuid"
                         >
-                            <div v-for="(msg, i) in item.message" :key="i" class="message-item">{{ msg }}</div>
+                            <pre v-for="(msg, i) in item.message" :key="i" class="message-item">{{ msg }}</pre>
                         </div>
                     </template>
                 </el-card>
@@ -198,11 +198,11 @@ const onSwitchPackageManager = () => {
     margin-top: 10px;
     min-height: 30px;
     max-height: 200px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: auto;
     scrollbar-width: none;
     &::-webkit-scrollbar {
         width: 5px;
+        height: 5px;
     }
     &::-webkit-scrollbar-thumb {
         background: #c8c9cc;
