@@ -7,7 +7,7 @@ return [
     // npm包管理器
     'npm_package_manager'  => 'pnpm',
     // 安装服务端口
-    'install_service_port' => '8000',
+    'install_service_port' => '8001',
     // 允许执行的命令
     'commands'             => [
         // 数据库迁移命令
