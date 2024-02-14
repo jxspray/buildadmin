@@ -135,6 +135,8 @@ import type {ElForm, FormInstance, FormItemRule, TabsPaneContext} from 'element-
 import FormItem from '/@/components/formItem/index.vue'
 import {useI18n} from 'vue-i18n'
 import ElField from "/@/views/backend/cms/components/elField/index.vue";
+import {initialize} from "/@/api/backend/cms";
+initialize()
 
 const {t} = useI18n()
 

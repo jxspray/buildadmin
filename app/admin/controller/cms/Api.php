@@ -4,6 +4,9 @@ namespace app\admin\controller\cms;
 
 use app\common\controller\Backend;
 use ba\cms\Cms;
+use ba\Filesystem;
+use think\facade\Cache;
+use think\facade\Event;
 
 class Api extends Backend
 {
@@ -62,5 +65,43 @@ class Api extends Backend
     public function param(): void
     {
         $this->success(__('Update successful'), config("cms.param"));
+    }
+
+    public function init(): void
+    {
+        $moduleList = \app\admin\model\cms\Module::select()->toArray();
+        // 获取所有模型模板
+        $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home", ['html']);
+        $data = [];
+        foreach ($files as $file) {
+            $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+            if (!str_contains($file, '/')) $data[$file] = $file;
+        }
+        $template = [
+            ['index' => $data, 'info' => []]
+        ];
+
+        foreach ($moduleList as $module) {
+            $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\{$module['name']}", ['html']);
+            $data = [];
+            foreach ($files as $file) {
+                $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+                if (!str_contains($file, '/')) $data[$file] = $file;
+            }
+            $template[$module['id']]['index'] = $data;
+            if ($module['type'] == '0') {
+                $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\{$module['name']}\\info", ['html']);
+                $data = [];
+                foreach ($files as $file) {
+                    $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+                    if (!str_contains($file, '/')) $data[$file] = $file;
+                }
+                $template[$module['id']]['info'] = $data;
+            }
+        }
+        array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
+
+        $commonField = json_decode(\app\admin\model\cms\Config::where(['name' => "common", "group" => "catalog"])->value("value"), true);
+        $this->success('', ['moduleList' => $moduleList, "templates" => $template, "commonField" => $commonField]);
     }
 }
