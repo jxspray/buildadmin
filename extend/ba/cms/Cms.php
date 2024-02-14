@@ -74,16 +74,16 @@ class Cms
         $method = "update{$name}";
         if (method_exists(self::class, $method)) $data = self::$method(true);
         else if ($name == 'Module') {
-            $namespace = "\\app\\index\\model\\web\\$name";
-            if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
+            $namespace = "\\app\\common\\model\\cms\\$name";
+            if (!class_exists($namespace)) $namespace = "\\app\\common\\model\\cms\\Content";
             $instance = new $namespace();
             $data = $instance->getColumnAll();
         } else if ($name == 'Fields') {
             $instance = new \app\index\model\web\Fields();
             $data = $instance->getColumnAll($type->getParam());
         } else {
-            $namespace = "\\app\\index\\model\\web\\contents\\$name";
-            if (!class_exists($namespace)) $namespace = "\\app\\index\\model\\web\\Content";
+            $namespace = "\\app\\common\\model\\cms\\contents\\$name";
+            if (!class_exists($namespace)) $namespace = "\\app\\common\\model\\cms\\Content";
             $instance = new $namespace($name);
             $data = $instance->getColumnAll();
         }

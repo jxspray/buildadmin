@@ -18,7 +18,6 @@ export default class catalogTable extends baTable {
   public commonField: CmsCommonField = {top: [], foot: []}
   constructor(api: baTableApi, table: BaTable, form: BaTableForm = {}, before: BaTableBefore = {}, after: BaTableAfter = {}) {
     super(api, table, form, before, after);
-    this.api.actionUrl.set("init", "/admin/cms.catalog/init");
     this.api.actionUrl.set("configEdit", "/admin/cms.config/edit");
     this.init()
   }

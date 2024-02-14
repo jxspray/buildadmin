@@ -140,53 +140,6 @@ class Catalog extends Backend
             }
         }
         // 读取用户组所有权限规则
-        return $this->model
-            ->where($where)
-            ->with('module')
-            ->order('weigh desc,id asc')
-            ->cache()
-            ->select()->toArray();
-    }
-
-
-    public function init(): void
-    {
-        $moduleList = \app\admin\model\cms\Module::select()->toArray();
-        array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
-        $catalogList = $this->tree->assembleTree($this->tree->getTreeArray($this->getCatalogs(), 'title'));
-        array_unshift($catalogList, ['id' => 0, 'title' => '无']);
-
-        $template = [];
-        // 获取所有模型模板
-        $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home", ['html']);
-        $data = [];
-        foreach ($files as $file) {
-            $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
-            if (!str_contains($file, '/')) $data[$file] = $file;
-        }
-        $template[0]['index'] = $data;
-        $template[0]['info'] = [];
-
-        foreach (GM("module")->getColumnAll() as $module) {
-            $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\" . $module['name'], ['html']);
-            $data = [];
-            foreach ($files as $file) {
-                $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
-                if (!str_contains($file, '/')) $data[$file] = $file;
-            }
-            $template[$module['id']]['index'] = $data;
-            if ($module['type'] == '0') {
-                $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\" . $module['name'] . "\\info", ['html']);
-                $data = [];
-                foreach ($files as $file) {
-                    $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
-                    if (!str_contains($file, '/')) $data[$file] = $file;
-                }
-                $template[$module['id']]['info'] = $data;
-            }
-        }
-
-        $commonField = json_decode(\app\admin\model\cms\Config::where(['name' => "common", "group" => "catalog"])->value("value"), true);
-        $this->success('', ['moduleList' => $moduleList, 'catalogList' => $catalogList, "templates" => $template, "commonField" => $commonField]);
+        return $this->model->where($where)->with('module')->order('weigh desc,id asc')->cache()->select()->toArray();
     }
 }

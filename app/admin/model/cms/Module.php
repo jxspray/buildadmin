@@ -8,7 +8,7 @@ namespace app\admin\model\cms;
  *
  *
  */
-class Module extends \think\Model
+    class Module extends \think\Model
 {
     // 表名
     protected $name = 'cms_module';

@@ -4,6 +4,9 @@ import useClipboard from "vue-clipboard3";
 import {range} from "lodash-es";
 import {nextTick, reactive} from "vue";
 import {buildValidatorData} from "/@/utils/validate";
+import {FieldType, FormFieldType, ElFieldForm} from "/@/views/backend/cms/interface/field";
+
+
 
 const {toClipboard} = useClipboard();
 
@@ -11,24 +14,6 @@ export interface SortableEvt extends SortableEvent {
   originalEvent?: DragEvent
 }
 
-interface FieldType {
-  value: any
-  label: string
-  icon: string
-  type: string
-}
-
-interface FormFieldType {
-  field: string
-  label: string
-  type?: FieldType
-}
-
-interface ElFieldForm {
-  setShow: boolean
-  setIndex: number,
-  setForm: FormFieldType
-}
 
 export default class elField {
   // noinspection SpellCheckingInspection 自定义字段类型
