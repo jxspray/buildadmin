@@ -6,7 +6,9 @@ export const useConfig = defineStore('cmsConfig', {
         return {
             templates: [],
             moduleList: [],
-            commonField: {top: [], foot: []}
+            catalogList: [],
+            commonField: {top: [], foot: []},
+            initialize: false
         }
     },
     actions: {

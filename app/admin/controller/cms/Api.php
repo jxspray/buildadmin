@@ -5,6 +5,7 @@ namespace app\admin\controller\cms;
 use app\common\controller\Backend;
 use ba\cms\Cms;
 use ba\Filesystem;
+use ba\Tree;
 use think\facade\Cache;
 use think\facade\Event;
 
@@ -69,6 +70,10 @@ class Api extends Backend
 
     public function init(): void
     {
+        $tree = Tree::instance();
+        $rules = \app\common\model\cms\Catalog::with('module')->order('weigh desc,id asc')->cache()->select()->toArray();
+        $catalogList = $tree->assembleTree($tree->getTreeArray($tree->assembleChild($rules), 'title'));
+        array_unshift($catalogList, ['id' => 0, 'title' => '无']);
         $moduleList = \app\admin\model\cms\Module::select()->toArray();
         // 获取所有模型模板
         $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home", ['html']);
@@ -102,6 +107,6 @@ class Api extends Backend
         array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
 
         $commonField = json_decode(\app\admin\model\cms\Config::where(['name' => "common", "group" => "catalog"])->value("value"), true);
-        $this->success('', ['moduleList' => $moduleList, "templates" => $template, "commonField" => $commonField]);
+        $this->success('', ['catalogList' => $catalogList, 'moduleList' => $moduleList, "templates" => $template, "commonField" => $commonField]);
     }
 }
