@@ -8,6 +8,8 @@ export interface CommonField {
 }
 export interface Config {
     templates: TemplateFile[]
-    moduleList: []
+    moduleList: any[]
+    catalogList: any[]
     commonField: CommonField
+    initialize: boolean
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\index\model\web;
+namespace app\common\model\cms;
 
 use ba\cms\utils\Url;
 use think\Model;

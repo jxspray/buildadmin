@@ -1,9 +1,9 @@
 import createAxios from '/@/utils/axios'
 import { useConfig } from '/@/views/backend/cms/cmsStore'
 import { debounce } from '/@/utils/common'
-import router from '/@/router/index'
 import { isEmpty } from 'lodash-es'
 
+export const config = useConfig()
 
 /**
  * 初始化CMS配置 模板文件、模型、栏目、字段
@@ -11,10 +11,19 @@ import { isEmpty } from 'lodash-es'
  */
 export function initialize(callback?: (res: ApiResponse) => void) {
     debounce(() => {
-        if (router.currentRoute.value.meta.initialize === false) return
-
-        const config = useConfig()
-
+        if (config.initialize) {
+            return typeof callback == 'function' && callback({
+                data: {
+                    templates: config.templates,
+                    moduleList: config.moduleList,
+                    catalogList: config.catalogList,
+                    commonField: config.commonField
+                },
+                code: 200,
+                msg: '初始化成功',
+                time: Date.now()
+            })
+        }
         createAxios({
             url: '/admin/cms.api/init',
             method: 'get'
@@ -22,7 +31,9 @@ export function initialize(callback?: (res: ApiResponse) => void) {
             config.dataFill({
                 templates: res.data.templates,
                 moduleList: res.data.moduleList,
-                commonField: res.data.commonField
+                catalogList: res.data.catalogList,
+                commonField: res.data.commonField,
+                initialize: true
             })
 
             typeof callback == 'function' && callback(res)

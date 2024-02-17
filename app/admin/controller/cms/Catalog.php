@@ -29,7 +29,6 @@ class Catalog extends Backend
 
     protected bool $modelValidate = false;
 
-    protected array $noNeedLogin = ['init'];
 
     public function initialize(): void
     {
