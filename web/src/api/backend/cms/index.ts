@@ -2,6 +2,7 @@ import createAxios from '/@/utils/axios'
 import { useConfig } from '/@/views/backend/cms/cmsStore'
 import { debounce } from '/@/utils/common'
 import { isEmpty } from 'lodash-es'
+import {ElLoading} from "element-plus";
 
 export const config = useConfig()
 
@@ -11,7 +12,9 @@ export const config = useConfig()
  */
 export function initialize(callback?: (res: ApiResponse) => void) {
     debounce(() => {
+        const loadingInstance = ElLoading.service({ fullscreen: true })
         if (config.initialize) {
+            loadingInstance.close();
             return typeof callback == 'function' && callback({
                 data: {
                     templates: config.templates,
@@ -24,6 +27,7 @@ export function initialize(callback?: (res: ApiResponse) => void) {
                 time: Date.now()
             })
         }
+
         createAxios({
             url: '/admin/cms.api/init',
             method: 'get'
@@ -35,6 +39,7 @@ export function initialize(callback?: (res: ApiResponse) => void) {
                 commonField: res.data.commonField,
                 initialize: true
             })
+            loadingInstance.close();
 
             typeof callback == 'function' && callback(res)
         })
