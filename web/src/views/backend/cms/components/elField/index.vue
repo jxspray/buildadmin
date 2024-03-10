@@ -4,7 +4,7 @@
       <el-col :xs="24" :span="4" style="height: 100%" v-if="ifset">
         <div class="el-field-push">
           <div class="add-draggable" :ref="tabsRefs.set">
-            <div v-for="item in state.fields" class="el-field-move-item">
+            <div v-for="(item, index) in state.fields" :key="index" class="el-field-move-item">
               <Icon :name="item.icon" color="var(--el-text-color-primary)"/>
               <div class="title">{{ item.label }}</div>
             </div>
@@ -21,27 +21,26 @@
               class="el-field-content"
               :data-id="index"
             >
-              <el-form-item :data-id="index" :label="item.label" :key="index" class="el-form-draggable"
-                            :class="{'el-form-set': ifset}" v-if="state.module.show">
+              <el-form-item
+                :data-id="index" :label="item.label" :key="index" class="el-form-draggable"
+                :class="{'el-form-set': ifset}" v-if="state.module.show" labelWidth="100">
                 <div class="curd-icon" v-if="ifset">
-                  <Icon name="el-icon-CopyDocument" class="myicon" color="var(--el-bg-color-overlay)"
-                        @click="state.copyItem(item)" title="复制"/>
-                  <Icon name="el-icon-Edit" class="myicon" color="var(--el-bg-color-overlay)"
-                        @click="state.openItemDialog(item, index)" title="编辑"/>
-                  <Icon name="el-icon-Rank" class="rank myicon" color="var(--el-bg-color-overlay)"
-                        title="移动"/>
-                  <Icon name="el-icon-Delete" class="myicon" color="var(--el-bg-color-overlay)"
+                  <Icon
+                    name="el-icon-CopyDocument" class="myicon" color="var(--el-bg-color-overlay)" @click="state.copyItem(item)" title="复制"/>
+                  <Icon
+                    name="el-icon-Edit" class="myicon" color="var(--el-bg-color-overlay)" @click="state.openItemDialog(item, index)" title="编辑"/>
+                  <Icon
+                    name="el-icon-Rank" class="rank myicon" color="var(--el-bg-color-overlay)" title="移动"/>
+                  <Icon
+                    name="el-icon-Delete" class="myicon" color="var(--el-bg-color-overlay)"
                         @click="state.removeItem(index)" title="删除"/>
                 </div>
                 <div class="w100">
-                  <ElLinkSelect v-if="item.type!.type == 'link-select'" v-model="item.type!.value"
-                                size=""/>
+                  <ElLinkSelect
+                    v-if="item.type!.type == 'link-select'" v-model="item.type!.value" size=""/>
                   <CustomArray v-else-if="item.type!.type == 'customArray'" v-model="item.type!.value"/>
                   <BaInput
-                    v-else
-                    @pointerdown.stop
-                    v-model="item.type!.value"
-                    :type="item.type!.type"
+                    v-else @pointerdown.stop v-model="item.type!.value" :type="item.type!.type"
                   />
                 </div>
               </el-form-item>
@@ -71,10 +70,12 @@
           <el-input v-model="state.form.setForm.field" placeholder="如：content"></el-input>
         </el-form-item>
       </el-form>
-      <span slot="footer" class="dialog-footer">
+    <template #footer>
+      <span class="dialog-footer">
           <el-button size="small" type="primary" @click="state.submitItem(setFormRef)">确 定</el-button>
           <el-button size="small" @click="state.closeItemDialog()">取 消</el-button>
       </span>
+    </template>
     </el-dialog>
   </div>
 </template>

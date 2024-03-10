@@ -67,51 +67,6 @@
               :rules="rules"
           >
             <el-field v-model="baTable.form.items" :ifset="true" v-if="state.modelShow"></el-field>
-<!--            <template v-if="state.type == 'cms'">
-              <FormItem :label="t('网站名称')" type="string" v-model="baTable.form.items!.site_title" prop="site_title"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('网站名称') }) }"/>
-              <FormItem
-                  :label="t('cms.catalog.seo_keywords')" type="string"
-                  v-model="baTable.form.items!.seo_keywords" prop="seo_keywords"
-                  :input-attr="{
-                      placeholder: t('Please input field', {
-                          field: t('cms.catalog.seo_keywords'),
-                      }),
-                  }"/>
-              <FormItem
-                  :label="t('cms.catalog.seo_description')" type="textarea"
-                  v-model="baTable.form.items!.seo_description" prop="seo_description"
-                  :input-attr="{
-                      placeholder: t('Please input field', {
-                          field: t('cms.catalog.seo_description'),
-                      }),
-                  }"/>
-              <FormItem :label="t('ico')" type="image" v-model="baTable.form.items!.ico"/>
-              <FormItem :label="t('网站网址')" type="string" v-model="baTable.form.items!.site_url" prop="site_url"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('网站网址') }) }"/>
-              <FormItem :label="t('网站邮箱')" type="string" v-model="baTable.form.items!.site_email" prop="site_email"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('网站邮箱') }) }"/>
-              <FormItem :label="t('座机号')" type="string" v-model="baTable.form.items!.tel" prop="tel"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('座机号') }) }"/>
-              <FormItem :label="t('备案号')" type="string" v-model="baTable.form.items!.icpnum" prop="icpnum"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('备案号') }) }"/>
-              <FormItem :label="t('地址')" type="string" v-model="baTable.form.items!.address" prop="address"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('地址') }) }"/>
-            </template>
-            <template v-if="state.type == 'base'">
-              <FormItem :label="t('网站head区域')" type="string" v-model="baTable.form.items!.head" prop="head"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('网站head区域') }) }"/>
-              <FormItem :label="t('网站foot区域')" type="string" v-model="baTable.form.items!.foot" prop="foot"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('网站foot区域') }) }"/>
-              <FormItem :label="t('电脑端商桥代码')" type="string" v-model="baTable.form.items!.pc_shangqiao"
-                        prop="pc_shangqiao"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('电脑端商桥代码') }) }"/>
-              <FormItem :label="t('移动端商桥代码')" type="string" v-model="baTable.form.items!.wap_shangqiao"
-                        prop="wap_shangqiao"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('移动端商桥代码') }) }"/>
-              <FormItem :label="t('商桥链接')" type="string" v-model="baTable.form.items!.kefu_link" prop="kefu_link"
-                        :input-attr="{ placeholder: t('Please input field', { field: t('商桥链接') }) }"/>
-            </template>-->
           </el-form>
         </div>
       </el-scrollbar>
@@ -136,9 +91,10 @@ import FormItem from '/@/components/formItem/index.vue'
 import {useI18n} from 'vue-i18n'
 import ElField from "/@/views/backend/cms/components/elField/index.vue";
 import Cms from "/@/views/backend/cms/cms";
-const cms = new Cms()
-
 const {t} = useI18n()
+
+new Cms()
+
 
 const formRef = ref<InstanceType<typeof ElForm>>()
 // const baTable = inject('baTable') as baTableClass

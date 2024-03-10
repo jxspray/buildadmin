@@ -14,13 +14,6 @@ export default class catalogTable extends baTable {
     constructor(api: baTableApi, table: BaTable, form: BaTableForm = {}, before: BaTableBefore = {}, after: BaTableAfter = {}) {
         super(api, table, form, before, after);
         this.api.actionUrl.set("configEdit", "/admin/cms.config/edit?name=common&group=catalog");
-        cms.init(() => {
-            this.moduleList = cms.moduleList
-            this.catalogList = cms.catalogList
-            this.form.defaultItems!.top_field = cms.commonField.top
-            this.setTemplate(0)
-            console.log("初始化完成")
-        })
     }
     handleCommonField = (oldCommonField: any[], type: string) => {
         const commonField: any[] = JSON.parse(JSON.stringify(cms.commonField[type]));
