@@ -65,11 +65,6 @@ class Catalog extends Backend
             $this->error(__('Record not found'));
         }
 
-        $dataLimitAdminIds = $this->getDataLimitAdminIds();
-        if ($dataLimitAdminIds && !in_array($row[$this->dataLimitField], $dataLimitAdminIds)) {
-            $this->error(__('You have no permission'));
-        }
-
         if ($this->request->isPost()) {
             $data = $this->request->post();
             if (!$data) {
@@ -139,6 +134,6 @@ class Catalog extends Backend
             }
         }
         // 读取用户组所有权限规则
-        return $this->model->where($where)->with('module')->order('weigh desc,id asc')->cache()->select()->toArray();
+        return $this->model->where($where)->withJoin('module')->order('weigh desc,id asc')->cache()->select()->toArray();
     }
 }

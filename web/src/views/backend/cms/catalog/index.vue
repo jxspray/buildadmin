@@ -67,8 +67,8 @@ const baTable = new catalogTable(
     },
     {
         defaultItems: {
-            "pid": 0,
-            "module_id": 0,
+            "pid": null,
+            "module_id": null,
             "field": [],
             "weigh": "0",
             "links_type": "0",

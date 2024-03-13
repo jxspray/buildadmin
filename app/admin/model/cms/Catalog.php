@@ -3,6 +3,7 @@
 namespace app\admin\model\cms;
 
 use think\Model;
+use app\common\library\Cms;
 
 /**
  * Catalog
@@ -28,7 +29,7 @@ class Catalog extends Model
         'top_field' => 'json',
     ];
     protected $append = [
-        'module_name',
+//        'module_name',
         "field",
         "top_field"
     ];
@@ -36,22 +37,24 @@ class Catalog extends Model
     public static function onBeforeWrite(self $model): bool
     {
         // 获取上级
-        if ($model->pid > 0 && ($catalog = cms("catalog")[$model->pid])) {
+        if ($model->pid > 0 && ($catalog = self::find($model->pid))) {
             $model->pdir = $catalog['catdir'] . "/";
         }
-        $cat = $model->pdir . $model->catdir;
-        if (isset(cms("cat")[$cat]) && cms("cat")[$cat] != $model->id)
-            throw new \think\exception\ValidateException("栏目目录已存在");
+        $cid = self::where("pdir", $model->pdir)->where('catdir', $model->catdir)->value("id");
+        if ($cid) {
+            if (!$model->id || $cid != $model->id) throw new \think\exception\ValidateException("栏目目录已存在");
+        }
         $model->seo_url = $model->pdir . $model->catdir;
         $model->module_id = $model->module_id ?? 0;
-        $model->module = cms("module")[$model->module_id]['name']??'';
+        $model->module = Module::where("id", $model->module_id)->value("name")??'';
         $change_all = isset($model->change_all);
         if (isset($model->id) && $change_all) { // 多栏目设置
             // 查询子栏目
             (new self)->where('pid', $model->id)
                 ->update([
                     'status' => $model->status,
-                    'template_index' => $model->template_index, 'template_info' => $model->template_info
+                    'template_index' => $model->template_index,
+                    'template_info' => $model->template_info
                 ]);
         }
         return true;
@@ -67,20 +70,20 @@ class Catalog extends Model
 
     public static function onAfterWrite(self $model): void
     {
-        \ba\cms\Cms::getInstance()->forceUpdate('catalog');
+//        \ba\cms\Cms::getInstance()->forceUpdate('catalog');
     }
 
     public static function onAfterDelete(self $model): void
     {
-        \ba\cms\Cms::getInstance()->forceUpdate('catalog');
+//        \ba\cms\Cms::getInstance()->forceUpdate('catalog');
     }
 
     public function getModuleNameAttr($value, $data) {
-        return cms("module")[$data['module_id']]['title']??'页面';
+        return $value??'页面';
     }
 
     public function module(): \think\model\relation\BelongsTo
     {
-        return $this->belongsTo("module", 'module_id')->joinType("left");
+        return $this->belongsTo("module", 'module_id')->joinType("left")->bind(["module_name" => "title"]);
     }
 }
