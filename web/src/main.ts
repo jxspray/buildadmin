@@ -19,7 +19,9 @@ async function start() {
 
     // 全局语言包加载
     await loadLang(app)
-
+    router.beforeEach(async (to, from) => {
+        // console.log(to, from)
+    })
     app.use(router)
     app.use(ElementPlus)
 

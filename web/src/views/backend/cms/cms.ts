@@ -24,6 +24,7 @@ export default class Cms {
     }
 
     get moduleList(): any[] {
+        // 检查是否初始化完成
         return this._moduleList;
     }
 

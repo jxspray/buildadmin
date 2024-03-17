@@ -2,6 +2,7 @@
 
 namespace app\common\model\cms;
 
+use app\admin\model\cms\Module;
 use ba\cms\utils\Url;
 use think\Model;
 use think\model\concern\SoftDelete;
@@ -107,5 +108,10 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
     public function children(): \think\model\relation\HasMany
     {
         return $this->hasMany(self::class, 'pid', 'id')->where('status', '1')->order('weigh DESC, id ASC');
+    }
+
+    public function module(): \think\model\relation\BelongsTo
+    {
+        return $this->belongsTo(Module::class, 'module_id')->joinType("left")->bind(["module_name" => "title"]);
     }
 }

@@ -31,7 +31,7 @@ namespace app\admin\model\cms;
     public static function onBeforeInsert(self $model): bool
     {
         // 检查模型是否存在
-        if (isset(cms("mod")[$model['name']])) throw new \Exception("模型 {$model['name']} 已存在！");
+        if (self::find(['name' => $model['name']])) throw new \Exception("模型 {$model['name']} 已存在！");
 
         $model['name'] = $name = strtolower($model['name']);
         $model['path'] = "cms/content/$name";
@@ -73,7 +73,9 @@ namespace app\admin\model\cms;
 
     public static function onAfterWrite(self $model): void
     {
-        \ba\cms\Cms::getInstance()->forceUpdate('module');
+//        \think\facade\Queue::connection("redis")->push('modules\cmspro\job\FieldJob@onSave', $model, "cms");
+
+//        \ba\cms\Cms::getInstance()->forceUpdate('module');
     }
 
     /**
