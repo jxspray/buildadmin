@@ -47,9 +47,14 @@ class Terminal
     protected array $pipes = [];
 
     /**
-     * @var int proc 执行状态
+     * @var int proc执行状态:0=未执行,1=执行中,2=执行完毕
      */
-    protected int $procStatus = 0;
+    protected int $procStatusMark = 0;
+
+    /**
+     * @var array proc执行状态数据
+     */
+    protected array $procStatusData = [];
 
     /**
      * @var string 命令在前台的uuid
@@ -170,9 +175,14 @@ class Terminal
      */
     public function exec(bool $authentication = true): void
     {
-        header('X-Accel-Buffering: no');
-        header('Content-Type: text/event-stream');
-        header('Cache-Control: no-cache');
+        $headers                      = request()->allowCrossDomainHeaders ?? [];
+        $headers['X-Accel-Buffering'] = 'no';
+        $headers['Content-Type']      = 'text/event-stream';
+        $headers['Cache-Control']     = 'no-cache';
+
+        foreach ($headers as $name => $val) {
+            header($name . (!is_null($val) ? ':' . $val : ''));
+        }
 
         while (ob_get_level()) {
             ob_end_clean();
@@ -210,8 +220,25 @@ class Terminal
                 if (preg_match('/\r\n|\r|\n/', $newOutput)) {
                     $this->output($newOutput);
                     $this->outputContent = $contents;
+                    $this->checkOutput();
                 }
             }
+
+            // 输出执行状态信息
+            if ($this->procStatusMark === 2) {
+                $this->output('exitCode: ' . $this->procStatusData['exitcode']);
+                if ($this->procStatusData['exitcode'] === 0) {
+                    if ($this->successCallback()) {
+                        $this->outputFlag('exec-success');
+                    } else {
+                        $this->output('Error: Command execution succeeded, but callback execution failed');
+                        $this->outputFlag('exec-error');
+                    }
+                } else {
+                    $this->outputFlag('exec-error');
+                }
+            }
+
             usleep(500000);
         }
         foreach ($this->pipes as $pipe) {
@@ -227,23 +254,12 @@ class Terminal
      */
     public function getProcStatus(): bool
     {
-        $status = proc_get_status($this->process);
-        if ($status['running']) {
-            $this->procStatus = 1;
+        $this->procStatusData = proc_get_status($this->process);
+        if ($this->procStatusData['running']) {
+            $this->procStatusMark = 1;
             return true;
-        } elseif ($this->procStatus === 1) {
-            $this->procStatus = 0;
-            $this->output('exitcode: ' . $status['exitcode']);
-            if ($status['exitcode'] === 0) {
-                if ($this->successCallback()) {
-                    $this->outputFlag('exec-success');
-                } else {
-                    $this->output('Error: Command execution succeeded, but callback execution failed');
-                    $this->outputFlag('exec-error');
-                }
-            } else {
-                $this->outputFlag('exec-error');
-            }
+        } elseif ($this->procStatusMark === 1) {
+            $this->procStatusMark = 2;
             return true;
         } else {
             return false;
@@ -269,6 +285,17 @@ class Terminal
             echo 'data: ' . $data . "\n\n";
             if ($callback) $this->outputCallback($data);
             @ob_flush();// 刷新浏览器缓冲区
+        }
+    }
+
+
+    /**
+     * 检查输出
+     */
+    public function checkOutput(): void
+    {
+        if (str_contains($this->outputContent, '(Y/n)')) {
+            $this->execError('An interactive command has been detected, and you can manually execute the command to confirm the situation.', true);
         }
     }
 
