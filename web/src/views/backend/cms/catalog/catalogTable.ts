@@ -1,11 +1,10 @@
 import baTable from "/@/utils/baTable";
 import type {baTableApi} from "/@/api/common";
 
-import Cms from "/@/views/backend/cms/cms";
 import {TemplateFile} from "/@/views/backend/cms/interface";
+import Cms from "/@/views/backend/cms/cms";
 
-const cms = new Cms()
-
+const cms = Cms.getInstance()
 export default class catalogTable extends baTable {
    get moduleList(): any[] {
     return this._moduleList;

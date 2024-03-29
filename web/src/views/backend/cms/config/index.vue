@@ -93,7 +93,7 @@ import ElField from "/@/views/backend/cms/components/elField/index.vue";
 import Cms from "/@/views/backend/cms/cms";
 const {t} = useI18n()
 
-new Cms()
+// new Cms()
 
 
 const formRef = ref<InstanceType<typeof ElForm>>()

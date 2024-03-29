@@ -1,8 +1,23 @@
 import {TemplateFile, CommonField} from "/@/views/backend/cms/interface";
+// import {config, initialize} from "/@/api/backend/cms";
 import {config, initialize} from "/@/api/backend/cms";
 import {ElLoading} from "element-plus";
+import {debounce} from "/@/utils/common";
+import createAxios from "/@/utils/axios";
 let loadingInstance: any
 export default class Cms {
+  private static _instance: Cms;
+  private constructor() {
+    // 私有构造函数，确保外部无法直接创建实例
+  }
+  static getInstance(): Cms {
+    if (!Cms._instance) {
+      Cms._instance = new Cms();
+    }
+    return Cms._instance;
+  }
+
+
     set loadStatus(value: "noloaded" | "loading" | "loadend") {
         this._loadStatus = value;
         if (value === "loading") {
@@ -15,12 +30,17 @@ export default class Cms {
             loadingInstance.close()
         }
     }
+    get loadStatus(): "noloaded" | "loading" | "loadend" {
+        return this._loadStatus;
+    }
     get templates(): TemplateFile[] {
+      console.log(this._templates)
         return this._templates;
     }
 
     set templates(value: TemplateFile[]) {
-        config.templates = this._templates = value;
+        // config.templates =
+          this._templates = value;
     }
 
     get moduleList(): any[] {
@@ -29,7 +49,8 @@ export default class Cms {
     }
 
     set moduleList(value: any[]) {
-        config.moduleList = this._moduleList = value;
+        // config.moduleList =
+          this._moduleList = value;
     }
 
     get catalogList(): any[] {
@@ -37,7 +58,8 @@ export default class Cms {
     }
 
     set catalogList(value: any[]) {
-        config.catalogList = this._catalogList = value;
+        // config.catalogList =
+          this._catalogList = value;
     }
 
     get commonField(): CommonField {
@@ -45,7 +67,8 @@ export default class Cms {
     }
 
     set commonField(value: CommonField) {
-        config.commonField = this._commonField = value;
+        // config.commonField =
+          this._commonField = value;
     }
     private _templates: TemplateFile[] = []
 
@@ -54,26 +77,19 @@ export default class Cms {
     private _commonField: CommonField = {top: [], foot: []}
     private _loadStatus: 'noloaded' | 'loading' | 'loadend' = 'noloaded'
 
-    constructor() {
-        this.loadStatus = 'loading'
-        initialize(res => {
-            this.moduleList = res.data.moduleList
-            this.catalogList = res.data.catalogList
-            this.templates = res.data.templates
-            this.commonField = res.data.commonField
-            this.loadStatus = 'loadend'
-        })
-    }
-
-
-    async init(callback: () => void) {
-        initialize(res => {
-            this._moduleList = res.data._moduleList
-            this._catalogList = res.data._catalogList
-            this._templates = res.data._templates
-            this._commonField = res.data._commonField
-            callback()
-        })
-        return ""
+    async init() {
+      this.loadStatus = 'loading'
+      const loadingInstance = ElLoading.service({ fullscreen: true })
+      await createAxios({
+        url: '/admin/cms.api/init',
+        method: 'get'
+      }).then(async (res) => {
+        this.moduleList = res.data.moduleList
+        this.catalogList = res.data.catalogList
+        this.templates = res.data.templates
+        this.commonField = res.data.commonField
+        this.loadStatus = 'loadend'
+        loadingInstance.close();
+      })
     }
 }
