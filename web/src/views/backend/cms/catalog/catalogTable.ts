@@ -30,6 +30,8 @@ export default class catalogTable extends baTable {
   constructor(api: baTableApi, table: BaTable, form: BaTableForm = {}, before: BaTableBefore = {}, after: BaTableAfter = {}) {
     super(api, table, form, before, after);
     this.api.actionUrl.set("configEdit", "/admin/cms.config/edit?name=common&group=catalog");
+    this.moduleList = cms.moduleList
+    this.catalogList = cms.catalogList
   }
 
   handleCommonField = (oldCommonField: any[], type: string) => {

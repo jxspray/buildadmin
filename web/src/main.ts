@@ -11,7 +11,7 @@ import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/display.css'
 import 'font-awesome/css/font-awesome.min.css'
 import '/@/styles/index.scss'
-import Cms from "/@/views/backend/cms/cms";
+import Cms from "/@/views/backend/cms/cms"
 const cms = Cms.getInstance()
 // modules import mark, Please do not remove.
 async function start() {
@@ -23,10 +23,7 @@ async function start() {
         console.log(to, from)
         if (/\/admin\/cms\//.test(to.fullPath) && cms.loadStatus == 'noloaded') {
           await cms.init()
-          console.log("加载了cms")
         }
-      // await delay(4000); // 等待1秒
-      // console.log('定时任务执行完毕');
     })
     app.use(router)
     app.use(ElementPlus)

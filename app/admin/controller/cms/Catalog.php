@@ -134,6 +134,6 @@ class Catalog extends Backend
             }
         }
         // 读取用户组所有权限规则
-        return $this->model->where($where)->withJoin('module')->order('weigh desc,id asc')->cache()->select()->toArray();
+        return $this->model->where($where)->withJoin('module')->order('weigh desc,id asc')->select()->toArray();
     }
 }

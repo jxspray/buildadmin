@@ -89,6 +89,7 @@ export default class Cms {
         this.templates = res.data.templates
         this.commonField = res.data.commonField
         this.loadStatus = 'loadend'
+        console.log("初始化CMS配置完成")
         loadingInstance.close();
       })
     }

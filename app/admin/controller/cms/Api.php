@@ -71,7 +71,7 @@ class Api extends Backend
     public function init(): void
     {
         $tree = Tree::instance();
-        $rules = \app\common\model\cms\Catalog::with('module')->order('weigh desc,id asc')->cache()->select()->toArray();
+        $rules = \app\common\model\cms\Catalog::with('module')->order('weigh desc,id asc')->select()->toArray();
         $catalogList = $tree->assembleTree($tree->getTreeArray($tree->assembleChild($rules), 'title'));
         array_unshift($catalogList, ['id' => 0, 'title' => '无']);
         $moduleList = \app\admin\model\cms\Module::select()->toArray();
