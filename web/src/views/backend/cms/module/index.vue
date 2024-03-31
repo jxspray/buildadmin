@@ -35,6 +35,7 @@ import TableHeader from '/@/components/table/header/index.vue'
 import { defaultOptButtons } from '/@/components/table'
 import { baTableApi } from '/@/api/common'
 import { useI18n } from 'vue-i18n'
+import Cms from "/@/views/backend/cms/cms";
 
 
 const router = useRouter()
@@ -86,6 +87,14 @@ const baTable = new baTableClass(
         },
     }
 )
+baTable.after = {
+  getIndex: function ({ res }) {
+    if (res.data) {
+      let moduleList = [{id: 0, title: "页面"}];
+      Cms.getInstance().moduleList = [...moduleList, ...res.data.list]
+    }
+  }
+}
 
 baTable.mount()
 baTable.getIndex()

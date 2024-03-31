@@ -2,6 +2,8 @@
 
 namespace ba\cms;
 
+use app\admin\model\cms\Catalog;
+use app\index\model\web\Module;
 use ba\cms\handler\Cache;
 use ba\Filesystem;
 
@@ -107,7 +109,7 @@ class Cms
         if ($value === true) {
             $data = $instance->getColumnAll();
         } else {
-            $data = self::update($instance, cms('module'), $value, $isDelete);
+            $data = self::update($instance, Module::select(), $value, $isDelete);
         }
         $mod = [];
         foreach ($data as $datum) {
@@ -123,7 +125,7 @@ class Cms
         if ($value === true) {
             $data = $instance->getColumnAll();
         } else {
-            $data = self::update($instance, cms('catalog'), $value, $isDelete);
+            $data = self::update($instance, Catalog::select(), $value, $isDelete);
         }
         $cat = [];
         foreach ($data as $datum) {

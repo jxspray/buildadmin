@@ -70,43 +70,55 @@ class Api extends Backend
 
     public function init(): void
     {
-        $tree = Tree::instance();
-        $rules = \app\common\model\cms\Catalog::with('module')->order('weigh desc,id asc')->select()->toArray();
-        $catalogList = $tree->assembleTree($tree->getTreeArray($tree->assembleChild($rules), 'title'));
-        array_unshift($catalogList, ['id' => 0, 'title' => '无']);
-        $moduleList = \app\admin\model\cms\Module::select()->toArray();
-        // 获取所有模型模板
-        $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home", ['html']);
-        $data = [];
-        foreach ($files as $file) {
-            $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
-            if (!str_contains($file, '/')) $data[$file] = $file;
-        }
-        $template = [
-            ['index' => $data, 'info' => []]
-        ];
-
-        foreach ($moduleList as $module) {
-            $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\{$module['name']}", ['html']);
-            $data = [];
-            foreach ($files as $file) {
-                $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
-                if (!str_contains($file, '/')) $data[$file] = $file;
-            }
-            $template[$module['id']]['index'] = $data;
-            if ($module['type'] == '0') {
-                $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\{$module['name']}\\info", ['html']);
+        $scene = $this->request->get("scene", "all", "trim");
+        switch ($scene) {
+            case "all":
+            case "module":
+                $moduleList = \app\admin\model\cms\Module::select()->toArray();
+                array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
+                if ($scene == "module") $this->success('', $moduleList);
+            case "catalog":
+                $tree = Tree::instance();
+                $rules = \app\common\model\cms\Catalog::with('module')->order('weigh desc,id asc')->select()->toArray();
+                $catalogList = $tree->assembleTree($tree->getTreeArray($tree->assembleChild($rules), 'title'));
+                array_unshift($catalogList, ['id' => 0, 'title' => '无']);
+                if ($scene == "catalog") $this->success('', $catalogList);
+            case "templates":
+                $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home", ['html']);
                 $data = [];
                 foreach ($files as $file) {
                     $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
                     if (!str_contains($file, '/')) $data[$file] = $file;
                 }
-                $template[$module['id']]['info'] = $data;
-            }
-        }
-        array_unshift($moduleList, ['id' => 0, 'title' => '页面']);
+                $template = [
+                    ['index' => $data, 'info' => []]
+                ];
 
-        $commonField = json_decode(\app\admin\model\cms\Config::where(['name' => "common", "group" => "catalog"])->value("value"), true);
+                foreach (\app\admin\model\cms\Module::cache()->select()->toArray() as $module) {
+                    $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\{$module['name']}", ['html']);
+                    $data = [];
+                    foreach ($files as $file) {
+                        $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+                        if (!str_contains($file, '/')) $data[$file] = $file;
+                    }
+                    $template[$module['id']]['index'] = $data;
+                    if ($module['type'] == '0') {
+                        $files = Filesystem::getDirFiles(root_path() . Cms::baseViewPath . "\\home\\{$module['name']}\\info", ['html']);
+                        $data = [];
+                        foreach ($files as $file) {
+                            $file = preg_replace('/\/(.*)\.html$/', "$1", $file);
+                            if (!str_contains($file, '/')) $data[$file] = $file;
+                        }
+                        $template[$module['id']]['info'] = $data;
+                    }
+                }
+                if ($scene == "templates") $this->success('', $template);
+            case "common":
+                $commonField = json_decode(\app\admin\model\cms\Config::where(['name' => "common", "group" => "catalog"])->value("value"), true);
+                if ($scene == "common") $this->success('', $commonField);
+        }
+
+
         $this->success('', ['catalogList' => $catalogList, 'moduleList' => $moduleList, "templates" => $template, "commonField" => $commonField]);
     }
 }

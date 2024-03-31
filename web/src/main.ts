@@ -20,7 +20,6 @@ async function start() {
     // 全局语言包加载
     await loadLang(app)
     router.beforeEach(async (to, from) => {
-        console.log(to, from)
         if (/\/admin\/cms\//.test(to.fullPath) && cms.loadStatus == 'noloaded') {
           await cms.init()
         }

@@ -31,7 +31,7 @@ $infoAppend = [
     'action' => 'info'
 ];
 // 模型路由访问
-foreach (cms("module") as $module) {
+foreach (\app\index\model\web\Module::select() as $module) {
     $infoAppend['module_id'] = $module['id'];
     if ($module['rule']) Route::get("{$module['rule']}/:id", "action/index")->append(array_merge($infoAppend, ['path' => $module['name']]))->middleware($middleware);
 }
@@ -47,7 +47,7 @@ $indexAppend = [
     'action' => 'index'
 ];
 // 栏目路由访问
-foreach (cms("catalog") as $catalog) {
+foreach (\app\index\model\web\Catalog::select() as $catalog) {
     if ($catalog['seo_url']) {
         $catalogAppend['catid'] = $catalog['id'];
         $catalogAppend['module_id'] = $catalog['module_id'];
@@ -72,7 +72,7 @@ foreach (cms("catalog") as $catalog) {
 /* 默认首页，需要放在末尾 */
 
 /* 首页访问，需要放在第一个 */
-//Route::get("index", "action/index")->append($indexAppend)->middleware($middleware);
+Route::get("index", "action/index")->append($indexAppend)->middleware($middleware);
 Route::miss(function() {
     return '404 Not Found!';
 });

@@ -93,4 +93,33 @@ export default class Cms {
         loadingInstance.close();
       })
     }
+
+    async update(scene: "module" | "catalog" | "templates" | "common", data: any) {
+      this.loadStatus = 'loading'
+      const loadingInstance = ElLoading.service({ fullscreen: true })
+      await createAxios({
+        url: '/admin/cms.api/init',
+        method: 'get',
+        data: {
+          scene: scene
+        }
+      }).then(async (res) => {
+        switch (scene) {
+          case 'module':
+            this.moduleList = res.data.moduleList;
+            break;
+          case 'catalog':
+            this.catalogList = res.data.catalogList;
+            break;
+          case 'templates':
+            this.templates = res.data.templates;
+            break;
+          case 'common':
+            this.commonField = res.data.commonField;
+            break;
+        }
+        this.loadStatus = 'loadend'
+        loadingInstance.close();
+      })
+    }
 }

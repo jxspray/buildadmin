@@ -88,7 +88,7 @@ class Base extends \app\index\controller\Action
     private function checkTerminal(): string
     {
         $terminal = 'home'; // 默认为PC端
-        if (check_mobile()) $terminal = 'wap'; // 如果是手机端设备访问，则设置为手机端
+//        if (check_mobile()) $terminal = 'wap'; // 如果是手机端设备访问，则设置为手机端
 //        else if ($_SERVER['SERVER_NAME'] == $this->Config['wap_url']) $terminal = 'wap'; // 如果是手机端域名访问，则设置为手机端
 //        elseif (cookie('phone') == 1) $terminal = 'wap'; // 如果是手机端标识COOKIE存在，则为手机端访问
         return $terminal;

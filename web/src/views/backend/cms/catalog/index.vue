@@ -30,6 +30,7 @@ import CommonField from './commonField.vue'
 import Table from '/@/components/table/index.vue'
 import TableHeader from '/@/components/table/header/index.vue'
 import catalogTable from "/@/views/backend/cms/catalog/catalogTable";
+import Cms from "/@/views/backend/cms/cms";
 
 const {t} = useI18n()
 const tableRef = ref()
@@ -80,6 +81,14 @@ const baTable = new catalogTable(
     }
 )
 
+baTable.after = {
+  getIndex: function ({ res }) {
+    if (res.data) {
+      let catalogList = [{id: 0, title: "页面"}];
+      Cms.getInstance().catalogList = [...catalogList, ...res.data.list]
+    }
+  }
+}
 provide('baTable', baTable)
 
 onMounted(() => {
