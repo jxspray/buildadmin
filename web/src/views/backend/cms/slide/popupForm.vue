@@ -56,7 +56,7 @@
                                     </el-row>
                                     <el-row :gutter="10">
                                         <el-col :span="10" :offset="8">
-                                            <el-button v-blur class="ba-add-array-item" @click="onAddArrayItem()" icon="el-icon-Plus">{{ t('Add') }}</el-button>
+                                            <el-button v-blur class="ba-add-array-item" @click="onAddArrayItem('groups')" icon="el-icon-Plus">{{ t('Add') }}</el-button>
                                         </el-col>
                                     </el-row>
                                 </div>
@@ -134,7 +134,18 @@ const state = reactive({
     activeTab: "base"
 })
 
-const obj = {
+const obj: {
+  groups: {
+    name: string,
+    width: number,
+    height: number
+  },
+  extends: {
+    field: string,
+    label: string,
+    type: any
+  }
+} = {
     groups: {
         name: '',
         width: 0,
@@ -147,6 +158,11 @@ const obj = {
     }
 }
 
+interface FieldType {
+  label: string,
+  type: string,
+  value: any
+}
 const fields: FieldType[] = [
     {label: "文本", type: "string", value: ""},
     {label: "文本域", type: "textarea", value: ""},
@@ -161,7 +177,7 @@ const fields: FieldType[] = [
     {label: "颜色选择", type: "color", value: ""},
     {label: "开关", type: "switch", value: false},
 ]
-const onAddArrayItem = (field: string) => {
+const onAddArrayItem = (field: 'groups' | 'extends') => {
     baTable.form.items![field].push(JSON.parse(JSON.stringify(obj[field])))
 }
 const onEditExtendsItem = (index: number) => {
@@ -169,27 +185,6 @@ const onEditExtendsItem = (index: number) => {
     state.setShow = true
     state.setForm = baTable.form.items!.extends[index].type
 }
-const addField = (formEl: FormInstance | undefined = undefined) => {
-    if (formEl) {
-        formEl.validate((valid: boolean) => {
-            if (valid) {
-                let row = this.form.setForm
-                this.module.column.push(row)
-                this.module.table.map(item => {
-                    item[row.field] = row.type?.value
-                    return item
-                })
-                this.form.setShow = false
-                this.form.setForm = {label: '', field: '', type: undefined}
-            }
-        }).then(r => {
-            console.log(r)
-        })
-    } else {
-        return false;
-    }
-}
-
 const onDelArrayItem = (field: string, idx: number) => {
     baTable.form.items![field].splice(idx, 1)
     console.log(baTable.form.items![field])

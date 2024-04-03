@@ -53,6 +53,10 @@ class Slide extends Backend
             if (!$data) {
                 $this->error(__('Parameter %s can not be empty', ['']));
             }
+            foreach ($data['groups'] as &$group) {
+                $group['width'] = (int)$group['width'];
+                $group['height'] = (int)$group['height'];
+            }
 
             $data   = $this->excludeFields($data);
             $result = false;

@@ -1,4 +1,88 @@
+<template>
+  <div class="default-main ba-table-box">
+    <div class="custom-tabs">
+      <el-tabs v-model="state.activeName" @tab-click="tabClick">
+        <el-tab-pane v-for="(tab, name) in state.configData" :label="t(name)" :name="name">
+          <div class="custom-body">
+            <el-row :gutter="30">
+              <el-col :xs="24" :sm="12" :md="8" :lg="6" :xl="6" v-for="item in tab">
+                <div class="config-item" :style="{background:item.background}">
+                  <div class="tip-container">
+                    <div class="config-item-icon-container"
+                         style="margin-top: 30px;position: relative;display: flex;">
+                      <div class="item-icon-1"><img :src="'/src/assets/addons/cms/img/config/' + item.icon + '.png'"
+                                                    alt=""/>
+                      </div>
+                      <div class="item-icon-2"></div>
+                    </div>
+                    <div class="config-title">{{ item.title }}</div>
+                    <div class="config-tip ellipsis-item">{{ item.tip }}</div>
+                    <div class="config-message ellipsis-item">{{ item.message }}</div>
+                  </div>
+                  <div class="set-container">
+                    <div class="config-item-leaf-container">
+                      <div class="item-leaf-1">
+                        <div class="leaf leaf-11"></div>
+                        <div class="leaf leaf-12" :style="{background:item.leaf}"></div>
+                        <div class="leaf leaf-13"></div>
+                      </div>
+                      <div class="item-leaf-2"></div>
+                    </div>
+                    <div class="config-item-btn display-flex-c" :style="item.button"
+                         @click="operation(name, item.id,item.title)">立即设置
+                    </div>
+                  </div>
+                </div>
+              </el-col>
+            </el-row>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
 
+    <!-- 表单 -->
+    <el-dialog
+      :fullscreen="true"
+      class="ba-operate-dialog"
+      :close-on-click-modal="false"
+      :model-value="state.modelShow"
+      @close="closeModel"
+    >
+      <template #header>
+        <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
+          {{ state.modelTitle }}
+        </div>
+      </template>
+      <el-scrollbar v-loading="baTable.form.loading" class="ba-table-form-scrollbar">
+        <div
+          class="ba-operate-form"
+          :class="'ba-edit-form'"
+        >
+          <el-form
+            v-if="!baTable.form.loading"
+            ref="formRef"
+            @keyup.enter="onSubmit(formRef)"
+            :model="baTable.form"
+            label-position="right"
+            :rules="rules"
+          >
+            <el-field v-model="baTable.form.items" :ifset="true" v-if="state.modelShow"></el-field>
+          </el-form>
+        </div>
+      </el-scrollbar>
+      <template #footer>
+        <div>
+          <el-button @click="closeModel">{{ t('Cancel') }}</el-button>
+          <el-button v-blur :loading="baTable.form.submitLoading" @click="onSubmit(formRef)" type="primary">
+            {{ t('Save') }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+  </div>
+</template>
+
+<script setup lang="ts">
 import {reactive, ref, inject, provide} from 'vue'
 import baTableClass from '/@/utils/baTable'
 import {baTableApi} from '/@/api/common'
@@ -15,8 +99,8 @@ const {t} = useI18n()
 const formRef = ref<InstanceType<typeof ElForm>>()
 // const baTable = inject('baTable') as baTableClass
 const baTable = new baTableClass(
-    new baTableApi('/admin/cms.config/'),
-    {pk: 'name', column: []}
+  new baTableApi('/admin/cms.config/'),
+  {pk: 'name', column: []}
 )
 // import PopupForm from './popupForm.vue'
 defineOptions({
@@ -104,20 +188,20 @@ const loadOperation = (group: string | number, id: string) => {
   baTable.form.loading = true
   baTable.form.items = {}
   return baTable.api
-      .edit({
-        [baTable.table.pk!]: id,
-        group: group,
-      })
-      .then((res) => {
-        baTable.form.items = res.data.row.value
-        console.log(baTable.form.items)
-      })
-      .catch((err) => {
-        baTable.toggleForm()
-      })
-      .finally(() => {
-        baTable.form.loading = false
-      })
+    .edit({
+      [baTable.table.pk!]: id,
+      group: group,
+    })
+    .then((res) => {
+      baTable.form.items = res.data.row.value
+      console.log(baTable.form.items)
+    })
+    .catch((err) => {
+      baTable.toggleForm()
+    })
+    .finally(() => {
+      baTable.form.loading = false
+    })
 }
 
 const operation = ((group: string | number, id: string, title: string) => {
@@ -141,14 +225,14 @@ const onSubmit = (formEl: FormInstance | undefined = undefined) => {
   const submitCallback = () => {
     baTable.form.submitLoading = true
     baTable.api
-        .postData('edit', {name: state.type, group: state.activeName, value: value})
-        .then((res) => {
-          baTable.toggleForm()
-          state.modelShow = false
-        })
-        .finally(() => {
-          baTable.form.submitLoading = false
-        })
+      .postData('edit', {name: state.type, group: state.activeName, value: value})
+      .then((res) => {
+        baTable.toggleForm()
+        state.modelShow = false
+      })
+      .finally(() => {
+        baTable.form.submitLoading = false
+      })
   }
 
   if (formEl) {

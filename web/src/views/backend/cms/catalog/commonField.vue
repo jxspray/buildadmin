@@ -5,7 +5,9 @@ import {useI18n} from "vue-i18n";
 import catalogTable from "/@/views/backend/cms/catalog/catalogTable";
 import createAxios from "/@/utils/axios";
 import {CommonField} from "/@/views/backend/cms/interface";
+import Cms from "/@/views/backend/cms/cms";
 
+const cms = Cms.getInstance()
 const {t} = useI18n();
 
 const state: {
@@ -30,11 +32,12 @@ const onClose = () => {
 const onOpen = () => {
     state.show = true
     state.loading = true
-    createAxios<CommonField>({
+    createAxios<{ row: { value: CommonField } }>({
         url: baTable.api.actionUrl.get('configEdit'),
         method: 'get',
     }).then((res) => {
-        state.value = res.data
+        state.value = res.data.row.value
+        console.log(state.value)
         state.loading = false
     }).finally(() => {
         state.loading = false
@@ -44,7 +47,7 @@ const onSubmit = () => {
     state.submitLoading = true
     baTable.api.postData("configEdit", {name: "common", group: "catalog", value: state.value})
         .then((res) => {
-            baTable.setCommonField(state.value)
+            // cms.commonField(state.value)
             state.submitLoading = false
             onClose()
         })

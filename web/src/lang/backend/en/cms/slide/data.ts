@@ -2,6 +2,7 @@ export default {
     id: 'id',
     slide_id: 'slide_id',
     slide__name: 'name',
+    cdn_image: 'image',
     title: 'title',
     remark: 'remark',
     width: 'width',

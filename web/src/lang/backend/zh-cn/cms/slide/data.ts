@@ -10,6 +10,7 @@ export default {
     id: 'ID',
     slide_id: '幻灯片ID',
     slide__name: '名称',
+    cdn_image: '图片',
     title: '标题',
     image: '图片',
     link: '跳转链接',
