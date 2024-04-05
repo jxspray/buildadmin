@@ -144,7 +144,7 @@ if (!function_exists('getSlides')) {
     {
         $res = (new app\index\model\web\Slide)->getInfo($where);
         if (!$res) abort(500, "幻灯片不存在");
-        if ($limit) $res->list()->limit($limit)->select();
+        if ($limit) $res->list->limit($limit)->select();
         $res->list;
         return $res;
     }

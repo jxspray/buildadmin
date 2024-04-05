@@ -173,14 +173,15 @@
         <div id="slideBox-index" class="slideBox-index new_slideBox_banner">
             <div class="hd">
                 <ul>
-                    {foreach $catalog.field.banner as $item}
+                    {php}$banners = getSlides(1)->list;{/php}
+                    {foreach $banners as $item}
                         <li></li>
                     {/foreach}
                 </ul>
             </div>
             <div class="bd">
                 <ul>
-                    {foreach $catalog.field.banner as $item}
+                    {foreach $banners as $item}
                         <li>
                             <a href="{$item->link}" target="_blank" title="{$item->title}"
                                style="background-image:url({$item->image});"></a>
@@ -646,13 +647,13 @@
                 <a href="{$catalogList[5]['url']}" target="_blank" title="查看更多" class="btn">查看更多</a>
             </div>
             {/*<div class="fangright_a">
-                <a href="{$Categorys[64]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
+                <a href="{$catalogList[64]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
             </div>
             <div class="fangright_a">
-                <a href="{$Categorys[88]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
+                <a href="{$catalogList[88]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
             </div>
             <div class="fangright_a">
-                <a href="{$Categorys[76]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
+                <a href="{$catalogList[76]['url']&cc;" target="_blank" title="查看更多" class="btn">查看更多</a>
             </div>*/}
         </div>
     </div>
@@ -888,7 +889,7 @@
             <div class="expleft">
                 <div class="t1">全面赋能企业 持续高速成长</div>
                 <div class="t2">了解聚之唯让企业<br>高速增长的秘诀</div>
-                <a href="{$Categorys[1]['url']}" title="{$Categorys[1]['title']}" class="btn">more&nbsp;<span class="pls">+</span></a>
+                <a href="{$catalogList[1]['url']}" title="{$catalogList[1]['title']}" class="btn">more&nbsp;<span class="pls">+</span></a>
             </div>
             <div class="expmiddle">
                 <div class="t1">
