@@ -4,12 +4,9 @@ namespace app\common\controller;
 
 use Throwable;
 use think\Model;
-use think\facade\Db;
 use think\facade\Event;
-use think\facade\Cookie;
 use app\admin\library\Auth;
-use think\db\exception\PDOException;
-use think\exception\HttpResponseException;
+use app\common\library\token\TokenExpirationException;
 
 class Backend extends Api
 {
@@ -139,32 +136,32 @@ class Backend extends Api
     {
         parent::initialize();
 
-        // 检测数据库连接
+        $needLogin = !action_in_arr($this->noNeedLogin);
+
         try {
-            Db::execute("SELECT 1");
-        } catch (PDOException $e) {
-            $this->error(mb_convert_encoding($e->getMessage(), 'UTF-8', 'UTF-8,GBK,GB2312,BIG5'));
+
+            // 初始化管理员鉴权实例
+            $this->auth = Auth::instance();
+            $token      = get_auth_token();
+            if ($token) $this->auth->init($token);
+
+        } catch (TokenExpirationException) {
+            if ($needLogin) {
+                $this->error(__('Token expiration'), [], 409);
+            }
         }
 
-        $this->auth = Auth::instance();
-        $routePath  = $this->app->request->controllerPath . '/' . $this->request->action(true);
-        $token      = $this->request->server('HTTP_BATOKEN', $this->request->request('batoken', Cookie::get('batoken') ?: false));
-        if (!action_in_arr($this->noNeedLogin)) {
-            $this->auth->init($token);
+        if ($needLogin) {
             if (!$this->auth->isLogin()) {
                 $this->error(__('Please login first'), [
                     'type' => $this->auth::NEED_LOGIN
                 ], $this->auth::LOGIN_RESPONSE_CODE);
             }
             if (!action_in_arr($this->noNeedPermission)) {
+                $routePath = ($this->app->request->controllerPath ?? '') . '/' . $this->request->action(true);
                 if (!$this->auth->check($routePath)) {
                     $this->error(__('You have no permission'), [], 401);
                 }
-            }
-        } elseif ($token) {
-            try {
-                $this->auth->init($token);
-            } catch (HttpResponseException) {
             }
         }
 

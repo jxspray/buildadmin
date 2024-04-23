@@ -14,10 +14,10 @@ namespace ba;
 use Throwable;
 use think\Response;
 use think\facade\Config;
-use think\facade\Cookie;
 use app\admin\library\Auth;
 use app\admin\library\module\Manage;
 use think\exception\HttpResponseException;
+use app\common\library\token\TokenExpirationException;
 
 class Terminal
 {
@@ -175,14 +175,7 @@ class Terminal
      */
     public function exec(bool $authentication = true): void
     {
-        $headers                      = request()->allowCrossDomainHeaders ?? [];
-        $headers['X-Accel-Buffering'] = 'no';
-        $headers['Content-Type']      = 'text/event-stream';
-        $headers['Cache-Control']     = 'no-cache';
-
-        foreach ($headers as $name => $val) {
-            header($name . (!is_null($val) ? ':' . $val : ''));
-        }
+        $this->sendHeader();
 
         while (ob_get_level()) {
             ob_end_clean();
@@ -197,11 +190,16 @@ class Terminal
         }
 
         if ($authentication) {
-            $token = request()->server('HTTP_BATOKEN', request()->request('batoken', Cookie::get('batoken') ?: false));
-            $auth  = Auth::instance();
-            $auth->init($token);
-            if (!$auth->isLogin() || !$auth->isSuperAdmin()) {
-                $this->execError("You are not super administrator or not logged in", true);
+            try {
+                $token = get_auth_token();
+                $auth  = Auth::instance();
+                $auth->init($token);
+
+                if (!$auth->isLogin() || !$auth->isSuperAdmin()) {
+                    $this->execError("You are not super administrator or not logged in", true);
+                }
+            } catch (TokenExpirationException) {
+                $this->execError(__('Token expiration'));
             }
         }
 
@@ -282,7 +280,7 @@ class Terminal
         ];
         $data = json_encode($data, JSON_UNESCAPED_UNICODE);
         if ($data) {
-            echo 'data: ' . $data . "\n\n";
+            $this->finalOutput($data);
             if ($callback) $this->outputCallback($data);
             @ob_flush();// 刷新浏览器缓冲区
         }
@@ -464,5 +462,39 @@ class Terminal
         $buildConfigContent = preg_replace("/'npm_package_manager'(\s+)=>(\s+)'$oldPackageManager'/", "'npm_package_manager'\$1=>\$2'$newPackageManager'", $buildConfigContent);
         $result             = @file_put_contents($buildConfigFile, $buildConfigContent);
         return (bool)$result;
+    }
+
+    /**
+     * 最终输出
+     */
+    public function finalOutput(string $data): void
+    {
+        $app = app();
+        if (!empty($app->worker) && !empty($app->connection)) {
+            $app->connection->send(new \Workerman\Protocols\Http\ServerSentEvents(['event' => 'message', 'data' => $data]));
+        } else {
+            echo 'data: ' . $data . "\n\n";
+        }
+    }
+
+    /**
+     * 发送响应头
+     */
+    public function sendHeader(): void
+    {
+        $headers = array_merge(request()->allowCrossDomainHeaders ?? [], [
+            'X-Accel-Buffering' => 'no',
+            'Content-Type'      => 'text/event-stream',
+            'Cache-Control'     => 'no-cache',
+        ]);
+
+        $app = app();
+        if (!empty($app->worker) && !empty($app->connection)) {
+            $app->connection->send(new \Workerman\Protocols\Http\Response(200, $headers, "\r\n"));
+        } else {
+            foreach ($headers as $name => $val) {
+                header($name . (!is_null($val) ? ':' . $val : ''));
+            }
+        }
     }
 }

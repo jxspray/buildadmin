@@ -59,12 +59,14 @@ return [
                 'host'       => '127.0.0.1',
                 'port'       => 6379,
                 'password'   => '',
-                'select'     => false,
+                // Db索引，非 0 以避免数据被意外清理
+                'select'     => 1,
                 'timeout'    => 0,
-                'expire'     => 0,
+                // 默认 token 有效时间
+                'expire'     => 2592000,
                 'persistent' => false,
-                'userprefix' => 'up:',
-            ]
+                'prefix'     => 'tk:',
+            ],
         ]
     ],
     // 自动写入管理员操作日志
@@ -74,7 +76,7 @@ return [
     // 内容分发网络URL，末尾不带`/`
     'cdn_url'               => '',
     // 版本号
-    'version'               => 'v2.0.7',
+    'version'               => 'v2.0.9',
     // 接口地址
     'api_url'               => 'https://buildadmin.com',
 ];
