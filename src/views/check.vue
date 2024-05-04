@@ -8,7 +8,7 @@
                     <el-alert :closable="false" center type="error">
                         <template #default>
                             {{ t('Port error prompt 1') }}
-                            <a target="_blank" href="https://wonderful-code.gitee.io/guide/install/start.html">{{ t('Get started quickly') }}</a>
+                            <a target="_blank" href="https://doc.buildadmin.com/guide/install/start.html">{{ t('Get started quickly') }}</a>
                             {{ t('Port error prompt 3') }}
                         </template>
                     </el-alert>
@@ -287,7 +287,7 @@ const setNpmRegistry = () => {
                                     name: t('How to solve'),
                                     title: t('Click to see how to solve it'),
                                     type: 'faq',
-                                    url: 'https://wonderful-code.gitee.io/guide/install/setNpmRegistryFail.html',
+                                    url: 'https://doc.buildadmin.com/guide/install/setNpmRegistryFail.html',
                                 },
                             ],
                         },
@@ -340,7 +340,7 @@ const axiosNpmTestInstall = () => {
                             name: t('How to solve'),
                             title: t('Click to see how to solve it'),
                             type: 'faq',
-                            url: 'https://wonderful-code.gitee.io/guide/install/npmInstallFail.html',
+                            url: 'https://doc.buildadmin.com/guide/install/npmInstallFail.html',
                         },
                     ],
                 },

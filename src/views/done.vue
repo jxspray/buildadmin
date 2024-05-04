@@ -36,7 +36,7 @@ const { t } = useI18n()
 
 const host = window.location.protocol + '//' + window.location.host
 const state = reactive({
-    hideIndexUrl: 'https://wonderful-code.gitee.io/guide/install/hideIndex.html',
+    hideIndexUrl: 'https://doc.buildadmin.com/guide/install/hideIndex.html',
     indexUrl: host + '/index.html/#/',
     adminUrl: host + '/index.html/#/admin',
 })
