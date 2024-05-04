@@ -148,7 +148,12 @@ const reload = () => {
             padding: 10px;
             background-color: #f5f5f5;
             word-break: break-all;
-            font-family: Consolas, Monaco, Andale Mono, Ubuntu Mono, monospace;
+            font-family:
+                Consolas,
+                Monaco,
+                Andale Mono,
+                Ubuntu Mono,
+                monospace;
             margin: 15px 0;
             .command {
                 line-height: 2;
