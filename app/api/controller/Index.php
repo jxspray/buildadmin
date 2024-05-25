@@ -11,7 +11,7 @@ use app\common\library\token\TokenExpirationException;
 
 class Index extends Frontend
 {
-    protected array $noNeedLogin = ['index'];
+    protected array $noNeedLogin = ['index', 'loadRules'];
 
     public function initialize(): void
     {
@@ -79,5 +79,12 @@ class Index extends Frontend
             'rules'            => $rules,
             'menus'            => $menus,
         ]);
+    }
+
+    public function loadRules()
+    {
+        // 生成模型列表规则
+        // 生成模型详情规则
+        // 生成单页规则
     }
 }

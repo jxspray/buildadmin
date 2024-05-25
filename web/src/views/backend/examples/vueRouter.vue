@@ -1,6 +1,40 @@
 <template>
     <div class="default-main">
         <el-collapse class="collapse" v-model="state.collapseActiveName">
+            <el-collapse-item title="BuildAdmin顶栏菜单（选项卡）管理" name="tabs">
+                <div class="form-box">
+                    <FormItem label="菜单的路由路径" placeholder="请输入任意菜单（有权限访问的路由）路径" type="string" v-model="state.tabPath" />
+                    <div class="form-buttons">
+                        <el-button @click="router.push(state.tabPath)" type="success">新建菜单选项卡</el-button>
+                        <el-button @click="router.push(state.tabPath)" type="success">激活菜单选项卡</el-button>
+                        <el-button @click="navTabs.updateTabTitle(state.tabPath, '新的选项卡标题')" type="primary"> 修改菜单选项卡的标题 </el-button>
+                        <el-button @click="navTabs.closeTabByPath(state.tabPath)" type="warning">关闭菜单选项卡</el-button>
+                        <el-button @click="navTabs.closeAllTab()" type="danger">关闭所有已打开选项卡</el-button>
+                    </div>
+                </div>
+            </el-collapse-item>
+            <el-collapse-item title="注册BuildAdmin顶栏菜单（选项卡）" name="addtab">
+                <div class="sub-title">注册 mete.addtab=true 的路由 BuildAdmin 即可自动生成顶栏菜单（选项卡）</div>
+                <div class="form-box">
+                    <el-form label-width="120px" :model="state.createRoute">
+                        <FormItem label="路由名称" type="string" placeholder="选填的" v-model="state.createRoute.name" />
+                        <FormItem label="路由路径" type="string" v-model="state.createRoute.path" />
+                        <FormItem
+                            label="组件物理路径"
+                            type="string"
+                            v-model="state.createRoute.component"
+                            :input-attr="{
+                                disabled: true,
+                            }"
+                        />
+                        <div class="form-buttons">
+                            <el-button @click="createRoute(true)" type="success">创建可自动生成tab的路由</el-button>
+                            <el-button @click="router.push({ path: state.createRoute.path })">导航</el-button>
+                            <el-button @click="router.push({ name: state.createRoute.name })">通过路由名称导航</el-button>
+                        </div>
+                    </el-form>
+                </div>
+            </el-collapse-item>
             <el-collapse-item title="动态添加静态路由" name="create">
                 <div class="sub-title">建立组件与路由的映射关系</div>
                 <div class="form-box">
@@ -58,28 +92,6 @@
                     </el-form>
                 </div>
             </el-collapse-item>
-            <el-collapse-item title="BuildAdmin顶栏tab菜单" name="tabs">
-                <div class="sub-title">注册 mete.addtab=true 的路由 BuildAdmin 即可自动生成顶栏 tab</div>
-                <div class="form-box">
-                    <el-form label-width="120px" :model="state.createRoute">
-                        <FormItem label="路由名称" type="string" placeholder="选填的" v-model="state.createRoute.name" />
-                        <FormItem label="路由路径" type="string" v-model="state.createRoute.path" />
-                        <FormItem
-                            label="组件物理路径"
-                            type="string"
-                            v-model="state.createRoute.component"
-                            :input-attr="{
-                                disabled: true,
-                            }"
-                        />
-                        <div class="form-buttons">
-                            <el-button @click="createRoute(true)" type="success">创建可自动生成tab的路由</el-button>
-                            <el-button @click="router.push({ path: state.createRoute.path })">导航</el-button>
-                            <el-button @click="router.push({ name: state.createRoute.name })">通过路由名称导航</el-button>
-                        </div>
-                    </el-form>
-                </div>
-            </el-collapse-item>
         </el-collapse>
         <div class="vue-router-link">
             <el-link target="_blank" type="primary" href="https://router.vuejs.org/zh/introduction.html"> vue-router中文文档 </el-link>
@@ -92,12 +104,15 @@ import { reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import FormItem from '/@/components/formItem/index.vue'
+import { useNavTabs } from '/@/stores/navTabs'
 
 const router = useRouter()
+const navTabs = useNavTabs()
 let removeRoute: any = null
 
 const state = reactive({
-    collapseActiveName: ['create', 'dynamic-route', 'tabs'],
+    tabPath: '/admin/user/user',
+    collapseActiveName: ['create', 'dynamic-route', 'tabs', 'addtab'],
     createRoute: {
         id: '',
         name: '',
@@ -188,6 +203,9 @@ const pushRouteWithParam = (type: string) => {
     margin: 0 auto;
     .form-buttons {
         margin-left: 120px;
+        .el-button {
+            margin-bottom: 10px;
+        }
     }
 }
 .sub-buttons {
