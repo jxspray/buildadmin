@@ -2,6 +2,22 @@
 
 🔥🔥基于 Vue3.x setup + ThinkPHP6 + TypeScript + Vite + Pinia + Element Plus等流行技术栈的后台管理系统，自适应多端、支持CRUD代码生成、自带WEB终端、同时提供Web和Server端、内置全局数据回收站和字段级数据修改保护、自动注册路由、无限子级权限管理等，无需授权即可免费商用，希望能帮助大家实现快速开发。
 
+## v2.0.10-Release
+### 新增
+- 单复选框支持按钮模式
+- 公共搜索增加渲染类名方便单独定位某字段
+- 图片上传达到限制数时隐藏上传框的配置项
+- 增加`AttachmentInsert`事件，开发者或模块可于附件入库后对新的附件做一些额外的操作
+
+### 重构/优化/修复
+- 优化文件上传，文件移动操作优先于文件数据入库
+- 优化管理员管理和菜单规则管理的控制器代码
+- 修复选择数据表、选择数据表字段接口非默认数据库返回空数据的问题
+- 修复第一个菜单为 Iframe 时不能自动跳转的 BUG
+- 修复由于`Gitee Pages`停止服务造成的文档站无法访问
+- 修复可视化`CRUD`远程下拉选择数据表时不能关键词搜索的问题
+- 修复右击菜单组件的菜单面板可能超出屏幕的问题
+
 ## v2.0.9-Release
 ### 新增
 - 增加动态修改后台顶部`Tab`标题的方法
@@ -189,7 +205,7 @@
 - 可视化CRUD：MySQL text 和 blob 类型不能有默认值
 
 ## v2.0.0-Release
-此版本有一些不兼容更新，建议在更新前参考：[v2.0.0不兼容更新](https://wonderful-code.gitee.io/guide/other/incompatibleUpdate/v200.html)
+此版本有一些不兼容更新，建议在更新前参考：[v2.0.0不兼容更新](https://doc.buildadmin.com/guide/other/incompatibleUpdate/v200.html)
 ### 新增
 - 升级到`tp8.0.0`，升级所有后端依赖
 - 升级到`vue3.3`，升级所有前端依赖
@@ -362,7 +378,7 @@
 - 修复后台因为管理员模型登录时间获取器导致登录判断报错问题
 
 ## v1.1.2-Release
-- 此版本有一些不兼容更新，建议在更新前参考：[v1.1.2不兼容更新](https://wonderful-code.gitee.io/guide/other/incompatibleUpdate/v112.html)
+- 此版本有一些不兼容更新，建议在更新前参考：[v1.1.2不兼容更新](https://doc.buildadmin.com/guide/other/incompatibleUpdate/v112.html)
 - 页面组件与页面语言包全部**按需加载**，大幅减少首屏加载大小
 - 更新系统前端的所有可更新依赖到最新稳定版本
 - 可视化CRUD增加字段名称检查
