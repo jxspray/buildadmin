@@ -86,5 +86,6 @@ class Index extends Frontend
         // 生成模型列表规则
         // 生成模型详情规则
         // 生成单页规则
+        $this->success("加载成功");
     }
 }
