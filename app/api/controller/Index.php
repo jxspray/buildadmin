@@ -68,6 +68,7 @@ class Index extends Frontend
 
         $this->success('', [
             'site'             => [
+                'tel' => get_sys_config('tel'),
                 'siteName'     => get_sys_config('site_name'),
                 'recordNumber' => get_sys_config('record_number'),
                 'version'      => get_sys_config('version'),
@@ -83,9 +84,11 @@ class Index extends Frontend
 
     public function loadRules()
     {
+        $rules = [];
         // 生成模型列表规则
         // 生成模型详情规则
         // 生成单页规则
-        $this->success("加载成功");
+
+        $this->success('', $rules);
     }
 }
