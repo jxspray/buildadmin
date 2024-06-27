@@ -36,6 +36,7 @@ class Frontend extends Api
      */
     public function initialize(): void
     {
+
         parent::initialize();
 
         $needLogin = !action_in_arr($this->noNeedLogin);
@@ -44,6 +45,7 @@ class Frontend extends Api
 
             // 初始化会员鉴权实例
             $this->auth = Auth::instance();
+//            $res = $this->auth->login("user", "123456", true);
             $token      = get_auth_token(['ba', 'user', 'token']);
             if ($token) $this->auth->init($token);
 
