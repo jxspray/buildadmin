@@ -32,7 +32,7 @@ class Catalog extends Model implements \app\admin\model\cms\CmsModelInterface
 
     public function getRouteAttr($value, $array)
     {
-        return empty($array["seo_url"]) ? $array["id"] : $array["seo_url"];
+        return "/" . empty($array["seo_url"]) ? $array["id"] : $array["seo_url"];
     }
 
     public function getFieldAttr($value, $array): array

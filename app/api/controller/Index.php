@@ -8,7 +8,7 @@ use think\facade\Config;
 use app\common\controller\Frontend;
 use ba\cms\utils\Tree;
 
-class IndexBak extends Frontend
+class Index extends Frontend
 {
     protected array $noNeedLogin = ['index', 'loadRules'];
 
@@ -26,8 +26,7 @@ class IndexBak extends Frontend
         $catalogHeader = [];
         $catalogFooter = [];
         // 头部底部菜单
-        $catalogList = Catalog::where('status', 1)->order('weigh','desc')
-            ->cache()->append(['url', 'route'])->select()->toArray();
+        $catalogList = Catalog::where('status', 1)->order('weigh','desc')->append(['url', 'route'])->select()->toArray();
         $catalogList = array_combine(array_column($catalogList, 'id'), $catalogList);
         foreach ($catalogList as $val) {
             if (request()->isMobile() && $val['mobile'] === 0) continue;
@@ -51,7 +50,6 @@ class IndexBak extends Frontend
         $values = \app\index\model\web\Config::where("name", "cms")->find();
         $this->success('初始化完成', [
             'site'             => $values->value,
-            'openMemberCenter' => Config::get('buildadmin.open_member_center'),
             'menus'            => $catalogHeader,
         ]);
     }

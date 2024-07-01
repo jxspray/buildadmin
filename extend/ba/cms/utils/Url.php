@@ -40,7 +40,8 @@ function index_url(string|int $url = '', array $vars = [], bool $theme = true): 
         $param .= $str . $key . '=' . $val;
         $index++;
     }
-    return request()->domain() . $url . $param;
+//    return request()->domain() . $url . $param;
+    return $url . $param;
 }
 /**
  * 链接组件
