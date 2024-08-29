@@ -27,14 +27,16 @@
                             class="block-on-failure-tag"
                             v-if="(item.status == taskStatus.Failed || item.status == taskStatus.Unknown) && item.blockOnFailure"
                             type="warning"
-                            >{{ t('terminal.Failure to execute this command will block the execution of the queue') }}</el-tag
                         >
+                            {{ t('terminal.Failure to execute this command will block the execution of the queue') }}
+                        </el-tag>
                         <el-tag
                             class="block-on-failure-tag"
                             v-if="item.status == taskStatus.Connecting || item.status == taskStatus.Executing"
                             type="danger"
-                            >{{ t('terminal.Do not refresh the browser') }}</el-tag
                         >
+                            {{ t('terminal.Do not refresh the browser') }}
+                        </el-tag>
                         <span class="command">{{ item.command }}</span>
                         <div class="task-opt">
                             <el-button
@@ -81,9 +83,9 @@
 
         <el-button-group>
             <el-button class="terminal-menu-item" v-blur @click="terminal.addTaskPM('test', false)">{{ t('terminal.Test command') }}</el-button>
-            <el-button class="terminal-menu-item" v-blur @click="terminal.addTaskPM('web-install')">{{
-                t('terminal.Install dependent packages')
-            }}</el-button>
+            <el-button class="terminal-menu-item" v-blur @click="terminal.addTaskPM('web-install')">
+                {{ t('terminal.Install dependent packages') }}
+            </el-button>
             <el-button class="terminal-menu-item" v-blur @click="webBuild()">{{ t('terminal.Republish') }}</el-button>
             <el-button class="terminal-menu-item" v-blur @click="terminal.addTask('version.npm', false)">npm -v</el-button>
             <el-button class="terminal-menu-item" v-blur @click="onSwitchPackageManager">{{ t('Switch package manager') }}</el-button>
@@ -128,7 +130,7 @@ const terminal = useTerminal()
 
 const getTaskStatus = (status: number) => {
     let statusText = t('terminal.unknown')
-    let statusType = ''
+    let statusType = 'info'
     switch (status) {
         case taskStatus.Waiting:
             statusText = t('terminal.Waiting for execution')

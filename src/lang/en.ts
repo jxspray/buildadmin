@@ -22,7 +22,7 @@ export default {
     php_version: 'PHP Version',
     config_is_writable: 'Is the configuration directory writable?',
     public_is_writable: 'Is the public directory writable?',
-    php_pdo: 'PHP PDO extension',
+    php_pdo: 'PHP pdo_mysql extension',
     php_safe_mode: 'PHP security mode',
     php_proc: 'PHP proc_open and proc_close permission',
     php_gd2: 'PHP gd2 or freeType extensions',
