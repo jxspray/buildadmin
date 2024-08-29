@@ -85,10 +85,10 @@
                 </el-form-item>
                 <el-form-item :label="t('Set NPM source')">
                     <el-radio-group v-model="state.startForm.setNpmRegistry" class="ml-4">
-                        <el-radio label="none" size="large">{{ t('Use current source') }}</el-radio>
-                        <el-radio label="taobao" size="large">{{ t('TaoBao') }}</el-radio>
-                        <el-radio label="npm" size="large">NPM</el-radio>
-                        <el-radio label="tencent" size="large">{{ t('Tencent') }}</el-radio>
+                        <el-radio :label="t('Use current source')" value="none" size="large"></el-radio>
+                        <el-radio :label="t('TaoBao')" value="taobao" size="large"></el-radio>
+                        <el-radio label="NPM" value="npm" size="large"></el-radio>
+                        <el-radio :label="t('Tencent')" value="tencent" size="large"></el-radio>
                     </el-radio-group>
                 </el-form-item>
             </el-form>
