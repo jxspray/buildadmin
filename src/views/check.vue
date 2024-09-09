@@ -267,7 +267,7 @@ const setNpmRegistry = () => {
         let exist = false
         for (const key in terminal.state.taskList) {
             if (
-                terminal.state.taskList[key].command == 'set-registry.' + state.startForm.setNpmRegistry &&
+                terminal.state.taskList[key].command == 'set-npm-registry.' + state.startForm.setNpmRegistry &&
                 terminal.state.taskList[key].status == taskStatus.Success
             ) {
                 exist = true
@@ -275,7 +275,7 @@ const setNpmRegistry = () => {
             }
         }
         if (!exist) {
-            terminal.addTask('set-registry.' + state.startForm.setNpmRegistry, false, '', (res: number) => {
+            terminal.addTask('set-npm-registry.' + state.startForm.setNpmRegistry, false, '', (res: number) => {
                 if (res == taskStatus.Failed) {
                     let npmInstall = {
                         'set-npm-registry': {
