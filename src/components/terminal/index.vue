@@ -201,7 +201,6 @@ const onSwitchPackageManager = () => {
     min-height: 30px;
     max-height: 200px;
     overflow: auto;
-    scrollbar-width: none;
     &::-webkit-scrollbar {
         width: 5px;
         height: 5px;
@@ -219,6 +218,12 @@ const onSwitchPackageManager = () => {
         &::-webkit-scrollbar-thumb:hover {
             background: #909399;
         }
+    }
+}
+@supports not (selector(::-webkit-scrollbar)) {
+    .exec-message {
+        scrollbar-width: thin;
+        scrollbar-color: #c8c9cc #eaeaea;
     }
 }
 .toggle-message-display {
