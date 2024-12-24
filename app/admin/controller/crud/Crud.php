@@ -194,6 +194,11 @@ class Crud extends Backend
                 // 列字典数据
                 $columnDict = $this->getColumnDict($field);
 
+                // 关联表数据解析
+                if (in_array($field['designType'], ['remoteSelect', 'remoteSelects'])) {
+                    $this->parseJoinData($field, $table);
+                }
+
                 // 表单项
                 if (in_array($field['name'], $table['formFields'])) {
                     $this->formVueData['formFields'][] = $this->getFormField($field, $columnDict, $table['databaseConnection']);
@@ -202,11 +207,6 @@ class Crud extends Backend
                 // 表格列
                 if (in_array($field['name'], $table['columnFields'])) {
                     $this->indexVueData['tableColumn'][] = $this->getTableColumn($field, $columnDict);
-                }
-
-                // 关联表数据解析
-                if (in_array($field['designType'], ['remoteSelect', 'remoteSelects'])) {
-                    $this->parseJoinData($field, $table);
                 }
 
                 // 模型方法
@@ -541,11 +541,11 @@ class Crud extends Backend
 
     /**
      * 关联表数据解析
-     * @param $field
-     * @param $table
+     * @param array $field 字段信息（如果 $field['form']['remote-model'] 对应文件不存在将自动生成并记录）
+     * @param       $table
      * @throws Throwable
      */
-    private function parseJoinData($field, $table): void
+    private function parseJoinData(array &$field, $table): void
     {
         $dictEn   = [];
         $dictZhCn = [];
@@ -784,7 +784,12 @@ class Crud extends Backend
         } elseif ($field['designType'] == 'remoteSelect' || $field['designType'] == 'remoteSelects') {
             $pk = $field['form']['remote-pk'] ?? 'id';
             if (!str_contains($pk, '.')) {
-                $pk = TableManager::tableName($field['form']['remote-table'], true, $dbConnection) . '.' . $pk;
+                if ($field['form']['remote-model']) {
+                    $alias = parse_name(basename(str_replace('\\', '/', $field['form']['remote-model']), '.php'));
+                } else {
+                    $alias = TableManager::tableName($field['form']['remote-table'], true, $dbConnection);
+                }
+                $pk = $alias . '.' . $pk;
             }
 
             $formField[':input-attr']['pk']        = $pk;
