@@ -12,6 +12,8 @@ class Rule extends Backend
 {
     protected string|array $preExcludeFields = ['create_time', 'update_time'];
 
+    protected string|array $defaultSortField = ['weigh' => 'desc'];
+
     protected string|array $quickSearchField = 'title';
 
     /**
@@ -99,7 +101,7 @@ class Rule extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('add');
                         $validate->check($data);
                     }
@@ -165,7 +167,7 @@ class Rule extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('edit');
                         $validate->check($data);
                     }
@@ -198,14 +200,11 @@ class Rule extends Backend
 
     /**
      * 删除
-     * @param array $ids
      * @throws Throwable
      */
-    public function del(array $ids = []): void
+    public function del(): void
     {
-        if (!$this->request->isDelete() || !$ids) {
-            $this->error(__('Parameter error'));
-        }
+        $ids = $this->request->param('ids/a', []);
 
         // 子级元素检查
         $subData = $this->model->where('pid', 'in', $ids)->column('pid', 'id');
@@ -215,7 +214,7 @@ class Rule extends Backend
             }
         }
 
-        parent::del($ids);
+        parent::del();
     }
 
     /**
@@ -264,8 +263,9 @@ class Rule extends Backend
         // 读取用户组所有权限规则
         $rules = $this->model
             ->where($where)
-            ->order('weigh desc,id asc')
-            ->select()->toArray();
+            ->order($this->queryOrderBuilder())
+            ->select()
+            ->toArray();
 
         // 如果要求树状，此处先组装好 children
         return $this->assembleTree ? $this->tree->assembleChild($rules) : $rules;

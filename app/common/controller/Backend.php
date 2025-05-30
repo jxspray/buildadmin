@@ -49,17 +49,17 @@ class Backend extends Api
 
     /**
      * 默认排序
-     * @var string|array
+     * @var string|array id,desc 或 ['id' => 'desc']
      */
-    protected string|array $defaultSortField = 'id,desc';
+    protected string|array $defaultSortField = [];
 
     /**
-     * 表格拖拽排序时,两个权重相等则自动重新整理
-     * config/buildadmin.php文件中的auto_sort_eq_weight为默认值
-     * null=取默认值,false=关,true=开
-     * @var null|bool
+     * 有序保证
+     * 查询数据时总是需要指定 ORDER BY 子句，否则 MySQL 不保证排序，即先查到哪行就输出哪行且不保证多次查询中的输出顺序
+     * 将以下配置作为数据有序保证（用于无排序字段时、默认排序字段相同时继续保持数据有序），不设置将自动使用 pk 字段
+     * @var string|array id,desc 或 ['id' => 'desc']（有更方便的格式，此处为了保持和 $defaultSortField 属性的配置格式一致）
      */
-    protected null|bool $autoSortEqWeight = null;
+    protected string|array $orderGuarantee = [];
 
     /**
      * 快速搜索字段
@@ -170,7 +170,7 @@ class Backend extends Api
     }
 
     /**
-     * 构建查询参数
+     * 查询参数构建器
      * @throws Throwable
      */
     public function queryBuilder(): array
@@ -181,7 +181,6 @@ class Backend extends Api
         $pk           = $this->model->getPk();
         $quickSearch  = $this->request->get("quickSearch/s", '');
         $limit        = $this->request->get("limit/d", 10);
-        $order        = $this->request->get("order/s", '');
         $search       = $this->request->get("search/a", []);
         $initKey      = $this->request->get("initKey/s", $pk);
         $initValue    = $this->request->get("initValue", '');
@@ -205,25 +204,6 @@ class Backend extends Api
             $limit   = 999999;
         }
 
-        // 排序
-        if ($order) {
-            $order = explode(',', $order);
-            if (!empty($order[0]) && !empty($order[1]) && ($order[1] == 'asc' || $order[1] == 'desc')) {
-                $order = [$order[0] => $order[1]];
-            }
-        } else {
-            if (is_array($this->defaultSortField)) {
-                $order = $this->defaultSortField;
-            } else {
-                $order = explode(',', $this->defaultSortField);
-                if (!empty($order[0]) && !empty($order[1])) {
-                    $order = [$order[0] => $order[1]];
-                } else {
-                    $order = [$pk => 'desc'];
-                }
-            }
-        }
-
         // 通用搜索组装
         foreach ($search as $field) {
             if (!is_array($field) || !isset($field['operator']) || !isset($field['field']) || !isset($field['val'])) {
@@ -232,7 +212,22 @@ class Backend extends Api
 
             $field['operator'] = $this->getOperatorByAlias($field['operator']);
 
-            $fieldName = str_contains($field['field'], '.') ? $field['field'] : $mainTableAlias . $field['field'];
+            // 查询关联表字段，转换表别名（驼峰转小写下划线）
+            if (str_contains($field['field'], '.')) {
+                $fieldNameParts        = explode('.', $field['field']);
+                $fieldNamePartsLastKey = array_key_last($fieldNameParts);
+
+                // 忽略最后一个元素（字段名）
+                foreach ($fieldNameParts as $fieldNamePartsKey => $fieldNamePart) {
+                    if ($fieldNamePartsKey !== $fieldNamePartsLastKey) {
+                        $fieldNameParts[$fieldNamePartsKey] = parse_name($fieldNamePart);
+                    }
+                }
+
+                $fieldName = implode('.', $fieldNameParts);
+            } else {
+                $fieldName = $mainTableAlias . $field['field'];
+            }
 
             // 日期时间
             if (isset($field['render']) && $field['render'] == 'datetime') {
@@ -307,7 +302,33 @@ class Backend extends Api
             $where[] = [$mainTableAlias . $this->dataLimitField, 'in', $dataLimitAdminIds];
         }
 
-        return [$where, $alias, $limit, $order];
+        return [$where, $alias, $limit, $this->queryOrderBuilder()];
+    }
+
+    /**
+     * 查询的排序参数构建器
+     */
+    public function queryOrderBuilder()
+    {
+        $pk    = $this->model->getPk();
+        $order = $this->request->get("order/s") ?: $this->defaultSortField;
+
+        if ($order && is_string($order)) {
+            $order = explode(',', $order);
+            $order = [$order[0] => $order[1] ?? 'asc'];
+        }
+        if (!$this->orderGuarantee) {
+            $this->orderGuarantee = [$pk => 'desc'];
+        } elseif (is_string($this->orderGuarantee)) {
+            $this->orderGuarantee = explode(',', $this->orderGuarantee);
+            $this->orderGuarantee = [$this->orderGuarantee[0] => $this->orderGuarantee[1] ?? 'asc'];
+        }
+        $orderGuaranteeKey = array_key_first($this->orderGuarantee);
+        if (!array_key_exists($orderGuaranteeKey, $order)) {
+            $order[$orderGuaranteeKey] = $this->orderGuarantee[$orderGuaranteeKey];
+        }
+
+        return $order;
     }
 
     /**

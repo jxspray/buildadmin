@@ -215,10 +215,10 @@ class Terminal
             $contents = file_get_contents($this->outputFile);
             if (strlen($contents) && $this->outputContent != $contents) {
                 $newOutput = str_replace($this->outputContent, '', $contents);
+                $this->checkOutput($contents, $newOutput);
                 if (preg_match('/\r\n|\r|\n/', $newOutput)) {
                     $this->output($newOutput);
                     $this->outputContent = $contents;
-                    $this->checkOutput();
                 }
             }
 
@@ -289,11 +289,13 @@ class Terminal
 
     /**
      * 检查输出
+     * @param string $outputs   全部输出内容
+     * @param string $rowOutput 当前输出内容（行）
      */
-    public function checkOutput(): void
+    public function checkOutput(string $outputs, string $rowOutput): void
     {
-        if (str_contains($this->outputContent, '(Y/n)')) {
-            $this->execError('An interactive command has been detected, and you can manually execute the command to confirm the situation.', true);
+        if (str_contains($rowOutput, '(Y/n)')) {
+            $this->execError('Interactive output detected, please manually execute the command to confirm the situation.', true);
         }
     }
 
@@ -447,18 +449,15 @@ class Terminal
     public static function changeTerminalConfig($config = []): bool
     {
         // 不保存在数据库中，因为切换包管理器时，数据库资料可能还未配置
-        $oldPort           = Config::get('terminal.install_service_port');
         $oldPackageManager = Config::get('terminal.npm_package_manager');
-        $newPort           = request()->post('port', $config['port'] ?? $oldPort);
         $newPackageManager = request()->post('manager', $config['manager'] ?? $oldPackageManager);
 
-        if ($oldPort == $newPort && $oldPackageManager == $newPackageManager) {
+        if ($oldPackageManager == $newPackageManager) {
             return true;
         }
 
         $buildConfigFile    = config_path() . 'terminal.php';
         $buildConfigContent = @file_get_contents($buildConfigFile);
-        $buildConfigContent = preg_replace("/'install_service_port'(\s+)=>(\s+)'$oldPort'/", "'install_service_port'\$1=>\$2'$newPort'", $buildConfigContent);
         $buildConfigContent = preg_replace("/'npm_package_manager'(\s+)=>(\s+)'$oldPackageManager'/", "'npm_package_manager'\$1=>\$2'$newPackageManager'", $buildConfigContent);
         $result             = @file_put_contents($buildConfigFile, $buildConfigContent);
         return (bool)$result;

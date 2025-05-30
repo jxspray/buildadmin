@@ -11,13 +11,13 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, reactive } from 'vue'
-import { useRoute, onBeforeRouteUpdate, type RouteLocationNormalizedLoaded } from 'vue-router'
-import { currentRouteTopActivity } from '/@/layouts/backend/components/menus/helper'
+import { onBeforeRouteUpdate, useRoute, type RouteLocationNormalizedLoaded } from 'vue-router'
 import MenuTree from '/@/layouts/backend/components/menus/menuTree.vue'
-import { layoutMenuRef, layoutMenuScrollbarRef } from '/@/stores/refs'
 import NavMenus from '/@/layouts/backend/components/navMenus.vue'
-import { useNavTabs } from '/@/stores/navTabs'
 import { useConfig } from '/@/stores/config'
+import { useNavTabs } from '/@/stores/navTabs'
+import { layoutMenuRef, layoutMenuScrollbarRef } from '/@/stores/refs'
+import { getMenuKey } from '/@/utils/router'
 
 const config = useConfig()
 const navTabs = useNavTabs()
@@ -27,10 +27,15 @@ const state = reactive({
     defaultActive: '',
 })
 
-// 激活当前路由的菜单
+/**
+ * 激活当前路由的菜单
+ */
 const currentRouteActive = (currentRoute: RouteLocationNormalizedLoaded) => {
-    let routeChildren = currentRouteTopActivity(currentRoute.path, navTabs.state.tabsViewRoutes)
-    if (routeChildren) state.defaultActive = currentRoute.path
+    // 以路由 fullPath 匹配的菜单优先，且 fullPath 无匹配时，回退到 path 的匹配菜单
+    const tabView = navTabs.getTabsViewDataByRoute(currentRoute)
+    if (tabView) {
+        state.defaultActive = getMenuKey(tabView, tabView.meta!.matched as string)
+    }
 }
 
 // 滚动条滚动到激活菜单所在位置

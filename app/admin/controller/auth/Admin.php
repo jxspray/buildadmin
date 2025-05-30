@@ -79,7 +79,7 @@ class Admin extends Backend
             if ($this->modelValidate) {
                 try {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
-                    $validate = new $validate;
+                    $validate = new $validate();
                     $validate->scene('add')->check($data);
                 } catch (Throwable $e) {
                     $this->error($e->getMessage());
@@ -126,8 +126,10 @@ class Admin extends Backend
      * 编辑
      * @throws Throwable
      */
-    public function edit($id = null): void
+    public function edit(): void
     {
+        $pk  = $this->model->getPk();
+        $id  = $this->request->param($pk);
         $row = $this->model->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
@@ -151,7 +153,7 @@ class Admin extends Backend
             if ($this->modelValidate) {
                 try {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
-                    $validate = new $validate;
+                    $validate = new $validate();
                     $validate->scene('edit')->check($data);
                 } catch (Throwable $e) {
                     $this->error($e->getMessage());
@@ -212,26 +214,21 @@ class Admin extends Backend
 
     /**
      * 删除
-     * @param null $ids
      * @throws Throwable
      */
-    public function del($ids = null): void
+    public function del(): void
     {
-        if (!$this->request->isDelete() || !$ids) {
-            $this->error(__('Parameter error'));
-        }
-
         $where             = [];
         $dataLimitAdminIds = $this->getDataLimitAdminIds();
         if ($dataLimitAdminIds) {
             $where[] = [$this->dataLimitField, 'in', $dataLimitAdminIds];
         }
 
-        $pk      = $this->model->getPk();
-        $where[] = [$pk, 'in', $ids];
+        $ids     = $this->request->param('ids/a', []);
+        $where[] = [$this->model->getPk(), 'in', $ids];
+        $data    = $this->model->where($where)->select();
 
         $count = 0;
-        $data  = $this->model->where($where)->select();
         $this->model->startTrans();
         try {
             foreach ($data as $v) {
@@ -258,7 +255,7 @@ class Admin extends Backend
      * 检查分组权限
      * @throws Throwable
      */
-    public function checkGroupAuth(array $groups): void
+    private function checkGroupAuth(array $groups): void
     {
         if ($this->auth->isSuperAdmin()) {
             return;

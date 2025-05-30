@@ -48,7 +48,7 @@ class Group extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         $validate->scene('add')->check($data);
                     }
                 }
@@ -70,11 +70,12 @@ class Group extends Backend
 
     /**
      * 编辑
-     * @param string|int|null $id
      * @throws Throwable
      */
-    public function edit(string|int $id = null): void
+    public function edit(): void
     {
+        $pk  = $this->model->getPk();
+        $id  = $this->request->param($pk);
         $row = $this->model->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
@@ -96,7 +97,7 @@ class Group extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         $validate->scene('edit')->check($data);
                     }
                 }
@@ -138,7 +139,7 @@ class Group extends Backend
      * @return array
      * @throws Throwable
      */
-    public function handleRules(array &$data): array
+    private function handleRules(array &$data): array
     {
         if (is_array($data['rules']) && $data['rules']) {
             $rules = UserRule::select();

@@ -94,6 +94,7 @@ export default {
     'There are no more works': '没有更多作品了',
     'You need to disable this module before updating Do you want to disable it now?': '更新前需要先禁用该模块，立即禁用？',
     'Disable and update': '禁用并更新',
+    'No module purchase order was found within the expiration date': '没有找到在有效期以内的模块购买订单，是否立即购买当前模块？',
     // installConflict
     'new file': '新文件',
     'Existing files': '已有文件',
@@ -148,4 +149,8 @@ export default {
     'Wait for installation': '等待安装',
     'Conflict pending': '冲突待处理',
     'Dependency to be installed': '依赖待安装',
+    'Restart Vite hot server': '重启热更新服务',
+    'Restart Vite hot server tips': '在完成服务重启之前，您还可以随时从顶栏右侧的按钮组中找到手动重启服务的按钮。',
+    'Manual restart': '手动重启',
+    'Restart Now': '立即重启',
 }

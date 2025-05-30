@@ -98,6 +98,8 @@ export default {
     'You need to disable this module before updating Do you want to disable it now?':
         'You need to disable this module before updating. Do you want to disable it now?',
     'Disable and update': 'Disable and update',
+    'No module purchase order was found within the expiration date':
+        'No module purchase order was found within the expiration date. Do you want to purchase the current module now?',
     // installConflict
     'new file': 'new file',
     'Existing files': 'Existing files',
@@ -156,4 +158,9 @@ export default {
     'Wait for installation': 'Wait for installation',
     'Conflict pending': 'Conflict pending',
     'Dependency to be installed': 'Dependency to be installed',
+    'Restart Vite hot server': 'Restart Vite hot server',
+    'Restart Vite hot server tips':
+        'Before successfully restarting the service, you can find the button to manually restart the service from the button group on the right side of the top bar.',
+    'Manual restart': 'Manual restart',
+    'Restart Now': 'Restart Now',
 }

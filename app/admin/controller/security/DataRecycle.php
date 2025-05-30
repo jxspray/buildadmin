@@ -48,7 +48,7 @@ class DataRecycle extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('add');
                         $validate->check($data);
                     }
@@ -74,11 +74,12 @@ class DataRecycle extends Backend
 
     /**
      * 编辑
-     * @param int|string|null $id
      * @throws Throwable
      */
-    public function edit(int|string $id = null): void
+    public function edit(): void
     {
+        $pk  = $this->model->getPk();
+        $id  = $this->request->param($pk);
         $row = $this->model->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
@@ -101,7 +102,7 @@ class DataRecycle extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('edit');
                         $validate->check($data);
                     }

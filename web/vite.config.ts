@@ -1,9 +1,9 @@
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
+import type { ConfigEnv, UserConfig } from 'vite'
 import { loadEnv } from 'vite'
-import type { UserConfig, ConfigEnv, ProxyOptions } from 'vite'
-import { isProd, customHotUpdate } from '/@/utils/vite'
 import { svgBuilder } from '/@/components/icon/svg/index'
+import { customHotUpdate, isProd } from '/@/utils/vite'
 
 const pathResolve = (dir: string): any => {
     return resolve(__dirname, '.', dir)
@@ -11,22 +11,12 @@ const pathResolve = (dir: string): any => {
 
 // https://vitejs.cn/config/
 const viteConfig = ({ mode }: ConfigEnv): UserConfig => {
-    const { VITE_PORT, VITE_OPEN, VITE_BASE_PATH, VITE_OUT_DIR, VITE_PROXY_URL } = loadEnv(mode, process.cwd())
+    const { VITE_PORT, VITE_OPEN, VITE_BASE_PATH, VITE_OUT_DIR } = loadEnv(mode, process.cwd())
 
     const alias: Record<string, string> = {
         '/@': pathResolve('./src/'),
         assets: pathResolve('./src/assets'),
         'vue-i18n': isProd(mode) ? 'vue-i18n/dist/vue-i18n.cjs.prod.js' : 'vue-i18n/dist/vue-i18n.cjs.js',
-    }
-
-    let proxy: Record<string, string | ProxyOptions> = {}
-    if (VITE_PROXY_URL) {
-        proxy = {
-            '/': {
-                target: VITE_PROXY_URL,
-                changeOrigin: true,
-            },
-        }
     }
 
     return {
@@ -37,7 +27,6 @@ const viteConfig = ({ mode }: ConfigEnv): UserConfig => {
         server: {
             port: parseInt(VITE_PORT),
             open: VITE_OPEN != 'false',
-            proxy: proxy,
         },
         build: {
             cssCodeSplit: false,

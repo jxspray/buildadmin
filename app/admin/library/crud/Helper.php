@@ -237,6 +237,7 @@ class Helper
             'quickSearchField' => 'string|array',
             'withJoinTable'    => 'array',
             'defaultSortField' => 'string|array',
+            'weighField'       => 'string',
         ],
     ];
 
@@ -302,7 +303,10 @@ class Helper
     public static function getPhinxFieldType(string $type, array $field): array
     {
         if ($type == 'tinyint') {
-            if ((isset($field['dataType']) && $field['dataType'] == 'tinyint(1)') || $field['default'] == '1') {
+            if (
+                (isset($field['dataType']) && $field['dataType'] == 'tinyint(1)') ||
+                ($field['default'] == '1' && $field['defaultType'] == 'INPUT')
+            ) {
                 $type = 'boolean';
             }
         }
@@ -351,12 +355,10 @@ class Helper
                 $item = str_replace(['"', "'"], '', $item);
             }
             return ['values' => $dataTypeLimit];
-        } else {
-            if ($dataTypeLimit && $dataTypeLimit[0]) {
-                return ['limit' => $dataTypeLimit[0]];
-            } elseif (isset($field['length'])) {
-                return ['limit' => $field['length']];
-            }
+        } elseif ($dataTypeLimit && $dataTypeLimit[0]) {
+            return ['limit' => $dataTypeLimit[0]];
+        } elseif (isset($field['length'])) {
+            return ['limit' => $field['length']];
         }
         return [];
     }
@@ -372,11 +374,9 @@ class Helper
 
     public static function analyseFieldDefault(array $field): mixed
     {
-        if (strtolower((string)$field['default']) == 'null') {
-            return null;
-        }
-        return match ($field['default']) {
-            'empty string' => '',
+        return match ($field['defaultType']) {
+            'EMPTY STRING' => '',
+            'NULL' => null,
             default => $field['default'],
         };
     }
@@ -411,7 +411,7 @@ class Helper
             'text', 'blob', 'geometry', 'geometrycollection', 'json', 'linestring', 'longblob', 'longtext', 'mediumblob',
             'mediumtext', 'multilinestring', 'multipoint', 'multipolygon', 'point', 'polygon', 'tinyblob',
         ];
-        if ($field['default'] != 'none' && !in_array($conciseType, $noDefaultValueFields)) {
+        if ($field['defaultType'] != 'NONE' && !in_array($conciseType, $noDefaultValueFields)) {
             $phinxColumnOptions['default'] = self::analyseFieldDefault($field);
         }
 
@@ -588,13 +588,11 @@ class Helper
                     $pathArr[] = $item;
                 }
             }
+        } elseif (isset(self::$parseNamePresets[$type]) && array_key_exists($table, self::$parseNamePresets[$type])) {
+            $pathArr = self::$parseNamePresets[$type][$table];
         } else {
-            if (isset(self::$parseNamePresets[$type]) && array_key_exists($table, self::$parseNamePresets[$type])) {
-                $pathArr = self::$parseNamePresets[$type][$table];
-            } else {
-                $table   = str_replace(['.', '/', '\\', '_'], '/', $table);
-                $pathArr = explode('/', $table);
-            }
+            $table   = str_replace(['.', '/', '\\', '_'], '/', $table);
+            $pathArr = explode('/', $table);
         }
         $originalLastName = array_pop($pathArr);
         $pathArr          = array_map('strtolower', $pathArr);
@@ -641,13 +639,11 @@ class Helper
                     $pathArr[] = $item;
                 }
             }
+        } elseif (array_key_exists($table, self::$parseWebDirPresets[$type])) {
+            $pathArr = self::$parseWebDirPresets[$type][$table];
         } else {
-            if (array_key_exists($table, self::$parseWebDirPresets[$type])) {
-                $pathArr = self::$parseWebDirPresets[$type][$table];
-            } else {
-                $table   = str_replace(['.', '/', '\\', '_'], '/', $table);
-                $pathArr = explode('/', $table);
-            }
+            $table   = str_replace(['.', '/', '\\', '_'], '/', $table);
+            $pathArr = explode('/', $table);
         }
         $originalLastName = array_pop($pathArr);
         $pathArr          = array_map('strtolower', $pathArr);
@@ -757,11 +753,25 @@ class Helper
                 $dataType = str_replace(' unsigned', '', $item['COLUMN_TYPE']);
             }
 
+            // 默认值和默认值类型分析
+            $default = '';
+            if ($isNullAble && is_null($item['COLUMN_DEFAULT'])) {
+                $defaultType = 'NULL';
+            } elseif ($item['COLUMN_DEFAULT'] == '' && in_array($item['DATA_TYPE'], ['varchar', 'char'])) {
+                $defaultType = 'EMPTY STRING';
+            } elseif (!$isNullAble && is_null($item['COLUMN_DEFAULT'])) {
+                $defaultType = 'NONE';
+            } else {
+                $defaultType = 'INPUT';
+                $default     = $item['COLUMN_DEFAULT'];
+            }
+
             $column = [
                 'name'          => $item['COLUMN_NAME'],
                 'type'          => $item['DATA_TYPE'],
                 'dataType'      => $dataType,
-                'default'       => ($isNullAble && is_null($item['COLUMN_DEFAULT'])) ? 'null' : $item['COLUMN_DEFAULT'],
+                'default'       => $default,
+                'defaultType'   => $defaultType,
                 'null'          => $isNullAble,
                 'primaryKey'    => $item['COLUMN_KEY'] == 'PRI',
                 'unsigned'      => (bool)stripos($item['COLUMN_TYPE'], 'unsigned'),
@@ -910,43 +920,43 @@ class Helper
     public static function createMenu($webViewsDir, $tableComment): void
     {
         $menuName = self::getMenuName($webViewsDir);
-        if (!AdminRule::where('name', $menuName)->value('id')) {
-            $pid = 0;
-            foreach ($webViewsDir['path'] as $item) {
-                $pMenu = AdminRule::where('name', $item)->value('id');
-                if ($pMenu) {
-                    $pid = $pMenu;
-                    continue;
-                }
-                $menu = [
-                    'pid'   => $pid,
-                    'type'  => 'menu_dir',
-                    'title' => $item,
-                    'name'  => $item,
-                    'path'  => $item,
-                ];
-                $menu = AdminRule::create($menu);
-                $pid  = $menu->id;
-            }
-
-            // 建立菜单
-            foreach (self::$menuChildren as &$item) {
-                $item['name'] = $menuName . $item['name'];
-            }
-            $componentPath = str_replace(['\\', 'web/src'], ['/', '/src'], $webViewsDir['views'] . '/' . 'index.vue');
-            Menu::create([
-                [
-                    'type'      => 'menu',
-                    'title'     => $tableComment ?: $webViewsDir['originalLastName'],
-                    'name'      => $menuName,
-                    'path'      => $menuName,
-                    'menu_type' => 'tab',
-                    'keepalive' => '1',
-                    'component' => $componentPath,
-                    'children'  => self::$menuChildren,
-                ]
-            ], $pid);
+        if (AdminRule::where('name', $menuName)->value('id')) {
+            return;
         }
+
+        // 组装权限节点数据
+        $menuChildren = self::$menuChildren;
+        foreach ($menuChildren as &$item) {
+            $item['name'] = $menuName . $item['name'];
+        }
+
+        // 组件路径
+        $componentPath = str_replace(['\\', 'web/src'], ['/', '/src'], $webViewsDir['views'] . '/' . 'index.vue');
+
+        // 菜单数组
+        $menus = [
+            'type'      => 'menu',
+            'title'     => $tableComment ?: $webViewsDir['originalLastName'],
+            'name'      => $menuName,
+            'path'      => $menuName,
+            'menu_type' => 'tab',
+            'keepalive' => 1,
+            'component' => $componentPath,
+            'children'  => $menuChildren,
+        ];
+        $paths = array_reverse($webViewsDir['path']);
+        foreach ($paths as $path) {
+            $menus = [
+                'type'     => 'menu_dir',
+                'title'    => $path,
+                'name'     => $path,
+                'path'     => $path,
+                'children' => [$menus],
+            ];
+        }
+
+        // 创建菜单
+        Menu::create([$menus], 0, 'ignore');
     }
 
     public static function writeWebLangFile($langData, $webLangDir): void
@@ -1152,14 +1162,12 @@ class Helper
             }
             $itemJson = rtrim($itemJson, ',');
             $itemJson .= ' }';
+        } elseif ($item === 'false' || $item === 'true') {
+            $itemJson = ' ' . $key . ': ' . $item . ',';
+        } elseif (in_array($key, ['label', 'width', 'buttons'], true) || str_starts_with($item, "t('") || str_starts_with($item, "t(\"")) {
+            $itemJson = ' ' . $key . ': ' . $item . ',';
         } else {
-            if ($item === 'false' || $item === 'true') {
-                $itemJson = ' ' . $key . ': ' . $item . ',';
-            } elseif (in_array($key, ['label', 'width', 'buttons'], true) || str_starts_with($item, "t('") || str_starts_with($item, "t(\"")) {
-                $itemJson = ' ' . $key . ': ' . $item . ',';
-            } else {
-                $itemJson = ' ' . $key . ': \'' . $item . '\',';
-            }
+            $itemJson = ' ' . $key . ': \'' . $item . '\',';
         }
         return $itemJson;
     }

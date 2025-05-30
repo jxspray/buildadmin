@@ -39,8 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from 'vue'
-import { getCaptchaData, checkClickCaptcha } from '/@/api/common'
+import { computed, reactive } from 'vue'
+import { checkClickCaptcha, getCaptchaData } from '/@/api/common'
 import { i18n } from '/@/lang'
 
 interface Props {
@@ -85,6 +85,10 @@ const state: {
     },
 })
 
+const emits = defineEmits<{
+    (e: 'destroy'): void
+}>()
+
 const load = () => {
     state.loading = true
     getCaptchaData(props.uuid).then((res) => {
@@ -123,7 +127,7 @@ const onCancelRecord = (index: number) => {
 }
 
 const onClose = () => {
-    document.getElementById(props.uuid)?.remove()
+    emits('destroy')
 }
 
 const captchaBoxTop = computed(() => (state.captcha.height + 200) / 2 + 'px')

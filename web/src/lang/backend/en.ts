@@ -41,6 +41,7 @@ export default {
         'Full screen is not supported': 'Your browser does not support full screen, please change another browser and try again~',
     },
     terminal: {
+        Source: 'source',
         Terminal: 'Terminal',
         'Command run log': 'Command Run Log',
         'No mission yet': 'There is no task yet',
@@ -57,23 +58,13 @@ export default {
         'Unknown execution result': 'Execution result is unknown',
         'Are you sure you want to republish?': 'Are you sure to republish?',
         'Failure to execute this command will block the execution of the queue': 'Failed to execute this command will block queue execution.',
-        'Package manager': 'Package manager',
-        'Please select package manager': 'Please select a package manager',
-        'Switch package manager title':
-            'Readonly WEB terminal, it can more conveniently execute npm install, npm build and other commands after CRUD and other operations. Please select an installed or your favourite NPM package manager below.',
-        'I want to execute the command manually': 'I want to execute the command manually',
+        'NPM package manager': 'NPM package manager',
+        'NPM package manager tip': 'Select an available package manager for the execution of commands such as npm install in the WEB terminal',
+        'Clear successful task': 'Clear successful task',
+        'Clear successful task tip': 'When you start a new task, automatically clear the list of already successful tasks',
+        'Manual execution': 'Manual execution',
         'Do not refresh the browser': 'Do not refresh your browser.',
         'Terminal settings': 'Terminal setup',
-        'Install service port': 'Install service port',
-        'The port number to start the installation service (this port needs to be opened for external network access)':
-            'Start the port number of the installation service (External access requires to opened the port for public.)',
-        'Installation service startup command': 'install service start command',
-        'Please execute this command to start the service (add Su under Linux)':
-            'Please execute this command to start the service (add su under Linux)',
-        'Installation service URL': 'Installation service URL',
-        'Please access the site through the installation service URL (except in debug mode)':
-            'Please access the site through the installation service URL (except in debug mode)',
-        'Clean up successful tasks when starting a new task': 'Please clean up successful tasks when starting a new task.',
         'Back to terminal': 'Back to terminal',
         or: 'or',
         'Site domain name': 'Site domain name',
@@ -81,5 +72,20 @@ export default {
             'The current terminal is not running under the installation service, and some commands may not be executed.',
         'Newly added tasks will never start because they are blocked by failed tasks':
             'Newly added tasks will never start because they are blocked by failed tasks!(Web terminal)',
+        'Failed to modify the source command, Please try again manually': 'Failed to modify the source command. Please try again manually.',
+    },
+    vite: {
+        Later: '稍后',
+        'Restart hot update': '重启热更新',
+        'Close type terminal': 'WEB Terminal server',
+        'Close type crud': 'CRUD server',
+        'Close type modules': 'module install server',
+        'Close type config': 'system configuration server',
+        'Reload hot server title': 'Need to restart Vite hot update service',
+        'Reload hot server tips 1': 'To ensure that ',
+        'Reload hot server tips 2':
+            " is not interrupted, the system has temporarily suspended Vite's hot update function. During this period, changes to front-end files will not be updated in real-time and web pages will not be automatically reloaded. It has been detected that there are file updates during the service suspension period, and the hot update service needs to be restarted.",
+        'Reload hot server tips 3':
+            'The pause of hot updates does not affect the already loaded functions. You can continue to operate and click to restart the hot update service after everything is ready.',
     },
 }

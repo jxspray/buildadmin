@@ -33,6 +33,7 @@ export const state = reactive<moduleState>({
     goodsInfo: {},
     buy: {
         info: {},
+        renew: false,
         agreement: true,
     },
     common: {

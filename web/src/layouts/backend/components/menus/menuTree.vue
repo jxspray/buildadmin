@@ -1,7 +1,7 @@
 <template>
     <template v-for="menu in props.menus">
         <template v-if="menu.children && menu.children.length > 0">
-            <el-sub-menu @click="onClickSubMenu(menu)" :index="menu.path" :key="menu.path">
+            <el-sub-menu @click="onClickSubMenu(menu)" :index="getMenuKey(menu)" :key="getMenuKey(menu)">
                 <template #title>
                     <Icon :color="config.getColorVal('menuColor')" :name="menu.meta?.icon ? menu.meta?.icon : config.layout.menuDefaultIcon" />
                     <span>{{ menu.meta?.title ? menu.meta?.title : $t('noTitle') }}</span>
@@ -10,19 +10,20 @@
             </el-sub-menu>
         </template>
         <template v-else>
-            <el-menu-item :index="menu.path" :key="menu.path" @click="onClickMenu(menu)">
+            <el-menu-item @click="onClickMenu(menu)" :index="getMenuKey(menu)" :key="getMenuKey(menu)">
                 <Icon :color="config.getColorVal('menuColor')" :name="menu.meta?.icon ? menu.meta?.icon : config.layout.menuDefaultIcon" />
                 <span>{{ menu.meta?.title ? menu.meta?.title : $t('noTitle') }}</span>
             </el-menu-item>
         </template>
     </template>
 </template>
+
 <script setup lang="ts">
-import { useConfig } from '/@/stores/config'
-import type { RouteRecordRaw } from 'vue-router'
-import { getFirstRoute, onClickMenu } from '/@/utils/router'
 import { ElNotification } from 'element-plus'
 import { useI18n } from 'vue-i18n'
+import type { RouteRecordRaw } from 'vue-router'
+import { useConfig } from '/@/stores/config'
+import { getFirstRoute, getMenuKey, onClickMenu } from '/@/utils/router'
 
 const { t } = useI18n()
 const config = useConfig()

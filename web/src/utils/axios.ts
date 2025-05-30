@@ -173,6 +173,7 @@ function createAxios<Data = any, T = ApiPromise<Data>>(axiosConfig: AxiosRequest
                         ElNotification({
                             type: 'error',
                             message: response.data.msg,
+                            zIndex: 9999,
                         })
                     }
                     // 自动跳转到路由name或path
@@ -200,6 +201,7 @@ function createAxios<Data = any, T = ApiPromise<Data>>(axiosConfig: AxiosRequest
                     ElNotification({
                         message: response.data.msg ? response.data.msg : i18n.global.t('axios.Operation successful'),
                         type: 'success',
+                        zIndex: 9999,
                     })
                 }
             }
@@ -279,6 +281,7 @@ function httpErrorStatusHandle(error: any) {
     ElNotification({
         type: 'error',
         message,
+        zIndex: 9999,
     })
 }
 
@@ -364,9 +367,9 @@ interface Options {
     reductDataFormat?: boolean
     // 是否开启接口错误信息展示,默认为true
     showErrorMessage?: boolean
-    // 是否开启code不为0时的信息提示, 默认为true
+    // 是否开启code不为1时的信息提示, 默认为true
     showCodeMessage?: boolean
-    // 是否开启code为0时的信息提示, 默认为false
+    // 是否开启code为1时的信息提示, 默认为false
     showSuccessMessage?: boolean
     // 当前请求使用另外的用户token
     anotherToken?: string

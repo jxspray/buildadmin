@@ -139,12 +139,12 @@ if (!function_exists('full_url')) {
 
     /**
      * 获取资源完整url地址；若安装了云存储或 config/buildadmin.php 配置了CdnUrl，则自动使用对应的CdnUrl
-     * @param string  $relativeUrl 资源相对地址 不传入则获取域名
-     * @param boolean $domain      是否携带域名 或者直接传入域名
-     * @param string  $default     默认值
+     * @param string      $relativeUrl 资源相对地址 不传入则获取域名
+     * @param string|bool $domain      是否携带域名 或者直接传入域名
+     * @param string      $default     默认值
      * @return string
      */
-    function full_url(string $relativeUrl = '', bool $domain = true, string $default = ''): string
+    function full_url(string $relativeUrl = '', string|bool $domain = true, string $default = ''): string
     {
         // 存储/上传资料配置
         Event::trigger('uploadConfigInit', App::getInstance());
@@ -390,8 +390,8 @@ if (!function_exists('get_upload_config')) {
         // 存储/上传资料配置
         Event::trigger('uploadConfigInit', App::getInstance());
 
-        $uploadConfig            = Config::get('upload');
-        $uploadConfig['maxsize'] = Filesystem::fileUnitToByte($uploadConfig['maxsize']);
+        $uploadConfig             = Config::get('upload');
+        $uploadConfig['max_size'] = Filesystem::fileUnitToByte($uploadConfig['max_size']);
 
         $upload = request()->upload;
         if (!$upload) {
@@ -427,5 +427,31 @@ if (!function_exists('get_auth_token')) {
         }
         $tokens = array_filter($tokens);
         return array_values($tokens)[0] ?? '';
+    }
+}
+
+if (!function_exists('keys_to_camel_case')) {
+
+    /**
+     * 将数组 key 的命名方式转换为小写驼峰
+     * @param array $array 被转换的数组
+     * @param array $keys  要转换的 key，默认所有
+     * @return array
+     */
+    function keys_to_camel_case(array $array, array $keys = []): array
+    {
+        $result = [];
+        foreach ($array as $key => $value) {
+            // 将键名转换为驼峰命名
+            $camelCaseKey = $keys && in_array($key, $keys) ? parse_name($key, 1, false) : $key;
+
+            if (is_array($value)) {
+                // 如果值是数组，递归转换
+                $result[$camelCaseKey] = keys_to_camel_case($value);
+            } else {
+                $result[$camelCaseKey] = $value;
+            }
+        }
+        return $result;
     }
 }

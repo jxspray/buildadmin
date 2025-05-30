@@ -83,7 +83,7 @@ class SensitiveData extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('add');
                         $validate->check($data);
                     }
@@ -117,11 +117,12 @@ class SensitiveData extends Backend
 
     /**
      * 编辑重写
-     * @param string|int|null $id
      * @throws Throwable
      */
-    public function edit(string|int $id = null): void
+    public function edit(): void
     {
+        $pk  = $this->model->getPk();
+        $id  = $this->request->param($pk);
         $row = $this->model->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
@@ -144,7 +145,7 @@ class SensitiveData extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('edit');
                         $validate->check($data);
                     }

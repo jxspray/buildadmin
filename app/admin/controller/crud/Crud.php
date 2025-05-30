@@ -10,6 +10,7 @@ use ba\TableManager;
 use app\admin\model\CrudLog;
 use app\common\library\Menu;
 use app\admin\model\AdminLog;
+use app\admin\model\AdminRule;
 use app\common\controller\Backend;
 use app\admin\library\crud\Helper;
 
@@ -104,7 +105,7 @@ class Crud extends Backend
 
             // 生成文件信息解析
             $modelFile      = Helper::parseNameData($table['isCommonModel'] ? 'common' : 'admin', $tableName, 'model', $table['modelFile']);
-            $validateFile   = Helper::parseNameData('admin', $tableName, 'validate', $table['validateFile']);
+            $validateFile   = Helper::parseNameData($table['isCommonModel'] ? 'common' : 'admin', $tableName, 'validate', $table['validateFile']);
             $controllerFile = Helper::parseNameData('admin', $tableName, 'controller', $table['controllerFile']);
             $webViewsDir    = Helper::parseWebDirNameData($tableName, 'views', $table['webViewsDir']);
             $webLangDir     = Helper::parseWebDirNameData($tableName, 'lang', $table['webViewsDir']);
@@ -196,7 +197,7 @@ class Crud extends Backend
 
                 // 表单项
                 if (in_array($field['name'], $table['formFields'])) {
-                    $this->formVueData['formFields'][] = $this->getFormField($field, $columnDict);
+                    $this->formVueData['formFields'][] = $this->getFormField($field, $columnDict, $table['databaseConnection']);
                 }
 
                 // 表格列
@@ -388,7 +389,7 @@ class Crud extends Backend
 
         try {
             $modelFile      = Helper::parseNameData($commonModel ? 'common' : 'admin', $table, 'model');
-            $validateFile   = Helper::parseNameData('admin', $table, 'validate');
+            $validateFile   = Helper::parseNameData($commonModel ? 'common' : 'admin', $table, 'validate');
             $controllerFile = Helper::parseNameData('admin', $table, 'controller');
             $webViewsDir    = Helper::parseWebDirNameData($table, 'views');
         } catch (Throwable $e) {
@@ -509,8 +510,9 @@ class Crud extends Backend
     public function generateCheck(): void
     {
         $table          = $this->request->post('table');
-        $controllerFile = $this->request->post('controllerFile', '');
         $connection     = $this->request->post('connection');
+        $webViewsDir    = $this->request->post('webViewsDir', '');
+        $controllerFile = $this->request->post('controllerFile', '');
 
         if (!$table) {
             $this->error(__('Parameter error'));
@@ -519,19 +521,26 @@ class Crud extends Backend
         AdminLog::instance()->setTitle(__('Generate check'));
 
         try {
-            if (!$controllerFile) {
-                $controllerFile = Helper::parseNameData('admin', $table, 'controller')['rootFileName'];
-            }
+            $webViewsDir    = Helper::parseWebDirNameData($table, 'views', $webViewsDir);
+            $controllerFile = Helper::parseNameData('admin', $table, 'controller', $controllerFile)['rootFileName'];
         } catch (Throwable $e) {
             $this->error($e->getMessage());
         }
 
-        $tableList       = TableManager::getTableList($connection);
-        $tableExist      = array_key_exists(TableManager::tableName($table, true, $connection), $tableList);
+        // 数据表是否存在
+        $tableList  = TableManager::getTableList($connection);
+        $tableExist = array_key_exists(TableManager::tableName($table, true, $connection), $tableList);
+
+        // 控制器是否存在
         $controllerExist = file_exists(root_path() . $controllerFile);
 
-        if ($controllerExist || $tableExist) {
+        // 菜单规则是否存在
+        $menuName  = Helper::getMenuName($webViewsDir);
+        $menuExist = AdminRule::where('name', $menuName)->value('id');
+
+        if ($controllerExist || $tableExist || $menuExist) {
             $this->error('', [
+                'menu'       => $menuExist,
                 'table'      => $tableExist,
                 'controller' => $controllerExist,
             ], -1);
@@ -653,13 +662,14 @@ class Crud extends Backend
                     $columns[$relationField]['table']['show']            = 'false';
                     $columns[$relationField]['table']['operator']        = 'FIND_IN_SET';
                     $columns[$relationField]['table']['comSearchRender'] = 'remoteSelect';
-                    $columns[$relationField]['table']['remote']          = [
-                        'pk'        => TableManager::tableName($field['form']['remote-table']) . '.' . ($field['form']['remote-pk'] ?? 'id'),
+
+                    $columns[$relationField]['table']['remote'] = [
+                        'pk'        => $this->getRemoteSelectPk($field),
                         'field'     => $field['form']['remote-field'] ?? 'name',
                         'remoteUrl' => $this->getRemoteSelectUrl($field),
                         'multiple'  => 'true',
                     ];
-                    $this->indexVueData['tableColumn'][]                 = $this->getTableColumn($columns[$relationField], $columnDict, '', $relationFieldLangPrefix);
+                    $this->indexVueData['tableColumn'][]        = $this->getTableColumn($columns[$relationField], $columnDict, '', $relationFieldLangPrefix);
                 } else {
                     $columns[$relationField]['table']['operator'] = 'LIKE';
                     $this->indexVueData['tableColumn'][]          = $this->getTableColumn($columns[$relationField], $columnDict, $relationFieldPrefix, $relationFieldLangPrefix);
@@ -712,7 +722,7 @@ class Crud extends Backend
             $modelData['methods'][] = Helper::assembleStub('mixins/model/getters/string', [
                 'field' => $fieldName
             ]);
-        } elseif ($field['originalDesignType'] == 'float') {
+        } elseif (in_array($field['type'], ['float', 'decimal', 'double'])) {
             $modelData['methods'][] = Helper::assembleStub('mixins/model/getters/float', [
                 'field' => $fieldName
             ]);
@@ -747,13 +757,18 @@ class Crud extends Backend
                 $this->indexVueData['defaultOrder']               = Helper::buildDefaultOrder($table['defaultSortField'], $table['defaultSortType']);
             }
         }
+
+        // 自定义了权重字段名称
+        if ($field['originalDesignType'] == 'weigh' && $field['name'] != 'weigh') {
+            $this->controllerData['attr']['weighField'] = $field['name'];
+        }
     }
 
     /**
      * 组装前台表单的数据
      * @throws Throwable
      */
-    private function getFormField($field, $columnDict): array
+    private function getFormField($field, $columnDict, ?string $dbConnection = null): array
     {
         // 表单项属性
         $formField = [
@@ -765,21 +780,17 @@ class Crud extends Backend
 
         // 不同输入框的属性处理
         if ($columnDict || in_array($field['designType'], ['radio', 'checkbox', 'select', 'selects'])) {
-            $formField[':data'] = [
-                'content' => $columnDict,
-            ];
+            $formField[':input-attr']['content'] = $columnDict;
         } elseif ($field['designType'] == 'textarea') {
             $formField[':input-attr']['rows'] = (int)($field['form']['rows'] ?? 3);
             $formField['@keyup.enter.stop']   = '';
             $formField['@keyup.ctrl.enter']   = 'baTable.onSubmit(formRef)';
         } elseif ($field['designType'] == 'remoteSelect' || $field['designType'] == 'remoteSelects') {
-            $formField[':input-attr']['pk']         = TableManager::tableName($field['form']['remote-table']) . '.' . ($field['form']['remote-pk'] ?? 'id');
-            $formField[':input-attr']['field']      = $field['form']['remote-field'] ?? 'name';
-            $formField[':input-attr']['remote-url'] = $this->getRemoteSelectUrl($field);
+            $formField[':input-attr']['pk']        = $this->getRemoteSelectPk($field);
+            $formField[':input-attr']['field']     = $field['form']['remote-field'] ?? 'name';
+            $formField[':input-attr']['remoteUrl'] = $this->getRemoteSelectUrl($field);
         } elseif ($field['designType'] == 'number') {
             $formField[':input-attr']['step'] = (int)($field['form']['step'] ?? 1);
-            $formField['v-model.number']      = $formField['v-model'];
-            unset($formField['v-model']);
         } elseif ($field['designType'] == 'icon') {
             $formField[':input-attr']['placement'] = 'top';
         } elseif ($field['designType'] == 'editor') {
@@ -797,30 +808,45 @@ class Crud extends Backend
         }
 
         // 默认值
-        if ($field['default'] && $field['default'] != 'empty string') {
+        if ($field['defaultType'] == 'INPUT') {
             $this->indexVueData['defaultItems'][$field['name']] = $field['default'];
         }
-        if ($field['default'] == 'null') {
-            $this->indexVueData['defaultItems'][$field['name']] = $field['designType'] == 'editor' ? '' : null;
-        } elseif ($field['default'] == '0' && in_array($field['designType'], ['radio', 'checkbox', 'select', 'selects'])) {
-            // 防止为`0`时无法设置上默认值
-            $this->indexVueData['defaultItems'][$field['name']] = '0';
-        }
-        if ($field['designType'] == 'array') {
+
+        // 部分生成类型的默认值需要额外处理
+        if ($field['designType'] == 'editor') {
+            $this->indexVueData['defaultItems'][$field['name']] = ($field['defaultType'] == 'INPUT' && $field['default']) ? $field['default'] : '';
+        } elseif ($field['designType'] == 'array') {
             $this->indexVueData['defaultItems'][$field['name']] = "[]";
-        } elseif (in_array($field['designType'], $this->dtStringToArray) && $field['default'] !== null && stripos($field['default'], ',') !== false) {
+        } elseif ($field['defaultType'] == 'INPUT' && in_array($field['designType'], $this->dtStringToArray) && str_contains($field['default'], ',')) {
             $this->indexVueData['defaultItems'][$field['name']] = Helper::buildSimpleArray(explode(',', $field['default']));
-        } elseif (in_array($field['designType'], ['weigh', 'number', 'float'])) {
+        } elseif ($field['defaultType'] == 'INPUT' && in_array($field['designType'], ['number', 'float'])) {
             $this->indexVueData['defaultItems'][$field['name']] = (float)$field['default'];
         }
+
+        // 无意义的默认值
+        if (isset($field['default']) && in_array($field['designType'], ['switch', 'number', 'float', 'remoteSelect']) && $field['default'] == 0) {
+            unset($this->indexVueData['defaultItems'][$field['name']]);
+        }
+
         return $formField;
+    }
+
+    private function getRemoteSelectPk($field): string
+    {
+        $pk = $field['form']['remote-pk'] ?? 'id';
+        if (!str_contains($pk, '.')) {
+            if ($field['form']['remote-source-config-type'] == 'crud' && $field['form']['remote-model']) {
+                $alias = parse_name(basename(str_replace('\\', '/', $field['form']['remote-model']), '.php'));
+            } else {
+                $alias = $field['form']['remote-primary-table-alias'] ?? '';
+            }
+        }
+        return !empty($alias) ? "$alias.$pk" : $pk;
     }
 
     private function getRemoteSelectUrl($field): string
     {
-        if ($field['form']['remote-url']) return $field['form']['remote-url'];
-        $url = '';
-        if ($field['form']['remote-controller']) {
+        if ($field['form']['remote-source-config-type'] == 'crud' && $field['form']['remote-controller']) {
             $pathArr      = [];
             $controller   = explode(DIRECTORY_SEPARATOR, $field['form']['remote-controller']);
             $controller   = str_replace('.php', '', $controller);
@@ -835,9 +861,9 @@ class Crud extends Backend
                 }
             }
             $url = count($pathArr) > 1 ? implode('.', $pathArr) : $pathArr[0];
-            $url = '/admin/' . $url . '/index';
+            return '/admin/' . $url . '/index';
         }
-        return $url;
+        return $field['form']['remote-url'];
     }
 
     private function getTableColumn($field, $columnDict, $fieldNamePrefix = '', $translationPrefix = ''): array

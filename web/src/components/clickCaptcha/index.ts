@@ -1,7 +1,6 @@
-import { shortUuid } from '/@/utils/random'
 import { createVNode, render } from 'vue'
 import clickCaptchaConstructor from './index.vue'
-import type { VNode } from 'vue'
+import { shortUuid } from '/@/utils/random'
 
 interface ClickCaptchaOptions {
     // 验证码弹窗的自定义class
@@ -21,14 +20,18 @@ interface ClickCaptchaOptions {
  * @param options
  */
 const clickCaptcha = (uuid: string, callback?: (captchaInfo: string) => void, options: ClickCaptchaOptions = {}) => {
-    let vnode: VNode | null = createVNode(clickCaptchaConstructor, {
+    const container = document.createElement('div')
+    const vnode = createVNode(clickCaptchaConstructor, {
         uuid,
         callback,
         ...options,
         key: shortUuid(),
+        onDestroy: () => {
+            render(null, container)
+        },
     })
-    render(vnode, document.body)
-    vnode = null
+    render(vnode, container)
+    document.body.appendChild(container.firstElementChild!)
 }
 
 export default clickCaptcha

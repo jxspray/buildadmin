@@ -13,7 +13,9 @@
                     <div class="goods-basic">
                         <h4 class="goods-basic-title">{{ state.goodsInfo.title }}</h4>
                         <div class="goods-tag">
-                            <el-tag v-for="(tag, idx) in state.goodsInfo.tags" :key="idx" :type="tag.type">{{ tag.name }}</el-tag>
+                            <el-tag v-for="(tag, idx) in state.goodsInfo.tags" :key="idx" :type="tag.type ? tag.type : 'primary'">
+                                {{ tag.name }}
+                            </el-tag>
                         </div>
                         <div class="basic-item">
                             <div class="basic-item-title">{{ t('module.Price') }}</div>
@@ -113,7 +115,7 @@
                                     installButtonState.buy.includes(state.goodsInfo.state) &&
                                     state.goodsInfo.type == 'online'
                                 "
-                                @click="onBuy"
+                                @click="onBuy(false)"
                                 v-blur
                                 class="basic-button-item"
                                 type="danger"
@@ -314,6 +316,21 @@ const unInstall = (uid: string) => {
 }
 
 const onUpdate = (uid: string, order: number) => {
+    // 无有效订单
+    if (!order) {
+        ElMessageBox.confirm(t('module.No module purchase order was found within the expiration date'), t('Reminder'), {
+            confirmButtonText: t('Confirm'),
+            cancelButtonText: t('Cancel'),
+            type: 'warning',
+        })
+            .then(() => {
+                onBuy(true)
+            })
+            .catch(() => {})
+        return
+    }
+
+    // 未登录
     const baAccount = useBaAccount()
     if (!baAccount.token) {
         state.dialog.baAccount = true
@@ -481,6 +498,7 @@ const onUpdate = (uid: string, order: number) => {
                 display: -webkit-box;
                 -webkit-box-orient: vertical;
                 -webkit-line-clamp: 2;
+                line-clamp: 2;
                 line-height: 15px;
                 height: 28px;
             }

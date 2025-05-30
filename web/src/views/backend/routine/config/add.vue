@@ -1,5 +1,5 @@
 <template>
-    <el-dialog class="ba-operate-dialog" :close-on-click-modal="false" :model-value="modelValue" @close="closeForm">
+    <el-dialog class="ba-operate-dialog" :close-on-click-modal="false" :model-value="props.modelValue" @close="closeForm">
         <template #header>
             <div class="title" v-drag="['.ba-operate-dialog', '.el-dialog__header']" v-zoom="'.ba-operate-dialog'">
                 {{ t('routine.config.Add configuration item') }}
@@ -20,10 +20,10 @@
                         type="select"
                         v-model="state.addConfig.group"
                         prop="group"
-                        :data="{ content: configGroup }"
+                        :input-attr="{ content: configGroup }"
                     />
                     <CreateFormItemData v-model="state.formItemData" />
-                    <FormItem :label="t('Weigh')" type="number" v-model.number="state.addConfig.weigh" prop="weigh" />
+                    <FormItem :label="t('Weigh')" type="number" v-model="state.addConfig.weigh" prop="weigh" />
                 </el-form>
             </div>
         </el-scrollbar>

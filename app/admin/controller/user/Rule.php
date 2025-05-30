@@ -25,6 +25,8 @@ class Rule extends Backend
 
     protected string|array $preExcludeFields = ['create_time', 'update_time'];
 
+    protected string|array $defaultSortField = ['weigh' => 'desc'];
+
     protected string|array $quickSearchField = 'title';
 
     /**
@@ -95,7 +97,7 @@ class Rule extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('add');
                         $validate->check($data);
                     }
@@ -160,7 +162,7 @@ class Rule extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('edit');
                         $validate->check($data);
                     }
@@ -194,14 +196,11 @@ class Rule extends Backend
 
     /**
      * 删除
-     * @param array $ids
      * @throws Throwable
      */
-    public function del(array $ids = []): void
+    public function del(): void
     {
-        if (!$this->request->isDelete() || !$ids) {
-            $this->error(__('Parameter error'));
-        }
+        $ids = $this->request->param('ids/a', []);
 
         // 子级元素检查
         $subData = $this->model->where('pid', 'in', $ids)->column('pid', 'id');
@@ -211,7 +210,7 @@ class Rule extends Backend
             }
         }
 
-        parent::del($ids);
+        parent::del();
     }
 
     /**
@@ -234,7 +233,7 @@ class Rule extends Backend
      * 获取菜单规则
      * @throws Throwable
      */
-    public function getRules(array $where = []): array
+    private function getRules(array $where = []): array
     {
         $pk      = $this->model->getPk();
         $initKey = $this->request->get("initKey/s", $pk);
@@ -250,7 +249,12 @@ class Rule extends Backend
             $where[] = [$initKey, 'in', $this->initValue];
         }
 
-        $data = $this->model->where($where)->order('weigh desc,id asc')->select()->toArray();
+        $data = $this->model
+            ->where($where)
+            ->order($this->queryOrderBuilder())
+            ->select()
+            ->toArray();
+
         return $this->assembleTree ? $this->tree->assembleChild($data) : $data;
     }
 

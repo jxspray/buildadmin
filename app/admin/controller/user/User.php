@@ -79,7 +79,7 @@ class User extends Backend
                 if ($this->modelValidate) {
                     $validate = str_replace("\\model\\", "\\validate\\", get_class($this->model));
                     if (class_exists($validate)) {
-                        $validate = new $validate;
+                        $validate = new $validate();
                         if ($this->modelSceneValidate) $validate->scene('add');
                         $validate->check($data);
                     }
@@ -102,11 +102,12 @@ class User extends Backend
 
     /**
      * 编辑
-     * @param string|int|null $id
      * @throws Throwable
      */
-    public function edit(string|int $id = null): void
+    public function edit(): void
     {
+        $pk  = $this->model->getPk();
+        $id  = $this->request->param($pk);
         $row = $this->model->find($id);
         if (!$row) {
             $this->error(__('Record not found'));
@@ -135,6 +136,7 @@ class User extends Backend
     {
         list($where, $alias, $limit, $order) = $this->queryBuilder();
         $res = $this->model
+            ->withoutField('password,salt')
             ->withJoin($this->withJoinTable, $this->withJoinType)
             ->alias($alias)
             ->where($where)

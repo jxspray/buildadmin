@@ -7,7 +7,6 @@ use think\App;
 use think\Response;
 use think\facade\Db;
 use app\BaseController;
-use think\facade\Config;
 use think\db\exception\PDOException;
 use think\exception\HttpResponseException;
 
@@ -54,12 +53,6 @@ class Api extends BaseController
         }
 
         parent::initialize();
-
-        /**
-         * 设置默认过滤规则
-         * @see filter()
-         */
-        $this->request->filter('filter');
 
         // 加载控制器语言包
         $langSet = $this->app->lang->getLangSet();
@@ -114,14 +107,8 @@ class Api extends BaseController
             'data' => $data,
         ];
 
-        // 如果未设置类型则自动判断
-        $type = $type ?: ($this->request->param(Config::get('route.var_jsonp_handler')) ? 'jsonp' : $this->responseType);
-
-        $code = 200;
-        if (isset($header['statuscode'])) {
-            $code = $header['statuscode'];
-            unset($header['statuscode']);
-        }
+        $type = $type ?: $this->responseType;
+        $code = $header['statusCode'] ?? 200;
 
         $response = Response::create($result, $type, $code)->header($header)->options($options);
         throw new HttpResponseException($response);

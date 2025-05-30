@@ -18,6 +18,8 @@ class Account extends Frontend
 {
     protected array $noNeedLogin = ['retrievePassword'];
 
+    protected array $noNeedPermission = ['verification', 'changeBind'];
+
     public function initialize(): void
     {
         parent::initialize();
@@ -120,11 +122,8 @@ class Account extends Frontend
             if (!Token::check($params['accountVerificationToken'], $params['type'] . '-pass', $user->id)) {
                 $this->error(__('You need to verify your account before modifying the binding information'));
             }
-        } else {
-            // 验证账户密码
-            if (!isset($params['password']) || $user->password != encrypt_password($params['password'], $user->salt)) {
-                $this->error(__('Password error'));
-            }
+        } elseif (!isset($params['password']) || $user->password != encrypt_password($params['password'], $user->salt)) {
+            $this->error(__('Password error'));
         }
 
         // 检查验证码

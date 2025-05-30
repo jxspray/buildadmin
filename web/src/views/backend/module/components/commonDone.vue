@@ -72,8 +72,46 @@
                     "
                     v-model="form.rebuild"
                     type="radio"
-                    :data="{ content: { 0: t('module.no'), 1: t('module.yes') }, childrenAttr: { border: true } }"
+                    :input-attr="{
+                        border: true,
+                        content: { 0: t('module.no'), 1: t('module.yes') },
+                    }"
                 />
+            </div>
+        </div>
+        <div class="install-tis-box" v-if="hotUpdateState.dirtyFile && state.common.moduleState != moduleInstallState.DISABLE">
+            <div class="install-form">
+                <el-form-item :label="t('module.After installation 2') + t('module.Restart Vite hot server')">
+                    <BaInput
+                        v-model="form.reloadHotServer"
+                        type="radio"
+                        :attr="{
+                            class: 'hot-server-input',
+                            border: true,
+                            content: {
+                                0: t('vite.Later') + t('module.Manual restart'),
+                                1: t('module.Restart Now'),
+                            },
+                        }"
+                    />
+                    <el-popover :width="360" placement="top">
+                        <div>
+                            <div class="el-popover__title">{{ t('vite.Reload hot server title') }}</div>
+                            <div class="reload-hot-server-content">
+                                <p>
+                                    <span>{{ t('vite.Reload hot server tips 1') }}</span>
+                                    <span>【{{ t(`vite.Close type ${hotUpdateState.closeType}`) }}】</span>
+                                    <span>{{ t('vite.Reload hot server tips 2') }}</span>
+                                </p>
+                                <p>{{ t('vite.Reload hot server tips 3') }}</p>
+                                <p>{{ t('module.Restart Vite hot server tips') }}</p>
+                            </div>
+                        </div>
+                        <template #reference>
+                            <div class="block-help hot-server-tips">{{ t('module.detailed information') }}？</div>
+                        </template>
+                    </el-popover>
+                </el-form-item>
             </div>
         </div>
         <el-button
@@ -91,21 +129,24 @@
 </template>
 
 <script setup lang="ts">
+import { ElMessageBox } from 'element-plus'
 import { reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { onRefreshTableData } from '../index'
 import { state } from '../store'
 import { moduleInstallState } from '../types'
-import { onRefreshTableData } from '../index'
-import { useTerminal } from '/@/stores/terminal'
-import FormItem from '/@/components/formItem/index.vue'
-import { taskStatus } from '/@/components/terminal/constant'
-import { ElMessageBox } from 'element-plus'
-import { useI18n } from 'vue-i18n'
 import { dependentInstallComplete } from '/@/api/backend/module'
+import BaInput from '/@/components/baInput/index.vue'
+import FormItem from '/@/components/formItem/index.vue'
+import { taskStatus } from '/@/stores/constant/terminalTaskStatus'
+import { useTerminal } from '/@/stores/terminal'
+import { hotUpdateState, reloadServer } from '/@/utils/vite'
 
 const { t } = useI18n()
 const terminal = useTerminal()
 const form = reactive({
     rebuild: 0,
+    reloadHotServer: 0,
 })
 
 const showTerminal = () => {
@@ -119,13 +160,13 @@ const onSubmitInstallDone = () => {
         terminal.addTaskPM('web-build', false, '', (res: number) => {
             if (res == taskStatus.Success) {
                 terminal.toggle(false)
-                if (import.meta.hot && state.common.moduleState != moduleInstallState.DISABLE) {
-                    import.meta.hot.send('custom:reload-hot', { type: 'modules' })
+                if (form.reloadHotServer == 1 && state.common.moduleState != moduleInstallState.DISABLE) {
+                    reloadServer('modules')
                 }
             }
         })
-    } else if (import.meta.hot && state.common.moduleState != moduleInstallState.DISABLE) {
-        import.meta.hot.send('custom:reload-hot', { type: 'modules' })
+    } else if (form.reloadHotServer == 1 && state.common.moduleState != moduleInstallState.DISABLE) {
+        reloadServer('modules')
     }
 }
 
@@ -207,6 +248,19 @@ const onConfirmDepend = () => {
     display: block;
     margin: 20px auto;
     width: 120px;
+}
+.reload-hot-server-content {
+    font-size: var(--el-font-size-small);
+    p {
+        margin-bottom: 6px;
+    }
+}
+.hot-server-input {
+    width: 100%;
+}
+.hot-server-tips {
+    width: auto;
+    cursor: pointer;
 }
 @media screen and (max-width: 1600px) {
     :deep(.install-tis-box) {

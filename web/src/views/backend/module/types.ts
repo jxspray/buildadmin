@@ -48,6 +48,7 @@ export interface moduleState {
     goodsInfo: anyObj
     buy: {
         info: anyObj
+        renew: boolean
         agreement: boolean
     }
     common: {

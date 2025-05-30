@@ -15,14 +15,14 @@
 
 <script setup lang="ts">
 import { computed, nextTick, onMounted, reactive } from 'vue'
-import MenuTree from '/@/layouts/backend/components/menus/menuTree.vue'
 import type { RouteLocationNormalizedLoaded, RouteRecordRaw } from 'vue-router'
-import { layoutMenuRef, layoutMenuScrollbarRef } from '/@/stores/refs'
-import { useRoute, onBeforeRouteUpdate } from 'vue-router'
+import { onBeforeRouteUpdate, useRoute } from 'vue-router'
+import MenuTree from '/@/layouts/backend/components/menus/menuTree.vue'
 import { useConfig } from '/@/stores/config'
 import { useNavTabs } from '/@/stores/navTabs'
-import { currentRouteTopActivity } from '/@/layouts/backend/components/menus/helper'
+import { layoutMenuRef, layoutMenuScrollbarRef } from '/@/stores/refs'
 import horizontalScroll from '/@/utils/horizontalScroll'
+import { getMenuKey } from '/@/utils/router'
 
 const config = useConfig()
 const navTabs = useNavTabs()
@@ -50,12 +50,16 @@ const verticalMenusScrollbarHeight = computed(() => {
 
 /**
  * 激活当前路由的菜单
- * @param currentRoute 当前路由
  */
 const currentRouteActive = (currentRoute: RouteLocationNormalizedLoaded) => {
-    let routeChildren = currentRouteTopActivity(currentRoute.path, navTabs.state.tabsViewRoutes)
+    // 以路由 fullPath 匹配的菜单优先，且 fullPath 无匹配时，回退到 path 的匹配菜单
+    const tabView = navTabs.getTabsViewDataByRoute(currentRoute)
+    if (tabView) {
+        state.defaultActive = getMenuKey(tabView, tabView.meta!.matched as string)
+    }
+
+    let routeChildren = navTabs.getTabsViewDataByRoute(currentRoute, 'above')
     if (routeChildren) {
-        state.defaultActive = currentRoute.path
         if (routeChildren.children && routeChildren.children.length > 0) {
             state.routeChildren = routeChildren.children
         } else {

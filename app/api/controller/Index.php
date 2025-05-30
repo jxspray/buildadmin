@@ -2,15 +2,16 @@
 
 namespace app\api\controller;
 
-use app\index\model\web\Catalog;
+use ba\Tree;
 use Throwable;
+use think\facade\Db;
 use think\facade\Config;
 use app\common\controller\Frontend;
-use ba\cms\utils\Tree;
+use app\common\library\token\TokenExpirationException;
 
 class Index extends Frontend
 {
-    protected array $noNeedLogin = ['index', 'loadRules'];
+    protected array $noNeedLogin = ['index'];
 
     public function initialize(): void
     {
@@ -23,44 +24,60 @@ class Index extends Frontend
      */
     public function index(): void
     {
-        $catalogHeader = [];
-        $catalogFooter = [];
-        // 头部底部菜单
-        $catalogList = Catalog::where('status', 1)->order('weigh','desc')->append(['url', 'route'])->select()->toArray();
-        $catalogList = array_combine(array_column($catalogList, 'id'), $catalogList);
-        foreach ($catalogList as $val) {
-            if (request()->isMobile() && $val['mobile'] === 0) continue;
-            switch ($val['show']) {
-                case 1:
-                    $catalogHeader[] = $val;
-                    $catalogFooter[] = $val;
-                    break;
-                case 2:
-                    $catalogHeader[] = $val;
-                    break;
-                case 3:
-                    $catalogFooter[] = $val;
-                    break;
+        $menus = [];
+        if ($this->auth->isLogin()) {
+            $rules     = [];
+            $userMenus = $this->auth->getMenus();
+
+            // 首页加载的规则，验权，但过滤掉会员中心菜单
+            foreach ($userMenus as $item) {
+                if ($item['type'] == 'menu_dir') {
+                    $menus[] = $item;
+                } elseif ($item['type'] != 'menu') {
+                    $rules[] = $item;
+                }
             }
+            $rules = array_values($rules);
+        } else {
+            // 若是从前台会员中心内发出的请求，要求必须登录，否则会员中心异常
+            $requiredLogin = $this->request->get('requiredLogin/b', false);
+            if ($requiredLogin) {
+
+                // 触发可能的 token 过期异常
+                try {
+                    $token = get_auth_token(['ba', 'user', 'token']);
+                    $this->auth->init($token);
+                } catch (TokenExpirationException) {
+                    $this->error(__('Token expiration'), [], 409);
+                }
+
+                $this->error(__('Please login first'), [
+                    'type' => $this->auth::NEED_LOGIN
+                ], $this->auth::LOGIN_RESPONSE_CODE);
+            }
+
+            $rules = Db::name('user_rule')
+                ->where('status', '1')
+                ->where('no_login_valid', 1)
+                ->where('type', 'in', ['route', 'nav', 'button'])
+                ->order('weigh', 'desc')
+                ->select()
+                ->toArray();
+            $rules = Tree::instance()->assembleChild($rules);
         }
-        $header = new Tree($catalogHeader);
-        $footer = new Tree($catalogFooter);
-        $catalogHeader = $header->leaf(0);
-        $catalogFooter = $footer->leaf(0);
-        $values = \app\index\model\web\Config::where("name", "cms")->find();
-        $this->success('初始化完成', [
-            'site'             => $values->value,
-            'menus'            => $catalogHeader,
+
+        $this->success('', [
+            'site'             => [
+                'siteName'     => get_sys_config('site_name'),
+                'recordNumber' => get_sys_config('record_number'),
+                'version'      => get_sys_config('version'),
+                'cdnUrl'       => full_url(),
+                'upload'       => keys_to_camel_case(get_upload_config(), ['max_size', 'save_name', 'allowed_suffixes', 'allowed_mime_types']),
+            ],
+            'openMemberCenter' => Config::get('buildadmin.open_member_center'),
+            'userInfo'         => $this->auth->getUserInfo(),
+            'rules'            => $rules,
+            'menus'            => $menus,
         ]);
-    }
-
-    public function loadRules()
-    {
-        $rules = [];
-        // 生成模型列表规则
-        // 生成模型详情规则
-        // 生成单页规则
-
-        $this->success('', $rules);
     }
 }

@@ -63,7 +63,8 @@ export interface FieldItem {
     dataType?: string
     length: number
     precision: number
-    default: string
+    default?: string
+    defaultType: 'INPUT' | 'EMPTY STRING' | 'NULL' | 'NONE'
     null: boolean
     primaryKey: boolean
     unsigned: boolean
@@ -91,7 +92,8 @@ export const fieldItem: {
             table: {},
             form: {},
             ...fieldData.number,
-            default: 'none',
+            defaultType: 'NONE',
+            null: false,
             primaryKey: true,
             unsigned: true,
             autoIncrement: true,
@@ -107,7 +109,8 @@ export const fieldItem: {
             ...fieldData.number,
             type: 'bigint',
             length: 20,
-            default: 'none',
+            defaultType: 'NONE',
+            null: false,
             primaryKey: true,
             unsigned: true,
         },
@@ -119,6 +122,8 @@ export const fieldItem: {
             table: {},
             form: {},
             ...fieldData.switch,
+            default: '1',
+            defaultType: 'INPUT',
         },
         {
             title: i18n.global.t('crud.state.remarks'),
@@ -138,8 +143,6 @@ export const fieldItem: {
             table: {},
             form: {},
             ...fieldData.number,
-            default: '0',
-            null: true,
         },
         {
             title: i18n.global.t('Update time'),
@@ -211,6 +214,7 @@ export const fieldItem: {
             form: {},
             ...fieldData.radio,
             default: 'opt0',
+            defaultType: 'INPUT',
         },
         {
             title: i18n.global.t('utils.checkbox'),
@@ -222,6 +226,7 @@ export const fieldItem: {
             form: {},
             ...fieldData.checkbox,
             default: 'opt0,opt1',
+            defaultType: 'INPUT',
         },
         {
             title: i18n.global.t('utils.select'),
@@ -233,6 +238,7 @@ export const fieldItem: {
             form: {},
             ...fieldData.select,
             default: 'opt0',
+            defaultType: 'INPUT',
         },
         {
             title: i18n.global.t('utils.switch'),
@@ -242,6 +248,8 @@ export const fieldItem: {
             table: {},
             form: {},
             ...fieldData.switch,
+            default: '1',
+            defaultType: 'INPUT',
         },
         {
             title: i18n.global.t('utils.rich Text'),
@@ -278,8 +286,9 @@ export const fieldItem: {
             type: 'decimal',
             length: 5,
             precision: 2,
-            default: '0',
+            defaultType: 'NULL',
             ...npuaFalse(),
+            null: true,
             comment: i18n.global.t('utils.float'),
             designType: 'float',
             table: {},
@@ -319,7 +328,7 @@ export const fieldItem: {
             type: 'datetime',
             length: 0,
             precision: 0,
-            default: 'null',
+            defaultType: 'NULL',
             ...npuaFalse(),
             null: true,
             comment: i18n.global.t('utils.time date'),
@@ -764,6 +773,14 @@ export const designTypes: anyObj = {
                 value: '',
                 placeholder: i18n.global.t('crud.state.If it is not input, it will be automatically analyzed by the controller'),
             },
+            'remote-primary-table-alias': {
+                type: 'string',
+                value: '',
+            },
+            'remote-source-config-type': {
+                type: 'hidden',
+                value: '',
+            },
         },
     },
     remoteSelects: {
@@ -805,6 +822,14 @@ export const designTypes: anyObj = {
                 type: 'string',
                 value: '',
                 placeholder: i18n.global.t('crud.state.If it is not input, it will be automatically analyzed by the controller'),
+            },
+            'remote-primary-table-alias': {
+                type: 'string',
+                value: '',
+            },
+            'remote-source-config-type': {
+                type: 'hidden',
+                value: '',
             },
         },
     },

@@ -51,7 +51,7 @@
                             multiple: true,
                             params: { isTree: true, absoluteAuth: adminInfo.id == baTable.form.items!.id ? 0 : 1 },
                             field: 'name',
-                            'remote-url': '/admin/auth.Group/index',
+                            remoteUrl: '/admin/auth.Group/index',
                             placeholder: t('Click select'),
                         }"
                     />
@@ -75,6 +75,7 @@
                         prop="password"
                         v-model="baTable.form.items!.password"
                         type="password"
+                        :input-attr="{ autocomplete: 'new-password' }"
                         :placeholder="
                             baTable.form.operate == 'Add'
                                 ? t('Please input field', { field: t('auth.admin.Password') })
@@ -94,7 +95,10 @@
                         :label="t('State')"
                         v-model="baTable.form.items!.status"
                         type="radio"
-                        :data="{ content: { '0': t('Disable'), '1': t('Enable') }, childrenAttr: { border: true } }"
+                        :input-attr="{
+                            border: true,
+                            content: { '0': t('Disable'), '1': t('Enable') },
+                        }"
                     />
                 </el-form>
             </div>
